@@ -1,0 +1,767 @@
+<?php
+
+namespace App\Services;
+
+use App\Events\NewNotification;
+use App\Http\Resources\activites\ActivitesResource;
+use App\Http\Resources\SuiviFinancierResource;
+use App\Models\Activite;
+use App\Models\Bailleur;
+use App\Models\Gouvernement;
+use App\Models\Projet;
+use App\Models\SuiviFinancier;
+use App\Models\User;
+use App\Notifications\SuiviFinancierNotification;
+use App\Repositories\ActiviteRepository;
+use App\Repositories\SuiviFinancierRepository;
+use App\Traits\Helpers\HelperTrait;
+use App\Traits\Helpers\Pta;
+use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+use Core\Services\Contracts\BaseService;
+use Core\Services\Interfaces\SuiviFinancierServiceInterface;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Exception;
+use Illuminate\Notifications\Action;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+
+/**
+* Interface SuiviFinancierServiceInterface
+* @package Core\Services\Interfaces
+*/
+class SuiviFinancierService extends BaseService implements SuiviFinancierServiceInterface
+{
+
+    use Pta, HelperTrait;
+    /**
+     * @var service
+     */
+    protected $repository, $activiteRepository;
+
+    /**
+     * ProjetService constructor.
+     *
+     * @param SuiviFinancier $suiviFinancierRepository
+     */
+    public function __construct(SuiviFinancierRepository $suiviFinancierRepository, ActiviteRepository $activiteRepository)
+    {
+        parent::__construct($suiviFinancierRepository);
+        $this->repository = $suiviFinancierRepository;
+        $this->activiteRepository = $activiteRepository;
+    }
+
+    public function filtre(array $attributs): JsonResponse
+    {
+
+        try {
+
+            $suiviFinanciers = [];
+
+            $bailleur = Bailleur::find($attributs['bailleurId']);
+
+            $projet = Projet::where('bailleurId', $attributs['bailleurId'])->first();
+
+            $activites = $projet->activites();
+
+            foreach($activites as $activite)
+            {
+                $suivi = $projet->bailleur->suiviFinanciers->where('activiteId', $activite->id)
+                                                           ->where('trimestre', $attributs['trimestre'])
+                                                           ->where('annee', $attributs['annee'])
+                                                           ->first();
+
+                if(!$suivi) continue;
+
+                $plan = $activite->planDeDecaissement($attributs['trimestre'], $attributs['annee']);
+
+                $periode = [
+                    "budjet" => $plan['pret'],
+                    "consommer" => $suivi->consommer,
+                    "disponible" => $plan['pret'] - $suivi->consommer,
+                    "pourcentage" => $plan['pret'] != 0 ? round(($suivi->consommer*100)/$plan['pret'],2) : 0 . " %"
+                ];
+
+                $planParAnnee = $activite->planDeDecaissementParAnnee($attributs['annee']);
+                $consommerParAnnee = $projet->bailleur->suiviFinanciers->where('activiteId', $activite->id)
+                                                                        ->where('annee', $attributs['annee'])
+                                                                        ->sum('consommer');
+
+                $exercice = [
+                    "budjet" => $planParAnnee['pret'],
+                    "consommer" => $consommerParAnnee,
+                    "disponible" => $planParAnnee['pret'] - $consommerParAnnee,
+                    "pourcentage" => $planParAnnee['pret'] != 0 ? round(($consommerParAnnee*100)/$planParAnnee['pret'],2) : 0 . " %"
+                ];
+
+                $planCumul = $activite->planDeDecaissements->sum('pret');
+                $consommerCumul = $projet->bailleur->suiviFinanciers->where('activiteId', $activite->id)
+                                                                    ->sum('consommer');
+
+                $cumul = [
+                    "budjet" => $planCumul,
+                    "consommer" => $consommerCumul,
+                    "disponible" => $planCumul - $consommerCumul,
+                    "pourcentage" => $planCumul != 0 ? round(($consommerCumul*100)/$planCumul,2) : 0 . " %"
+                ];
+
+                $objet = [
+                    "bailleur" => $projet->bailleur->sigle,
+                    "trimestre" => $attributs['trimestre'],
+                    "annee" => $attributs['annee'],
+                    "activite" => new ActivitesResource($activite),
+                    "periode" => $periode,
+                    "exercice" => $exercice,
+                    "cumul" => $cumul
+                ];
+
+                array_push($suiviFinanciers, $objet);
+            }
+
+            $programme = Auth::user()->programme;
+            $projets = [];
+
+            foreach($programme->suiviFinanciers as $suiviFinancier)
+            {
+                $controle = 1;
+                $projet = $suiviFinancier->activite->composante->projet;
+
+                foreach($projets as $key => $p)
+                {
+
+                    if($p['id'] == $projet->id)
+                    {
+                        $projets[$key]['total']+= $suiviFinancier->consommer;
+                        $controle = 0;
+                    }
+                }
+
+                if($controle)
+                {
+                    array_push($projets, [
+                        'id' => $projet->id,
+                        'nom' => $projet->nom,
+                        'total' => $suiviFinancier->consommer
+                    ]);
+                }
+            }
+
+            $data = [
+                'suiviFinanciers' => $suiviFinanciers,
+                'total' => $programme->suiviFinanciers->sum('consommer'),
+                'projets' => $projets,
+                'annee' => $attributs['annee'],
+                'bailleur' => $bailleur->sigle
+            ];
+
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    public function create(array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try
+        {
+            $controle = 1;
+            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programmeId]);
+
+            $activite = Activite::find($attributs['activiteId']);
+
+            $durees = $activite->durees;
+            foreach($durees as $duree)
+            {
+                $debutTab = explode('-', $duree->debut);
+                $finTab = explode('-', $duree->fin);
+
+                if($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee'])
+                {
+                    $controle = 0;
+                    break;
+                }
+            }
+
+            if($controle)
+                throw new Exception("L'activite n'a aucune durée d'execution dans l'année precisé", 500);
+
+
+            /*if($activite->statut != 0 && $activite->statut != 1 )
+                throw new Exception("L'activite n'est ni en cours ni en retard, le suivi ne peux etre faire", 500);*/
+
+            if($activite->statut < 0 )
+                throw new Exception("L'activite n'a pas encore démarré", 500);
+
+            if($attributs['type'])
+                $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+                                                           ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
+                                                           ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Gouvernement())]])
+                                           ->pluck('trimestre');
+
+            else
+                $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+                                                           ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
+                                                           ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Bailleur())]])
+                                           ->pluck('trimestre');
+
+            // if(!(count($trimestres)) && $attributs['trimestre'] != 1)
+            //     throw new Exception("Vous devez d'abord faire le suivi du trimestre 1", 500);
+            if(in_array($attributs['trimestre'], $trimestres))
+                throw new Exception(" suivi du trimestre {$attributs['trimestre']} a été déja effectufié", 500);
+
+
+
+            $nombreDeTrimestre = count($trimestres);
+
+            /*if($nombreDeTrimestre == 0 && $attributs['trimestre'] > 1) throw new Exception("Vous devez d'abord faire le suivi du premier trimestre", 500);
+
+            else if( $nombreDeTrimestre == 0 && $attributs['trimestre'] == 1 );
+
+            else
+            {
+                $max = max($trimestres->all());
+                if($attributs['trimestre'] <= $max)
+                    throw new Exception("Le suivi du trimestre {$attributs['trimestre']} a déjà été effectué", 500);
+
+                else if($attributs['trimestre'] > $max+1)
+                {
+                    $max = $max+1;
+                    throw new Exception("Vous devez d'abord faire le suivi du trimestre {$max}", 500);
+                }
+
+                else if( $nombreDeTrimestre + 1 > 4)
+                    throw new Exception("Le suivi ne peut qu'être faire sur les 4 trimestres d'une année.", 1);
+            }*/
+
+            //$plan = $activite->planDeDecaissement($attributs['trimestre'], $attributs['annee']);
+
+            if(!array_key_exists('dateSuivie', $attributs))
+            {
+
+                switch ($attributs['trimestre']) {
+                    case 1:
+                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-03-31 ".date('h:i:s')]);
+                        break;
+
+                    case 2:
+                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-06-30 ".date('h:i:s')]);
+                        break;
+
+                    case 3:
+                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-09-30 ".date('h:i:s')]);
+                        break;
+
+                    case 4:
+                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-12-31 ".date('h:i:s')]);
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+            }
+
+
+            if($attributs['type'])
+            {
+                $gouvernement = $activite->composante->projet->programme->gouvernement;
+
+                if(!($gouvernement)) throw new Exception("Gouvernement n'existe pas, veillez creer son compte", 1);
+                $suiviFinancier = $gouvernement->suiviFinanciers()->create($attributs);
+            }
+
+            else
+            {
+                $bailleur = $activite->composante->projet->bailleur;
+                $suiviFinancier = $bailleur->suiviFinanciers()->create($attributs);
+            }
+
+            $data['texte'] = "Un suivi financier vient d'etre faire";
+            $data['id'] = $suiviFinancier->id;
+            $data['auteurId'] = Auth::user()->id;
+            $notification = new SuiviFinancierNotification($data);
+
+            $allUsers = User::where('programmeId', Auth::user()->programmeId);
+            foreach($allUsers as $user)
+            {
+                if($user->hasPermissionTo('alerte-suivi-financier'))
+                {
+                    $user->notify($notification);
+
+                    $notification = $user->notifications->last();
+
+                    event(new NewNotification($this->formatageNotification($notification, $user)));
+
+                }
+            }
+
+            DB::commit();
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SuiviFinancierResource($suiviFinancier), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+        catch (\Throwable $th)
+        {
+            DB::rollback();
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function trismestreASsuivre(array $attributs) : JsonResponse
+    {
+        $trimestreAll=[1,2,3,4];
+        $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+        ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
+        ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Bailleur())]])
+->pluck('trimestre');
+        $diff1= array_diff($trimestreAll, $trimestres);
+
+        return response()->json(['statut' => 'success', 'message' => null, 'data' =>  $diff1, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+    }
+
+
+
+    public function update($suiviFinancierId, array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try
+        {
+            if(array_key_exists('programmeId', $attributs))
+                unset($attributs['programmeId']);
+
+            if(array_key_exists('activiteId', $attributs))
+            {
+                $activite = Activite::find($attributs['activiteId']);
+
+                if($activite->composante->projet->programmeId != Auth::user()->programmeId) throw new Exception( "Cette activite n'est pas dans le programme en cours", 500);
+            }
+            if(!($suivi = $this->repository->findById($suiviFinancierId))) throw new Exception( "Cet suivi n'existe pas", 500);
+
+            if(array_key_exists('trimestre', $attributs)) unset($attributs['trimestre']);
+
+            $suivi = $suivi->fill($attributs);
+            DB::commit();
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $suivi, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+        catch (\Throwable $th)
+        {
+            DB::rollback();
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function importation_old(array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try
+        {
+            $programmeId = Auth::user()->programmeId;
+
+            $file = $attributs['fichier'];
+
+            if($file->getClientOriginalExtension() != 'xls')
+                throw new Exception("Le fichier doit être au format xls", 500);
+
+            $filenameWithExt = $file->getClientOriginalName();
+            $filename = strtolower(str_replace(' ', '-',time() . '-'. $filenameWithExt));
+            $path = "importation/".$filename;
+            Storage::disk('public')->put($path, $file->getContent());
+
+
+            if (($open = fopen(public_path("storage/".$path), "r")) !== FALSE)
+            {
+                $i = 1;
+
+                $header = fgetcsv($open, 1000, " ");
+                if(array_diff($header, ["codePta", "trimestre", "annee", "consommer", "source"]))
+                    throw new Exception("L'en-tete du fichier n'est pas valide", 500);
+                $i++;
+
+                while (($data = fgetcsv($open, 1000, " ")) !== FALSE)
+                {
+                    $attributs = [];
+                    $controle = 1;
+
+                    if(count($data) != 5)
+                        throw new Exception("Fichier invalide: ligne {$i} incorrecte", 500);
+
+                    $activite = $this->searchByCodePta(new Activite, $data[0]);
+
+                    if($activite == null)
+                        throw new Exception("Activite avec le code pta : {$data[0]} introuvable, ligne {$i}", 500);
+
+                    $durees = $activite->durees;
+                    foreach($durees as $duree)
+                    {
+                        $debutTab = explode('-', $duree->debut);
+                        $finTab = explode('-', $duree->fin);
+
+                        if($debutTab[0] <= $data[2] && $finTab[0] >= $data[2])
+                        {
+                            $controle = 0;
+                            break;
+                        }
+                    }
+
+                    if($controle)
+                        throw new Exception("L'activite n'a aucune durée d'execution dans l'année precisé, ligne {$i}", 500);
+
+                    if($activite->statut != 0 && $activite->statut != 1 )
+                        throw new Exception("L'activite n'est ni en cours ni en retard, le suivi ne peux etre faire, ligne {$i}", 500);
+
+                    if($data[4] == 'bn')
+                        $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $activite->id],
+                                                                   ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $data[2]],
+                                                                   ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Gouvernement())]])
+                                                   ->pluck('trimestre');
+
+                    else
+                        $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $activite->id],
+                                                                   ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $data[2]],
+                                                                   ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Bailleur())]])
+                                                   ->pluck('trimestre');
+
+                    $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $activite->id],
+                                                    ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $data[2]]])
+                                                   ->pluck('trimestre');
+
+                    if(!(count($trimestres)) && $data[1] != 1)
+                       throw new Exception("Vous devez d'abord faire le suivi du trimestre 1, ligne {$i}", 500);
+
+
+                    $nombreDeTrimestre = count($trimestres);
+
+                    if($nombreDeTrimestre == 0 && $data[1] > 1) throw new Exception("Vous devez d'abord faire le suivi du premier trimestre, ligne {$i}", 500);
+
+                    else if( $nombreDeTrimestre == 0 && $data[1] == 1 );
+
+                    else
+                    {
+                        $max = max($trimestres->all());
+                        if($data[1] <= $max)
+                            throw new Exception("Le suivi du trimestre {$data[1]} a déjà été effectué, ligne {$i}", 500);
+
+                        else if($data[1] > $max+1)
+                        {
+                            $max = $max+1;
+                            throw new Exception("Vous devez d'abord faire le suivi du trimestre {$max}, ligne {$i}", 500);
+                        }
+
+                        else if( $nombreDeTrimestre + 1 > 4)
+                            throw new Exception("Le suivi ne peut qu'être faire sur les 4 trimestres d'une année, ligne {$i}.", 1);
+                    }
+
+                    $attributs = array_merge($attributs, [
+                        'activiteId' => $activite->id,
+                        'trimestre' => $data[1],
+                        'annee' => $data[2],
+                        'consommer' => $data[3],
+                        'programmeId' => $programmeId
+                    ]);
+
+                    if($data[4] == 'bn')
+                    {
+                        $gouvernement = $activite->composante->projet->programme->gouvernement;
+
+                        if(!($gouvernement)) throw new Exception("Gouvernement n'existe pas, veillez creer son compte, ligne {$i}", 1);
+
+                        $gouvernement->suiviFinanciers()->create($attributs);
+                    }
+
+                    else
+                    {
+                        $bailleur = $activite->composante->projet->bailleur;
+                        $bailleur->suiviFinanciers()->create($attributs);
+                    }
+
+                    $i++;
+
+                }
+            }
+
+            DB::commit();
+
+            fclose($open);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => "Importation reussir", 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+        catch (\Throwable $th)
+        {
+            DB::rollback();
+
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function importation(array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try
+        {
+            $programmeId = Auth::user()->programmeId;
+
+            $file = $attributs['fichier'];
+
+            if($file->getClientOriginalExtension() != 'xlsx')
+                throw new Exception("Le fichier doit être au format xlsx", 500);
+
+            $filenameWithExt = $file->getClientOriginalName();
+            $filename = strtolower(str_replace(' ', '-',time() . '-'. $filenameWithExt));
+            $path = "importation/".$filename;
+            Storage::disk('public')->put($path, $file->getContent());
+
+            $trimestresFichier = [];
+
+            $reader = ReaderEntityFactory::createReaderFromFile(public_path("storage/".$path));
+
+            $reader->open(public_path("storage/".$path));
+
+            foreach ($reader->getSheetIterator() as $sheet)
+            {
+                foreach ($sheet->getRowIterator() as $key => $row)
+                {
+                    /* validation de l'en-tete du fichier et recuperation des trimestres */
+                    if($key == 1)
+                    {
+                        $cells = $row->getCells();
+                        foreach ($cells as $cellule => $cell) {
+                            switch ($cellule+1) {
+                                case 1:
+                                    if(strtolower($cell->getValue()) != "cod")
+                                        throw new Exception("Cellule 1 de la ligne 1 invalide ", 500);
+                                    break;
+                                case 2:
+                                    if(strtolower($cell->getValue()) != "codepta")
+                                        throw new Exception("Cellule 2 de la ligne 1 invalide ", 500);
+                                    break;
+                                case 3:
+                                    if(strtolower($cell->getValue()) != "annee")
+                                        throw new Exception("Cellule 3 de la ligne 1 invalide ", 500);
+                                    break;
+                                case 4:
+                                    if(strtolower($cell->getValue()) != "source")
+                                        throw new Exception("Cellule 4 de la ligne 1 invalide ", 500);
+                                    break;
+                                case 5:
+                                    if(strtolower($cell->getValue()) != "codact")
+                                        throw new Exception("Cellule 5 de la ligne 1 invalide ", 500);
+                                    break;
+                                case 6:
+                                   if(strtolower($cell->getValue()) != "activites")
+                                        throw new Exception("Cellule 6 de la ligne 1 invalide ", 500);
+                                    break;
+                                default:
+                                    if(strtolower($cell->getValue()) == "consommé")
+                                        array_push($trimestresFichier, $cellule+1);
+                                    break;
+                            }
+
+
+                        }
+                    }
+
+                    else
+                    {
+                        $attributs = [];
+                        $cells = $row->getCells();
+
+                        foreach($trimestresFichier as $keys=>$trimestre)
+                        {
+                            $attributs = array_merge($attributs, ['trimestre' => $keys+1]);
+                            $attributs = array_merge($attributs, ['programmeId' => $programmeId]);
+
+                            foreach ($cells as $cellule => $cell) {
+                                switch ($cellule+1) {
+                                    case 2:
+                                        if($cell->getValue() == "")
+                                            throw new Exception("Cellule 2 de la ligne {$key} invalide ", 500);
+
+                                        $attributs = array_merge($attributs, ['codePta' => $cell->getValue()]);
+                                        break;
+                                    case 3:
+                                        if($cell->getValue() == "")
+                                            throw new Exception("Cellule 3 de la ligne {$key} invalide ", 500);
+
+                                        $attributs = array_merge($attributs, ['annee' => $cell->getValue()]);
+                                        break;
+                                    case 4:
+                                        if($cell->getValue() == "")
+                                            throw new Exception("Cellule 4 de la ligne {$key} invalide ", 500);
+
+                                        $attributs = array_merge($attributs, ['source' => $cell->getValue()]);
+                                        break;
+                                    case $trimestre:
+                                        if($cell->getValue() == "")
+                                            throw new Exception("Cellule {$trimestre} de la ligne {$key} invalide ", 500);
+
+                                        $attributs = array_merge($attributs, ['consommer' => $cell->getValue()]);
+                                        break;
+
+                                    default:
+                                        //throw new Exception("Taille de la ligne 3 invalide, cela doit contenir 4 cellule ", 500);
+                                        break;
+                                }
+                            }
+
+                            $controle = 1;
+
+                            $activite = $this->searchByCodePta(new Activite, $attributs['codePta']);
+
+                            if($activite == null)
+                                throw new Exception("Activite avec le code pta : {$attributs['codePta']} introuvable, ligne {$key}", 500);
+
+                            $attributs = array_merge($attributs, ['activiteId' => $activite->id]);
+
+                            $durees = $activite->durees;
+                            foreach($durees as $duree)
+                            {
+                                $debutTab = explode('-', $duree->debut);
+                                $finTab = explode('-', $duree->fin);
+
+                                if($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee'])
+                                {
+                                    $controle = 0;
+                                    break;
+                                }
+                            }
+
+                            if($controle)
+                                throw new Exception("L'activite n'a aucune durée d'execution dans l'année precisé", 500);
+
+
+                            /*if($activite->statut != 0 && $activite->statut != 1 )
+                                throw new Exception("L'activite n'est ni en cours ni en retard, le suivi ne peux etre faire", 500);*/
+
+                            if($activite->statut < 0 )
+                                throw new Exception("L'activite n'a pas encore démarré", 500);
+
+                            if($attributs['source'] == 'bn')
+                                $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+                                                               ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
+                                                               ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Gouvernement())]])
+                                               ->pluck('trimestre');
+
+                            else
+                                $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+                                                               ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
+                                                               ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Bailleur())]])
+                                               ->pluck('trimestre');
+
+                            /*if(!(count($trimestres)) && $attributs['trimestre'] != 1)
+                                throw new Exception("Vous devez d'abord faire le suivi du trimestre 1", 500);
+
+
+                            $nombreDeTrimestre = count($trimestres);
+
+                            if($nombreDeTrimestre == 0 && $attributs['trimestre'] > 1) throw new Exception("Vous devez d'abord faire le suivi du premier trimestre", 500);
+
+                            else if( $nombreDeTrimestre == 0 && $attributs['trimestre'] == 1 );
+
+                            else
+                            {
+                                $max = max($trimestres->all());
+                                if($attributs['trimestre'] <= $max)
+                                    continue;
+
+                                else if($attributs['trimestre'] > $max+1)
+                                {
+                                    $max = $max+1;
+                                    throw new Exception("Vous devez d'abord faire le suivi du trimestre {$max}.", 500);
+                                }
+
+                                else if( $nombreDeTrimestre + 1 > 4)
+                                    throw new Exception("Le suivi ne peut qu'être faire sur les 4 trimestres d'une année.", 1);
+                            }*/
+
+                            //$plan = $activite->planDeDecaissement($attributs['trimestre'], $attributs['annee']);
+
+                            if(!array_key_exists('dateSuivie', $attributs))
+                            {
+
+                                switch ($attributs['trimestre']) {
+                                    case 1:
+                                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-03-31 ".date('h:i:s')]);
+                                        break;
+
+                                    case 2:
+                                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-06-30 ".date('h:i:s')]);
+                                        break;
+
+                                    case 3:
+                                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-09-30 ".date('h:i:s')]);
+                                        break;
+
+                                    case 4:
+                                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-12-31 ".date('h:i:s')]);
+                                        break;
+
+                                    default:
+                                        # code...
+                                        break;
+                                }
+                            }
+
+                            if($attributs['source'] == 'bn')
+                            {
+                                $gouvernement = $activite->composante->projet->programme->gouvernement;
+
+                                if(!($gouvernement)) throw new Exception("Gouvernement n'existe pas, veillz creer son compte", 1);
+                                $suiviFinancier = $gouvernement->suiviFinanciers()->create($attributs);
+                            }
+
+                            else
+                            {
+                                $bailleur = $activite->composante->projet->bailleur;
+                                $suiviFinancier = $bailleur->suiviFinanciers()->create($attributs);
+                            }
+
+
+                            $data['texte'] = "Un suivi financier vient d'etre faire";
+                            $data['id'] = $suiviFinancier->id;
+                            $data['auteurId'] = Auth::user()->id;
+                            $notification = new SuiviFinancierNotification($data);
+
+                            $allUsers = User::where('programmeId', Auth::user()->programmeId);
+                            foreach($allUsers as $user)
+                            {
+                                if($user->hasPermissionTo('alerte-suivi-financier'))
+                                {
+                                    $user->notify($notification);
+
+                                    $notification = $user->notifications->last();
+
+                                    event(new NewNotification($this->formatageNotification($notification, $user)));
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            DB::commit();
+
+            $reader->close();
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => "Importation reussir", 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+        catch (\Throwable $th)
+        {
+            DB::rollback();
+
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+}

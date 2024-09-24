@@ -1,0 +1,410 @@
+<?php
+
+namespace App\Models;
+
+use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+
+class Programme extends Model
+{
+
+    use HasSecureIds, HasFactory ;
+
+    protected $table = 'programmes';
+
+    protected $dates = ['deleted_at'];
+
+    protected $fillable = [
+        'nom',
+        'code',
+        'budgetNational',
+        'description',
+        'debut',
+        'fin',
+        'objectifGlobaux',
+        'organismeDeTutelle'
+    ];
+
+    protected $cast = [
+        "created_at" => "datetime:Y-m-d",
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+        'deleted_at' => 'datetime:Y-m-d H:i:s'
+    ];
+
+    protected $hidden = ['updated_at', 'deleted_at'];
+
+    protected static function boot() {
+        parent::boot();
+
+        static::deleting(function($programme) {
+
+            DB::beginTransaction();
+            try {
+
+                $programme->ptabScopes()->delete();
+
+                $programme->codes()->delete();
+
+                $programme->sinistres()->delete();
+
+                $programme->formulaires()->delete();
+
+                $programme->indicateurs()->delete();
+
+                $programme->objectifSpecifiques()->delete();
+
+                $programme->resultats()->delete();
+
+                $programme->sites()->delete();
+
+                $programme->projets()->delete();
+
+                $programme->eActivites()->delete();
+
+                $programme->eActiviteMods()->delete();
+
+                $programme->suiviFinanciers()->delete();
+
+                $programme->users->each(function ($user) {
+                    optional($user)->update(['statut' => -1]);
+                });
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+
+        });
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class, 'programmeId');
+    }
+
+    /**
+     * Liste des scopes d'un programme
+     *
+     */
+    public function ptabScopes()
+    {
+        return $this->hasMany(PtabScope::class, 'programmeId');
+    }
+
+    public function uniteeDeGestion()
+    {
+        return $this->hasOne(User::class, 'programmeId')->where("type", "unitee-de-gestion");
+    }
+
+    public function userUniteeDeGestion()
+    {
+        return $this->hasOne(User::class, 'programmeId')->where("profilable_type", "App\\Models\\UniteeDeGestion");
+    }
+
+    public function missionDeControle()
+    {
+        return $this->hasOne(User::class, 'programmeId')->where("type", "mission-de-controle");
+    }
+
+    public function userMissionDeControle()
+    {
+        return $this->hasOne(User::class, 'programmeId')->where("profilable_type", "App\\Models\\MissionDeControle");
+    }
+
+    public function gouvernement()
+    {
+        return $this->hasOne(User::class, 'programmeId')->where("type", "gouvernement");
+    }
+
+    public function entreprisesExecutante()
+    {
+        return $this->hasMany(User::class, 'programmeId')->where("type", "entreprise-executant");
+    }
+
+    public function institutions()
+    {
+        return $this->hasMany(User::class, 'programmeId')->where("type", "institution");
+    }
+
+    public function getEntreprises()
+    {
+        $users =  $this->entreprisesExecutante;
+
+        $entreprises = [];
+
+        foreach($users as $user)
+        {
+            $entreprise = EntrepriseExecutant::find($user->profilable_id);
+            array_push($entreprises, $entreprise);
+        }
+
+        return $entreprises;
+    }
+
+    public function mods()
+    {
+        return $this->hasMany(User::class, 'programmeId')->where("type", "mod");
+    }
+
+    public function bailleurs()
+    {
+        return $this->hasMany(User::class, 'programmeId')->where("type", "bailleur")->orderBy('nom', 'asc');
+    }
+
+    public function getBailleurs()
+    {
+        $users =  $this->bailleurs;
+
+        $bailleurs = [];
+
+        foreach($users as $user)
+        {
+            $bailleur = Bailleur::find($user->profilable_id);
+            array_push($bailleurs, $bailleur);
+        }
+
+        return $bailleurs;
+    }
+
+    public function codes()
+    {
+        return $this->hasMany(Code::class, 'programmeId');
+    }
+
+    public function sinistres()
+    {
+        return $this->hasMany(Sinistre::class, 'programmeId');
+    }
+
+    public function formulaires()
+    {
+        return $this->hasMany(Formulaire::class, 'programmeId');
+    }
+
+
+    public function codeBailleur($programmeId)
+    {
+        return intval(optional(optional($this->codes->where("programmeId", $programmeId))->last())->codePta) ?? 0;
+    }
+
+    public function uniteDeGestion()
+    {
+        return $this->hasOne(UniteeDeGestion::class, 'programmeId');
+    }
+
+    public function indicateurs()
+    {
+        return $this->morphMany(CadreLogiqueIndicateur::class, 'indicatable');
+    }
+
+    public function objectifSpecifiques()
+    {
+        return $this->morphMany(ObjectifSpecifique::class, 'objectifable');
+    }
+
+    public function objectifGlobauxes()
+    {
+        return $this->morphMany(ObjectifGlobaux::class, 'objectifable');
+    }
+
+    public function resultats()
+    {
+        return $this->morphMany(Resultat::class, 'resultable');
+    }
+
+    public function sites()
+    {
+        return $this->hasMany(BailleurSite::class, 'programmeId');
+    }
+
+    public function site()
+    {
+        return $this->hasMany(BailleurSite::class, 'programmeId');
+    }
+
+    public function projets()
+    {
+        return $this->hasMany(Projet::class, 'programmeId')/*->orderBy('nom', 'asc')*/;
+    }
+
+    public function archiveProjets()
+    {
+        return $this->hasMany(ArchiveProjet::class, 'programmeId');
+    }
+
+    public function composantes()
+    {
+    	$projets = $this->projets;
+    	$composante = [];
+
+    	if(count($projets))
+    	{
+    		foreach($projets as $projet)
+    		{
+    			$composantes = $projet->composantes;
+    			if(count($composantes))
+    			{
+    				foreach($composantes as $c)
+    				{
+	    				array_push($composante, $c);
+    				}
+    			}
+
+	    	}
+    	}
+
+    	return $composante;
+    }
+
+    public function sousComposantes()
+    {
+    	$composantes = $this->composantes();
+    	$sc = [];
+
+    	if(count($composantes))
+    	{
+    		foreach($composantes as $composante)
+    		{
+    			$sousComposantes = $composante->sousComposantes;
+
+    			if(count($sousComposantes))
+    			{
+    				foreach($sousComposantes as $c)
+    				{
+	    				array_push($sc, $c);
+    				}
+    			}
+
+	    	}
+    	}
+
+    	return $sc;
+    }
+
+    public function activites()
+    {
+    	$sousComposantes = $this->sousComposantes();
+    	$activites = [];
+
+    	if(count($sousComposantes))
+    	{
+    		foreach($sousComposantes as $sc)
+    		{
+    			$activite = $sc->activites;
+
+    			if(count($activite))
+    			{
+    				foreach($activite as $a)
+    				{
+	    				array_push($activites, $a);
+    				}
+    			}
+
+	    	}
+    	}
+
+    	return $activites;
+    }
+
+    public function taches()
+    {
+    	$activites = $this->activites();
+    	$taches = [];
+
+    	if(count($activites))
+    	{
+    		foreach($activites as $activite)
+    		{
+    			$tache = $activite->taches;
+
+    			if(count($tache))
+    			{
+    				foreach($tache as $t)
+    				{
+	    				array_push($taches, $t);
+    				}
+    			}
+
+	    	}
+    	}
+
+    	return $taches;
+    }
+
+    public function decaissements()
+    {
+    	$projets = $this->projets;
+    	$decaissements = [];
+
+    	if(count($projets))
+    	{
+    		foreach($projets as $projet)
+    		{
+    			$decaissement = $projet->decaissements;
+
+    			if(count($decaissement))
+    			{
+    				foreach($decaissement as $t)
+    				{
+	    				array_push($decaissements, $t);
+    				}
+    			}
+
+	    	}
+    	}
+
+    	return $decaissements;
+    }
+
+    public function eActivites()
+    {
+        return $this->hasMany(EActivite::class, 'programmeId');
+    }
+
+    public function eActiviteMods()
+    {
+        return $this->hasMany(EActiviteMod::class, 'programmeId');
+    }
+
+    public function maitriseOeuvres()
+    {
+        return $this->hasMany(MaitriseOeuvre::class, 'programmeId');
+    }
+
+    public function suiviFinanciers()
+    {
+        return $this->hasMany(SuiviFinancier::class, 'programmeId');
+    }
+
+    public function archiveSuiviFinanciers()
+    {
+        return $this->hasMany(ArchiveSuiviFinancier::class, 'programmeId');
+    }
+
+    public function ppm()
+    {
+        $projets = $this->projets;
+
+        $ppm = collect();
+
+        foreach($projets as $projet)
+        {
+            $ppm1 = collect($projet->ppm());
+            $ppm = $ppm->merge($ppm1);
+        }
+
+        return $ppm;
+    }
+
+    public function indicateurs_cadre_logique()
+    {
+        return $this->morphMany(IndicateurCadreLogique::class, 'indicatable');
+    }
+
+}

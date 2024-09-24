@@ -1,0 +1,800 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\User;
+use Illuminate\Console\Command;
+
+class Permissions extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'permissions';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Creer les roles hardcodé, les permissions et les liées';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        $dossier = './help/permissions/';
+
+        $roles = [
+            'Administrateur',
+            'Bailleur',
+            "MOD",
+            "Unitee de gestion",
+            "Mission de controle",
+            "ONG",
+            "AGENCE",
+            "Entreprise executant",
+            "Entreprise ete institution",
+            "Comptable",
+            "Expert suivi évaluation",
+            "Gouvernement"
+        ];
+
+        $roles_slugs = [
+            'administrateur',
+            'bailleur',
+            "mod",
+            "unitee-de-gestion",
+            "mission-de-controle",
+            "ong",
+            "agence",
+            "entreprise-executant",
+            "institution",
+            "comptable",
+            "expert-suivi-evaluation",
+            "gouvernement"
+        ];
+
+        $actions = [
+            'Creer',
+            'Modifier',
+            'Supprimer',
+            'Voir'
+        ];
+        $modules = [
+            'un utilisateur',
+            'un bailleur',
+            'un decaissement',
+            'un programme',
+            'une unitee de gestion',
+            'un mod',
+            'une entreprise executante',
+            'une mission de controle',
+            'un projet',
+            'une composante',
+            'une activite',
+            'une tache',
+            'un indicateur',
+            'un indicateur mod',
+            'une ong',
+            'une agence',
+            'unee institution',
+            'un gouvernement',
+            'un ano',
+            'une reponse ano',
+            'un plan de decaissement',
+            'un suivi financier',
+            'un role',
+            'un pap',
+            'une activite environnementale',
+            'une activite environnementale mod',
+            'un site',
+            'une checklist',
+            'une passation',
+            'une revision',
+            'une configuration alerte',
+            'une categorie',
+            'un suivi environnementale',
+            'un suivi indicateur',
+            'un suivi indicateur mod',
+            'un formulaire',
+            'un suivi',
+            'un rappel',
+            'une maitrise oeuvre',
+            'un fichier',
+            'une unite de mesure',
+            'un audit'
+        ];
+
+        $autres = [
+            'voir ptab',
+            'faire revision ptab',
+            'voir revision ptab',
+            'voir ppm',
+            'voir le plan de decaissement du ptab',
+            'voir une permission',
+            'attribuer une permission',
+            'retirer une permission',
+            'voir le point financier des activites',
+            'faire un backup',
+            'voir un historique',
+            'alerte tache',
+            'alerte activite',
+            'alerte creer rapport entreprise',
+            'alerte creer rapport missionDeControle',
+            'alerte creer rapport chefEnvironnement',
+            'alerte suivi financier',
+            'alerte suivi indicateur',
+            'modifier une frequence de sauvegarde',
+            'voir statistique activite',
+            'prolonger un projet',
+            'prolonger une tache',
+            'prolonger une activite',
+            'validation',
+            'voir details projet',
+            'voir formulaire mod',
+            'voir formulaire mission de controle',
+            'voir formulaire entreprise executant',
+            'exporter un suivi indicateur',
+            'exporter un decaissement',
+            'exporter un plan decaissement',
+            'exporter un suivi financier',
+            'exporter un suivi ppm',
+            'exporter un suivi ptab',
+            'exporter un suivi ppm revise',
+            'exporter un suivi ptab revise',
+            'exporter un pap',
+            'importer un pap',
+            'importer un suivi financier',
+            'voir une statistique activite',
+            'voir suivi kobo',
+            'voir formulaire kobo'
+        ];
+
+        $bailleurs = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'creer-un-bailleur',
+            'voir-un-decaissement',
+            'voir-un-mod',
+            'voir-une-entreprise-executante',
+            'voir-une-mission-de-controle',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-un-indicateur',
+            'voir-un-ano',
+            'voir-une-reponse-ano',
+            'creer-une-reponse-ano',
+            'modifier-une-reponse-ano',
+            'voir-un-plan-de-decaissement',
+            'voir-un-suivi-financier',
+            'voir-un-pap',
+            'voir-une-activite-environnementale',
+            'voir-un-site',
+            'voir-une-checklist',
+            'voir-une-passation',
+            'voir-une-revision',
+            'voir-une-categorie',
+            'voir-un-suivi-environnementale',
+            'voir-un-suivi-indicateur',
+            'voir-un-suivi-financier',
+            'creer-un-rappel',
+            'voir-un-fichier',
+            'voir-ptab',
+            'creer-un-fichier',
+            'voir-details-projet',
+            'voir-une-permission',
+            'exporter-un-suivi-indicateur',
+            'exporter-un-decaissement',
+            'exporter-un-plan-decaissement',
+            'exporter-un-suivi-financier',
+            'exporter-un-suivi-ppm',
+            'exporter-un-suivi-ptab',
+            'exporter-un-suivi-ppm-revise',
+            'exporter-un-suivi-ptab-revise',
+            'exporter-un-pap'
+        ];
+
+        $gouvernements = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'voir-un-gouvernement',
+            'modifier-un-gouvernement',
+            'creer-un-gouvernement',
+            'voir-un-decaissement',
+            'voir-un-mod',
+            'voir-une-entreprise-executante',
+            'voir-une-mission-de-controle',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-un-indicateur',
+            'voir-un-ano',
+            'voir-une-reponse-ano',
+            'voir-un-plan-de-decaissement',
+            'voir-un-suivi-financier',
+            'voir-un-pap',
+            'voir-une-activite-environnementale',
+            'voir-un-site',
+            'voir-une-checklist',
+            'voir-une-passation',
+            'voir-une-revision',
+            'voir-une-categorie',
+            'voir-un-suivi-environnementale',
+            'voir-un-suivi-indicateur',
+            'voir-un-suivi-financier',
+            'voir-une-permission',
+            'voir-ptab',
+            'creer-un-rappel',
+            'voir-un-fichier',
+            'creer-un-fichier',
+            'voir-details-projet',
+            'exporter-un-suivi-indicateur',
+            'exporter-un-decaissement',
+            'exporter-un-plan-decaissement',
+            'exporter-un-suivi-financier',
+            'exporter-un-suivi-ppm',
+            'exporter-un-suivi-ptab',
+            'exporter-un-suivi-ppm-revise',
+            'exporter-un-suivi-ptab-revise',
+            'exporter-un-pap'
+        ];
+
+        $instituts = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'voir-une-institution',
+            'modifier-une-institution',
+            'creer-une-institution',
+            'voir-un-decaissement',
+            'voir-un-mod',
+            'voir-une-entreprise-executante',
+            'voir-une-mission-de-controle',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-un-indicateur',
+            'voir-un-ano',
+            'voir-une-reponse-ano',
+            'voir-un-plan-de-decaissement',
+            'voir-un-suivi-financier',
+            'voir-un-pap',
+            'voir-une-activite-environnementale',
+            'voir-un-site',
+            'voir-une-checklist',
+            'voir-une-passation',
+            'voir-une-revision',
+            'voir-une-categorie',
+            'voir-un-suivi-environnementale',
+            'voir-un-suivi-indicateur',
+            'voir-un-suivi-financier',
+            'voir-ptab',
+            'creer-un-rappel',
+            'voir-un-fichier',
+            'creer-un-fichier',
+            'voir-details-projet',
+            'voir-une-permission',
+            'exporter-un-suivi-indicateur',
+            'exporter-un-decaissement',
+            'exporter-un-plan-decaissement',
+            'exporter-un-suivi-financier',
+            'exporter-un-suivi-ppm',
+            'exporter-un-suivi-ptab',
+            'exporter-un-suivi-ppm-revise',
+            'exporter-un-suivi-ptab-revise',
+            'exporter-un-pap'
+        ];
+
+
+        $mods = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'voir-une-institution',
+            'voir-un-decaissement',
+            'voir-un-mod',
+            'voir-une-entreprise-executante',
+            'voir-une-mission-de-controle',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-un-indicateur',
+            'voir-un-ano',
+            'voir-une-reponse-ano',
+            'voir-un-plan-de-decaissement',
+            'voir-un-suivi-financier',
+            'voir-un-pap',
+            'voir-une-activite-environnementale',
+            'voir-un-site',
+            'voir-une-checklist',
+            'voir-une-passation',
+            'voir-une-revision',
+            'voir-une-categorie',
+            'voir-un-suivi-environnementale',
+            'voir-un-suivi-indicateur',
+            'voir-un-suivi-financier',
+            'voir-ptab',
+            'creer-un-rappel',
+            'voir-un-fichier',
+            'creer-un-fichier',
+            'voir-details-projet',
+            'voir-une-permission',
+            'exporter-un-suivi-indicateur',
+            'exporter-un-decaissement',
+            'exporter-un-plan-decaissement',
+            'exporter-un-suivi-financier',
+            'exporter-un-suivi-ppm',
+            'exporter-un-suivi-ptab',
+            'exporter-un-suivi-ppm-revise',
+            'exporter-un-suivi-ptab-revise',
+            'exporter-un-pap'
+        ];
+
+        $missionDeControles = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'voir-un-formulaire',
+            'creer-un-formulaire',
+            'modifier-un-formulaire',
+            'voir-une-mission-de-controle',
+            'modifier-une-mission-de-controle',
+            'creer-une-mission-de-controle',
+            'creer-un-suivi-environnementale',
+            'modifier-un-suivi-environnementale',
+            'voir-un-suivi-environnementale',
+            'supprimer-un-suivi-environnementale',
+            'voir-un-decaissement',
+            'voir-une-entreprise-executante',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-un-indicateur',
+            'voir-une-activite-environnementale',
+            'voir-un-site',
+            'voir-une-checklist',
+            'voir-une-passation',
+            'voir-une-revision',
+            'voir-une-categorie',
+            'voir-un-suivi-environnementale',
+            'voir-ptab',
+            'voir-formulaire-mission-de-controle',
+            'creer-un-rappel',
+            'voir-un-fichier',
+            'creer-un-fichier',
+            'voir-details-projet',
+            'voir-une-permission',
+            'exporter-un-suivi-indicateur',
+            'exporter-un-suivi-ppm',
+            'exporter-un-suivi-ptab',
+            'exporter-un-suivi-ppm-revise',
+            'exporter-un-suivi-ptab-revise'
+        ];
+
+        $entreprises = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'voir-un-formulaire',
+            'creer-un-formulaire',
+            'modifier-un-formulaire',
+            'voir-une-entreprise-executante',
+            'modifier-une-entreprise-executante',
+            'creer-une-entreprise-executante',
+            'creer-un-suivi-environnementale',
+            'modifier-un-suivi-environnementale',
+            'voir-un-suivi-environnementale',
+            'supprimer-un-suivi-environnementale',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-une-activite-environnementale',
+            'voir-un-site',
+            'voir-une-checklist',
+            'voir-une-passation',
+            'voir-une-revision',
+            'voir-une-categorie',
+            'voir-un-suivi-environnementale',
+            'voir-une-permission',
+            'creer-un-rappel',
+            'voir-un-fichier',
+            'voir-ptab',
+            'voir-formulaire-entreprise-executant',
+            'creer-un-fichier',
+            'voir-details-projet',
+            'exporter-un-suivi-indicateur',
+            'exporter-un-suivi-ppm',
+            'exporter-un-suivi-ppm-revise',
+            'exporter-un-suivi-ptab-revise'
+        ];
+
+        $ongs = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'voir-un-formulaire',
+            'creer-un-formulaire',
+            'modifier-un-formulaire',
+            'voir-une-ong',
+            'modifier-une-ong',
+            'creer-une-ong',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-une-activite-environnementale',
+            'voir-une-revision',
+            'voir-une-categorie',
+            'voir-un-suivi-environnementale',
+            'voir-une-permission',
+            'creer-un-rappel',
+            'voir-un-fichier',
+            'creer-un-fichier',
+            'voir-details-projet',
+            'exporter-un-suivi-indicateur'
+        ];
+
+
+        $administrateurs = [
+            'voir-un-programme',
+            'creer-un-programme',
+            'modifier-un-programme',
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-gouvernement',
+            'creer-un-gouvernement',
+            'modifier-un-gouvernement',
+            'supprimer-un-gouvernement',
+            'voir-un-role',
+            'voir-une-permission',
+            'creer-un-role',
+            'modifier-un-role',
+            'voir-une-unitee-de-gestion',
+            'modifier-une-unitee-de-gestion',
+            'creer-une-unitee-de-gestion',
+            'voir-un-historique',
+            'faire-un-backup'
+        ];
+
+        $uniteeDeGestion = [
+            'voir-un-programme',
+            'creer-un-programme',
+            'modifier-un-programme',
+            'voir-un-gouvernement',
+            'creer-un-gouvernement',
+            'modifier-un-gouvernement',
+            'supprimer-un-gouvernement',
+            'voir-un-historique',
+            'faire-un-backup',
+            'voir-une-unitee-de-gestion',
+            'modifier-une-unitee-de-gestion',
+            'creer-une-unitee-de-gestion',
+            'supprimer-une-unitee-de-gestion',
+        ];
+
+        /** Creation des permissions */
+
+        dump('Creation des permissions.....');
+
+        file_put_contents($dossier.'permissions.txt', '');
+
+        foreach($actions as $action){
+            foreach($modules as $module)
+            {
+                $nom = $action.' '.$module;
+
+                $slug = str_replace(' ', '-', strtolower($nom));
+
+                $permissions = Permission::where('slug', $slug)->get();
+
+                if(!count($permissions))
+
+                {
+                    Permission::create([
+                        'nom' => $nom,
+                        'slug' =>$slug,
+                    ]);
+
+                }
+
+                else
+                {
+                    if(count($permissions) > 1)
+                    {
+                        for($i = 1; $i < count($permissions); $i++)
+                        {
+
+                            Permission::destroy($permissions[$i]['id']);
+                        }
+                    }
+                }
+
+                file_put_contents($dossier.'permissions.txt', $slug."\n", FILE_APPEND);
+            }
+        }
+
+        foreach($autres as $autre){
+            $permissions = Permission::where('slug', str_replace(' ', '-', $autre))->get();
+
+            if(!count($permissions))
+            {
+                Permission::create([
+                    'nom' => $autre,
+                    'slug' =>str_replace(' ', '-', $autre),
+                ]);
+            }
+
+            else
+            {
+                if(count($permissions) > 1)
+                {
+                    for($i = 1; $i < count($permissions); $i++)
+                    {
+                        dump($permissions[$i]['id']);
+                        Permission::destroy($permissions[$i]['id']);
+                    }
+                }
+            }
+
+            file_put_contents($dossier.'permissions.txt', $autre."\n", FILE_APPEND);
+        }
+
+        dump('Fin creation des permissions');
+
+        /** Creation des roles hardcodé */
+
+        dump('Creation des roles.....');
+
+        foreach ($roles as $key => $indice) {
+            $roles = Role::where('slug', $roles_slugs[$key])->get();
+
+            file_put_contents($dossier.$roles_slugs[$key].'.txt', '');
+
+            if(!count($roles))
+            {
+                $role = Role::create([
+                    'nom' => $indice,
+                    'slug' => $roles_slugs[$key],
+                    'description' => $indice
+                ]);
+
+            }
+
+            else
+            {
+                if(count($roles) > 1)
+                {
+                    for($i = 1; $i < count($roles); $i++)
+                    {
+                        Role::destroy($roles[$i]['id']);
+                    }
+                }
+            }
+
+            $role = Role::where('slug', $roles_slugs[$key])->first();
+
+            if($role->slug == 'bailleur')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($bailleurs as $bailleur)
+                {
+
+                    //if($role->permissions->where('slug', $bailleur)->first() == null)
+                    {
+                        $permission = Permission::where('slug', $bailleur)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'mission-de-controle')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($missionDeControles as $mission)
+                {
+                    //if(!$role->permissions->where('slug', $mission)->first())
+                    {
+                        $permission = Permission::where('slug', $mission)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'mod')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($mods as $mod)
+                {
+                    //if(!$role->permissions->where('slug', $mod)->first())
+                    {
+                        $permission = Permission::where('slug', $mod)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'gouvernement')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($gouvernements as $gouvernement)
+                {
+                    //if(!$role->permissions->where('slug', $gouvernement)->first())
+                    {
+                        $permission = Permission::where('slug', $gouvernement)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'ong')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($ongs as $ong)
+                {
+                    //if(!$role->permissions->where('slug', $ong)->first())
+                    {
+                        $permission = Permission::where('slug', $ong)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'institut')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($instituts as $institut)
+                {
+                    //if(!$role->permissions->where('slug', $institut)->first())
+                    {
+                        $permission = Permission::where('slug', $institut)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'entreprise-executant')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($entreprises as $entreprise)
+                {
+                    //if(!$role->permissions->where('slug', $entreprise)->first())
+                    {
+                        $permission = Permission::where('slug', $entreprise)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'unitee-de-gestion')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                $permissions = Permission::all();
+                $controle = 1;
+
+                foreach($permissions as $permission)
+                {
+                    foreach($uniteeDeGestion as $unitee)
+                    {
+                        if($unitee == $permission->slug)
+                        {
+
+                            $controle = 0;
+                            break;
+                        }
+                    }
+                    if($controle)
+                    {
+                        //if(!$role->permissions->where('slug', $permission->slug)->first())
+                        {
+                                $role->permissions()->attach($permission->id);
+
+                        }
+                    }
+
+                    $controle = 1;
+
+                }
+            }
+
+            else if($role->slug == 'administrateur')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($administrateurs as $administrateur)
+                {
+                    //if(!$role->permissions->where('slug', $administrateur)->first())
+                    {
+                        $permission = Permission::where('slug', $administrateur)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+
+                }
+
+            }
+
+            foreach($role->permissions as $permission)
+            {
+                file_put_contents($dossier.$role->slug.'.txt', $permission->slug."\n", FILE_APPEND);
+            }
+
+            dump($indice);
+        }
+
+        dump('Consulter le dossier help/permissions');
+    }
+
+}

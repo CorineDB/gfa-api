@@ -1,0 +1,210 @@
+creer-un-utilisateur
+creer-un-bailleur
+creer-un-decaissement
+creer-un-programme
+creer-une-unitee-de-gestion
+creer-un-mod
+creer-une-entreprise-executante
+creer-une-mission-de-controle
+creer-un-projet
+creer-une-composante
+creer-une-activite
+creer-une-tache
+creer-un-indicateur
+creer-un-indicateur-mod
+creer-une-ong
+creer-une-agence
+creer-unee-institution
+creer-un-gouvernement
+creer-un-ano
+creer-une-reponse-ano
+creer-un-plan-de-decaissement
+creer-un-suivi-financier
+creer-un-role
+creer-un-pap
+creer-une-activite-environnementale
+creer-une-activite-environnementale-mod
+creer-un-site
+creer-une-checklist
+creer-une-passation
+creer-une-revision
+creer-une-configuration-alerte
+creer-une-categorie
+creer-un-suivi-environnementale
+creer-un-suivi-indicateur
+creer-un-suivi-indicateur-mod
+creer-un-formulaire
+creer-un-suivi
+creer-un-rappel
+creer-une-maitrise-oeuvre
+creer-un-fichier
+creer-une-unite-de-mesure
+creer-un-audit
+modifier-un-utilisateur
+modifier-un-bailleur
+modifier-un-decaissement
+modifier-un-programme
+modifier-une-unitee-de-gestion
+modifier-un-mod
+modifier-une-entreprise-executante
+modifier-une-mission-de-controle
+modifier-un-projet
+modifier-une-composante
+modifier-une-activite
+modifier-une-tache
+modifier-un-indicateur
+modifier-un-indicateur-mod
+modifier-une-ong
+modifier-une-agence
+modifier-unee-institution
+modifier-un-gouvernement
+modifier-un-ano
+modifier-une-reponse-ano
+modifier-un-plan-de-decaissement
+modifier-un-suivi-financier
+modifier-un-role
+modifier-un-pap
+modifier-une-activite-environnementale
+modifier-une-activite-environnementale-mod
+modifier-un-site
+modifier-une-checklist
+modifier-une-passation
+modifier-une-revision
+modifier-une-configuration-alerte
+modifier-une-categorie
+modifier-un-suivi-environnementale
+modifier-un-suivi-indicateur
+modifier-un-suivi-indicateur-mod
+modifier-un-formulaire
+modifier-un-suivi
+modifier-un-rappel
+modifier-une-maitrise-oeuvre
+modifier-un-fichier
+modifier-une-unite-de-mesure
+modifier-un-audit
+supprimer-un-utilisateur
+supprimer-un-bailleur
+supprimer-un-decaissement
+supprimer-un-programme
+supprimer-une-unitee-de-gestion
+supprimer-un-mod
+supprimer-une-entreprise-executante
+supprimer-une-mission-de-controle
+supprimer-un-projet
+supprimer-une-composante
+supprimer-une-activite
+supprimer-une-tache
+supprimer-un-indicateur
+supprimer-un-indicateur-mod
+supprimer-une-ong
+supprimer-une-agence
+supprimer-unee-institution
+supprimer-un-gouvernement
+supprimer-un-ano
+supprimer-une-reponse-ano
+supprimer-un-plan-de-decaissement
+supprimer-un-suivi-financier
+supprimer-un-role
+supprimer-un-pap
+supprimer-une-activite-environnementale
+supprimer-une-activite-environnementale-mod
+supprimer-un-site
+supprimer-une-checklist
+supprimer-une-passation
+supprimer-une-revision
+supprimer-une-configuration-alerte
+supprimer-une-categorie
+supprimer-un-suivi-environnementale
+supprimer-un-suivi-indicateur
+supprimer-un-suivi-indicateur-mod
+supprimer-un-formulaire
+supprimer-un-suivi
+supprimer-un-rappel
+supprimer-une-maitrise-oeuvre
+supprimer-un-fichier
+supprimer-une-unite-de-mesure
+supprimer-un-audit
+voir-un-utilisateur
+voir-un-bailleur
+voir-un-decaissement
+voir-un-programme
+voir-une-unitee-de-gestion
+voir-un-mod
+voir-une-entreprise-executante
+voir-une-mission-de-controle
+voir-un-projet
+voir-une-composante
+voir-une-activite
+voir-une-tache
+voir-un-indicateur
+voir-un-indicateur-mod
+voir-une-ong
+voir-une-agence
+voir-unee-institution
+voir-un-gouvernement
+voir-un-ano
+voir-une-reponse-ano
+voir-un-plan-de-decaissement
+voir-un-suivi-financier
+voir-un-role
+voir-un-pap
+voir-une-activite-environnementale
+voir-une-activite-environnementale-mod
+voir-un-site
+voir-une-checklist
+voir-une-passation
+voir-une-revision
+voir-une-configuration-alerte
+voir-une-categorie
+voir-un-suivi-environnementale
+voir-un-suivi-indicateur
+voir-un-suivi-indicateur-mod
+voir-un-formulaire
+voir-un-suivi
+voir-un-rappel
+voir-une-maitrise-oeuvre
+voir-un-fichier
+voir-une-unite-de-mesure
+voir-un-audit
+voir ptab
+faire revision ptab
+voir revision ptab
+voir ppm
+voir le plan de decaissement du ptab
+voir une permission
+attribuer une permission
+retirer une permission
+voir le point financier des activites
+faire un backup
+voir un historique
+alerte tache
+alerte activite
+alerte creer rapport entreprise
+alerte creer rapport missionDeControle
+alerte creer rapport chefEnvironnement
+alerte suivi financier
+alerte suivi indicateur
+modifier une frequence de sauvegarde
+voir statistique activite
+prolonger un projet
+prolonger une tache
+prolonger une activite
+validation
+voir details projet
+voir formulaire mod
+voir formulaire mission de controle
+voir formulaire entreprise executant
+exporter un suivi indicateur
+exporter un decaissement
+exporter un plan decaissement
+exporter un suivi financier
+exporter un suivi ppm
+exporter un suivi ptab
+exporter un suivi ppm revise
+exporter un suivi ptab revise
+exporter un pap
+importer un pap
+importer un suivi financier
+voir une statistique activite
+voir suivi kobo
+voir formulaire kobo

@@ -1,0 +1,665 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.0.4" use-changelog="false" last-position="33,261" last-zoom="0.5" max-obj-count="25"
+	 default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="new_database" is-template="false" allow-conns="true">
+</database>
+
+<table name="profils" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="120" y="480"/>
+	<column name="profil_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="profilable_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="profilable_type" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="profil_id_pkey" type="pk-constr" factor="100" table="pg_catalog.profils">
+		<columns names="profil_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="organisations" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="840" y="100"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="partenaire_id_pkey" type="pk-constr" factor="100" table="pg_catalog.organisations">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="unites_de_gestion" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="900" y="660"/>
+	<column name="unite_de_gestion_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="partenaire_id_pkey_cp" type="pk-constr" factor="100" table="pg_catalog.unites_de_gestion">
+		<columns names="unite_de_gestion_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="unites_de_gestion_inherits_profils" type="relgen" layers="0"
+	 pk-pattern="{dt}_pk"
+	 custom-color="#24942b"
+	 src-table="pg_catalog.unites_de_gestion"
+	 dst-table="pg_catalog.profils"/>
+
+<relationship name="partenaires_inherits_profils" type="relgen" layers="0"
+	 pk-pattern="{dt}_pk"
+	 custom-color="#dab2cd"
+	 src-table="pg_catalog.organisations"
+	 dst-table="pg_catalog.profils">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<table name="programmes" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1580" y="640"/>
+	<column name="programme_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="programmes_pk" type="pk-constr" table="pg_catalog.programmes">
+		<columns names="programme_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="programmes_des_organisations" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1660" y="200"/>
+	<column name="structure_programme_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="titre" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="structure_programme_id_pk" type="pk-constr" table="pg_catalog.programmes_des_organisations">
+		<columns names="structure_programme_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_organisations" index="2"/>
+		<object name="programme_id_programmes" index="3"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="organisations_fk" index="1"/>
+		<object name="programmes_fk" index="2"/>
+	</customidxs>
+</table>
+
+<relationship name="programmes_has_many_structure_programmes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#56f8f3"
+	 src-table="pg_catalog.programmes"
+	 dst-table="pg_catalog.programmes_des_organisations"
+	 src-required="false" dst-required="false">
+	<line>
+		<position x="1560" y="300"/>
+	</line>
+	<label ref-type="src-label">
+		<position x="137.809" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-85.65" y="-24.6"/>
+	</label>
+</relationship>
+
+<relationship name="partenaires_has_many_structure_programmes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#825385"
+	 src-table="pg_catalog.organisations"
+	 dst-table="pg_catalog.programmes_des_organisations"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-5.65" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="17.8086" y="-25"/>
+	</label>
+</relationship>
+
+<table name="outputs" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="2400" y="400"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="titre" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="outputs_id_pkey" type="pk-constr" table="pg_catalog.outputs">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniq_output_title" type="uq-constr" table="pg_catalog.outputs">
+		<columns names="titre" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_outputs" index="5"/>
+		<object name="programme_id_programmes" index="4"/>
+		<object name="structure_programme_id_programmes_des_organisations" index="3"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="outputs_fk" index="4"/>
+		<object name="programmes_des_organisations_fk" index="2"/>
+		<object name="programmes_fk" index="3"/>
+	</customidxs>
+</table>
+
+<index name="idx_output_titre" table="pg_catalog.outputs"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="titre"/>
+		</idxelement>
+	<columns names="titre"/>
+</index>
+
+<table name="activites" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="3760" y="660"/>
+	<column name="activite_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="activity_id_pkey" type="pk-constr" factor="100" table="pg_catalog.activites">
+		<columns names="activite_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="idx_activity_nom" table="pg_catalog.activites"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="nom"/>
+		</idxelement>
+	<columns names="nom"/>
+</index>
+
+<table name="taches" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="5280" y="640"/>
+	<column name="tache_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<column name="activite_id_activites" alias="activite_id_activites" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<constraint name="tache_id_pkey" type="pk-constr" factor="100" table="pg_catalog.taches">
+		<columns names="tache_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="idx_tache_nom" table="pg_catalog.taches"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="nom"/>
+		</idxelement>
+	<columns names="nom"/>
+</index>
+
+<table name="suivies" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="5220" y="240"/>
+	<column name="suivi_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="valeur" not-null="true">
+		<type name="varchar" length="0"/>
+	</column>
+	<constraint name="suivi_id_pkey" type="pk-constr" factor="100" table="pg_catalog.suivies">
+		<columns names="suivi_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="unites_de_mesure" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1720" y="1440"/>
+	<column name="unite_de_mesure_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<constraint name="uniq_unite_nom" type="uq-constr" factor="100" table="pg_catalog.unites_de_mesure">
+		<columns names="nom" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="unites_de_mesure_pk" type="pk-constr" table="pg_catalog.unites_de_mesure">
+		<columns names="unite_de_mesure_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="commentaires" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="4500" y="280"/>
+	<column name="commentaire_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="commentaire" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="commentaires_pk" type="pk-constr" table="pg_catalog.commentaires">
+		<columns names="commentaire_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="activite_id_activites" index="3"/>
+		<object name="suivi_id_suivies" index="4"/>
+		<object name="tache_id_taches" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="activites_fk" index="1"/>
+		<object name="suivies_fk" index="3"/>
+		<object name="taches_fk" index="0"/>
+	</customidxs>
+</table>
+
+<relationship name="taches_has_many_commentaires" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#5ae6b5"
+	 src-table="pg_catalog.taches"
+	 dst-table="pg_catalog.commentaires"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-5.65" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="210.941" y="-105"/>
+	</label>
+</relationship>
+
+<relationship name="activites_has_many_commentaires" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#083da5"
+	 src-table="pg_catalog.activites"
+	 dst-table="pg_catalog.commentaires"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="23.668" y="134.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="30.9406" y="-104.6"/>
+	</label>
+</relationship>
+
+<table name="indicateurs" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1720" y="1100"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<column name="type" not-null="true" default-value="qualitatif">
+		<type name="varchar" length="12"/>
+	</column>
+	<column name="json_keys">
+		<type name="jsonb" length="0"/>
+	</column>
+	<constraint name="indicateurs_id_pk" type="pk-constr" table="pg_catalog.indicateurs">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="categories" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="2340" y="1120"/>
+	<column name="categorie_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="name" not-null="true">
+		<type name="character varying" length="0"/>
+	</column>
+	<constraint name="categories_pk" type="pk-constr" table="pg_catalog.categories">
+		<columns names="categorie_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="many_indicateurs_has_many_categories" type="relnn" layers="0"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 pk-col-pattern="id"
+	 custom-color="#a81593"
+	 src-table="pg_catalog.indicateurs"
+	 dst-table="pg_catalog.categories"
+	 src-required="false" dst-required="false"
+	 table-name="many_indicateurs_has_many_categories">
+	<label ref-type="src-label">
+		<position x="32.4517" y="25.476"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-25.5849" y="-15"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="59.5922" y="12.247"/>
+	</label>
+</relationship>
+
+<relationship name="many_unites_de_mesure_has_many_indicateurs" type="relnn" layers="0"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 pk-col-pattern="id"
+	 custom-color="#99a4a1"
+	 src-table="pg_catalog.unites_de_mesure"
+	 dst-table="pg_catalog.indicateurs"
+	 src-required="false" dst-required="false"
+	 table-name="many_unites_de_mesure_has_many_indicateurs">
+	<label ref-type="dst-label">
+		<position x="-27.2704" y="25.476"/>
+	</label>
+</relationship>
+
+<table name="suivies_financier" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="3820" y="180"/>
+	<column name="suivi_financier_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="valeur" not-null="true">
+		<type name="varchar" length="0"/>
+	</column>
+	<constraint name="suivi_id_pkey_cp" type="pk-constr" factor="100" table="pg_catalog.suivies_financier">
+		<columns names="suivi_financier_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="activite_id_activites" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="activites_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="activites_has_many_suivies_financier" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#c2ccda"
+	 src-table="pg_catalog.activites"
+	 dst-table="pg_catalog.suivies_financier"
+	 src-required="false" dst-required="false">
+	<line>
+		<position x="3740" y="260"/>
+	</line>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="-25"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="-46.2955" y="107.109"/>
+	</label>
+</relationship>
+
+<relationship name="suivies_has_many_commentaires" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#261189"
+	 src-table="pg_catalog.suivies"
+	 dst-table="pg_catalog.commentaires"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="taches_has_many_suivies" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#03a36c"
+	 src-table="pg_catalog.taches"
+	 dst-table="pg_catalog.suivies"
+	 src-required="false" dst-required="false">
+	<line>
+		<position x="5740" y="320"/>
+	</line>
+	<label ref-type="src-label">
+		<position x="-6.59766" y="-45.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="25.2844" y="-24.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="52.8979" y="87.509"/>
+	</label>
+</relationship>
+
+<relationship name="activites_has_many_taches" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#61f45e"
+	 src-table="pg_catalog.activites"
+	 dst-table="pg_catalog.taches"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="143.668" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-25.65" y="-24.2"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="116.213" y="-2.89099"/>
+	</label>
+</relationship>
+
+<table name="suivies_indicateur" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="960" y="1060"/>
+	<column name="suivi_indicateur_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="valeur" not-null="true">
+		<type name="jsonb" length="0"/>
+	</column>
+</table>
+
+<relationship name="indicateurs_has_many_suivies_indicateur" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#f5a73e"
+	 src-table="pg_catalog.indicateurs"
+	 dst-table="pg_catalog.suivies_indicateur"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-25.65" y="34.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="9.69063" y="-25"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="5.72482" y="-53.291"/>
+	</label>
+</relationship>
+
+<relationship name="categories_has_many_categories" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#858594"
+	 src-table="pg_catalog.categories"
+	 dst-table="pg_catalog.categories"
+	 src-required="false" dst-required="false">
+	<line>
+		<position x="2785.77" y="1169.97"/>
+	<position x="2785.77" y="1098"/>
+	<position x="2622.51" y="1098"/>
+	</line>
+	<label ref-type="name-label">
+		<position x="103.933" y="140.3"/>
+	</label>
+</relationship>
+
+<relationship name="structure_programmes_has_many_composantes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#d46ffa"
+	 src-table="pg_catalog.programmes_des_organisations"
+	 dst-table="pg_catalog.outputs"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="17.8086" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-25.65" y="-44.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="-7.7162" y="-3.09099"/>
+	</label>
+</relationship>
+
+<relationship name="unites_de_gestion_has_many_programmes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#034503"
+	 src-table="pg_catalog.unites_de_gestion"
+	 dst-table="pg_catalog.programmes"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-25.65" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="19.6211" y="35.4"/>
+	</label>
+</relationship>
+
+<relationship name="programmes_has_many_composantes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#e45300"
+	 src-table="pg_catalog.programmes"
+	 dst-table="pg_catalog.outputs"
+	 src-required="true" dst-required="false">
+	<label ref-type="dst-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="outputs_has_many_outputs" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#e5a46d"
+	 src-table="pg_catalog.outputs"
+	 dst-table="pg_catalog.outputs"
+	 src-required="true" dst-required="false">
+	<line>
+		<position x="3170.14" y="495.708"/>
+	<position x="3170.14" y="378"/>
+	<position x="2898.76" y="378"/>
+	</line>
+</relationship>
+
+<relationship name="outputs_has_many_activites" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#0a1935"
+	 src-table="pg_catalog.outputs"
+	 dst-table="pg_catalog.activites"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="suivies_financier_has_many_commentaires" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#d3d99a"
+	 src-table="pg_catalog.suivies_financier"
+	 dst-table="pg_catalog.commentaires"
+	 src-required="true" dst-required="false"/>
+
+<relationship name="programmes_has_many_indicateurs" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#d72197"
+	 src-table="pg_catalog.programmes"
+	 dst-table="pg_catalog.indicateurs"
+	 src-required="true" dst-required="false">
+	<line>
+		<position x="1560" y="1240"/>
+	</line>
+	<label ref-type="src-label">
+		<position x="-45.65" y="254.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="36.2"/>
+	</label>
+</relationship>
+
+</dbmodel>

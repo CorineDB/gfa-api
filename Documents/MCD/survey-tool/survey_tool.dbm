@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.0.4" use-changelog="false" last-position="0,0" last-zoom="0.65" max-obj-count="6"
+	 default-schema="public" default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="new_database" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="survey_forms" layers="0" collapse-mode="2" max-obj-count="6" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1080" y="60"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="slug" not-null="true">
+		<type name="character varying" length="100"/>
+	</column>
+	<column name="form_data" not-null="true">
+		<type name="jsonb" length="0"/>
+	</column>
+	<constraint name="survey_forms_pk" type="pk-constr" table="public.survey_forms">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_programmes" index="4"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="programmes_fk" index="1"/>
+	</customidxs>
+</table>
+
+<table name="surveys" layers="0" collapse-mode="2" max-obj-count="13" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="180" y="380"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="description">
+		<type name="varchar" length="0"/>
+	</column>
+	<column name="date_debut" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="date_fin" not-null="true">
+		<type name="date" length="0"/>
+	</column>
+	<column name="survey_data" not-null="true">
+		<type name="jsonb" length="0"/>
+	</column>
+	<column name="created_at" default-value="now()" generated="true">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="updated_at" default-value="now()" generated="true">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="deleted_at">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<constraint name="surveys_pk" type="pk-constr" table="public.surveys">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_programmes" index="9"/>
+		<object name="id_users" index="10"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="programmes_fk" index="1"/>
+		<object name="users_fk" index="2"/>
+	</customidxs>
+</table>
+
+<table name="survey_answers" layers="0" collapse-mode="2" max-obj-count="9" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1180" y="380"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="response_data" not-null="true">
+		<type name="jsonb" length="0"/>
+	</column>
+	<column name="submitted_at" default-value="now()" generated="true">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="created_at" default-value="now()" generated="true">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="updated_at" default-value="now()" generated="true">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<column name="deleted_at">
+		<type name="timestamp with time zone" length="0" with-timezone="true"/>
+	</column>
+	<constraint name="survey_answer_id_pk" type="pk-constr" factor="100" table="public.survey_answers">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_surveys" index="6"/>
+		<object name="id_users" index="7"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="surveys_fk" index="1"/>
+		<object name="users_fk" index="2"/>
+	</customidxs>
+</table>
+
+<table name="programmes" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="220" y="140"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom">
+		<type name="varchar" length="30"/>
+	</column>
+	<constraint name="programmes_id_pk" type="pk-constr" table="public.programmes">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="unites_de_gestion_has_many_surveys" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#288933"
+	 src-table="public.programmes"
+	 dst-table="public.surveys"
+	 src-required="true" dst-required="false">
+	<line>
+		<position x="598.701" y="175.8"/>
+	</line>
+	<label ref-type="src-label">
+		<position x="11.359" y="34.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="13.4492" y="-42.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="75.2045" y="-112.291"/>
+	</label>
+</relationship>
+
+<relationship name="programmes_has_many_survey_forms" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#4c8fda"
+	 src-table="public.programmes"
+	 dst-table="public.survey_forms"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="11.359" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="35.8"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="172.52" y="-72.891"/>
+	</label>
+</relationship>
+
+<relationship name="surveys_has_many_survey_answers" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#e89db8"
+	 src-table="public.surveys"
+	 dst-table="public.survey_answers"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="53.4492" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="-23.4"/>
+	</label>
+</relationship>
+
+<table name="users" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="740" y="720"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="30"/>
+	</column>
+	<constraint name="users_pk" type="pk-constr" table="public.users">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="users_has_many_surveys" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#bbc039"
+	 src-table="public.users"
+	 dst-table="public.surveys"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-5.65" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="14.3555" y="37.8"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="25.1041" y="-11.891"/>
+	</label>
+</relationship>
+
+<relationship name="users_has_many_survey_answers" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#2b5f53"
+	 src-table="public.users"
+	 dst-table="public.survey_answers"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="38.393" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-45.65" y="36.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+</dbmodel>

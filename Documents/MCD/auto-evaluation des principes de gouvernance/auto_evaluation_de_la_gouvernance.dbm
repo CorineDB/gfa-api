@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.0.4" use-changelog="false" last-position="0,165" last-zoom="0.5" max-obj-count="12"
+	 default-schema="public" default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="suivies_indicateur_de_gouvernance" is-template="false" allow-conns="true">
+</database>
+
+<schema name="public" layers="0" fill-color="#e1e1e1" sql-disabled="true">
+</schema>
+
+<table name="programmes" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="100" y="280"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="varchar" length="30"/>
+	</column>
+	<constraint name="programmes_id_pk" type="pk-constr" table="public.programmes">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="organisations" layers="0" collapse-mode="2" max-obj-count="2" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="100" y="60"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="varchar" length="30"/>
+	</column>
+	<constraint name="structure_partenaire_id_pk" type="pk-constr" factor="100" table="public.organisations">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="types_de_gouvernance" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="520" y="800"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="types_de_gouvernance_pk" type="pk-constr" table="public.types_de_gouvernance">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="principes_de_gouvernance" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1880" y="820"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="principes_de_gouvernance_pk" type="pk-constr" table="public.principes_de_gouvernance">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="criteres_de_gouvernance" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="2700" y="600"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="varchar" length="0"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="criteres_de_gouvernance_pk" type="pk-constr" table="public.criteres_de_gouvernance">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="indicateurs_de_gouvernance" layers="0" collapse-mode="2" max-obj-count="7" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1280" y="500"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="varchar" length="50"/>
+	</column>
+	<column name="description">
+		<type name="text" length="0"/>
+	</column>
+	<column name="type" not-null="true" default-value="factuel">
+		<type name="varchar" length="0"/>
+	</column>
+	<column name="as_multiple_choice" not-null="true" default-value="false">
+		<type name="boolean" length="0"/>
+	</column>
+	<constraint name="indicateurs_de_gouvernance_pk" type="pk-constr" table="public.indicateurs_de_gouvernance">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="programmes_des_organisations" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1000" y="120"/>
+	<column name="structure_programme_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="structure_programmes_pk" type="pk-constr" table="pg_catalog.programmes_des_organisations">
+		<columns names="structure_programme_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_organisations" index="2"/>
+		<object name="id_programmes" index="3"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="organisations_fk" index="1"/>
+		<object name="programmes_fk" index="2"/>
+	</customidxs>
+</table>
+
+<relationship name="structures_partenaire_has_many_structure_programmes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#06c983"
+	 src-table="public.organisations"
+	 dst-table="pg_catalog.programmes_des_organisations"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="31.234" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-65.65" y="-25"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="105.497" y="-103.291"/>
+	</label>
+</relationship>
+
+<table name="suivies_des_indicateurs_de_gouvernance" layers="0" collapse-mode="2" max-obj-count="4" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="1940" y="80"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="source" not-null="true">
+		<type name="varchar" length="30"/>
+	</column>
+	<constraint name="suivies_des_indicateurs_de_gouvernance_pk" type="pk-constr" table="public.suivies_des_indicateurs_de_gouvernance">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_indicateurs_de_gouvernance" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="indicateurs_de_gouvernance_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="indicateurs_de_gouvernance_has_many_suivies_des_indicateurs" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#5220ef"
+	 src-table="public.indicateurs_de_gouvernance"
+	 dst-table="public.suivies_des_indicateurs_de_gouvernance"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="11.2809" y="-45.8"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="-94.2955" y="16.509"/>
+	</label>
+</relationship>
+
+<relationship name="programmes_has_many_types_de_gouvernance" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#508da0"
+	 src-table="public.programmes"
+	 dst-table="public.types_de_gouvernance"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="29.2809" y="54.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="-24.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="6.51996" y="36.909"/>
+	</label>
+</relationship>
+
+<relationship name="types_de_gouvernance_has_many_principes_de_gouvernance" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#176386"
+	 src-table="public.types_de_gouvernance"
+	 dst-table="public.principes_de_gouvernance"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="13.2965" y="34.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="-64.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="principes_de_gouvernance_has_many_criteres_de_gouvernance" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#49adf6"
+	 src-table="public.principes_de_gouvernance"
+	 dst-table="public.criteres_de_gouvernance"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="26.3278" y="34.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="-24.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="-22.9566" y="-13.091"/>
+	</label>
+</relationship>
+
+<table name="options_de_responses" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="580" y="420"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="varchar" length="30"/>
+	</column>
+	<column name="valeur">
+		<type name="character varying" length="12"/>
+	</column>
+	<constraint name="options_qo_pk" type="pk-constr" table="public.options_de_responses">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="programmes_has_many_programmes_des_structures" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#3389d8"
+	 src-table="public.programmes"
+	 dst-table="pg_catalog.programmes_des_organisations"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="69.2809" y="-45.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-25.65" y="15.4"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="84.02" y="-23.091"/>
+	</label>
+</relationship>
+
+<table name="commentaires" layers="0" collapse-mode="2" max-obj-count="3" z-value="0">
+	<schema name="public"/>
+	<role name="postgres"/>
+	<position x="2960" y="180"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="commentaire" not-null="true">
+		<type name="text" length="0"/>
+	</column>
+	<constraint name="commentaires_pk" type="pk-constr" table="public.commentaires">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="many_indicateurs_de_gouvernance_has_many_options_de_responses" type="relnn" layers="0"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 pk-col-pattern="id"
+	 custom-color="#abcf9a"
+	 src-table="public.indicateurs_de_gouvernance"
+	 dst-table="public.options_de_responses"
+	 src-required="false" dst-required="false"
+	 table-name="many_indicateurs_de_gouvernance_has_many_options_de_responses">
+	<label ref-type="src-label">
+		<position x="-41" y="26.2037"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="7.36529" y="-39.4006"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="40.9536" y="-42.653"/>
+	</label>
+</relationship>
+
+<relationship name="programmes_des_structures_has_many_suivies_des_indicateurs_de_g" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#9eeac0"
+	 src-table="pg_catalog.programmes_des_organisations"
+	 dst-table="public.suivies_des_indicateurs_de_gouvernance"
+	 src-required="true" dst-required="false">
+	<label ref-type="dst-label">
+		<position x="14.35" y="15.4"/>
+	</label>
+</relationship>
+
+<relationship name="suivies_des_indicateurs_de_gouvernance_has_many_commentaires" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#61e13d"
+	 src-table="public.suivies_des_indicateurs_de_gouvernance"
+	 dst-table="public.commentaires"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="8.74297" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-5.65" y="35"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="29.751" y="-3.29099"/>
+	</label>
+</relationship>
+
+<relationship name="criteres_de_gouvernance_has_many_indicateurs_de_gouvernance" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#c044f8"
+	 src-table="public.criteres_de_gouvernance"
+	 dst-table="public.indicateurs_de_gouvernance"
+	 src-required="true" dst-required="false"/>
+
+</dbmodel>

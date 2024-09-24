@@ -1,0 +1,293 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\Helpers\Pta;
+use Exception;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+
+class Composante extends Model
+{
+
+    protected $table = 'composantes';
+    public $timestamps = true;
+
+    use Pta;
+
+    use HasSecureIds, HasFactory ;
+
+    protected $dates = ['deleted_at'];
+
+    protected $fillable = array('nom', 'position', 'poids', 'pret', 'budgetNational', 'description', 'projetId', 'composanteId', 'statut');
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($composante) {
+
+            DB::beginTransaction();
+            try {
+
+                if (optional($composante->statuts->last())->etat !== -2) {
+                    if ($composante->composante) {
+                        $composante->rangement($composante->composante->sousComposantes->where("position", ">", $composante->position));
+                    } else if ($composante->projet) {
+                        $composante->rangement($composante->projet->composantes->where("position", ">", $composante->position));
+                    }
+                }
+
+                $composante->statuts()->delete();
+
+                $composante->sousComposantes()->delete();
+
+                $composante->activites()->delete();
+
+                $composante->suivis()->delete();
+
+                $composante->fichiers()->delete();
+
+                $composante->commentaires()->delete();
+
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
+    }
+
+    public function projet()
+    {
+        return $this->belongsTo(Projet::class, 'projetId');
+    }
+
+    public function statuts()
+    {
+        return $this->morphMany(Statut::class, 'statuttable');
+    }
+
+
+    public function getStatusAttribute()
+    {
+        $controle = 1;
+        $statut = $this->statuts->last();
+
+        $statut = $statut ? $statut : $this->statuts()->create(['etat' => -1]);
+
+        if($statut['etat'] > -2 && $this->position == 0)
+        {
+            if($this->composanteId == 0)
+            {
+                $this->position = $this->position($this->projet, 'composantes');
+            }
+
+            else
+            {
+                $this->position = $this->position($this->composante, 'sousComposantes');
+            }
+
+            $this->save();
+        }
+
+        if($statut &&  $statut['etat'] > -2)
+        {
+
+            foreach($this->activites as $activite)
+            {
+                if($activite->statut != 2)
+                {
+                    $controle = 0;
+                    break;
+                }
+
+                else $controle = 2;
+            }
+        }
+
+        if($controle == 2)
+        {
+            $statut = $this->statuts()->create(['etat' => 2]);
+        }
+
+        else if($controle == 1)
+        {
+            if($statut && $statut['etat'] == -1)
+            {
+                $statut = $this->statuts()->create(['etat' => 0]);
+            }
+        }
+
+        return $statut ? $statut['etat'] : null;
+    }
+
+    public function sousComposantes()
+    {
+        return $this->hasMany(Composante::class, 'composanteId')->orderBy('position', 'asc');
+    }
+
+    public function composante()
+    {
+        return $this->belongsTo(Composante::class, 'composanteId');
+    }
+
+    public function activites()
+    {
+        return $this->hasMany(Activite::class, 'composanteId')->orderBy('position', 'asc');
+    }
+
+    public function ppm()
+    {
+        return $this->hasMany(Activite::class, 'composanteId')
+            ->where('type', 'ppm')
+            ->get();
+    }
+
+    public function suivis()
+    {
+        return $this->morphMany(Suivi::class, 'suivitable');
+    }
+
+    public function suivi()
+    {
+        return $this->morphMany(Suivi::class, 'suivitable')->last();
+    }
+
+    public function fichiers()
+    {
+        return $this->morphMany(Fichier::class, 'fichiertable');
+    }
+
+    public function commentaires()
+    {
+        return $this->morphMany(Commentaire::class, 'commentable');
+    }
+
+    public function getTepAttribute()
+    {
+        $activites = $this->activites;
+        $sousComposantes = $this->sousComposantes;
+        $somme = 0;
+        $sommeActuel = 0;
+
+        if (count($activites)) {
+            foreach ($activites as $activite) {
+                $suivi = $activite->suivis->last();
+                $somme += $activite->poids;
+                $sommeActuel += optional($suivi)->poidsActuel;
+            }
+        }
+
+        if (count($sousComposantes)) {
+            foreach ($sousComposantes as $sousComposante) {
+                $suivi = $sousComposante->suivis->last();
+                $somme += $sousComposante->poids;
+                $sommeActuel += optional($suivi)->poidsActuel;
+            }
+        }
+
+        if (!$somme) return 0;
+
+        return ($sommeActuel * 100) / $somme;
+    }
+
+    public function sousComposanteTerminer()
+    {
+        $etat = ['etat' => 2];
+        $suivi = ['poidsActuel' => $this->poids];
+
+        $etats = $this->statuts()->create($etat);
+        $suivi = $this->suivis()->create($suivi);
+
+        $activites = $this->activites;
+
+        foreach ($activites as $activite) {
+            $activite->terminer();
+        }
+    }
+
+    public function composanteTerminer()
+    {
+        $etat = ['etat' => 2];
+        $suivi = ['poidsActuel' => $this->poids];
+
+        $etats = $this->statuts()->create($etat);
+        $suivi = $this->suivis()->create($suivi);
+
+        $sousComposantes = $this->sousComposantes;
+
+        foreach ($sousComposantes as $sousComposante) {
+            $sousComposante->sousComposanteTerminer();
+        }
+    }
+
+    public function getCodePtaAttribute()
+    {
+        if ($this->composanteId !== 0) {
+            return '' . optional($this->composante)->codePta . '.' . $this->position;
+        }
+        return '' . optional($this->projet)->codePta . '.' . $this->position;
+    }
+
+    public function getBailleurAttribute()
+    {
+        if ($this->composanteId) {
+            return $this->composante->bailleur;
+        } else {
+            return $this->projet->bailleur;
+        }
+    }
+
+    public function planDeDecaissement($trimestre, $annee)
+    {
+        if ($this->composanteId) {
+            $activites = $this->activites;
+            $plan = [
+                'pret' => 0,
+                'budgetNational' => 0
+            ];
+
+            foreach ($activites as $activite) {
+                $aplan = $activite->planDeDecaissement($trimestre, $annee);
+                $plan['pret'] += optional($aplan)->pret;
+                $plan['budgetNational'] += optional($aplan)->budgetNational;
+            }
+        } else {
+            $scs = $this->sousComposantes;
+            $plan = [
+                'pret' => 0,
+                'budgetNational' => 0
+            ];
+
+            foreach ($scs as $sc) {
+                $scplan = $sc->planDeDecaissement($trimestre, $annee);
+                $plan['pret'] += optional($scplan)->pret;
+                $plan['budgetNational'] += optional($scplan)->budgetNational;
+            }
+        }
+
+        return $plan;
+    }
+
+    public function planDeDecaissementParAnnee($annee)
+    {
+        $pret = 0;
+        $budgetNational = 0;
+
+        for($i = 1; $i < 5; $i++)
+        {
+            $pret += $this->planDeDecaissement($i, $annee)['pret'];
+
+            $budgetNational += $this->planDeDecaissement($i, $annee)['budgetNational'];
+        }
+
+        return ['pret' => $pret,
+                'budgetNational' => $budgetNational];
+    }
+}

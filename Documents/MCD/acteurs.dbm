@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+CAUTION: Do not modify this file unless you know what you are doing.
+ Unexpected results may occur if the code is changed deliberately.
+-->
+<dbmodel pgmodeler-ver="1.0.4" use-changelog="false" last-position="0,0" last-zoom="0.35" max-obj-count="13"
+	 default-owner="postgres"
+	 layers="Default layer"
+	 active-layers="0"
+	 layer-name-colors="#000000"
+	 layer-rect-colors="#b4b4b4"
+	 show-layer-names="false" show-layer-rects="false">
+<database name="new_database" is-template="false" allow-conns="true">
+</database>
+
+<table name="users" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="6" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="240" y="720"/>
+	<column name="user_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="25"/>
+	</column>
+	<constraint name="user_id" type="pk-constr" factor="100" table="pg_catalog.users">
+		<columns names="user_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="user_idx_nom" table="pg_catalog.users"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="90">
+		<idxelement use-sorting="false">
+			<column name="nom"/>
+		</idxelement>
+	<columns names="user_id"/>
+</index>
+
+<table name="roles" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="4" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1000" y="1200"/>
+	<column name="role_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="slug" not-null="true">
+		<type name="character varying" length="60"/>
+	</column>
+	<constraint name="role_id_pkey" type="pk-constr" factor="100" table="pg_catalog.roles">
+		<columns names="role_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniq_role_nom" type="uq-constr" factor="100" table="pg_catalog.roles">
+		<columns names="nom" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniq_role_slug" type="uq-constr" factor="100" table="pg_catalog.roles">
+		<columns names="slug" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="idx_role_nom" table="pg_catalog.roles"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="nom"/>
+		</idxelement>
+	<columns names="nom"/>
+</index>
+
+<index name="idx_role_slug" table="pg_catalog.roles"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="nom"/>
+		</idxelement>
+	<columns names="nom"/>
+</index>
+
+<table name="permissions" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1920" y="1220"/>
+	<column name="role_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<column name="slug" not-null="true">
+		<type name="character varying" length="60"/>
+	</column>
+	<constraint name="role_id_pkey_cp" type="pk-constr" factor="100" table="pg_catalog.permissions">
+		<columns names="role_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniq_permission_nom" type="uq-constr" factor="100" table="pg_catalog.permissions">
+		<columns names="nom" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uniq_permission_slug" type="uq-constr" factor="100" table="pg_catalog.permissions">
+		<columns names="slug" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<index name="idx_permission_nom" table="pg_catalog.permissions"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="nom"/>
+		</idxelement>
+	<columns names="nom"/>
+</index>
+
+<index name="idx_permission_slug" table="pg_catalog.permissions"
+	 concurrent="true" unique="true" fast-update="false" buffering="false"
+	 index-type="btree" factor="0">
+		<idxelement use-sorting="false">
+			<column name="nom"/>
+		</idxelement>
+	<columns names="nom"/>
+</index>
+
+<table name="profils" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1680" y="760"/>
+	<column name="profil_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="profilable_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="profilable_type" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="profil_id_pkey" type="pk-constr" factor="100" table="pg_catalog.profils">
+		<columns names="profil_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="many_roles_has_many_permissions" type="relnn" layers="0"
+	 src-col-pattern="{sc}_{st}" dst-col-pattern="{sc}_{dt}"
+	 pk-pattern="{gt}_pk" uq-pattern="{gt}_uq"
+	 src-fk-pattern="{st}_fk" dst-fk-pattern="{dt}_fk"
+	 pk-col-pattern="id"
+	 custom-color="#8d203b"
+	 src-table="pg_catalog.roles"
+	 dst-table="pg_catalog.permissions"
+	 src-required="false" dst-required="false"
+	 table-name="many_roles_has_many_permissions">
+	<label ref-type="src-label">
+		<position x="35.2836" y="38.0949"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-41" y="-36.3098"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<table name="ddc" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="4" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="2120" y="320"/>
+	<column name="ddc_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<constraint name="ddc_id_pkey" type="pk-constr" factor="100" table="pg_catalog.ddc">
+		<columns names="ddc_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="organisations" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="6" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1680" y="120"/>
+	<column name="id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="organisations_id_pkey" type="pk-constr" factor="100" table="pg_catalog.organisations">
+		<columns names="id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="ddc_inherits_profils" type="relgen" layers="0"
+	 pk-pattern="{dt}_pk"
+	 custom-color="#10ed87"
+	 src-table="pg_catalog.ddc"
+	 dst-table="pg_catalog.profils"/>
+
+<table name="unites_de_gestion" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="6" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="1100" y="460"/>
+	<column name="unite_de_gestion_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="partenaire_id_pkey_cp" type="pk-constr" factor="100" table="pg_catalog.unites_de_gestion">
+		<columns names="unite_de_gestion_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<relationship name="unites_de_gestion_inherits_profils" type="relgen" layers="0"
+	 pk-pattern="{dt}_pk"
+	 custom-color="#24942b"
+	 src-table="pg_catalog.unites_de_gestion"
+	 dst-table="pg_catalog.profils"/>
+
+<relationship name="partenaires_inherits_profils" type="relgen" layers="0"
+	 pk-pattern="{dt}_pk"
+	 custom-color="#dab2cd"
+	 src-table="pg_catalog.organisations"
+	 dst-table="pg_catalog.profils"/>
+
+<table name="programmes" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="3" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="100" y="420"/>
+	<column name="programme_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="programmes_pk" type="pk-constr" table="pg_catalog.programmes">
+		<columns names="programme_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="programmes_des_organisations" layers="0" collapse-mode="2" pagination="true" attribs-page="0" ext-attribs-page="0" max-obj-count="4" z-value="0">
+	<schema name="pg_catalog"/>
+	<role name="postgres"/>
+	<position x="580" y="80"/>
+	<column name="structure_programme_id" not-null="true">
+		<type name="int4" length="0"/>
+	</column>
+	<column name="nom" not-null="true">
+		<type name="character varying" length="50"/>
+	</column>
+	<constraint name="structure_programmes_pk" type="pk-constr" table="pg_catalog.programmes_des_organisations">
+		<columns names="structure_programme_id" ref-type="src-columns"/>
+	</constraint>
+
+	<customidxs object-type="column">
+		<object name="id_organisations" index="2"/>
+	</customidxs>
+
+	<customidxs object-type="constraint">
+		<object name="organisations_fk" index="1"/>
+	</customidxs>
+</table>
+
+<relationship name="partenaires_has_many_structure_programmes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#825385"
+	 src-table="pg_catalog.organisations"
+	 dst-table="pg_catalog.programmes_des_organisations"
+	 src-required="false" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-25.65" y="34.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="17.8086" y="-24.6"/>
+	</label>
+</relationship>
+
+<relationship name="unites_de_gestion_has_many_programmes" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#df22ef"
+	 src-table="pg_catalog.unites_de_gestion"
+	 dst-table="pg_catalog.programmes"
+	 src-required="true" dst-required="false">
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="programmes_has_many_users" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#700d73"
+	 src-table="pg_catalog.programmes"
+	 dst-table="pg_catalog.users"
+	 src-required="true" dst-required="false">
+	<line>
+		<position x="80" y="820"/>
+	</line>
+	<label ref-type="src-label">
+		<position x="34.35" y="154.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-25.65" y="-24.2"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="-9.7955" y="-172.891"/>
+	</label>
+</relationship>
+
+<relationship name="profils_has_many_roles" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#0e0310"
+	 src-table="pg_catalog.profils"
+	 dst-table="pg_catalog.roles"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-25.65" y="114.2"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="12.9336" y="-44.6"/>
+	</label>
+</relationship>
+
+<relationship name="programmes_has_many_programmes_des_organisations" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#32ffe7"
+	 src-table="pg_catalog.programmes"
+	 dst-table="pg_catalog.programmes_des_organisations"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="54.35" y="-85.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="-25.65" y="-44.6"/>
+	</label>
+</relationship>
+
+<relationship name="profils_has_many_users" type="rel1n" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#82d1f4"
+	 src-table="pg_catalog.profils"
+	 dst-table="pg_catalog.users"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-85.65" y="-25.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="37.8086" y="-24.6"/>
+	</label>
+	<label ref-type="name-label">
+		<position x="0" y="0"/>
+	</label>
+</relationship>
+
+<relationship name="users_has_one_roles" type="rel11" layers="0"
+	 src-col-pattern="{sc}_{st}"
+	 pk-pattern="{dt}_pk" uq-pattern="{dt}_uq"
+	 src-fk-pattern="{st}_fk"
+	 custom-color="#3a841b"
+	 src-table="pg_catalog.roles"
+	 dst-table="pg_catalog.users"
+	 src-required="true" dst-required="false">
+	<label ref-type="src-label">
+		<position x="-5.65" y="-45.8"/>
+	</label>
+	<label ref-type="dst-label">
+		<position x="37.8086" y="75.8"/>
+	</label>
+</relationship>
+
+</dbmodel>

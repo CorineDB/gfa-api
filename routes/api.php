@@ -1,0 +1,667 @@
+
+<?php
+
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ModController;
+use App\Http\Controllers\UniteeDeGestionController;
+use App\Models\UniteeDeGestion;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register API routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
+|
+*/
+
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
+
+
+Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'namespace' => 'App\Http\Controllers' */], function () {
+
+
+    Route::get('confirmation-de-compte/{email}', [AuthController::class, 'confirmationDeCompte'])->name('confirmationDeCompte');
+
+    Route::get('activation-de-compte/{token}', [AuthController::class, 'activationDeCompte'])->name('activationDeCompte');
+
+    Route::post('suiviKobo', 'SuiviIndicateurController@suiviKobo');
+
+
+    Route::get('reinitialisation-de-mot-de-passe/{email}', [AuthController::class, 'verificationEmailReinitialisationMotDePasse'])->name('verificationEmailReinitialisationMotDePasse');
+
+    Route::get('verification-de-compte/{token}', [AuthController::class, 'verificationDeCompte'])->name('verificationDeCompte');
+
+    Route::post('reinitialisation-de-mot-de-passe', [AuthController::class, 'reinitialisationDeMotDePasse'])->name('reinitialisationDeMotDePasse');
+
+
+    Route::post('authentification', [AuthController::class, 'authentification'])->name('auth.authentification'); // Route d'authentification
+
+
+    Route::group(['middleware' => [/*'deconnexion', */'auth:sanctum'/*, 'cookie'*/]], function () {
+
+        Route::group(['prefix' => 'authentification', 'as' => 'auth.'], function () {
+
+            Route::controller('AuthController')->group(function () {
+
+                Route::post('/deconnexion', 'deconnexion')->name('deconnexion'); // Route de déconnexion
+
+                Route::get('/utilisateur-connecte', 'utilisateurConnecte')->name('utilisateurConnecte');
+
+                Route::get('/refresh-token', 'refresh_token')->name('refreshToken');
+
+                Route::post('reinitialisation-de-mot-de-passe', 'modificationDeMotDePasse')->name('modificationDeMotDePasse');
+
+                Route::get('/{id}/debloquer', 'debloquer')->name('debloquer');
+
+            });
+        });
+
+        Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function (){
+
+            Route::controller('UserController')->group(function () {
+
+                Route::post('/creation-de-compte-bailleur', 'creationDeCompteBailleur')->name('creationDeCompteBailleur')->middleware('permission:creer-un-bailleur');
+                Route::put('/mis-à-jour-de-compte-bailleur/{id}', 'miseAJourDeCompteBailleur')->name('miseAJourDeCompteBailleur')->middleware('permission:modifier-un-bailleur');
+                Route::get('/bailleurs', 'bailleurs')->name('bailleurs')->middleware('permission:voir-un-bailleur');
+                Route::post('/logo', 'createLogo')->name('createLogo')->middleware('permission:modifier-un-bailleur');
+                Route::post('/photo', 'createPhoto')->name('createPhoto')->middleware('permission:modifier-un-utilisateur');
+                Route::get('/getNotifications', 'getNotifications')->name('getNotifications');
+                Route::put('/readNotifications', 'readNotifications')->name('readNotifications');
+                Route::get('/deleteNotifications/{id}', 'deleteNotifications')->name('deleteNotifications');
+                Route::get('/deleteAllNotifications', 'deleteAllNotifications')->name('deleteAllNotifications');
+                Route::get('/fichiers', 'fichiers')->name('fichiers')->middleware('permission:voir-un-fichier');
+                Route::put('/{id}', 'update')->name('update');
+            });
+
+        });/* s */
+
+        Route::group(['prefix' =>  'utilisateur', 'as' => 'utilisateur.'], function (){
+
+            Route::controller('UserController')->group(function () {
+                Route::get('/getNotifications', 'getNotifications')->name('getNotifications');
+                Route::post('/readNotifications', 'readNotifications')->name('readNotifications');
+            });
+
+        });
+
+        Route::apiResource('programmes', 'ProgrammeController')->names('programmes');
+
+        Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function (){
+
+            Route::controller('ProgrammeController')->group(function () {
+
+                Route::get('{id}/projets', 'projets')->name('projets')->middleware('permission:voir-un-projet');
+
+                Route::get('{id}/bailleurs', 'bailleurs')->name('bailleurs')->middleware('permission:voir-un-bailleur');
+
+                Route::get('{id}/mods', 'mods')->name('mods')->middleware('permission:voir-un-mod');
+
+                Route::get('{id}/mods/passations', 'modPassations')->name('modPassations')->middleware('permission:voir-une-passation');
+
+                Route::get('{id}/missionDeControles/passations', 'missionDeControlePassations')->name('missionDeControlePassations')->middleware('permission:voir-une-passation');
+
+                Route::get('{id}/entreprise-executants', 'entreprisesExecutante')->name('entreprise-executants')->middleware('permission:voir-une-entreprise-executante');
+
+                Route::get('{id}/structures', 'structures')->name('structures')->middleware('permission:voir-un-utilisateur');
+
+                Route::get('{id}/users', 'users')->name('users')->middleware('permission:voir-un-utilisateur');
+
+                Route::get('entrepriseUsers/{id}', 'entrepriseUsers')->name('entrepriseUsers')->middleware('permission:voir-un-utilisateur');
+
+                Route::get('/composantes/{id}', 'composantes')->name('composantes')->middleware('permission:voir-une-composante');
+
+                Route::get('/sousComposantes/{id}', 'sousComposantes')->name('sousComposantes')->middleware('permission:voir-une-composante');
+
+                Route::get('{id}/activites', 'activites')->name('activites')->middleware('permission:voir-une-activite');
+
+                Route::get('{id}/eActivites', 'eActivites')->name('eActivites')->middleware('permission:voir-une-activite-environnementale');
+
+                Route::get('{id}/maitriseOeuvres', 'maitriseOeuvres')->name('maitriseOeuvres')->middleware('permission:voir-une-maitrise-oeuvre');
+
+                Route::get('taches/{id}', 'taches')->name('taches')->middleware('permission:voir-une-tache');
+
+                Route::get('{id}/decaissements', 'decaissements')->name('decaissements')->middleware('permission:voir-un-decaissement');
+
+                Route::get('{id}/sinistres', 'sinistres')->name('sinistres')->middleware('permission:voir-un-pap');
+
+                Route::get('{id}/sites', 'sites')->name('sites')->middleware('permission:voir-un-site');
+
+                Route::get('{id}/scopes', 'scopes')->name('scopes')->middleware('permission:voir-une-revision');
+
+                Route::get('{id}/suiviFinanciers', 'suiviFinanciers')->name('suiviFinanciers')->middleware('permission:voir-un-suivi-financier');
+
+            });
+
+        });
+
+        Route::get('programme/kobo', 'ProgrammeController@kobo')->middleware('permission:voir-formulaire-kobo');
+
+        Route::put('programme/kobo', 'ProgrammeController@koboUpdate')->middleware('permission:voir-formulaire-kobo');
+
+        Route::post('programme/kobo', 'ProgrammeController@koboSuivie')->middleware('permission:voir-suivi-kobo');
+
+        Route::post('programme/koboPreview', 'ProgrammeController@koboPreview')->middleware('permission:voir-suivi-kobo');
+
+        Route::post('programme/rapport', 'ProgrammeController@rapport');
+
+        Route::get('programme/rapports', 'ProgrammeController@rapports');
+
+        Route::put('programme/rapport/{id}', 'ProgrammeController@updateRapport');
+
+        Route::delete('programme/rapport/{id}', 'ProgrammeController@deleteRapport');
+
+        Route::get('programme/rapports', 'ProgrammeController@rapports');
+
+        Route::get('programme/emailRapports', 'ProgrammeController@emailRapports');
+
+        Route::post('programme/rapport/sendMail', 'ProgrammeController@rapportSendMail');
+
+        Route::get('programme/dashboard', 'ProgrammeController@dashboard')->name('dashboard')->middleware('permission:voir-un-projet');
+
+        Route::resource('decaissements', 'DecaissementController')->names('decaissements');
+
+        Route::group(['prefix' =>  'decaissements', 'as' => 'decaissements.'], function (){
+
+            Route::controller('DecaissementController')->group(function () {
+
+                Route::post('filtres', 'filtre')->name('filtres')->middleware('permission:voir-un-decaissement');
+
+            });
+
+        });
+
+
+        Route::resource('utilisateurs', 'UserController')->names('utilisateurs');
+
+        /*Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function (){
+            Route::controller('UserController')->group(function () {
+                Route::get('/{id}/permissions', 'permissions')->name('permissions');
+            });
+        });*/
+
+        Route::apiResource('activites', 'ActiviteController')->names('activites');
+
+        Route::group(['prefix' =>  'activites', 'as' => 'activites.'], function (){
+
+            Route::controller('ActiviteController')->group(function () {
+
+                //Route::post('{activite}/prolonger', 'prolonger')->name('prolonger')->middleware('permission:prolonger-une-activite');
+
+                Route::get('/{id}/taches', 'taches')->name('taches')->middleware('permission:voir-une-tache');
+
+                Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
+
+                Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-activite');
+
+                Route::post('/ppm', 'ppm')->name('ppm')->middleware('permission:voir-une-activite');
+
+                Route::post('/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-activite');
+
+                Route::post('{id}/deplacer', 'deplacer')->name('deplacer')->middleware('permission:modifier-une-activite');
+
+                Route::post('/filtre', 'filtre')->name('filtre');
+
+                Route::get('{id}/plansDeDecaissement', 'plansDeDecaissement')->name('plansDeDecaissement')->middleware('permission:voir-un-plan-de-decaissement');
+
+            });
+
+        });
+
+        Route::group(['prefix' =>  'eActivites', 'as' => 'eActivites.'], function (){
+
+            Route::controller('EActiviteController')->group(function () {
+
+                Route::get('/checkLists/{id}', 'checkLists')->name('checkLists');
+
+                Route::post('/ajouterDuree/{id}', 'ajouterDuree')->name('ajouterDuree');
+
+                Route::post('/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree');
+
+            });
+
+        });
+
+        Route::apiResource('gouvernements', 'GouvernementController')->names('gouvernements');
+
+
+        Route::apiResource('bailleurs', 'BailleurController', ['except' => ['index', 'update']])->names('bailleurs')->middleware(['role:super-admin|administrateur|unitee-de-gestion']);
+
+        Route::apiResource('bailleurs', 'BailleurController', ['only' => ['index']])->names('bailleurs');
+
+        Route::group(['prefix' =>  'bailleur', 'middleware' =>  ['role:bailleur'], 'as' => 'bailleur.'], function (){
+
+            Route::controller('BailleurController')->group(function () {
+
+                Route::get('/anos', 'anos')->name('anos');
+
+                Route::post('{id}/update', 'update')->name('update');
+
+                Route::get('/entreprisesExecutantes', 'entreprisesExecutant')->name('entreprisesExecutantes');
+
+                Route::get('/indicateurs', 'indicateurs')->name('indicateurs');
+
+                Route::get('/suiviIndicateurs', 'suiviIndicateurs')->name('suiviIndicateurs');
+
+            });
+
+        });
+
+        Route::group(['prefix' =>  'bailleur', 'as' => 'bailleur.'], function (){
+
+            Route::controller('BailleurController')->group(function () {
+
+                Route::post('/{id}/update', 'update')->name('update');
+
+            });
+
+        });
+
+
+        Route::apiResource('unitee-de-gestions', 'UniteeDeGestionController')->names('unitee-de-gestions')->middleware(['role:super-admin|administrateur|unitee-de-gestion']);
+
+        Route::group(['prefix' =>  'unitee-de-gestions', 'middleware' =>  ['role:unitee-de-gestion'], 'as' => 'unitee-de-gestions.'], function (){
+
+            Route::apiResource('{id}/membres', 'MembreUniteeGestionController')->names('membres');
+
+        });
+
+        Route::apiResource('mission-de-controles', 'MissionDeControleController', ['except' => ['index']])->names('mission-de-controles')->middleware(['role:unitee-de-gestion|administrateur|mod']);
+
+        Route::apiResource('mission-de-controles', 'MissionDeControleController', ['only' => ['index']])->names('mission-de-controles')->middleware(['role:unitee-de-gestion|administrateur|bailleur|mod']);
+
+        Route::group(['prefix' =>  'mission-de-controles', 'middleware' =>  ['role:mission-de-controle|unitee-de-gestion'], 'as' => 'mission-de-controles.'], function (){
+
+            Route::apiResource('{id}/membres', 'MembreMissionDeControleController')->names('membres');
+
+        });
+
+
+        Route::apiResource('institutions', 'InstitutionController', ['except' => ['index']])->names('institutions')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('institutions', 'InstitutionController', ['only' => ['index']])->names('institutions');
+
+
+        Route::apiResource('ongs', 'ONGController', ['except' => ['index']])->names('ongs')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('ongs', 'ONGController', ['only' => ['index']])->names('ongs');
+
+
+        Route::apiResource('unitees-de-mesure', 'UniteeMesureController', ['except' => ['index']])->names('unitees_de_mesure')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('unitees-de-mesure', 'UniteeMesureController', ['only' => ['index']])->names('unitees_de_mesure');
+
+
+        Route::apiResource('agences-de-communication', 'AgenceController', ['except' => ['index']])->names('agences-de-communication')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('agences-de-communication', 'AgenceController', ['only' => ['index']])->names('agences-de-communication');
+
+
+        Route::apiResource('entreprise-executants', 'EntrepriseExecutantController', ['except' => ['index']])->names('entreprise-executants')->middleware(['role:unitee-de-gestion|mod']);
+
+        Route::apiResource('entreprise-executants', 'EntrepriseExecutantController', ['only' => ['index']])->names('entreprise-executants');
+
+        Route::group(['prefix' =>  'entreprise-executants', 'as' => 'entreprise-executants.'], function (){
+
+            Route::controller('EntrepriseExecutantController')->group(function () {
+
+                Route::get('{id}/eActivites', 'eActivites')->name('eActivites')->middleware('permission:voir-une-activite-environnementale');
+            });
+
+        });
+
+
+
+        Route::apiResource('mods', 'ModController', ['except' => ['index']])->names('mods')->middleware(['role:unitee-de-gestion']);
+        Route::apiResource('mods', 'ModController', ['only' => ['index']])->names('mods')->middleware(['role:unitee-de-gestion|bailleur']);
+        Route::apiResource('agences-de-communication', 'AgenceController')->names('agences-de-communication')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('entreprise-executants', 'EntrepriseExecutantController')->names('entreprise-executants')->middleware(['role:unitee-de-gestion|mod']);
+
+
+        Route::apiResource('categories', 'CategorieController', ['except' => ['index']])->names('categories')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('categories', 'CategorieController', ['only' => ['index']])->names('categories');
+
+
+        Route::apiResource('commentaires', 'CommentaireController')->names('commentaires');
+
+        Route::apiResource('composantes', 'ComposanteController')->names('composantes');
+
+        Route::group(['prefix' =>  'composantes', 'as' => 'composantes.'], function (){
+
+            Route::controller('ComposanteController')->group(function () {
+
+                Route::get('{id?}/sousComposantes', 'sousComposantes')->name('sousComposantes')->middleware('permission:voir-une-composante');
+
+                Route::get('{id}/activites', 'activites')->name('activites')->middleware('permission:voir-une-activite');
+
+                //Route::get('{id}/filtreActivites', 'filtreActivites')->name('filtreActivites');
+
+                Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
+
+                Route::post('{id}/deplacer', 'deplacer')->name('deplacer')->middleware('permission:modifier-une-composante');
+
+            });
+
+        });
+
+        // Route::apiResource('collecteurs-bassins', 'SiteController')->names('collecteurs_bassins');
+
+        Route::apiResource('fichiers', 'FichierController')->names('fichiers');
+
+        Route::apiResource('reponseAnos', 'ReponseAnoController')->names('reponse-anos');
+
+        Route::apiResource('historiques', 'HistoriqueController', ['only' => ['index']])->names('historiques');
+
+        Route::apiResource('indicateurs', 'IndicateurController', ['except' => ['index']])->names('indicateurs');
+
+        Route::group(['prefix' =>  'indicateurs', 'as' => 'indicateurs.'], function (){
+
+            Route::controller('IndicateurController')->group(function () {
+
+                Route::get('{id}/checkSuivi/{year}', 'checkSuivi')->name('checkSuivi')->middleware('permission:voir-un-suivi-indicateur');
+
+                Route::get('{id}/suivis', 'suivis')->name('suivis')->middleware('permission:modifier-un-suivi-indicateur');
+
+                Route::post('filtres', 'filtre')->name('filtre')->middleware('permission:modifier-un-suivi-indicateur');
+
+            });
+        });
+
+        Route::group(['prefix' =>  'indicateurMods', 'as' => 'indicateurMods.'], function (){
+
+            Route::controller('IndicateurModController')->group(function () {
+
+                Route::get('{id}/checkSuivi/{year}', 'checkSuivi')->name('checkSuivi')->middleware('permission:voir-un-suivi-indicateur-mod');
+
+                Route::get('{id}/suivis', 'suivis')->name('suivis')->middleware('permission:modifier-un-suivi-indicateur-mod');
+
+                Route::post('filtres', 'filtre')->name('filtre')->middleware('permission:modifier-un-suivi-indicateur-mod');
+
+            });
+        });
+
+        Route::apiResource('indicateurs', 'IndicateurController', ['only' => ['index']])->names('indicateurs');
+
+        Route::apiResource('indicateurs_cadre_logique', 'IndicateurCadreLogiqueController', ['except' => ['index']])->names('indicateurs_cadre_logique')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('indicateurs_cadre_logique', 'IndicateurCadreLogiqueController', ['only' => ['index']])->names('indicateurs_cadre_logique');
+
+
+
+        //Route::apiResource('indicateur-mods', 'IndicateurModController', ['except' => ['index']])->names('indicateur-mods')->middleware(['role:unitee-de-gestion|mod']);
+
+        //Route::apiResource('indicateur-mods', 'IndicateurModController', ['only' => ['index']])->names('indicateur-mods');
+
+        Route::apiResource('indicateur-mods', 'IndicateurModController')->names('indicateur-mods');
+
+
+        Route::apiResource('sites', 'SiteController', ['except' => ['index']])->names('sites')->middleware(['role:unitee-de-gestion']);
+
+        Route::apiResource('sites', 'SiteController', ['only' => ['index']])->names('sites');
+
+        Route::apiResource('checkLists', 'CheckListController')->names('checkLists');
+
+        Route::apiResource('checks-list-ongs-agences', 'CheckListComController')->names('checks-list-ongs-agences')->middleware(['role:ong|agence']);
+
+        Route::apiResource('suivi-checks-list-ongs-agences', 'SuiviCheckListComController')->names('suivi-checks-list-ongs-agences')->middleware(['role:ong|agence']);
+
+        Route::apiResource('eSuivis', 'ESuiviController')->names('eSuivis');
+
+        Route::group(['prefix' =>  'eSuivis', 'as' => 'eSuivis.'], function (){
+
+            Route::controller('ESuiviController')->group(function () {
+
+                Route::post('dates', 'dates')->name('dates')->middleware('permission:voir-un-suivi-environnementale');
+
+                Route::post('formulaires', 'formulaires')->name('formulaires')->middleware('permission:voir-un-formulaire');
+
+                Route::post('graphes', 'graphes')->name('graphes')->middleware('permission:voir-un-formulaire');
+            });
+        });
+
+
+        Route::apiResource('passations', 'PassationController')->names('passations');
+
+        Route::apiResource('suivi-financier-mods', 'SuiviFinancierMODController', ['except' => ['index']])->names('suivi-financier-mods')->middleware(['role:unitee-de-gestion|mod']);
+
+        Route::apiResource('suivi-financier-mods', 'SuiviFinancierMODController', ['only' => ['index']])->names('suivi-financier-mods');
+
+
+        Route::apiResource('maitrise-oeuvres', 'MaitriseOeuvreController')->names('maitrise-oeuvres');
+
+        Route::apiResource('permissions', 'PermissionController', ['only' => ['index']])->names('permissions')->middleware(['permission:voir-une-permission']);
+
+        Route::apiResource('planDecaissements', 'PlanDecaissementController')->names('plan-decaissements');
+
+        Route::apiResource('projets', 'ProjetController', ['except' => ['update']])->names('projets');
+
+        Route::group(['prefix' =>  'projets', 'as' => 'projets.'], function (){
+
+            Route::controller('ProjetController')->group(function () {
+
+                Route::post('{id}/update', 'update')->name('update');
+
+                Route::post('{projet}/prolonger', 'prolonger')->name('prolonger')->middleware('permission:prolonger-un-projet');
+
+                Route::get('{id}/composantes', 'composantes')->name('composantes')->middleware('permission:voir-une-composante');
+
+                Route::get('{id}/decaissements', 'decaissements')->name('decaissements')->middleware('permission:voir-un-decaissement');
+
+                Route::post('{id}/tef', 'tef')->name('tef');
+
+                Route::get('{id}/statistiques', 'statistiques')->name('statistiques')->middleware('permission:voir-un-projet');
+
+                Route::get('{id}/cadreLogique', 'cadreLogique')->name('cadreLogique')->middleware('permission:voir-un-projet');
+
+            });
+
+        });
+
+        Route::apiResource('ptabScopes', 'PtabRevisionController', ['only' => ['index']])->names('ptab-scopes');
+
+        Route::group(['prefix' =>  'ptas', 'as' => 'ptas.'], function (){
+            Route::controller('PtaController')->group(function () {
+
+                Route::post('/generer', 'generer')->name('generer')->middleware('permission:voir-ptab');
+
+                Route::post('/filtre', 'filtre')->name('filtre')->middleware('permission:voir-ptab');
+
+            });
+
+            Route::controller('PtabRevisionController')->group(function () {
+
+                Route::post('/getOldPtaReviser', 'getOldPtaReviser')->name('getOldPtaReviser')->middleware('permission:voir-revision-ptab');
+
+                Route::post('/getPtabReviser', 'getPtabReviser')->name('getPtabReviser')->middleware('permission:voir-revision-ptab');
+
+                Route::post('/reviserPtab', 'reviserPtab')->name('reviserPtab')->middleware('permission:faire-revision-ptab');
+
+                Route::get('/listVersionPtab', 'getListVersionPtab')->name('getListVersionPtab')->middleware('permission:voir-revision-ptab');
+
+            });
+
+        });
+
+        Route::resource('eActivites', 'EActiviteController')->names('eActivites');
+
+        Route::resource('eActiviteMods', 'EActiviteModController')->names('eActiviteMods');
+
+        Route::resource('eSuiviActiviteMods', 'ESuiviActiviteModController')->names('eSuiviActiviteMods');
+
+        Route::apiResource('roles', 'RoleController')->names('roles');
+
+        Route::apiResource('suivis', 'SuiviController')->names('suivis');
+
+        Route::group(['prefix' =>  'suivis', 'as' => 'suivis.'], function (){
+            Route::controller('SuiviController')->group(function () {
+
+                Route::post('filterByModule', 'getSuivis')->name('getSuivis')->middleware('permission:voir-un-suivi');
+
+                Route::post('suivisV2', 'suivisV2')->name('suivisV2')->middleware('permission:voir-un-suivi');
+
+            });
+        });
+
+        Route::post('suivisV2', 'SuiviController@suivisV2');
+
+        Route::apiResource('suiviFinanciers', 'SuiviFinancierController')->names('suivi-financiers');
+
+        Route::group(['prefix' =>  'suiviFinanciers', 'as' => 'suiviFinanciers'], function (){
+            Route::controller('SuiviFinancierController')->group(function () {
+
+                Route::post('importation', 'importation')->name('importation')->middleware('permission:creer-un-suivi-financier');
+
+                Route::post('filtres', 'filtre')->name('filtres')->middleware('permission:voir-un-suivi-financier');
+                Route::post('trismestreASsuivre', 'trismestreASsuivre')->name('trismestreASsuivre')->middleware('permission:voir-un-suivi-financier');
+
+
+
+            });
+        });
+
+        Route::apiResource('suivisIndicateurs', 'SuiviIndicateurController')->names('suivi-indicateurs');
+
+        Route::apiResource('suivi-indicateurs', 'SuiviIndicateurController')->names('suivi-indicateurs');
+
+        Route::apiResource('audits', 'AuditController')->names('audits');
+
+        Route::controller('AuditController')->group(function () {
+
+            Route::post('audits/{id}', 'update')->name('update');
+
+        });
+
+        Route::controller('SuiviIndicateurController')->group(function () {
+
+            Route::post('suivi-indicateurs/filter', 'filtre')->name('filtre');
+
+            Route::post('suivi-indicateurs/dateSuivie', 'dateSuivie')->name('dateSuivie');
+
+        });
+
+        Route::apiResource('suivi-indicateurs-mods', 'SuiviIndicateurMODController')->names('suivi-indicateurs-mods');
+
+        Route::controller('SuiviIndicateurMODController')->group(function () {
+
+            Route::post('suivi-indicateurs-mods/filter', 'filtre')->name('filtre');
+
+            Route::post('suivi-indicateurs-mods/dateSuivie', 'dateSuivie')->name('dateSuivie');
+
+        });
+
+        Route::apiResource('taches', 'TacheController')->parameters([
+            'tach' => 'tache'
+        ])->names('taches');
+
+        Route::group(['prefix' =>  'taches', 'as' => 'taches.'], function (){
+            Route::controller('TacheController')->group(function () {
+
+                Route::post('{tache}/prolonger', 'prolonger')->name('prolonger')->middleware('permission:prolonger-une-tache');
+
+                Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
+
+                Route::get('/{id}/changeStatut', 'changeStatut')->name('changeStatut')/*->middleware('permission:voir-un-suivi')*/;
+
+                Route::post('suivisV2', 'suivisV2')->name('suivisV2')->middleware('permission:voir-un-suivi');
+
+                Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-tache');
+
+                Route::post('/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-tahe');
+
+                Route::post('/deplacer/{id}', 'deplacer')->name('deplacer')->middleware('permission:modifier-une-tache');
+
+            });
+
+        });
+
+        Route::apiResource('anos', 'AnoController')->names('anos');
+
+        Route::group(['prefix' =>  'ano', 'as' => 'ano.'], function (){
+
+            Route::controller('AnoController')->group(function () {
+
+                Route::get('rappel', 'rappel')->name('rappel')->middleware('permission:voir-un-ano');
+
+                Route::get('{id}/reponses', 'reponses')->name('reponses')->middleware('permission:voir-un-ano');
+
+            });
+
+        });
+
+        Route::apiResource('formulaires', 'FormulaireController')->names('formulaires');
+
+        Route::group(['prefix' =>  'formulaire', 'as' => 'formulaires.'], function (){
+
+            Route::controller('FormulaireController')->group(function () {
+
+                Route::post('getSuivi', 'getSuivi')->name('getSuivi')->middleware('permission:voir-un-suivi-environnementale');
+
+                Route::post('getSuiviGeneral', 'getSuiviGeneral')->name('getSuiviGeneral');
+
+                Route::get('generals', 'allGeneral')->name('generals')->middleware('permission:voir-un-formulaire');
+
+            });
+
+        });
+
+        Route::apiResource('sinistres', 'SinistreController')->names('sinistres');
+
+        Route::group(['prefix' =>  'sinistres', 'as' => 'sinistres'], function (){
+            Route::controller('SinistreController')->group(function () {
+
+                Route::post('importation', 'importation')->name('importation')->middleware('permission:creer-un-pap');
+
+            });
+        });
+
+        Route::apiResource('proprietes', 'ProprieteController')->names('proprietes');
+
+        Route::apiResource('nouvelleProprietes', 'NouvelleProprieteController')->names('nouvelleProprietes');
+
+        Route::apiResource('payes', 'PayeController')->names('payes');
+
+        Route::apiResource('typeAnos', 'TypeAnoController')->names('typeAnos');
+
+        Route::group(['prefix' =>  'tables', 'as' => 'tables.'], function (){
+            Route::controller('TableController')->group(function () {
+
+                Route::post('/tauxDecaissement', 'tauxDecaissement')->name('tauxDecaissement')->middleware('permission:voir-un-decaissement');
+
+            });
+
+        });
+
+        Route::apiResource('objectifSpecifiques', 'ObjectifSpecifiqueController')->names('objectifSpecifiques');
+
+        Route::apiResource('objectifGlobaux', 'ObjectifGlobauxController')->names('objectifGlobaux');
+
+        Route::apiResource('resultats', 'ResultatController')->names('resultats');
+
+        Route::apiResource('rappels', 'RappelController')->names('rappels');
+
+        Route::apiResource('alerteConfig', 'AlerteConfigController', ['only' => ['index', 'update']])->names('alerteConfig');
+
+        Route::group(['prefix' =>  'backups', 'as' => 'backups.'], function (){
+            Route::controller('BackupController')->group(function () {
+
+                Route::get('/lancer', 'lancer')->name('lancer');
+                Route::get('/listes', 'index')->name('listes');
+
+            });
+
+        });
+
+        Route::apiResource('reponses', 'ReponseController')->names('reponses');
+
+
+    });
+
+});
+

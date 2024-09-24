@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Http\Resources\user\auth;
+
+use App\Http\Resources\fichiers\FichiersResource;
+use App\Http\Resources\programmes\ProgrammesResource;
+use App\Http\Resources\ProjetResource;
+use App\Http\Resources\role\RoleResource;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Auth;
+
+class AuthResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     */
+    public function toArray($request)
+    {
+
+        return [
+
+            "id" => $this->secure_id,
+            "nom" => $this->nom,
+            "email" => $this->email,
+            "contact" => $this->contact,
+            "type" => $this->type,
+            //"profil" => $this->hasRole("ong", "agence", "institution", "mission-de-controle", "unitee-de-gestion", "mod" ) ? $this->profilable : ($this->type === 'bailleur' ? array_merge($this->profilable->toArray(), ["code" => $this->code, "projet" => new ProjetResource($this->profilable->projets(Auth::user()->programme->id))]) : null),
+            "profil" => $this->type !== 'administrateur' ? $this->profilable : null,
+            "programme" => $this->type !== 'administrateur' ? $this->programme : null,
+            "role" => RoleResource::collection($this->roles->load('permissions')),
+            "photo" => new FichiersResource($this->photo),
+        ];
+    }
+}

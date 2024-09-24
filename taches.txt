@@ -1,0 +1,11 @@
+- Logo : bailleur
+
+- permissions
+
+- statut : non demarré, en cours, achevé, proroger
+
+- proroger un projet
+
+- details projet
+
+- Composantes filtre

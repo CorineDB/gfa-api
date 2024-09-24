@@ -1,0 +1,87 @@
+<?php
+
+namespace App\Models;
+
+use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+
+class Categorie extends Model
+{
+
+    use HasSecureIds ;
+
+    protected $table = 'categories';
+
+    public $timestamps = true;
+
+    protected $dates = ['deleted_at'];
+
+    protected $fillable = ['nom'];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'updated_at','deleted_at'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        "created_at" => "datetime:Y-m-d",
+        "updated_at" => "datetime:Y-m-d",
+        "deleted_at" => "datetime:Y-m-d"
+    ];
+
+    protected static function boot() {
+        parent::boot();
+
+        static::deleting(function($categorie) {
+
+            DB::beginTransaction();
+            try {
+
+                $categorie->update([
+                    'nom' => time() . '::' . $categorie->nom
+                ]);
+
+                $categorie->indicateurs()->delete();
+                $categorie->indicateurMods()->delete();
+                DB::commit();
+            } catch (\Throwable $th) {
+               DB::rollBack();
+               throw new Exception($th->getMessage(), 1);
+            }
+
+        });
+    }
+
+    /**
+     * Liste des indicateurs de bailleur
+     *
+     * return List<Indicateur>
+     */
+    public function indicateurs()
+    {
+        return $this->hasMany(Indicateur::class, 'categorieId');
+    }
+
+    /**
+     * Liste des indicateurs de mod
+     *
+     * return List<IndicateurMod>
+     */
+    public function indicateurMods()
+    {
+        return $this->hasMany(IndicateurMod::class, 'categorieId');
+    }
+
+}

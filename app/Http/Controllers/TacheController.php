@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\tache\StoreTacheRequest;
+use App\Http\Requests\tache\UpdateTacheRequest;
+use App\Http\Requests\duree\StoreDureeRequest;
+use App\Http\Requests\duree\UpdateDureeRequest;
+use App\Http\Requests\tache\DeplacerRequest;
+use App\Http\Requests\tache\ProlongementRequest;
+use Core\Services\Interfaces\TacheServiceInterface;
+
+
+class TacheController extends Controller
+{
+    /**
+     * @var service
+     */
+    private $tacheService;
+
+    /**
+     * Instantiate a new ActiviteController instance.
+     * @param TacheServiceInterface $tacheServiceInterface
+     */
+    public function __construct(TacheServiceInterface $tacheServiceInterface)
+    {
+        $this->middleware('permission:voir-une-tache')->only(['index', 'show']);
+        $this->middleware('permission:modifier-une-tache')->only(['update']);
+        $this->middleware('permission:creer-une-tache')->only(['store']);
+        $this->middleware('permission:supprimer-une-tache')->only(['destroy']);
+
+        $this->tacheService = $tacheServiceInterface;
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return $this->tacheService->all();
+    }
+
+    /**
+     * Liste des suivis d'une tache
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function suivis($id)
+    {
+        return $this->tacheService->suivis($id);
+    }
+
+    public function changeStatut($id)
+    {
+        return $this->tacheService->changeStatut($id);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreTacheRequest $request)
+    {
+        return $this->tacheService->create($request->all());
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\Tache  $tache
+     * @return \Illuminate\Http\Response
+     */
+    public function show($tache)
+    {
+        return $this->tacheService->findById($tache);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Tache  $tache
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateTacheRequest $request, $tache)
+    {
+        return $this->tacheService->update($tache, $request->all());
+    }
+
+    /**
+     * Prolongement de date de fin
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function prolonger(ProlongementRequest $request, $tache)
+    {
+        return $this->tacheService->prolonger($tache, $request->all());
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Tache  $tache
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy( $tache)
+    {
+        return $this->tacheService->deleteById($tache);
+    }
+
+    public function ajouterDuree(StoreDureeRequest $request, $id)
+    {
+        return $this->tacheService->ajouterDuree($request->all(), $id);
+    }
+
+    public function modifierDuree(UpdateDureeRequest $request, $dureeId)
+    {
+        return $this->tacheService->modifierDuree($request->all(), $dureeId);
+    }
+
+    public function deplacer(DeplacerRequest $request, $id)
+    {
+        return $this->tacheService->deplacer($request->all(), $id);
+    }
+}

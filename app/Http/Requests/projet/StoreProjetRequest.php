@@ -1,0 +1,78 @@
+<?php
+
+namespace App\Http\Requests\projet;
+
+use App\Models\Bailleur;
+use App\Models\Programme;
+use App\Rules\HashValidatorRule;
+use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
+
+class StoreProjetRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'nom' => 'required',
+            'couleur' => 'required',
+            'debut' => 'required|date|date_format:Y-m-d',
+            'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
+            'ville' => 'required|max:255',
+            'bailleurId' => ['bail', 'required', new HashValidatorRule(new Bailleur())],
+            'programmeId' => ['bail', 'required', new HashValidatorRule(new Programme())],
+            'nombreEmploie' => 'integer',
+            'image' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
+            //'fichier' => 'nullable|array',
+            //'fichier.*' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
+            'budgetNational' => ['required', 'integer', 'min:0', function(){
+                if($this->programmeId){
+                    $programme = Programme::findByKey($this->programmeId);
+                    $budgetNational = $programme->budgetNational;
+                    $totalBudgetNational = $programme->projets->sum('budgetNational');
+
+                    if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
+                    {
+                        throw ValidationException::withMessages(["budgetNational" => "Le total des budgets nationaux des projets de ce programme ne peut pas dépasser le montant du budget national du programme"], 1);
+                    }
+                }
+            }]
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'nom.required' => 'Le nom du projet est obligatoire.',
+            'statut.required' => 'Le statut du projet est obligatoire.',
+            'couleur.required' => 'La couleur du projet est obligatoire.',
+            'poids.required' => 'Le poids du projet est obligatoire.',
+            'ville.required' => 'La ville du projet est obligatoire.',
+            'budjetNational.required' => 'Le budget national du projet est obligatoire.',
+            'description.required' => 'La description du projet est obligatoire.',
+            'pret.required' => 'Le pret effectué du projet est obligatoire.',
+            'bailleurId.required' => 'Le bailleur du projet est obligatoire.',
+            'debut.required' => 'La date de début du programme est obligatoire.',
+            'fin.required' => 'La date de fin du programme est obligatoire.',
+        ];
+    }
+}
