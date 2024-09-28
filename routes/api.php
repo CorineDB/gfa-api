@@ -661,6 +661,108 @@ Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'name
         Route::apiResource('reponses', 'ReponseController')->names('reponses');
 
 
+        Route::apiResource('types-de-gouvernance', 'TypeDeGouvernanceController')->names('types-de-gouvernance')
+            ->parameters([
+                'types-de-gouvernance' => 'type_de_gouvernance',
+            ]);
+        
+        Route::group(['prefix' =>  'types-de-gouvernance', 'as' => 'types-de-gouvernance.'], function (){
+
+            Route::controller('TypeDeGouvernanceController')->group(function () {
+
+                Route::get('{type_de_gouvernance}/principes-de-gouvernance', 'principes')->name('principes');//->middleware('permission:voir-un-principe-de-gouvernance');
+
+            });
+
+        });
+        
+        Route::apiResource('principes-de-gouvernance', 'PrincipeDeGouvernanceController')->names('principes-de-gouvernance')
+            ->parameters([
+                'principes-de-gouvernance' => 'principe_de_gouvernance',
+            ]);
+
+        Route::group(['prefix' =>  'principes-de-gouvernance', 'as' => 'principes-de-gouvernance.'], function (){
+
+            Route::controller('PrincipeDeGouvernanceController')->group(function () {
+
+                Route::get('{principe_de_gouvernance}/criteres-de-gouvernance', 'criteres')->name('criteres');//->middleware('permission:voir-un-critere-de-gouvernance');
+
+                Route::get('{principe_de_gouvernance}/indicateurs-de-gouvernance', 'indicateurs')->name('indicateurs')/*->middleware('permission:voir-un-indicateur-de-gouvernance')*/;
+
+            });
+
+        });
+        
+        Route::apiResource('criteres-de-gouvernance', 'CritereDeGouvernanceController')->names('criteres-de-gouvernance')
+            ->parameters([
+                'criteres-de-gouvernance' => 'critere_de_gouvernance',
+            ]);
+
+        Route::group(['prefix' =>  'criteres-de-gouvernance', 'as' => 'criteres-de-gouvernance.'], function (){
+
+            Route::controller('CritereDeGouvernanceController')->group(function () {
+
+                Route::get('{critere_de_gouvernance}/indicateurs-de-gouvernance', 'indicateurs')->name('indicateurs')/*->middleware('permission:voir-un-indicateur-de-gouvernance')*/;
+
+            });
+
+        });
+
+        Route::apiResource('indicateurs-de-gouvernance', 'IndicateurDeGouvernanceController')->names('indicateurs-de-gouvernance')
+            ->parameters([
+                'indicateurs-de-gouvernance' => 'indicateur_de_gouvernance',
+            ]);
+
+        Route::group(['prefix' =>  'indicateurs-de-gouvernance', 'as' => 'indicateurs-de-gouvernance.'], function (){
+
+            Route::controller('IndicateurDeGouvernanceController')->group(function () {
+
+                Route::get('{indicateur_de_gouvernance}/observations', 'observations')->name('observations');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+                Route::put('{indicateur_de_gouvernance}/observer', 'observer')->name('observer');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+            });
+
+        });
+        
+        Route::apiResource('options-de-reponse', 'OptionDeReponseController')->names('options-de-reponse')
+            ->parameters([
+                'options-de-reponse' => 'option_de_reponse',
+            ]);
+
+        
+        Route::apiResource('enquetes-de-collecte', 'EnqueteDeCollecteController')->names('enquetes-de-reponse')
+            ->parameters([
+                'enquetes-de-collecte' => 'enquete_de_collecte',
+            ]);
+
+
+        Route::group(['prefix' =>  'enquetes-de-collecte', 'as' => 'enquetes-de-collecte.'], function (){
+
+            Route::controller('EnqueteDeCollecteController')->group(function () {
+
+                Route::put('{enquete_de_collecte}/collecter', 'collecter')->name('collecter');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+
+                Route::get('{enquete_de_collecte}/reponses-collecter', 'reponses_collecter')->name('reponses_collecter');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                Route::get('{enquete_de_collecte}/profil-de-gouvernance/{organisationId}', 'profil_de_gouvernance')->name('profil-de-gouvernance');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+                Route::get('{enquete_de_collecte}/resultats/{organisationId}', 'resultats')->name('resultats');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+            });
+
+        });
+
+
+        Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function (){
+
+            Route::controller('PrincipeDeGouvernanceController')->group(function () {
+
+                Route::get('{programmeId}/formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
+                Route::get('{programmeId}/formulaire-de-perception', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
+            });    
+        });
+
     });
 
 });

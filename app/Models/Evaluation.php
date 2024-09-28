@@ -11,7 +11,7 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 class Evaluation extends Model
 
 {
-    protected $table = 'enquetes_de_gouvernance';
+    protected $table = 'evaluations';
     public $timestamps = true;
 
     use HasSecureIds, HasFactory ;
@@ -19,6 +19,8 @@ class Evaluation extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = array('code', 'start_at', 'submitted_at', 'enqueteId', 'commentaire', 'organisationId');
+
+    protected $casts = ['start_at'  => 'datetime', 'submitted_at'  => 'datetime'];
 
     protected static function boot()
     {
@@ -29,8 +31,6 @@ class Evaluation extends Model
             DB::beginTransaction();
             try {
 
-                $enquete->evaluations()->delete();
-
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -40,14 +40,19 @@ class Evaluation extends Model
         });
     }
 
-    public function evaluations()
+    public function enquete()
     {
-        return $this->hasMany(Evaluation::class, 'enqueteId');
+        return $this->belongsTo(Enquete::class, 'enqueteId');
     }
 
     public function organisation()
     {
         return $this->belongsTo(Organisation::class, 'organisationId');
+    }
+
+    public function responses()
+    {
+        return $this->hasMany(ReponseEvaluation::class, 'evaluationId');
     }
 
 }

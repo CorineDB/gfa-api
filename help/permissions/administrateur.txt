@@ -4,6 +4,12 @@ modifier-un-programme
 voir-un-utilisateur
 creer-un-utilisateur
 modifier-un-utilisateur
+voir-un-ddc
+creer-un-ddc
+modifier-un-ddc
+voir-une-organisation
+creer-une-organisation
+modifier-une-organisation
 voir-un-gouvernement
 creer-un-gouvernement
 modifier-un-gouvernement

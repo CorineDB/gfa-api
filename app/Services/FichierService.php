@@ -40,7 +40,7 @@ class FichierService extends BaseService implements FichierServiceInterface
      *
      * @param FichierRepository $fichierRepository
      */
-    public function __construct(FichierRepository $fichierRepository,)
+    public function __construct(FichierRepository $fichierRepository)
     {
         parent::__construct($fichierRepository);
         $this->repository = $fichierRepository;

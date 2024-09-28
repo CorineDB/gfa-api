@@ -16,9 +16,13 @@ class CreateOptionsDeReponseTable extends Migration
         if(!Schema::hasTable('options_de_reponse')){
             Schema::create('options_de_reponse', function (Blueprint $table) {
                 $table->id();
-                $table->string('nom')->unique();
-                $table->string('valeur')->unique();
+                $table->string('libelle')->unique();
+                $table->string('slug')->unique();
                 $table->longText('description')->nullable();
+                $table->bigInteger('programmeId')->unsigned();
+                $table->foreign('programmeId')->references('id')->on('programmes')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
                 $table->timestamps();
                 $table->softDeletes();
             });

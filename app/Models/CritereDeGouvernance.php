@@ -18,18 +18,22 @@ class CritereDeGouvernance extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'description', 'principeId');
+    protected $fillable = array('nom', 'description', 'principeDeGouvernanceId');
 
     protected static function boot()
     {
         parent::boot();
 
-        static::deleted(function ($principe_de_gouvernance) {
+        static::deleted(function ($critere_de_gouvernance) {
 
             DB::beginTransaction();
             try {
 
-                $principe_de_gouvernance->indicateurs_de_gouvernance()->delete();
+                $critere_de_gouvernance->update([
+                    'nom' => time() . '::' . $critere_de_gouvernance->nom
+                ]);
+
+                $critere_de_gouvernance->indicateurs_de_gouvernance()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {
@@ -42,7 +46,7 @@ class CritereDeGouvernance extends Model
 
     public function principe_de_gouvernance()
     {
-        return $this->belongsTo(PrincipeDeGouvernance::class, 'principeId');
+        return $this->belongsTo(PrincipeDeGouvernance::class, 'principeDeGouvernanceId');
     }
 
     public function indicateurs_de_gouvernance()

@@ -15,7 +15,7 @@ class CreateIndicateursDeGouvernanceTable extends Migration
     {
         Schema::create('indicateurs_de_gouvernance', function (Blueprint $table) {
 			$table->id();
-			$table->string('nom');
+			$table->string('nom')->unique();
 			$table->longText('description')->nullable();
 			$table->enum('type', ['factuel', 'perception']);
 			$table->boolean('can_have_multiple_reponse');

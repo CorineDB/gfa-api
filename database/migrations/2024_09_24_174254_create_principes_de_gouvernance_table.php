@@ -17,8 +17,8 @@ class CreatePrincipesDeGouvernanceTable extends Migration
 			$table->id();
 			$table->string('nom');
 			$table->longText('description')->nullable();
-			$table->bigInteger('typeId')->unsigned();
-            $table->foreign('typeId')->references('id')->on('types_de_gouvernance')
+			$table->bigInteger('typeDeGouvernanceId')->unsigned();
+            $table->foreign('typeDeGouvernanceId')->references('id')->on('types_de_gouvernance')
 				  ->onDelete('cascade')
 				  ->onUpdate('cascade');
 			$table->timestamps();

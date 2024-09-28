@@ -407,4 +407,24 @@ class Programme extends Model
         return $this->morphMany(IndicateurCadreLogique::class, 'indicatable');
     }
 
+
+    public function types_de_gouvernance()
+    {
+        return $this->hasMany(TypeDeGouvernance::class, 'programmeId');
+    }
+    
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function principes_de_gouvernance()
+    {
+        return $this->hasManyThrough(
+            PrincipeDeGouvernance::class,    // Final Model
+            TypeDeGouvernance::class,       // Intermediate Model
+            'programmeId',                  // Foreign key on the types_de_gouvernance table
+            'typeDeGouvernanceId',          // Foreign key on the principes_de_gouvernance table
+            'id',                              // Local key on the principes_de_gouvernance table
+            'id'                               // Local key on the types_de_gouvernance table
+        );
+    }
 }

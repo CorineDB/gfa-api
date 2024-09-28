@@ -10,14 +10,16 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Enquete extends Model
 {
-    protected $table = 'enquetes_de_gouvernance';
+    protected $table = 'enquetes_de_collecte';
     public $timestamps = true;
 
     use HasSecureIds, HasFactory ;
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('code', 'title', 'objectif', 'description', 'debut', 'fin', 'enqueteId', 'planning', 'programmeId');
+    protected $fillable = array('nom', 'objectif', 'description', 'debut', 'fin', 'programmeId');
+
+    protected $casts = ['debut'  => 'datetime', 'fin'  => 'datetime' ];
 
     protected static function boot()
     {
@@ -28,7 +30,12 @@ class Enquete extends Model
             DB::beginTransaction();
             try {
 
-                $enquete->evaluations()->delete();
+
+                $enquete->update([
+                    'nom' => time() . '::' . $enquete->nom
+                ]);
+
+                $enquete->responses()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {
@@ -39,9 +46,9 @@ class Enquete extends Model
         });
     }
 
-    public function evaluations()
+    public function reponses_collecter()
     {
-        return $this->hasMany(Evaluation::class, 'enqueteId');
+        return $this->hasMany(ReponseCollecter::class, 'enqueteDeCollecteId');
     }
 
     public function programme()

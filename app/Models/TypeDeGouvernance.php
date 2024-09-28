@@ -28,6 +28,10 @@ class TypeDeGouvernance extends Model
             DB::beginTransaction();
             try {
 
+                $type_de_gouvernance->update([
+                    'nom' => time() . '::' . $type_de_gouvernance->nom
+                ]);
+
                 $type_de_gouvernance->principes_de_gouvernance()->delete();
 
                 DB::commit();
@@ -41,7 +45,7 @@ class TypeDeGouvernance extends Model
 
     public function principes_de_gouvernance()
     {
-        return $this->hasMany(PrincipeDeGouvernance::class, 'typeId');
+        return $this->hasMany(PrincipeDeGouvernance::class, 'typeDeGouvernanceId');
     }
 
     public function programme()

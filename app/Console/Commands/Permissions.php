@@ -45,6 +45,8 @@ class Permissions extends Command
         $roles = [
             'Administrateur',
             'Bailleur',
+            "Organisation",
+            "DDC",
             "MOD",
             "Unitee de gestion",
             "Mission de controle",
@@ -60,6 +62,8 @@ class Permissions extends Command
         $roles_slugs = [
             'administrateur',
             'bailleur',
+            "organisation",
+            "ddc",
             "mod",
             "unitee-de-gestion",
             "mission-de-controle",
@@ -81,6 +85,8 @@ class Permissions extends Command
         $modules = [
             'un utilisateur',
             'un bailleur',
+            'une organisation',
+            'un ddc',
             'un decaissement',
             'un programme',
             'une unitee de gestion',
@@ -218,6 +224,25 @@ class Permissions extends Command
             'exporter-un-pap'
         ];
 
+        $ddcs = [
+            'voir-un-utilisateur',
+            'creer-un-utilisateur',
+            'modifier-un-utilisateur',
+            'voir-un-role',
+            'creer-un-role',
+            'modifier-un-role',
+            'creer-un-bailleur',
+            'voir-un-decaissement',
+            'voir-un-mod',
+            'voir-une-entreprise-executante',
+            'voir-une-mission-de-controle',
+            'voir-un-projet',
+            'voir-une-composante',
+            'voir-une-activite',
+            'voir-une-tache',
+            'voir-un-indicateur',
+        ];
+
         $gouvernements = [
             'voir-un-utilisateur',
             'creer-un-utilisateur',
@@ -317,7 +342,6 @@ class Permissions extends Command
             'exporter-un-suivi-ptab-revise',
             'exporter-un-pap'
         ];
-
 
         $mods = [
             'voir-un-utilisateur',
@@ -490,6 +514,12 @@ class Permissions extends Command
             'voir-un-utilisateur',
             'creer-un-utilisateur',
             'modifier-un-utilisateur',
+            'voir-un-ddc',
+            'creer-un-ddc',
+            'modifier-un-ddc',
+            'voir-une-organisation',
+            'creer-une-organisation',
+            'modifier-une-organisation',
             'voir-un-gouvernement',
             'creer-un-gouvernement',
             'modifier-un-gouvernement',
@@ -513,6 +543,12 @@ class Permissions extends Command
             'creer-un-gouvernement',
             'modifier-un-gouvernement',
             'supprimer-un-gouvernement',
+            'voir-un-ddc',
+            'creer-un-ddc',
+            'modifier-un-ddc',
+            'voir-une-organisation',
+            'creer-une-organisation',
+            'modifier-une-organisation',
             'voir-un-historique',
             'faire-un-backup',
             'voir-une-unitee-de-gestion',
@@ -665,6 +701,22 @@ class Permissions extends Command
                     //if(!$role->permissions->where('slug', $mod)->first())
                     {
                         $permission = Permission::where('slug', $mod)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'ddc')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($ddcs as $ddc)
+                {
+                    //if(!$role->permissions->where('slug', $mod)->first())
+                    {
+                        $permission = Permission::where('slug', $ddc)->first();
 
                         $role->permissions()->attach($permission->id);
                     }

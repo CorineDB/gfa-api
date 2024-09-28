@@ -19,6 +19,13 @@ class IndicateurDeGouvernance extends Model
 
     protected $fillable = array('nom', 'description', 'type', 'can_have_multiple_reponse', 'principeable_id', 'principeable_type');
 
+    /**
+     * The attributes that should be appended to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [];
+
     protected static function boot()
     {
         parent::boot();
@@ -26,7 +33,12 @@ class IndicateurDeGouvernance extends Model
         static::deleted(function ($indicateur_de_gouvernance) {
 
             DB::beginTransaction();
+
             try {
+
+                $indicateur_de_gouvernance->update([
+                    'nom' => time() . '::' . $indicateur_de_gouvernance->nom
+                ]);
 
                 $indicateur_de_gouvernance->options_de_reponse()->delete();
 
@@ -41,11 +53,16 @@ class IndicateurDeGouvernance extends Model
 
     public function options_de_reponse()
     {
-        return $this->belongsToMany(OptionsDeReponse::class, 'indicateurId');
+        return $this->belongsToMany(OptionDeReponse::class,'indicateur_options_de_reponse', 'indicateurId', 'optionId');
     }
 
     public function principeable()
     {
         return $this->morphTo();
+    }
+
+    public function observations()
+    {
+        return $this->hasMany(ReponseCollecter::class, 'indicateurDeGouvernanceId');
     }
 }

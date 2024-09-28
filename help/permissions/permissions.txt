@@ -1,5 +1,7 @@
 creer-un-utilisateur
 creer-un-bailleur
+creer-une-organisation
+creer-un-ddc
 creer-un-decaissement
 creer-un-programme
 creer-une-unitee-de-gestion
@@ -42,6 +44,8 @@ creer-une-unite-de-mesure
 creer-un-audit
 modifier-un-utilisateur
 modifier-un-bailleur
+modifier-une-organisation
+modifier-un-ddc
 modifier-un-decaissement
 modifier-un-programme
 modifier-une-unitee-de-gestion
@@ -84,6 +88,8 @@ modifier-une-unite-de-mesure
 modifier-un-audit
 supprimer-un-utilisateur
 supprimer-un-bailleur
+supprimer-une-organisation
+supprimer-un-ddc
 supprimer-un-decaissement
 supprimer-un-programme
 supprimer-une-unitee-de-gestion
@@ -126,6 +132,8 @@ supprimer-une-unite-de-mesure
 supprimer-un-audit
 voir-un-utilisateur
 voir-un-bailleur
+voir-une-organisation
+voir-un-ddc
 voir-un-decaissement
 voir-un-programme
 voir-une-unitee-de-gestion

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9024e070ea5a182afb781ed822aa812e",
+    "content-hash": "3440eaadc606fa98e3df39f56d822c10",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -9612,35 +9612,37 @@
         },
         {
             "name": "rakutentech/laravel-request-docs",
-            "version": "1.31",
+            "version": "v2.41",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rakutentech/laravel-request-docs.git",
-                "reference": "930df317a89c0287e18f2abcfb5c0c38f0217900"
+                "reference": "5d28e995eb8dfbefd4a94f2c194f2d5e5b48649d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rakutentech/laravel-request-docs/zipball/930df317a89c0287e18f2abcfb5c0c38f0217900",
-                "reference": "930df317a89c0287e18f2abcfb5c0c38f0217900",
+                "url": "https://api.github.com/repos/rakutentech/laravel-request-docs/zipball/5d28e995eb8dfbefd4a94f2c194f2d5e5b48649d",
+                "reference": "5d28e995eb8dfbefd4a94f2c194f2d5e5b48649d",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "illuminate/contracts": "^8.37|^9.0|^10.0",
+                "illuminate/contracts": "^8.37|^9.0|^10.0|^11.0",
                 "kitloong/laravel-app-logger": "^1.0",
-                "php": "^7.4|^8.0",
+                "php": "^7.4|^8.0|^8.1|^8.2|^8.3",
                 "spatie/laravel-package-tools": "^1.4.3"
             },
             "require-dev": {
-                "barryvdh/laravel-ide-helper": "^2.12",
-                "brianium/paratest": "^6.2",
+                "barryvdh/laravel-ide-helper": "^2.12|dev-master",
+                "brianium/paratest": "^6.2|^7.4",
                 "friendsofphp/php-cs-fixer": "^3.5",
-                "nunomaduro/collision": "^5.3|^6.0",
-                "orchestra/testbench": "^6.15|^7.0|^8.0",
-                "phpunit/phpunit": "^9.3",
+                "larastan/larastan": "^1.0|^2.0",
+                "nunomaduro/collision": "^5.3|^6.0|^8.0",
+                "orchestra/testbench": "^6.15|^7.0|^8.0|^9.0",
+                "phpunit/phpunit": "^9.3|^10.5",
+                "slevomat/coding-standard": "^8.15",
                 "spatie/laravel-ray": "^1.23",
                 "squizlabs/php_codesniffer": "^3.6",
-                "vimeo/psalm": "^4.8"
+                "vimeo/psalm": "^4.8|^5.6"
             },
             "type": "library",
             "extra": {
@@ -9678,9 +9680,9 @@
             ],
             "support": {
                 "issues": "https://github.com/rakutentech/laravel-request-docs/issues",
-                "source": "https://github.com/rakutentech/laravel-request-docs/tree/1.31"
+                "source": "https://github.com/rakutentech/laravel-request-docs/tree/v2.41"
             },
-            "time": "2023-02-02T02:55:25+00:00"
+            "time": "2024-09-08T04:40:15+00:00"
         },
         {
             "name": "sebastian/cli-parser",

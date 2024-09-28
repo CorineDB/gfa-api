@@ -13,7 +13,8 @@ class CreateIndicateurOptionsDeReponseTable extends Migration
      */
     public function up()
     {
-        if(!Schema::hasTable('indicateur_options_de_reponse')){
+        if(!Schema::hasTable("indicateur_options_de_reponse")){
+            
             Schema::create('indicateur_options_de_reponse', function (Blueprint $table) {
                 $table->id();
                 $table->bigInteger('indicateurId')->unsigned();
@@ -27,9 +28,7 @@ class CreateIndicateurOptionsDeReponseTable extends Migration
                 $table->timestamps();
                 $table->softDeletes();
             });
-
         }
-
     }
 
     /**

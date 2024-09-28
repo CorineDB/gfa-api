@@ -54,7 +54,12 @@ use App\Repositories\RappelRepository;
 use App\Repositories\AlerteConfigRepository;
 use App\Repositories\ReponseRepository;
 use App\Repositories\AuditRepository;
-
+use App\Repositories\CritereDeGouvernanceRepository;
+use App\Repositories\EnqueteDeCollecteRepository;
+use App\Repositories\IndicateurDeGouvernanceRepository;
+use App\Repositories\OptionDeReponseRepository;
+use App\Repositories\PrincipeDeGouvernanceRepository;
+use App\Repositories\TypeDeGouvernanceRepository;
 use App\Services\AuthService;
 use App\Services\CategorieService;
 use App\Services\IndicateurService;
@@ -116,6 +121,12 @@ use App\Services\PtabScopeService;
 use App\Services\ReponseAnoService;
 use App\Services\ReponseService;
 use App\Services\AuditService;
+use App\Services\CritereDeGouvernanceService;
+use App\Services\EnqueteDeCollecteService;
+use App\Services\IndicateurDeGouvernanceService;
+use App\Services\OptionDeReponseService;
+use App\Services\PrincipeDeGouvernanceService;
+use App\Services\TypeDeGouvernanceService;
 use Core\Services\Contracts\BaseService;
 
 use Core\Services\Contracts\AbstractServiceInterface;
@@ -180,6 +191,12 @@ use Core\Services\Interfaces\PtabScopeServiceInterface;
 use Core\Services\Interfaces\ReponseAnoServiceInterface;
 use Core\Services\Interfaces\ReponseServiceInterface;
 use Core\Services\Interfaces\AuditServiceInterface;
+use Core\Services\Interfaces\CritereDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\EnqueteDeCollecteServiceInterface;
+use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\OptionDeReponseServiceInterface;
+use Core\Services\Interfaces\PrincipeDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\TypeDeGouvernanceServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -244,6 +261,12 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, AlerteConfigRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, ReponseRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, AuditRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, TypeDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, PrincipeDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, CritereDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, IndicateurDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, OptionDeReponseRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteDeCollecteRepository::class);
 
         $this->app->bind(AbstractServiceInterface::class, BaseService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
@@ -308,7 +331,13 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReponseServiceInterface::class, ReponseService::class);
         $this->app->bind(AuditServiceInterface::class, AuditService::class);
 
-
+        $this->app->bind(TypeDeGouvernanceServiceInterface::class, TypeDeGouvernanceService::class);
+        $this->app->bind(PrincipeDeGouvernanceServiceInterface::class, PrincipeDeGouvernanceService::class);
+        $this->app->bind(CritereDeGouvernanceServiceInterface::class, CritereDeGouvernanceService::class);
+        $this->app->bind(IndicateurDeGouvernanceServiceInterface::class, IndicateurDeGouvernanceService::class);
+        $this->app->bind(OptionDeReponseServiceInterface::class, OptionDeReponseService::class);
+        $this->app->bind(EnqueteDeCollecteServiceInterface::class, EnqueteDeCollecteService::class);
+        
     }
 
     /**
