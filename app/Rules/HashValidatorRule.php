@@ -34,11 +34,47 @@ class HashValidatorRule implements Rule
         
         if($model === null || $model instanceof Builder) return false;
 
-        $result = $model->id;
+        // Set the found model ID back into the request, at the correct attribute path
+        $this->setNestedAttributeValue($attribute, $model->id);
+        /*$result = $model->id;
 
-        request()[$attribute] = $result;
+        request()[$attribute] = $result;*/
         
         return true;
+    }
+
+    /**
+     * Set the value for a nested attribute in the request data.
+     *
+     * @param string $attribute
+     * @param mixed $value
+     */
+    private function setNestedAttributeValue($attribute, $value)
+    {
+        // Split the attribute by '.' to get the individual levels (for example, 'response_data.factuel.0.indicateurDeGouvernanceId')
+        $keys = explode('.', $attribute);
+
+        // Get the full request data and store it in a variable
+        $input = request()->all();
+    
+        // Traverse through the keys and create the nested array path
+        $current = &$input; // Reference to the root of the array
+
+        // Traverse the keys to get the nested attribute
+        foreach ($keys as $key) {
+            // If the key doesn't exist, create it as an empty array
+            if (!isset($current[$key])) {
+                $current[$key] = [];
+            }
+            // Traverse deeper into the array by reference
+            $current = &$current[$key];
+        }
+
+        // Set the final value
+        $current = $value;
+    
+        // Now put the modified data back into the request
+        request()->merge($input);
     }
 
     /**

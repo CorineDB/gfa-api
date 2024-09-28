@@ -19,7 +19,7 @@ class OptionDeReponse extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('libelle', 'slug', 'description', 'programmeId');
+    protected $fillable = array('libelle', 'slug', 'note', 'description', 'programmeId');
 
     protected $appends = ['note'];
 

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\enquete_de_collecte\AppreciationRequest;
 use App\Http\Requests\enquete_de_collecte\CollecteRequest;
 use App\Http\Requests\enquete_de_collecte\StoreRequest;
 use App\Http\Requests\enquete_de_collecte\UpdateRequest;
 use Core\Services\Interfaces\EnqueteDeCollecteServiceInterface;
+use Illuminate\Http\Request;
 
 class EnqueteDeCollecteController extends Controller
 {
@@ -92,12 +94,12 @@ class EnqueteDeCollecteController extends Controller
     /**
      * Charger la liste des reponses d'une enquete
      *
-     * @param  String  $id
+     * @param  String  $enqueteId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function resultats($id, $organisationId)
+    public function resultats($enqueteId, $organisationId)
     {
-        return $this->enqueteDeCollecteService->resultats($id, $organisationId);
+        return $this->enqueteDeCollecteService->resultats($enqueteId, $organisationId);
     }
 
     /**
@@ -106,9 +108,20 @@ class EnqueteDeCollecteController extends Controller
      * @param  String  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function reponses_collecter($id)
+    public function resultat_appreciations(Request $request, $enqueteId, $organisationId)
     {
-        return $this->enqueteDeCollecteService->reponses_collecter($id);
+        return $this->enqueteDeCollecteService->resultat_appreciations($enqueteId, $organisationId, ["type" => $request->query('type')]);
+    }
+
+    /**
+     * Charger la liste des reponses d'une enquete
+     *
+     * @param  String  $enqueteId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function reponses_collecter($enqueteId)
+    {
+        return $this->enqueteDeCollecteService->reponses_collecter($enqueteId);
     }
 
     /**
@@ -118,8 +131,19 @@ class EnqueteDeCollecteController extends Controller
      * @param  \App\Models\Activite  $paye
      * @return \Illuminate\Http\Response
      */
-    public function collecter(CollecteRequest $request, $id)
+    public function collecter(CollecteRequest $request, $enqueteId)
     {
-        return $this->enqueteDeCollecteService->collecter($id, $request->all());
+        return $this->enqueteDeCollecteService->collecter($enqueteId, $request->all());
+    }
+
+    /**
+     * Appreciation de l'etat de gouvernance
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Activite  $paye
+     * @return \Illuminate\Http\Response
+     */
+    public function appreciation(AppreciationRequest $request, $enqueteId)
+    {
+        return $this->enqueteDeCollecteService->appreciation($enqueteId, $request->all());
     }
 }

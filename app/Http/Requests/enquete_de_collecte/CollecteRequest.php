@@ -3,6 +3,7 @@
 namespace App\Http\Requests\enquete_de_collecte;
 
 use App\Models\Enquete;
+use App\Models\EntrepriseExecutant;
 use App\Models\IndicateurDeGouvernance;
 use App\Models\OptionDeReponse;
 use App\Models\User;
@@ -12,6 +13,8 @@ use Illuminate\Validation\Rule;
 
 class CollecteRequest extends FormRequest
 {
+    protected $indicateurCache = null;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -35,57 +38,76 @@ class CollecteRequest extends FormRequest
         }
 
 
+
         return [
-            //'enqueteDeCollecteId'   => ['required', new HashValidatorRule(new Enquete())],
-            'userId'   => ['required', new HashValidatorRule(new User())],
-            'indicateurDeGouvernanceId'   => [
-                'required', 
+            'organisationId'   => ['required', new HashValidatorRule(new EntrepriseExecutant())],
+
+
+            'response_data'        => ['required', 'array', 'min:1'],
+            'response_data.factuel'      => ['required', 'array', 'min:1'],
+
+            'response_data.factuel.*.indicateurDeGouvernanceId'      => ['required', 'distinct', 
                 new HashValidatorRule(new IndicateurDeGouvernance()), 
                 function($attribute, $value, $fail) {
-                    $indicateur = IndicateurDeGouvernance::findByKey($value);
-                    
-                    // Check if there are response options
-                    if (count($indicateur->options_de_reponse) == 0) {
+                    $indicateur = IndicateurDeGouvernance::where("type", "factuel")->findByKey($value);
+                    if (!$indicateur) {
                         // Fail validation if no response options are available
-                        $fail('The selected Indicateur does not have any response options.');
+                        $fail("Cet Indicateur n'existe pas.");
                     }
-                }, 
-                function($attribute, $value, $fail) {
-                    $indicateur = IndicateurDeGouvernance::findByKey($value);
+
+                    $this->indicateurCache = $indicateur;
                     
-                    //dd($this->enquete_de_collecte->id);
                     // Check if there are response options
-                    if ($indicateur->observations()->where('enqueteDeCollecteId', $this->enquete_de_collecte->id)->where('userId', $this->userId)->where('indicateurDeGouvernanceId', $this->indicateurDeGouvernanceId)->exists()) {
+                    if ($indicateur->observations()->where('enqueteDeCollecteId', $this->enquete_de_collecte->id)->where('organisationId', $this->organisationId)->where('indicateurDeGouvernanceId', $indicateur->id)->exists()) {
                         // Fail validation if no response options are available
                         $fail('Cet Indicateur a deja ete observer pour le compte de cette enquete et par rapport a cette structure.');
                     }
                 }
             ],
-            'optionDeReponseId'   => ['required', new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail){
-
-                $indicateur = IndicateurDeGouvernance::findByKey($this->indicateurDeGouvernanceId);
-
+            'response_data.factuel.*.optionDeReponseId'   => ['required', new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
                  * If the provided optionDeReponseId is not valid, fail the validation
                  */
-                if (!($indicateur->options_de_reponse()->where('optionId', $this->optionDeReponseId)->exists())) {
+                if (!($this->indicateurCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                     $fail('The selected option is invalid for the given Indicateur.');
                 }
 
             }],
-            'source'                => [
+            'response_data.factuel.*.source'                => ['required', 'string', 'max:255'],
+            
+            'response_data.perception'      => ['required', 'array', 'min:1'],
+            'response_data.perception.*.indicateurDeGouvernanceId'      => ['required', 'distinct', new HashValidatorRule(new IndicateurDeGouvernance()), 
                 function($attribute, $value, $fail) {
-                    $indicateur = IndicateurDeGouvernance::findByKey($this->indicateurDeGouvernanceId);
-                    
-                    // Check if 'type' is 'factuel' and make 'source' required in that case
-                    if ($indicateur->type === 'factuel' && empty($value)) {
-                        $fail('The source field is required for factuel indicateurs.');
+                    $indicateur = IndicateurDeGouvernance::where("type", "perception")->findByKey($value);
+                    if (!$indicateur) {
+                        // Fail validation if no response options are available
+                        $fail("Cet Indicateur n'existe pas.");
                     }
-                },
-                'sometimes', 'string', 'max:255'
+
+                    $this->indicateurCache = $indicateur;
+                    
+                    // Check if there are response options
+                    if ($indicateur->observations()->where('enqueteDeCollecteId', $this->enquete_de_collecte->id)->where('organisationId', $this->organisationId)->where('indicateurDeGouvernanceId', $indicateur->id)->exists()) {
+                        // Fail validation if no response options are available
+                        $fail('Cet Indicateur a deja ete observer pour le compte de cette enquete et par rapport a cette structure.');
+                    }
+                }
             ],
+
+            'response_data.perception.*.optionDeReponseId'   => ['required', new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail){
+                /**
+                 * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
+                 * 
+                 * If the provided optionDeReponseId is not valid, fail the validation
+                 */
+                if (!($this->indicateurCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
+                    $fail('The selected option is invalid for the given Indicateur.');
+                }
+
+            }],
+            'response_data.perception.commentaire'                => ['nullable', 'string', 'max:255'],
         ];
     }
 

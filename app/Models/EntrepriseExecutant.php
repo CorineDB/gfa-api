@@ -164,4 +164,13 @@ class EntrepriseExecutant extends Model
         return $this->belongsToMany(EActivite::class, 'entreprise_executant_e_activites', 'entrepriseExecutantId', 'eActiviteId');
     }
 
+    public function evaluations()
+    {
+        return $this->hasMany(ReponseCollecter::class, 'organisationId');
+    }
+
+    public function notes_resultat()
+    {
+        return $this->hasMany(EnqueteResultatNote::class, 'organisationId');
+    }
 }

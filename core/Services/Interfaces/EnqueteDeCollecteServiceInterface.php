@@ -30,5 +30,11 @@ interface EnqueteDeCollecteServiceInterface
 
     public function resultats($enqueteId, $organisationId, array $attributs = ['*'], array $relations = []): JsonResponse;
 
-    //public function profil_de_gouvernance($enqueteId, $organisationId, array $attributs = ['*'], array $relations = []): JsonResponse;
+    /**
+     * Appreciation
+     *
+     * @param  $enqueteId
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function appreciation($enqueteId, array $attributs = ['*'], array $relations = []): JsonResponse;
 }

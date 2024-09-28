@@ -93,5 +93,10 @@ class FormulaireController extends Controller
         return $this->formulaireService->getSuivi($request->all());
     }
 
+    public function getSuiviGeneral(getSuiviRequest $request)
+    {
+        return $this->formulaireService->getSuivi($request->all());
+    }
+
     
 }

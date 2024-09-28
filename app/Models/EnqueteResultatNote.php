@@ -8,18 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
-class Enquete extends Model
+class EnqueteResultatNote extends Model
 {
-    protected $table = 'enquetes_de_collecte';
+    protected $table = 'enquete_resultat_notes';
     public $timestamps = true;
 
     use HasSecureIds, HasFactory ;
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'objectif', 'description', 'debut', 'fin', 'programmeId');
-
-    protected $casts = ['debut'  => 'datetime', 'fin'  => 'datetime' ];
+    protected $fillable = array('contenu', 'type', 'enqueteDeCollecteId', "organisationId", 'userId');
+    
+    /**
+     * The attributes that should be appended to the model's array form.
+     *
+     * @var array
+     */
+    //protected $with = ['note'];
 
     protected static function boot()
     {
@@ -30,13 +35,6 @@ class Enquete extends Model
             DB::beginTransaction();
             try {
 
-
-                $enquete->update([
-                    'nom' => time() . '::' . $enquete->nom
-                ]);
-
-                $enquete->responses()->delete();
-
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -46,18 +44,18 @@ class Enquete extends Model
         });
     }
 
-    public function reponses_collecter()
+    public function enquete()
     {
-        return $this->hasMany(ReponseCollecter::class, 'enqueteDeCollecteId');
+        return $this->belongsTo(Enquete::class, 'enqueteDeCollecteId');
     }
 
-    public function programme()
+    public function organisation()
     {
-        return $this->belongsTo(Programme::class, 'programmeId');
+        return $this->belongsTo(EntrepriseExecutant::class, 'organisationId');
     }
 
-    public function notes_resultat()
+    public function user()
     {
-        return $this->hasMany(EnqueteResultatNote::class, 'enqueteDeCollecteId');
+        return $this->belongsTo(User::class, 'userId');
     }
 }

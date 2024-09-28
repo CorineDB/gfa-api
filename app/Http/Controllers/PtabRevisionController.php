@@ -66,4 +66,14 @@ class PtabRevisionController extends Controller
     public function getPtabReviser(ValidatePtabScope $request){
         return $this->ptabScopedService->getPtabReviser($request->all());
     }
+
+    /**
+     * Get ptab (projets, composantes, sous-composantes, activites, taches) d'un scope donnée sous forme de liste distincte
+     * @return JsonResponse
+     */
+    public function getListVersionPtab(){
+        return $this->ptabScopedService->all();
+    }
+
+    
 }

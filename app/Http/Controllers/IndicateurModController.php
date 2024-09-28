@@ -105,4 +105,9 @@ class IndicateurModController extends Controller
         return $this->indicateurModService->suivis($id);
     }
 
+    public function filtre(){
+
+        return [];
+    }
+
 }

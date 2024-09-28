@@ -9,7 +9,7 @@ use App\Http\Requests\duree\UpdateDureeRequest;
 use App\Http\Requests\tache\DeplacerRequest;
 use App\Http\Requests\tache\ProlongementRequest;
 use Core\Services\Interfaces\TacheServiceInterface;
-
+use Illuminate\Http\Request;
 
 class TacheController extends Controller
 {
@@ -127,4 +127,15 @@ class TacheController extends Controller
     {
         return $this->tacheService->deplacer($request->all(), $id);
     }
+
+    /**
+     * Liste des suivis d'une tache
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function suivisV2(StoreTacheRequest $request)
+    {
+        return $this->tacheService->create($request->all());
+    }
+    
 }

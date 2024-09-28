@@ -164,7 +164,7 @@ Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'name
 
         Route::get('programme/dashboard', 'ProgrammeController@dashboard')->name('dashboard')->middleware('permission:voir-un-projet');
 
-        Route::resource('decaissements', 'DecaissementController')->names('decaissements');
+        Route::apiResource('decaissements', 'DecaissementController')->names('decaissements');
 
         Route::group(['prefix' =>  'decaissements', 'as' => 'decaissements.'], function (){
 
@@ -177,7 +177,7 @@ Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'name
         });
 
 
-        Route::resource('utilisateurs', 'UserController')->names('utilisateurs');
+        Route::apiResource('utilisateurs', 'UserController')->names('utilisateurs');
 
         /*Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function (){
             Route::controller('UserController')->group(function () {
@@ -489,11 +489,11 @@ Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'name
 
         });
 
-        Route::resource('eActivites', 'EActiviteController')->names('eActivites');
+        Route::apiResource('eActivites', 'EActiviteController')->names('eActivites');
 
-        Route::resource('eActiviteMods', 'EActiviteModController')->names('eActiviteMods');
+        Route::apiResource('eActiviteMods', 'EActiviteModController')->names('eActiviteMods');
 
-        Route::resource('eSuiviActiviteMods', 'ESuiviActiviteModController')->names('eSuiviActiviteMods');
+        Route::apiResource('eSuiviActiviteMods', 'ESuiviActiviteModController')->names('eSuiviActiviteMods');
 
         Route::apiResource('roles', 'RoleController')->names('roles');
 
@@ -652,7 +652,7 @@ Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'name
             Route::controller('BackupController')->group(function () {
 
                 Route::get('/lancer', 'lancer')->name('lancer');
-                Route::get('/listes', 'index')->name('listes');
+                Route::get('/listes', 'listes')->name('listes');
 
             });
 
@@ -719,8 +719,6 @@ Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'name
 
                 Route::get('{indicateur_de_gouvernance}/observations', 'observations')->name('observations');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
-                Route::put('{indicateur_de_gouvernance}/observer', 'observer')->name('observer');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-
             });
 
         });
@@ -743,9 +741,12 @@ Route::group(['middleware' => ['cors', 'json.response'],'as' => 'api.'/* , 'name
 
                 Route::put('{enquete_de_collecte}/collecter', 'collecter')->name('collecter');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
+                Route::post('{enquete_de_collecte}/appreciation', 'appreciation')->name('appreciation');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+                Route::get('{enquete_de_collecte}/resultat-appreciations/{organisationId}', 'resultat_appreciations')->name('resultat_appreciations');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
 
                 Route::get('{enquete_de_collecte}/reponses-collecter', 'reponses_collecter')->name('reponses_collecter');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-                Route::get('{enquete_de_collecte}/profil-de-gouvernance/{organisationId}', 'profil_de_gouvernance')->name('profil-de-gouvernance');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                 Route::get('{enquete_de_collecte}/resultats/{organisationId}', 'resultats')->name('resultats');//->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 

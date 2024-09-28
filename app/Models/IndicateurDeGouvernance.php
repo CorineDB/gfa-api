@@ -19,6 +19,8 @@ class IndicateurDeGouvernance extends Model
 
     protected $fillable = array('nom', 'description', 'type', 'can_have_multiple_reponse', 'principeable_id', 'principeable_type');
 
+
+    protected $with = ['options_de_reponse'];
     /**
      * The attributes that should be appended to the model's array form.
      *
