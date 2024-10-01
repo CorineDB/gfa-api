@@ -173,4 +173,9 @@ class EntrepriseExecutant extends Model
     {
         return $this->hasMany(EnqueteResultatNote::class, 'organisationId');
     }
+
+    public function projet()
+    {
+        return $this->morphOne(Projet::class, 'projetable');//->where('programmeId', $this->user->programmeId)->first();
+    }
 }

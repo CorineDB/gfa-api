@@ -31,6 +31,7 @@ class CreateEnqueteResultatNotesTable extends Migration
             $table->enum('type', ["faiblesse", "recommendation"]);
 			$table->text('contenu');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

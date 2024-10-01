@@ -23,12 +23,14 @@ use App\Jobs\GenererPta;
 use App\Models\Activite;
 use App\Models\Bailleur;
 use App\Models\Decaissement;
+use App\Models\EntrepriseExecutant;
 use App\Models\Sinistre;
 use App\Models\Suivi;
 use App\Models\SuiviIndicateur;
 use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Notifications\FichierNotification;
+use App\Repositories\EntrepriseExecutantRepository;
 use App\Traits\Helpers\HelperTrait;
 use App\Traits\Helpers\IdTrait;
 use App\Traits\Helpers\LogActivity;
@@ -96,19 +98,40 @@ class ProjetService extends BaseService implements ProjetServiceInterface
         try
         {
             $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
-            if(!($bailleur = $this->bailleurRepository->findById($attributs['bailleurId']))) {
-                throw new Exception( "Ce bailleur n'existe pas", 500);
+            $entrepriseAssocie = null;
+            if(isset($attributs['bailleurId']) && !empty($attributs['bailleurId'])){
+                if(!($bailleur = $this->bailleurRepository->findById($attributs['bailleurId']))) {
+                    //throw new Exception( "Ce bailleur n'existe pas", 500);
+                }
+            }
+            
+            if(!($programme = $this->programmeRepository->findById($attributs['programmeId'])))
+            {
+                throw new Exception( "Ce programme n'existe pas", 500);
             }
 
-            if(($projet = $bailleur->projets)) throw new Exception( "Ce bailleur a déja un projet dans le programme", 500);
+            if(isset($attributs['entrepriseExecutantId']) && !empty($attributs['entrepriseExecutantId'])){
+                if(!($entrepriseAssocie = app(EntrepriseExecutantRepository::class)->findById($attributs['entrepriseExecutantId']))) {
+                    throw new Exception( "Cette organisation n'existe pas", 500);
+                }
 
-            if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
+                if($entrepriseAssocie->user->programmeId !== $attributs["programmeId"]){
+                    throw new Exception( "Cette organisation ne fait pas partir de ce programme", 500);
+                }
+            }
 
+            /*if(($projet = $bailleur->projets)) throw new Exception( "Ce bailleur a déja un projet dans le programme", 500);
             $attributs = array_merge($attributs, ['bailleurId' => $bailleur->id, 'programmeId' => $programme->id,]);
+            $attributs = array_merge($attributs, ['bailleurId' => $bailleur->id, 'programmeId' => $programme->id,]);
+            */
+            if(($projet = $entrepriseAssocie->projet)) throw new Exception( "Cette entreprise est déja associé a un projet dans le programme", 500);
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id,]);
 
             $attributs = array_merge($attributs, ['statut' => -2]);
+            $projet = $entrepriseAssocie->projet()->create($attributs);
 
-            $projet = $this->repository->create($attributs);
+            //$projet = $this->repository->create($attributs);
 
             $projet = $projet->fresh();
 

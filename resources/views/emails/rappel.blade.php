@@ -101,7 +101,7 @@
 
 <center>
     <p class="myStyle" style="color: #b0adc5;">
-        &copy; 2022 {{ config("app.name") }}. All rights reserved.
+        &copy; 2024 {{ config("app.name") }}. All rights reserved.
     </p>
 </center>
 

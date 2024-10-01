@@ -37,8 +37,8 @@ return [
         'smtp' => [
             'transport' => 'smtp',
             'host' => "smtp.titan.email",
-            'port' => 465,
-            'encryption' => "ssl",
+            'port' => env('MAIL_PORT', 465),
+            'encryption' => env('MAIL_ENCRYPTION', "ssl"),
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,

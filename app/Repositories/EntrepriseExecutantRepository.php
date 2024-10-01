@@ -11,10 +11,10 @@ class EntrepriseExecutantRepository extends BaseRepository
    /**
     * EntrepriseExecutantRepository constructor.
     *
-    * @param EntrepriseExecutant $uniteeDeGestion
+    * @param EntrepriseExecutant $entrepriseExecutant
     */
-   public function __construct(EntrepriseExecutant $uniteeDeGestion)
+   public function __construct(EntrepriseExecutant $entrepriseExecutant)
    {
-       parent::__construct($uniteeDeGestion);
+       parent::__construct($entrepriseExecutant);
    }
 }

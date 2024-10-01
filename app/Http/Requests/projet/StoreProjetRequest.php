@@ -3,6 +3,7 @@
 namespace App\Http\Requests\projet;
 
 use App\Models\Bailleur;
+use App\Models\EntrepriseExecutant;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,8 +34,9 @@ class StoreProjetRequest extends FormRequest
             'debut' => 'required|date|date_format:Y-m-d',
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
             'ville' => 'required|max:255',
-            'bailleurId' => ['bail', 'required', new HashValidatorRule(new Bailleur())],
-            'programmeId' => ['bail', 'required', new HashValidatorRule(new Programme())],
+            'bailleurId' => ['nullable', new HashValidatorRule(new Bailleur())],
+            'entrepriseExecutantId' => ['sometimes', new HashValidatorRule(new EntrepriseExecutant())],
+            'programmeId' => ['required', new HashValidatorRule(new Programme())],
             'nombreEmploie' => 'integer',
             'image' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
             //'fichier' => 'nullable|array',

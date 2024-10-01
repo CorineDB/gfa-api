@@ -25,7 +25,6 @@ class Projet extends Model
 
     protected $fillable = array(
         'nom',
-        'poids',
         'couleur',
         'description',
         'ville',
@@ -44,7 +43,9 @@ class Projet extends Model
         'secteurActivite',
         'dateAprobation',
         'tauxEngagement',
-        'statut'
+        'statut',
+        'projetable_id',
+        'projetable_type'
     );
 
 
@@ -481,6 +482,7 @@ class Projet extends Model
     public function getCodePtaAttribute()
     {
         $programme = $this->programme;
+        return $programme->code.'.1';
         $code = $this->bailleur->codes($programme->id)->first();
         return $programme->code.'.'.optional($code)->codePta;
     }
@@ -667,6 +669,10 @@ class Projet extends Model
     public function indicateurs_cadre_logique()
     {
         return $this->morphMany(IndicateurCadreLogique::class, 'indicatable');
+    }
+
+    public function projetable(){
+        return $this->morphTo();
     }
 
 }
