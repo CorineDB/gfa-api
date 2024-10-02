@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests\enquete_de_collecte;
 
-use App\Models\PrincipeDeGouvernance;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -16,7 +15,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("administrateur", "super-admin", "unitee-de-gestion");
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

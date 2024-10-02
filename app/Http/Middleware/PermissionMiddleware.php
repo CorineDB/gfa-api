@@ -17,8 +17,6 @@ class PermissionMiddleware
      */
     public function handle(Request $request, Closure $next, $permission)
     {
-
-        //dump($request->user()->hasPermissionTo($permission));
         if (!$request->user()->hasPermissionTo($permission)) {
             return response()->json(['statut' => 'error', 'message' => "Vous n'avez pas la permission d'accès à cette ressource", 'errors' => [], 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
         }

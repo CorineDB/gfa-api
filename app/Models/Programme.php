@@ -131,6 +131,14 @@ class Programme extends Model
     {
         return $this->hasMany(User::class, 'programmeId')->where("type", "institution");
     }
+    
+    /**
+     * Charger la liste des organisations d'un oogramme
+     */
+    public function organisations()
+    {
+        return $this->hasMany(User::class, 'programmeId')->where("type", "organisation");
+    }
 
     public function getEntreprises()
     {
@@ -145,6 +153,21 @@ class Programme extends Model
         }
 
         return $entreprises;
+    }
+
+    public function getOrganisations()
+    {
+        $users =  $this->organisations;
+
+        $organisations = [];
+
+        foreach($users as $user)
+        {
+            $organisation = Organisation::find($user->profilable_id);
+            array_push($organisations, $organisation);
+        }
+
+        return $organisations;
     }
 
     public function mods()

@@ -114,6 +114,11 @@ class User extends Authenticatable
         return $this->morphTo()->where("profilable_type", get_class(new OngCom()));
     }
 
+    public function organisation()
+    {
+        return $this->morphTo()->where("profilable_type", get_class(new Organisation()));
+    }
+
     public function entrepriseExecutant()
     {
         return $this->morphTo()->where("profilable_type", get_class(new EntrepriseExecutant()));

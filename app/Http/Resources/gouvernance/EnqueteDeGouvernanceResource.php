@@ -24,7 +24,7 @@ class EnqueteDeGouvernanceResource extends JsonResource
             // Collect organisation information without using an 'organisation' key
             $organisationInfo = [
                 'id' => $organisationId,
-                'nom' => $organisationResponses->first()->organisation->nom,
+                'nom' => optional(optional($organisationResponses->first())->organisation)->nom ?? null,
             ];
 
             // Group observations by category

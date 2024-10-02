@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Resources\user;
+namespace App\Http\Resources;
 
+use App\Http\Resources\FichierResource;
+use App\Http\Resources\user\UserResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Auth;
 
-class UtilisateurResource extends JsonResource
+class OrganisationResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -18,12 +19,12 @@ class UtilisateurResource extends JsonResource
     {
         return [
             "id" => $this->secure_id,
+            'nom' => $this->whenLoaded('user', $this->user->nom),
             'sigle' => $this->when($this->sigle, $this->sigle),
             'code' => $this->when($this->code, $this->code),
-            "user" => new UserResource($this->user),
-            "mod" => $this->when($this->user->hasRole("entreprise-executant"), function(){
-                return $this->modByProgramme(Auth::user()->programmeId);
-            }),
+            'user' => $this->whenLoaded('user', new UserResource($this->user)),
+            //"user" => new UserResource($this->user),
+            'projet' => $this->whenLoaded($this->projet, $this->projet),
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }

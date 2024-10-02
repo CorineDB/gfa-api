@@ -172,11 +172,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
         Route::apiResource('utilisateurs', 'UserController')->names('utilisateurs');
 
-        /*Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function (){
+        Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function (){
             Route::controller('UserController')->group(function () {
                 Route::get('/{id}/permissions', 'permissions')->name('permissions');
             });
-        });*/
+        });
 
         Route::apiResource('activites', 'ActiviteController')->names('activites');
 
@@ -617,7 +617,46 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
         Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
 
+            Route::apiResource('organisations', 'OrganisationController')->names('organisations')->middleware(['role:unitee-de-gestion']);
+
             Route::apiResource('programmes', 'ProgrammeController')->names('programmes');
+
+            Route::apiResource('projets', 'ProjetController', ['except' => ['update']])->names('projets');
+
+            Route::group(['prefix' =>  'projets', 'as' => 'projets.'], function () {
+
+                Route::controller('ProjetController')->group(function () {
+
+                    Route::put('{id}/update', 'update')->name('update');
+
+                    Route::post('{projet}/prolonger', 'prolonger')->name('prolonger')->middleware('permission:prolonger-un-projet');
+
+                    Route::get('{id}/composantes', 'composantes')->name('composantes')->middleware('permission:voir-une-composante');
+
+                    Route::post('{id}/tef', 'tef')->name('tef');
+
+                    Route::get('{id}/statistiques', 'statistiques')->name('statistiques')->middleware('permission:voir-un-projet');
+
+                });
+            });
+
+            Route::apiResource('composantes', 'ComposanteController')->names('composantes');
+
+            Route::group(['prefix' =>  'composantes', 'as' => 'composantes.'], function () {
+
+                Route::controller('ComposanteController')->group(function () {
+
+                    Route::get('{id?}/sousComposantes', 'sousComposantes')->name('sousComposantes')->middleware('permission:voir-une-composante');
+
+                    Route::get('{id}/activites', 'activites')->name('activites')->middleware('permission:voir-une-activite');
+
+                    //Route::get('{id}/filtreActivites', 'filtreActivites')->name('filtreActivites');
+
+                    Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
+
+                    Route::post('{id}/deplacer', 'deplacer')->name('deplacer')->middleware('permission:modifier-une-composante');
+                });
+            });
 
             Route::apiResource('types-de-gouvernance', 'TypeDeGouvernanceController')->names('types-de-gouvernance')
                 ->parameters([

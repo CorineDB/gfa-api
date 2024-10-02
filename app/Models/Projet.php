@@ -481,8 +481,8 @@ class Projet extends Model
 
     public function getCodePtaAttribute()
     {
+        return $this->programme->code.'.'.optional($this->organisation)->code ?? 1;
         $programme = $this->programme;
-        return $programme->code.'.1';
         $code = $this->bailleur->codes($programme->id)->first();
         return $programme->code.'.'.optional($code)->codePta;
     }
@@ -663,7 +663,6 @@ class Projet extends Model
         }
 
         return $tef;
-
     }
 
     public function indicateurs_cadre_logique()
@@ -673,6 +672,10 @@ class Projet extends Model
 
     public function projetable(){
         return $this->morphTo();
+    }
+
+    public function organisation(){
+        return optional($this->where("projetable_type", Organisation::class)->first())->projetable() ?? null;
     }
 
 }

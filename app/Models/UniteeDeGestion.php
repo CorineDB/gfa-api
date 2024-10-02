@@ -77,5 +77,24 @@ class UniteeDeGestion extends Model
         return $this->morphMany(ESuivi::class, 'auteurable');
     }
 
+    public function projet()
+    {
+        return $this->morphOne(Projet::class, 'projetable');//->where('programmeId', $this->user->programmeId)->first();
+    }
+    
+    /**
+     * Charger la liste des outcomes d'un projet
+     */
+    public function outcomes()
+    {
+        return $this->hasManyThrough(
+            Composante::class,    // Final Model
+            Projet::class,       // Intermediate Model
+            'projetable_id',                  // Foreign key on the types_de_gouvernance table
+            'projetId',          // Foreign key on the principes_de_gouvernance table
+            'id',                              // Local key on the principes_de_gouvernance table
+            'id'                               // Local key on the types_de_gouvernance table
+        )->whereNull("composanteId");
+    }
 
 }

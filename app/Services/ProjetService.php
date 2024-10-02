@@ -24,6 +24,7 @@ use App\Models\Activite;
 use App\Models\Bailleur;
 use App\Models\Decaissement;
 use App\Models\EntrepriseExecutant;
+use App\Models\Organisation;
 use App\Models\Sinistre;
 use App\Models\Suivi;
 use App\Models\SuiviIndicateur;
@@ -31,6 +32,7 @@ use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Notifications\FichierNotification;
 use App\Repositories\EntrepriseExecutantRepository;
+use App\Repositories\OrganisationRepository;
 use App\Traits\Helpers\HelperTrait;
 use App\Traits\Helpers\IdTrait;
 use App\Traits\Helpers\LogActivity;
@@ -81,9 +83,9 @@ class ProjetService extends BaseService implements ProjetServiceInterface
         try
         {
             if(Auth::user()->hasRole('bailleur'))
-                return response()->json([';statut' => 'success', 'message' => null, 'data' => new ProjetResource((Auth::user()->profilable->projets)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                return response()->json(['statut' => 'success', 'message' => null, 'data' => new ProjetResource((Auth::user()->profilable->projets)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
-            return response()->json([';statut' => 'success', 'message' => null, 'data' => ProjetsResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ProjetsResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {
@@ -97,43 +99,25 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
         try
         {
-            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
-            $entrepriseAssocie = null;
-            if(isset($attributs['bailleurId']) && !empty($attributs['bailleurId'])){
-                if(!($bailleur = $this->bailleurRepository->findById($attributs['bailleurId']))) {
-                    //throw new Exception( "Ce bailleur n'existe pas", 500);
-                }
-            }
-            
-            if(!($programme = $this->programmeRepository->findById($attributs['programmeId'])))
-            {
-                throw new Exception( "Ce programme n'existe pas", 500);
-            }
-
-            if(isset($attributs['entrepriseExecutantId']) && !empty($attributs['entrepriseExecutantId'])){
-                if(!($entrepriseAssocie = app(EntrepriseExecutantRepository::class)->findById($attributs['entrepriseExecutantId']))) {
+            if(isset($attributs['organisationId']) && !empty($attributs['organisationId'])){
+                if(!($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId']))) {
                     throw new Exception( "Cette organisation n'existe pas", 500);
                 }
 
-                if($entrepriseAssocie->user->programmeId !== $attributs["programmeId"]){
+                if($organisation->user->programmeId !== Auth::user()->programme->id){
                     throw new Exception( "Cette organisation ne fait pas partir de ce programme", 500);
                 }
             }
 
-            /*if(($projet = $bailleur->projets)) throw new Exception( "Ce bailleur a déja un projet dans le programme", 500);
-            $attributs = array_merge($attributs, ['bailleurId' => $bailleur->id, 'programmeId' => $programme->id,]);
-            $attributs = array_merge($attributs, ['bailleurId' => $bailleur->id, 'programmeId' => $programme->id,]);
-            */
-            if(($projet = $entrepriseAssocie->projet)) throw new Exception( "Cette entreprise est déja associé a un projet dans le programme", 500);
+            if(($projet = $organisation->projet)) {
+                throw new Exception( "Cette organisation est déja associé a un projet dans le programme", 500);
+            }
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id,]);
+            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
 
             $attributs = array_merge($attributs, ['statut' => -2]);
-            $projet = $entrepriseAssocie->projet()->create($attributs);
-
-            //$projet = $this->repository->create($attributs);
-
-            $projet = $projet->fresh();
+            
+            $projet = $organisation->projet()->create($attributs);
 
             /*$statut = ['etat' => -2];
 
@@ -201,7 +185,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
             }*/
 
-            $projet = $projet->fresh();
+            $projet->refresh();
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -465,7 +449,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
         {
             $composantes = [];
 
-            if( $id !== 'undefined' ) $projet = $this->repository->findById($id); //Retourner les données du premier projet
+            if( $id !== 'undefined' &&   $id != null ) $projet = $this->repository->findById($id); //Retourner les données du premier projet
 
             else $projet = $this->repository->firstItem(); //Retourner les données du premier projet
 

@@ -33,39 +33,10 @@ class StoreComposanteRequest extends FormRequest
     {
         return [
             'nom' => 'required',
-            'poids' => ['required'],
+            'poids' => ['required', 'numeric'],
             'projetId' => [ Rule::requiredIf(!$this->composanteId), 'bail', new HashValidatorRule(new Projet())],
             'composanteId' => [ Rule::requiredIf(!$this->projetId), 'bail', new HashValidatorRule(new Composante())],
 
-            'pret' => ['required', 'integer', 'min:0', function(){
-
-                if($this->projetId){
-                    $projet = Projet::find($this->projetId);
-                    if($projet){
-                        $pret = $projet->pret;
-                        $totalPret = $projet->composantes->sum('pret');
-
-                        if(($totalPret + $this->pret) > $pret)
-                        {
-                            throw ValidationException::withMessages(["pret" => "Le total des prêts des composantes de ce projet ne peut pas dépasser le montant du pret du projet"], 1);
-
-                        }
-                    }
-                }
-
-                elseif($this->composanteId){
-                    $composante = Composante::find($this->composanteId);
-                    if($composante){
-                        $pret = $composante->pret;
-                        $totalPret = $composante->sousComposantes->sum('pret');
-
-                        if(($totalPret + $this->pret) > $pret)
-                        {
-                            throw ValidationException::withMessages(["pret" => "Le total des prêts des sous composantes de cette composante ne peut pas dépasser le montant du pret de la composante"], 1);
-                        }
-                    }
-                }
-            }],
             'budgetNational' => ['required', 'integer', 'min:0', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
@@ -109,7 +80,6 @@ class StoreComposanteRequest extends FormRequest
             'poids.required' => 'Le poids de la composante est obligatoire.',
             'budjetNational.required' => 'Le budget national de la composante est obligatoire.',
             'pret.required' => 'Le pret effectué de la composante est obligatoire.',
-            'tepPrevu.required' => 'Le tep prévu de la composante est obligatoire.',
             'projetId.required' => 'Le projet est obligatoire.',
             'composanteId.required' => 'La composante de la sous composante est obligatoire.'
         ];

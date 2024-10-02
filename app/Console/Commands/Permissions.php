@@ -517,9 +517,11 @@ class Permissions extends Command
             'voir-un-ddc',
             'creer-un-ddc',
             'modifier-un-ddc',
+            'supprimer-un-ddc',
             'voir-une-organisation',
             'creer-une-organisation',
             'modifier-une-organisation',
+            'supprimer-une-organisation',
             'voir-un-gouvernement',
             'creer-un-gouvernement',
             'modifier-un-gouvernement',
@@ -546,9 +548,11 @@ class Permissions extends Command
             'voir-un-ddc',
             'creer-un-ddc',
             'modifier-un-ddc',
+            'supprimer-un-ddc',
             'voir-une-organisation',
             'creer-une-organisation',
             'modifier-une-organisation',
+            'supprimer-un-organisation',
             'voir-un-historique',
             'faire-un-backup',
             'voir-une-unitee-de-gestion',
@@ -793,15 +797,16 @@ class Permissions extends Command
                 $role->permissions()->detach($ids);
 
                 $permissions = Permission::all();
+                
                 $controle = 1;
 
                 foreach($permissions as $permission)
                 {
                     foreach($uniteeDeGestion as $unitee)
                     {
+                        
                         if($unitee == $permission->slug)
                         {
-
                             $controle = 0;
                             break;
                         }

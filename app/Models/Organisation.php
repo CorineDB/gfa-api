@@ -99,4 +99,36 @@ class Organisation extends Model
         return $this->hasMany(Indicateur::class, 'indicateurable');
     }
 
+    /**
+     * Get organisations by programme ID.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param int $programmeId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeByProgramme($query, $programmeId = null)
+    {
+        return $query->whereHas('user', function ($q) use ($programmeId) {
+            if(!$programmeId){
+                $programmeId = auth()->user()->programmeId;
+            }
+
+            $q->where('programmeId', $programmeId)->where('type', "organisation");
+        });
+    }
+    
+    /**
+     * Charger la liste des outcomes d'un projet
+     */
+    public function outcomes()
+    {
+        return $this->hasManyThrough(
+            Composante::class,    // Final Model
+            Projet::class,       // Intermediate Model
+            'projetable_id',                  // Foreign key on the types_de_gouvernance table
+            'projetId',          // Foreign key on the principes_de_gouvernance table
+            'id',                              // Local key on the principes_de_gouvernance table
+            'id'                               // Local key on the types_de_gouvernance table
+        )->whereNull("composanteId");
+    }
 }

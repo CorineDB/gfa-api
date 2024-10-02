@@ -3,10 +3,9 @@
 namespace App\Http\Requests\enquete_de_collecte;
 
 use App\Models\Enquete;
-use App\Models\EntrepriseExecutant;
+use App\Models\Organisation;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class AppreciationRequest extends FormRequest
 {
@@ -18,7 +17,7 @@ class AppreciationRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("administrateur", "super-admin", "unitee-de-gestion");
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -36,7 +35,7 @@ class AppreciationRequest extends FormRequest
         return [
             'contenu'          => ['required', 'string', 'max:255'],
             'type'             => 'required|string|in:faiblesse,recommendation',  // Ensures the value is either 'faiblesse' or 'recommendation'
-            'organisationId'   => ['required', new HashValidatorRule(new EntrepriseExecutant())],
+            'organisationId'   => ['required', new HashValidatorRule(new Organisation())],
         ];
     }
 

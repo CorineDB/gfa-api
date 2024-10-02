@@ -5,10 +5,10 @@ namespace App\Services;
 use App\Http\Resources\gouvernance\EnqueteDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationDePerceptionResource;
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationFactuelleResource;
-use App\Models\EntrepriseExecutant;
+use App\Models\Organisation;
 use App\Models\ReponseCollecter;
 use App\Repositories\EnqueteDeCollecteRepository;
-use App\Repositories\EntrepriseExecutantRepository;
+use App\Repositories\OrganisationRepository;
 use App\Repositories\OptionDeReponseRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
 use App\Repositories\TypeDeGouvernanceRepository;
@@ -85,8 +85,8 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
                 throw new Exception("Cette enquete n'existe pas", 500);
 
-            if (!($organisation = app(EntrepriseExecutantRepository::class)->findById($attributs["organisationId"])))
-                throw new Exception("Cette enquete n'existe pas", 500);
+            if (!($organisation = app(OrganisationRepository::class)->findById($attributs["organisationId"])))
+                throw new Exception("Cette organisation n'existe pas", 500);
 
 
             $data = [];
@@ -137,7 +137,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
                 throw new Exception("Cette enquete n'existe pas", 500);
             
-            if (!($organisation = app(EntrepriseExecutantRepository::class)->findById($organisationId)))
+            if (!($organisation = app(OrganisationRepository::class)->findById($organisationId)))
                 throw new Exception("Cette orgsnisation n'existe pas", 500);
 
             $resultats = $enqueteDeCollecte->notes_resultat()->where($attributs)->get("*");
@@ -155,7 +155,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
                 throw new Exception("Cette enquete n'existe pas", 500);
             
-            if (!($organisation = app(EntrepriseExecutantRepository::class)->findById($organisationId)))
+            if (!($organisation = app(OrganisationRepository::class)->findById($organisationId)))
                 throw new Exception("Cette orgsnisation n'existe pas", 500);
 
             $resultats = [
@@ -305,7 +305,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
                 throw new Exception("Cette enquete n'existe pas", 500);
 
-            if (!app(EntrepriseExecutantRepository::class)->findById($attributs["organisationId"]))
+            if (!app(OrganisationRepository::class)->findById($attributs["organisationId"]))
                 throw new Exception("Cette organisation n'existe pas", 500);
 
 

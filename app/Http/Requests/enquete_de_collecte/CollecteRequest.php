@@ -3,13 +3,11 @@
 namespace App\Http\Requests\enquete_de_collecte;
 
 use App\Models\Enquete;
-use App\Models\EntrepriseExecutant;
+use App\Models\Organisation;
 use App\Models\IndicateurDeGouvernance;
 use App\Models\OptionDeReponse;
-use App\Models\User;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CollecteRequest extends FormRequest
 {
@@ -22,7 +20,7 @@ class CollecteRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("administrateur", "super-admin", "unitee-de-gestion");
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -37,10 +35,8 @@ class CollecteRequest extends FormRequest
             $this->enquete_de_collecte = Enquete::findByKey($this->enquete_de_collecte);
         }
 
-
-
         return [
-            'organisationId'   => ['required', new HashValidatorRule(new EntrepriseExecutant())],
+            'organisationId'   => ['required', new HashValidatorRule(new Organisation())],
 
 
             'response_data'        => ['required', 'array', 'min:1'],

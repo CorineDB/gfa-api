@@ -3,6 +3,7 @@
 namespace App\Http\Requests\projet;
 
 use App\Models\Bailleur;
+use App\Models\Organisation;
 use App\Models\Programme;
 use App\Models\Projet;
 use App\Rules\HashValidatorRule;
@@ -19,7 +20,7 @@ class UpdateProjetRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
 
@@ -39,8 +40,8 @@ class UpdateProjetRequest extends FormRequest
             'ville' => 'sometimes|required|max:255',
             'budgetNational' => 'sometimes|required|integer|min:0',
             'pret' => 'sometimes|required|integer|min:0',
+            'organisationId' => ['sometimes', new HashValidatorRule(new Organisation())],
             //'bailleurId' => ['sometimes','required', new HashValidatorRule(new Bailleur())],
-            'programmeId' => ['sometimes','required', new HashValidatorRule(new Programme())],
             'nombreEmploie' => 'sometimes|integer',
             'image' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
 

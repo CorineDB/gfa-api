@@ -53,7 +53,26 @@ class AddNewColumnsToReponsesCollecterTable extends Migration
 
                 if(Schema::hasColumn('reponses_collecter', 'organisationId')){
 
-                    $table->dropForeign(['organisationId']);
+                     // Check if the column has a foreign key constraint
+                    $foreignKey = \DB::select(\DB::raw("
+                        SELECT CONSTRAINT_NAME 
+                        FROM information_schema.KEY_COLUMN_USAGE 
+                        WHERE TABLE_NAME = 'reponses_collecter' 
+                        AND COLUMN_NAME = 'organisationId' 
+                        AND CONSTRAINT_SCHEMA = DATABASE()
+                    "));
+
+                    // If a foreign key exists, drop and recreate it
+                    if (!empty($foreignKey)) {
+
+                        // Use try-catch to avoid errors if foreign key doesn't exist
+                        try {
+                            $table->dropForeign(['organisationId']);
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            // Foreign key didn't exist, no action needed
+                        }
+                    }
+
                     $table->dropColumn('organisationId');
                 }
 

@@ -58,7 +58,7 @@ class ReponseCollecter extends Model
 
     public function organisation()
     {
-        return $this->belongsTo(EntrepriseExecutant::class, 'organisationId');
+        return $this->belongsTo(Organisation::class, 'organisationId');
     }
 
     public function user()

@@ -57,30 +57,6 @@ class UpdateComposanteRequest extends FormRequest
             'projetId' => ['sometimes',  Rule::requiredIf(!$this->composanteId), new HashValidatorRule(new Projet())],
             'composanteId' => ['sometimes',  Rule::requiredIf(!$this->projetId), new HashValidatorRule(new Composante())],
 
-            'pret' => ['sometimes', 'required', 'integer', 'min:0', function(){
-
-                if($this->projetId){
-                    $projet = Projet::find($this->projetId);
-                    $pret = $projet->pret;
-                    $totalPret = $projet->composantes->where("id", "!=", $this->composante)->sum('pret');
-
-                    if(($totalPret + $this->pret) > $pret)
-                    {
-                        throw ValidationException::withMessages(["pret" => "Le total des prêts des composantes de ce projet ne peut pas dépasser le montant du pret du projet"], 1);
-                    }
-                }
-
-                elseif($this->composanteId){
-                    $composante = Composante::find($this->composanteId);
-                    $pret = $composante->pret;
-                    $totalPret = $composante->sousComposantes->where("id", "!=", $this->composante)->sum('pret');
-
-                    if(($totalPret + $this->pret) > $pret)
-                    {
-                        throw ValidationException::withMessages(["pret" => "Le total des prêts des sous composantes de cette composante ne peut pas dépasser le montant du pret de la composante"], 1);
-                    }
-                }
-            }],
             'budgetNational' => ['sometimes', 'required', 'integer', 'min:0', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);

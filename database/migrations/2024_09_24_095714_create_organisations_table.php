@@ -18,6 +18,7 @@ class CreateOrganisationsTable extends Migration
 			$table->string('sigle', 255)->nullable();
             $table->string('code', 12)->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

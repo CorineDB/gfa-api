@@ -108,7 +108,7 @@ class EntrepriseExecutantService extends BaseService implements EntrepriseExecut
             DB::commit();
 
             //Envoyer les identifiants de connexion à l'utilisateur via son email
-            //dispatch(new SendEmailJob($entrepriseExecutant->user, "confirmation-de-compte", $password))->delay(now()->addSeconds(15));
+            dispatch(new SendEmailJob($entrepriseExecutant->user, "confirmation-de-compte", $password))->delay(now()->addSeconds(15));
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 

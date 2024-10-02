@@ -10,15 +10,27 @@ trait HasPermissionTrait
     public function hasPermissionTo($permission)
     {
         
-        return /*$this->hasPermissionThroughRole($permission) ||*/ $this->hasPermission($permission);
+        return $this->hasPermissionThroughRole($permission) || $this->hasPermission($permission);
     }
 
     public function hasPermissionThroughRole($permission)
     {
+        if(is_string($permission)){
 
-        foreach ($permission->roles as $role) {
-            if ($this->roles->contains($role)) {
-                return true;
+            return $this->roles->each(function ($role) use ($permission) {
+                return ($role->permissions->contains($permission));
+            })->count();
+            /*foreach ($permission->roles as $role) {
+                if ($this->roles->contains($role)) {
+                    return true;
+                }
+            }*/
+        }
+        else if(is_object($permission)){
+            foreach ($permission->roles as $role) {
+                if ($this->roles->contains($role)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -56,7 +68,6 @@ trait HasPermissionTrait
      */
     protected function hasPermission($permission)
     {
-
         return (bool) $this->permissions->where('slug', $permission)->count();
     }
 

@@ -2,16 +2,11 @@
 
 namespace App\Services;
 
-use App\Models\Activite;
-use App\Models\EActivite;
-use App\Models\EActiviteStatut;
-use App\Models\EntrepriseExecutant;
 use App\Models\User;
 use App\Repositories\ReponseRepository;
 use App\Traits\Helpers\LogActivity;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\ReponseServiceInterface;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
