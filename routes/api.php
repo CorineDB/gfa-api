@@ -672,6 +672,29 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
             });
 
+            Route::apiResource('taches', 'TacheController')->parameters([
+                'tach' => 'tache'
+            ])->names('taches');
+
+            Route::group(['prefix' =>  'taches', 'as' => 'taches.'], function () {
+                Route::controller('TacheController')->group(function () {
+
+                    Route::post('{tache}/prolonger', 'prolonger')->name('prolonger')->middleware('permission:prolonger-une-tache');
+
+                    Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
+
+                    Route::get('/{id}/changeStatut', 'changeStatut')->name('changeStatut')/*->middleware('permission:voir-un-suivi')*/;
+
+                    Route::post('suivisV2', 'suivisV2')->name('suivisV2')->middleware('permission:voir-un-suivi');
+
+                    Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-tache');
+
+                    Route::post('/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-tahe');
+
+                    Route::post('/deplacer/{id}', 'deplacer')->name('deplacer')->middleware('permission:modifier-une-tache');
+                });
+            });
+
             Route::apiResource('types-de-gouvernance', 'TypeDeGouvernanceController')->names('types-de-gouvernance')
                 ->parameters([
                     'types-de-gouvernance' => 'type_de_gouvernance',
