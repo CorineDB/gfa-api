@@ -38,7 +38,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
     /**
      * @var service
      */
-    protected $repository, $composanteReposotory, $userRepository, $dureeRepository;
+    protected $repository, $composanteRepository, $userRepository, $dureeRepository;
 
     /**
      * ActiviteService constructor.
@@ -142,9 +142,9 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
         try {
 
             $composante = $this->composanteRepository->findById($attributs['composanteId']);
-            $this->userRepository->findById($attributs['userId']);
-            $this->userRepository->findById($attributs['structureResponsableId']);
-            $this->userRepository->findById($attributs['structureAssocieId']);
+            //$this->userRepository->findById($attributs['userId']);
+            //$this->userRepository->findById($attributs['structureResponsableId']);
+            //$this->userRepository->findById($attributs['structureAssocieId']);
 
             if ($composante->projet->debut > $attributs['debut'])
                 throw new Exception("La date de début de l'activité est antérieur à celui du projet", 500);
@@ -168,9 +168,9 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
             $activite->durees()->create($duree);
 
-            $activite->structures()->attach($attributs['structureResponsableId'], ['type' => 'Responsable']);
+            //$activite->structures()->attach($attributs['structureResponsableId'], ['type' => 'Responsable']);
 
-            $activite->structures()->attach($attributs['structureAssocieId'], ['type' => 'Associée']);
+            //$activite->structures()->attach($attributs['structureAssocieId'], ['type' => 'Associée']);
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 

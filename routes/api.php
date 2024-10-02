@@ -658,6 +658,20 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
             });
 
+            Route::apiResource('activites', 'ActiviteController')->names('activites');
+
+            Route::group(['prefix' =>  'activites', 'as' => 'activites.'], function () {
+
+                Route::controller('ActiviteController')->group(function () {
+
+                    //Route::post('{activite}/prolonger', 'prolonger')->name('prolonger')->middleware('permission:prolonger-une-activite');
+
+                    Route::get('/{id}/taches', 'taches')->name('taches')->middleware('permission:voir-une-tache');
+
+                    Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
+                });
+            });
+
             Route::apiResource('types-de-gouvernance', 'TypeDeGouvernanceController')->names('types-de-gouvernance')
                 ->parameters([
                     'types-de-gouvernance' => 'type_de_gouvernance',

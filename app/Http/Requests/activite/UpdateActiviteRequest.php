@@ -54,22 +54,8 @@ class UpdateActiviteRequest extends FormRequest
             'composanteId' => ['required', new HashValidatorRule(new Composante())],
             'userId' => ['sometimes', 'required', new HashValidatorRule(new User())],
             'description' => 'string',
-            'structureResponsableId' => ['sometimes', 'required', new HashValidatorRule(new User())],
-            'structureAssocieId' => ['sometimes', 'required', new HashValidatorRule(new User())],
-
-            'pret' => ['sometimes','required', 'integer', 'min:0', function(){
-
-                if($this->composanteId){
-                    $composante = Composante::find($this->composanteId);
-                    $pret = $composante->pret;
-                    $totalPret = $composante->activites->where("id", "!=", $this->activite)->sum('pret');
-
-                    if(($totalPret + $this->pret) > $pret)
-                    {
-                        throw ValidationException::withMessages(["pret" => "Le total des prêts des activites ne peut pas dépasser le montant du pret de la composante"], 1);
-                    }
-                }
-            }],
+            //'structureResponsableId' => ['sometimes', 'required', new HashValidatorRule(new User())],
+            //'structureAssocieId' => ['sometimes', 'required', new HashValidatorRule(new User())],
 
             'budgetNational' => ['sometimes','required', 'integer', 'min:0', function(){
                 if($this->composanteId){

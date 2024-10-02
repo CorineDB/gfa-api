@@ -34,27 +34,10 @@ class StoreActiviteRequest extends FormRequest
             'debut' => 'required|date|date_format:Y-m-d',
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
             'type' => 'required|max:255',
-            'userId' => ['required', new HashValidatorRule(new User())],
+            //'userId' => ['required', new HashValidatorRule(new User())],
             'composanteId' => ['required', new HashValidatorRule(new Composante())],
-            'structureResponsableId' => ['required', new HashValidatorRule(new User())],
-            'structureAssocieId' => ['required', new HashValidatorRule(new User())],
-
-            'pret' => ['required', 'integer', 'min:0', function(){
-
-                if($this->composanteId){
-                    $composante = Composante::find($this->composanteId);
-                    if($composante){
-
-                        $pret = $composante->pret;
-                        $totalPret = $composante->activites->sum('pret');
-
-                        if(($totalPret + $this->pret) > $pret)
-                        {
-                            throw ValidationException::withMessages(["pret" => "Le total des prêts des activites ne peut pas dépasser le montant du pret de la composante. "], 1);
-                        }
-                    }
-                }
-            }],
+            //'structureResponsableId' => ['required', new HashValidatorRule(new User())],
+            //'structureAssocieId' => ['required', new HashValidatorRule(new User())],
 
             'budgetNational' => ['required', 'integer', 'min:0', function(){
                 if($this->composanteId){

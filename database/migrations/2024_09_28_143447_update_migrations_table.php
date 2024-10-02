@@ -30,6 +30,10 @@ class UpdateMigrationsTable extends Migration
                 if(Schema::hasColumn('activites', 'tepPrevu')){
                     $table->bigInteger('tepPrevu')->nullable()->change();
                 }
+
+                if(Schema::hasColumn('activites', 'userId')){
+                    $table->bigInteger('userId')->unsigned()->nullable()->default(null)->change();
+                }
             });
         }
 
@@ -237,6 +241,10 @@ class UpdateMigrationsTable extends Migration
                 }
                 if(Schema::hasColumn('activites', 'tepPrevu')){
                     $table->bigInteger('tepPrevu')->nullable(false)->change();
+                }
+
+                if(Schema::hasColumn('activites', 'userId')){
+                    $table->bigInteger('userId')->unsigned()->nullable(false)->change();
                 }
             });
         }

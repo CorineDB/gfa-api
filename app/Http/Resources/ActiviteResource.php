@@ -30,11 +30,34 @@ class ActiviteResource extends JsonResource
             "statut" => $this->statut,
             "tep" => $this->tep,
             "tef" =>$this->tef(),
-            "responsable" => $this->responsable,
+            "responsable" => $this->when($this->responsable, $this->responsable),
             "durees" => $this->durees,
             "composanteId" => optional($this->composante)->secure_id ?? 0 ,
-            "structureResponsable" => $this->structureResponsable(),
-            "structureAssociee" => $this->structureAssociee(),
+            //"structureResponsable" => $this->structureResponsable(),
+            //"structureAssociee" => $this->structureAssociee(),
+
+            $this->mergeWhen($this->composante->composanteId === 0, function(){
+                return [
+                    "projet_owner" => optional(optional($this->composante)->projet)->projetable === null ? null : [
+                        "id" => $this->composante->projet->projetable->id,
+                        "sigle" => $this->when($this->composante->projet->projetable->sigle, $this->composante->projet->projetable->sigle),
+                        "code" => $this->when($this->composante->projet->projetable->code, $this->composante->projet->projetable->code),
+                        
+                        "nom" => $this->composante->projet->projetable->user->nom
+                    ]
+                ];
+            }),
+
+            $this->mergeWhen($this->composante->composanteId !== 0, function(){
+                return [
+                    "projet_owner" => optional(optional($this->composante->composante)->projet)->projetable === null ? null : [
+                        "id" => $this->composante->composante->projet->projetable->id,
+                        "sigle" => $this->when($this->composante->composante->projet->projetable->sigle, $this->composante->composante->projet->projetable->sigle),
+                        "code" => $this->when($this->composante->composante->projet->projetable->code, $this->composante->composante->projet->projetable->code),
+                        "nom" => $this->composante->composante->projet->projetable->user->nom
+                    ],
+                ];
+            }),
 
             $this->mergeWhen($this->composante->composanteId === 0, function(){
                 return [
