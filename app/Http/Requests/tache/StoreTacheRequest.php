@@ -5,6 +5,7 @@ namespace App\Http\Requests\tache;
 use App\Models\Activite;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class StoreTacheRequest extends FormRequest
@@ -26,13 +27,26 @@ class StoreTacheRequest extends FormRequest
      */
     public function rules()
     {
+        $activite = Activite::findByKey(request()->input('activiteId'));
         return [
             'nom' => 'required',
             //'statut' => 'required|integer|min:-2|max:2',
-            'poids' => 'required',
-            'debut' => 'required|date|date_format:Y-m-d',
-            'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
+            'poids' => ['sometimes', 'numeric', 'min:0'],
             'activiteId' => ['required', new HashValidatorRule(new Activite())],
+            'debut' => ["required", "date", "date_format:Y-m-d", function($attribute, $value, $fail) use ($activite) {
+
+                if($activite->dureeActivite->debut > $value){
+                    $fail("La date de debut de la tache est anterieur à celui de l'activite");
+                }
+                
+            }],
+            'fin' => ["required", "date", "date_format:Y-m-d", "after_or_equal:debut", function($attribute, $value, $fail) use ($activite) {
+
+                if($activite->dureeActivite->fin < $value){
+                    $fail("La date de fin de la tache est superieur à celui de l'activite");
+                }
+                
+            }],
         ];
     }
 

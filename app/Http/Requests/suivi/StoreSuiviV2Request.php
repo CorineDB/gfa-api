@@ -26,17 +26,27 @@ class StoreSuiviV2Request extends FormRequest
      */
     public function rules()
     {
+        if($this->id){
+           $tache = Tache::findByKey($this->id);
+
+            if( $tache->statut && !($tache->statut >= 0 &&  $tache->statut < 2) ){
+                throw ValidationException::withMessages(["tacheId" =>  "Le suivi ne peut qu'etre effectuer, que pour les tâches en cours ou en retard d'execution."]);
+            }
+        }
+        
         return [
-            'commentaire'          => 'sometimes',
-            'tacheId' => ['required',  new HashValidatorRule(new Tache()), function(){
+            'commentaire'       => 'sometimes',
+
+            'poidsActuel'       => ["required", "integer", "in:0,50,100", ],
+            'tacheId'           => ['sometimes',  new HashValidatorRule(new Tache()), function(){
 
                 $tache = Tache::findByKey($this->tacheId);
 
-                /* if( $tache->statut && !($tache->statut >= 0 &&  $tache->statut < 2) ){
+                if( $tache->statut && !($tache->statut >= 0 &&  $tache->statut < 2) ){
                     throw ValidationException::withMessages(["tacheId" =>  "Le suivi ne peut qu'etre effectuer, que pour les tâches en cours ou en retard d'execution."]);
-                } */
+                }
             }],
-            'date' =>'required|date|date_format:Y-m-d'
+            'date'              => 'required|date|date_format:Y-m-d'
         ];
     }
 

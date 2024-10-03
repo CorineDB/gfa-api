@@ -272,7 +272,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             }
 
 
-            if($attributs['type'])
+            /*if($attributs['type'])
             {
                 $gouvernement = $activite->composante->projet->programme->gouvernement;
 
@@ -284,7 +284,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             {
                 $bailleur = $activite->composante->projet->bailleur;
                 $suiviFinancier = $bailleur->suiviFinanciers()->create($attributs);
-            }
+            }*/
+
+            $suiviFinancier = $this->repository->create($attributs);
 
             $data['texte'] = "Un suivi financier vient d'etre faire";
             $data['id'] = $suiviFinancier->id;

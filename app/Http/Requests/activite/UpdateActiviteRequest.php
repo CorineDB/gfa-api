@@ -49,7 +49,7 @@ class UpdateActiviteRequest extends FormRequest
         return [
             'nom' => 'sometimes|required|max:255',
             'statut' => 'sometimes|required|integer|min:-1|max:-1',
-            'poids' => 'sometimes|required',
+            'poids' => ['sometimes', 'numeric', 'min:0'],
             'type' => 'sometimes|required|max:255',
             'composanteId' => ['required', new HashValidatorRule(new Composante())],
             'userId' => ['sometimes', 'required', new HashValidatorRule(new User())],

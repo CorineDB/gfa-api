@@ -78,6 +78,17 @@ class Activite extends Model
         return $this->belongsToMany(User::class,'activite_users', 'activiteId', 'userId')->wherePivot('type', 'Associée')->first();
     }
 
+    public function projet()
+    {
+        $composante = $this->composante;
+
+        while ($composante->composante) {
+           $composante = $composante->composante;
+        }
+
+        return $composante->projet();
+    }
+
     public function composante()
     {
         return $this->belongsTo(Composante::class, 'composanteId');
@@ -263,6 +274,11 @@ class Activite extends Model
         }
 
         return $duree;
+    }
+
+    public function getDureeActiviteAttribute()
+    {
+        return new Duree(["debut" => $this->durees->first()->debut, "fin" => $this->durees->last()->fin]);
     }
 
     public function getTepAttribute()

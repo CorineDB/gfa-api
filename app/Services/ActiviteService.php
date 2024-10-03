@@ -320,7 +320,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
             $duree = $activite->durees->last();
             if (isset($duree)) {
                 if (!($this->verifieDuree($duree->toArray(), $attributs)))
-                    throw new Exception("Durée antérieur à celle qui était la", 500);
+                    throw new Exception("Durée antérieur à ". $duree->debut . " - " . $duree->fin, 500);
             }
 
             $duree = $activite->durees()->create($attributs);
@@ -341,25 +341,54 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
         }
     }
 
-    public function modifierDuree(array $attributs, $id): JsonResponse
+    public function modifierDuree(array $attributs, $activiteId, $dureeId): JsonResponse
     {
         DB::beginTransaction();
 
         try {
-            $duree = $this->dureeRepository->findById($id);
+            $duree = $this->dureeRepository->findById($dureeId);
 
-            $activite = $this->repository->findById($attributs['activiteId']);
+            //$activite = $this->repository->findById($attributs['activiteId']);*/
+
+            $activite = $this->repository->findById($activiteId);
+
+            $duree = $activite->durees()->where('id', $duree->id)->first();
 
             if ($activite->composante->projet->debut > $attributs['debut'])
                 throw new Exception("La date de début de l'activité est antérieur à celui du projet", 500);
             if ($activite->composante->projet->fin < $attributs['fin'])
                 throw new Exception("La date de fin de l'activité est supérieur à celui du projet", 500);
 
-            $duree = $activite->durees->last();
+            if($activite->durees->count() > 1){
+                foreach ($activite->durees as $key => $index) {
+                    if ($index->id === $duree->id) {
+                        if($key != 0 && $key != ($activite->durees->count()-1)){
+                            if($this->verifieDuree(($activite->durees[$key-1])->toArray(), $attributs)){
+                                throw new Exception("Durée antérieur à celle qui était la", 500);
+                            }
+                            if($attributs['fin'] >= $activite->durees[$key+1]['debut']) {
+                                throw new Exception("Durée superieur à celle qui suit", 500);
+                            }
+                        }
+                        else if($key === 0){
+                            if($attributs['fin'] >= $activite->durees[$key+1]['debut']) {
+                                throw new Exception("Durée superieur à celle qui suit", 500);
+                            }
+                        }
+                        else if($key === $activite->durees->count()){
+                            if($this->verifieDuree(($activite->durees[$key-2])->toArray(), $attributs)){
+                                throw new Exception("Durée antérieur à celle qui était la", 500);
+                            }
+                        }
+                    }
+                }
+            }
+
+            /*$duree = $activite->durees->last();
             if (isset($duree)) {
                 if (!($this->verifieDuree($duree->toArray(), $attributs)))
                     throw new Exception("Durée antérieur à celle qui était la", 500);
-            }
+            }*/
 
             $duree->debut = $attributs['debut'];
             $duree->fin = $attributs['fin'];

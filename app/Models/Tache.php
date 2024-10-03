@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Traits\Helpers\Pta;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,6 +33,19 @@ class Tache extends Model
 
             }
         });
+    }
+
+
+
+    public function projet()
+    {
+        return $this->activite->projet();
+
+        while ($composante->composante) {
+           $composante = $composante->composante;
+        }
+
+        return $composante->projet();
     }
 
     public function activite()
@@ -84,6 +98,29 @@ class Tache extends Model
         return $statut ? $statut['etat'] : null;
     }
 
+
+    public function verifiePlageDuree(string $debut, string $fin, Activite $activite = null)
+    {
+        // Use Carbon to parse the dates for accurate comparison
+        $debutDate = Carbon::parse($debut);
+        $finDate = Carbon::parse($fin);
+
+        if(!$activite){
+            $activite = $this->activite;
+        }
+
+        // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
+        return $activite->durees()
+            ->where(function($query) use ($debutDate, $finDate) {
+                // Check if the task's start date and end date fall within any of the ranges
+                $query->where(function ($subQuery) use ($debutDate, $finDate) {
+                    $subQuery->where('debut', '<=', $debutDate)
+                             ->where('fin', '>=', $finDate);
+                });
+            })
+            ->exists(); // Return true if such a range exists
+    }
+
     public function getDureeAttribute()
     {
         $duree = $this->durees->first();
@@ -102,6 +139,11 @@ class Tache extends Model
         }
 
         return $duree;
+    }
+
+    public function getDureeActiviteAttribute()
+    {
+        return new Duree(["debut" => $this->durees->first()->debut, "fin" => $this->durees->last()->fin]);
     }
 
     public function getDebutAttribute()

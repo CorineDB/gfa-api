@@ -24,7 +24,7 @@ class UpdateSuiviRequest extends FormRequest
     public function rules()
     {
         return [
-            'poidsActuel' => 'required|integer',
+            'poidsActuel'             => 'required|integer|in:0,50,100'
         ];
     }
 

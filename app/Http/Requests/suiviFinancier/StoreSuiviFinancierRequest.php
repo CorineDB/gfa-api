@@ -38,7 +38,7 @@ class StoreSuiviFinancierRequest extends FormRequest
                 ]);
             }],
             'trimestre' => 'integer|min:1|max:4',
-            'type' => 'required|integer|min:0|max:1',
+            'type' => 'sometimes|integer|min:0|max:1',
             'commentaire'          => 'sometimes',
         ];
     }

@@ -117,9 +117,9 @@ class ActiviteController extends Controller
         return $this->activiteService->ajouterDuree($request->all(),$id );
     }
 
-    public function modifierDuree(UpdateDureeRequest $request, $dureeId)
+    public function modifierDuree(UpdateDureeRequest $request, $activiteId, $dureeId)
     {
-        return $this->activiteService->modifierDuree($request->all(), $dureeId);
+        return $this->activiteService->modifierDuree($request->all(), $activiteId, $dureeId);
     }
 
     public function deplacer(DeplacerRequest $request, $id)

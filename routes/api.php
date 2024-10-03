@@ -669,6 +669,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('/{id}/taches', 'taches')->name('taches')->middleware('permission:voir-une-tache');
 
                     Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
+
+                    Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-activite');
+
+                    Route::post('{id}/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-activite');
                 });
             });
 
@@ -685,13 +689,25 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('/{id}/changeStatut', 'changeStatut')->name('changeStatut')/*->middleware('permission:voir-un-suivi')*/;
 
-                    Route::post('suivisV2', 'suivisV2')->name('suivisV2')->middleware('permission:voir-un-suivi');
+                    Route::post('/{id}/suivisV2', 'suivisV2')->name('suivisV2')->middleware('permission:voir-un-suivi');
 
                     Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-tache');
 
-                    Route::post('/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-tahe');
+                    Route::post('{id}/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-tache');
 
                     Route::post('/deplacer/{id}', 'deplacer')->name('deplacer')->middleware('permission:modifier-une-tache');
+                });
+            });
+
+            Route::apiResource('suiviFinanciers', 'SuiviFinancierController')->names('suivi-financiers');
+
+            Route::group(['prefix' =>  'suiviFinanciers', 'as' => 'suiviFinanciers'], function () {
+                Route::controller('SuiviFinancierController')->group(function () {
+
+                    Route::post('importation', 'importation')->name('importation')->middleware('permission:creer-un-suivi-financier');
+
+                    Route::post('filtres', 'filtre')->name('filtres')->middleware('permission:voir-un-suivi-financier');
+                    Route::post('trismestreASsuivre', 'trismestreASsuivre')->name('trismestreASsuivre')->middleware('permission:voir-un-suivi-financier');
                 });
             });
 

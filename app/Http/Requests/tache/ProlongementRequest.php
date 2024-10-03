@@ -32,7 +32,7 @@ class ProlongementRequest extends FormRequest
         }
 
         return [
-            'debut' => [ Rule::requiredIf(!$this->fin), 'after:'. $this->tache->debut, 'before_or_equal:'.$this->tache->fin],
+            'debut' => [ Rule::requiredIf(!$this->fin), 'before_or_equal:'.$this->tache->fin],
             'fin' => [ Rule::requiredIf(!$this->debut), 'after:'. $this->tache->fin]
         ];
     }
@@ -46,11 +46,11 @@ class ProlongementRequest extends FormRequest
     public function messages()
     {
         return [
-            'debut.required'            => 'La date de début du tache est obligatoire.',
-            'debut.after'               => 'La nouvelle date de fin doit être supérieur à la date de debut actuelle du tache.',
-            'debut.before_or_equal'     => 'La date de début doit être supérieur ou égale à la date de fin du tache.',
-            'fin.required'              => 'La date de fin du tache est obligatoire.',
-            'fin.after'                 => 'La nouvelle date de fin doit être supérieur à la date de fin actuelle du tache.',
+            "debut.required"            => "La date de début du tache est obligatoire.",
+            "debut.after"               => "La nouvelle date de fin doit être supérieur à la date de debut actuelle d'une tache.",
+            "debut.before_or_equal"     => "La date de début doit être supérieur ou égale à la date de fin du tache.",
+            "fin.required"              => "La date de fin du tache est obligatoire.",
+            "fin.after"                 => "La nouvelle date de fin doit être supérieur à la date de fin actuelle du tache.",
         ];
     }
 }

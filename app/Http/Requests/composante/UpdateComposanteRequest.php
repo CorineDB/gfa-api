@@ -53,7 +53,7 @@ class UpdateComposanteRequest extends FormRequest
 
             'nom' => 'sometimes|required|max:255',
             'statut' => 'sometimes|required|integer|min:-1|max:-1',
-            'poids' => 'sometimes|required',
+            'poids' => ['sometimes', 'numeric', 'min:0'],
             'projetId' => ['sometimes',  Rule::requiredIf(!$this->composanteId), new HashValidatorRule(new Projet())],
             'composanteId' => ['sometimes',  Rule::requiredIf(!$this->projetId), new HashValidatorRule(new Composante())],
 

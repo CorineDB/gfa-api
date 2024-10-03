@@ -6,8 +6,10 @@ use App\Http\Requests\tache\StoreTacheRequest;
 use App\Http\Requests\tache\UpdateTacheRequest;
 use App\Http\Requests\duree\StoreDureeRequest;
 use App\Http\Requests\duree\UpdateDureeRequest;
+use App\Http\Requests\suivi\StoreSuiviV2Request;
 use App\Http\Requests\tache\DeplacerRequest;
 use App\Http\Requests\tache\ProlongementRequest;
+use App\Services\SuiviService;
 use Core\Services\Interfaces\TacheServiceInterface;
 use Illuminate\Http\Request;
 
@@ -118,9 +120,9 @@ class TacheController extends Controller
         return $this->tacheService->ajouterDuree($request->all(), $id);
     }
 
-    public function modifierDuree(UpdateDureeRequest $request, $dureeId)
+    public function modifierDuree(UpdateDureeRequest $request, $tacheId, $dureeId)
     {
-        return $this->tacheService->modifierDuree($request->all(), $dureeId);
+        return $this->tacheService->modifierDuree($request->all(), $tacheId, $dureeId);
     }
 
     public function deplacer(DeplacerRequest $request, $id)
@@ -133,9 +135,9 @@ class TacheController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function suivisV2(StoreTacheRequest $request)
+    public function suivisV2(StoreSuiviV2Request $request, $id)
     {
-        return $this->tacheService->create($request->all());
+        return app(SuiviService::class)->suiviV2($request->all(), $id);
     }
     
 }

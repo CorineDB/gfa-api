@@ -152,15 +152,22 @@ class SuiviService extends BaseService implements SuiviServiceInterface
         }
     }
 
-    public function suiviV2(array $attributs) : JsonResponse
+    public function suiviV2(array $attributs, $tacheId = null) : JsonResponse
     {
         DB::beginTransaction();
 
         try
         {
-            if(!($tache = $this->tacheRepository->findById($attributs['tacheId']))) throw new Exception( "Cette tache n'existe pas", 500);
+            if(!($tache = $this->tacheRepository->findById($tacheId ?? $attributs['tacheId']))) throw new Exception( "Cette tache n'existe pas", 500);
 
-            $suivi = $tache->suivis()->create(array_merge($attributs, ['poidsActuel'=> $tache->poids, 'created_at' => $attributs['date'].' 00:00:00']));
+            //$suivi = $tache->suivis()->create(array_merge($attributs, ['poidsActuel'=> $tache->poids, 'created_at' => $attributs['date'].' 00:00:00']));
+
+            $suivi = $tache->suivis()->create(array_merge($attributs, ['poidsActuel'=> $attributs['poidsActuel'], 'created_at' => $attributs['date'].' 00:00:00']));
+
+            if($attributs["poidsActuel"]==100){
+
+                $tache->statut = 2;
+            }
 
             //$tache->statuts()->create(['etat' => 2]);
 
@@ -170,11 +177,7 @@ class SuiviService extends BaseService implements SuiviServiceInterface
 
             $suivi->save();
 
-            $tache->statut = 2;
-
-            $tache->save();
-
-            $tache =  $tache->fresh();
+            $tache->refresh();
 
             $suivi =  $suivi->fresh();
 

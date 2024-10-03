@@ -10,6 +10,7 @@ use Core\Services\Interfaces\TacheServiceInterface;
 use App\Models\Tache;
 use App\Http\Resources\TacheResource;
 use App\Jobs\GenererPta;
+use App\Repositories\DureeRepository;
 use App\Traits\Helpers\LogActivity;
 use App\Traits\Helpers\Pta;
 use Illuminate\Http\JsonResponse;
@@ -82,13 +83,16 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             if(!($activite = $this->activiteRepository->findById($attributs['activiteId']))) throw new Exception( "Cette activité n'existe pas", 500);
 
-            $activiteduree = $activite->durees->last();
+            //$activiteduree = $activite->durees->last();
 
-            if($activiteduree == null) throw new Exception( "L'activté n'a pas de durée en cours, veillez verifier cela", 500);
+            if(!(app(Tache::class)->verifiePlageDuree($attributs['debut'], $attributs['fin'], $activite))) throw new Exception( "La duree de la tache doit-etre comprise entre la plage de duree d'une activite", 500);
+
+
+            /*if($activiteduree == null) throw new Exception( "L'activté n'a pas de durée en cours, veillez verifier cela", 500);
 
             if($activiteduree->debut > $attributs['debut']) throw new Exception( "La date de début de la tache est antérieur à celui de l'activite", 500);
 
-            if($activiteduree->fin < $attributs['fin']) throw new Exception( "La date de fin de la tache est supérieur à celui de l'activite", 500);
+            if($activiteduree->fin < $attributs['fin']) throw new Exception( "La date de fin de la tache est supérieur à celui de l'activite", 500);*/
 
             $attributs = array_merge($attributs, ['activiteId' => $activite->id]);
 
@@ -262,11 +266,10 @@ class TacheService extends BaseService implements TacheServiceInterface
         {
             if(!($tache = $this->repository->findById($id))) throw new Exception( "Cette tache n'existe pas", 500);
 
+            if(!($tache->verifiePlageDuree($attributs['debut'], $attributs['fin']))) throw new Exception( "La duree de la tache doit-etre comprise entre la plage de duree d'une activite", 500);
 
-            $activiteduree = $tache->activite->durees->last();
-
-            if($activiteduree->debut > $attributs['debut']) throw new Exception( "La date de début de la tache est antérieur à celui de l'activite", 500);
-            if($activiteduree->fin < $attributs['fin']) throw new Exception( "La date de fin de la tache est supérieur à celui de l'activite", 500);
+            //if($activiteduree->debut > $attributs['debut']) throw new Exception( "La date de début de la tache est antérieur à celui de l'activite", 500);
+            //if($activiteduree->fin < $attributs['fin']) throw new Exception( "La date de fin de la tache est supérieur à celui de l'activite", 500);
 
             $duree = $tache->durees->last();
             if(isset($duree))
@@ -287,24 +290,53 @@ class TacheService extends BaseService implements TacheServiceInterface
         }
     }
 
-    public function modifierDuree(array $attributs, $id) : JsonResponse
+    public function modifierDuree(array $attributs, $tacheId, $dureeId) : JsonResponse
     {
         DB::beginTransaction();
 
         try
         {
-            if(!($duree = $this->dureeRepository->findById($id))) throw new Exception( "Cette durée n'existe pas", 500);
+            if(!($duree = app(DureeRepository::class)->findById($dureeId))) throw new Exception( "Cette durée n'existe pas", 500);
 
-            if(!($tache = $this->repository->findById($attributs['activiteId']))) throw new Exception( "Cette tache n'existe pas", 500);
+            if(!($tache = $this->repository->findById($tacheId))) throw new Exception( "Cette tache n'existe pas", 500);
 
-            $activiteduree = $tache->activite->duree->last();
-            if($activiteduree->debut > $attributs['debut']) throw new Exception( "La date de début de la tache est antérieur à celui de l'activite", 500);
-            if($activiteduree->fin < $attributs['fin']) throw new Exception( "La date de fin de la tache est supérieur à celui de l'activite", 500);
+            if(!($duree = $tache->durees()->where('id', $duree->id)->first())) throw new Exception( "Cette duree n'est pas celle de la tache", 500);
 
-            $duree = $tache->durees->last();
+            /*if($activiteduree->debut > $attributs['debut']) throw new Exception( "La date de début de la tache est antérieur à celui de l'activite", 500);
+            if($activiteduree->fin < $attributs['fin']) throw new Exception( "La date de fin de la tache est supérieur à celui de l'activite", 500);*/
+
+            //dd($tache->activite->durees);
+            if(!($tache->verifiePlageDuree($attributs['debut'], $attributs['fin']))) throw new Exception( "La duree de la tache doit-etre comprise entre la plage de duree d'une activite", 500);
+
+            /*$duree = $tache->durees->last();
             if(isset($duree))
             {
                 if(!($this->verifieDuree($duree->toArray(), $attributs))) throw new Exception( "Durée antérieur à celle qui était la", 500);
+            }*/
+
+            if($tache->durees->count() > 1){
+                foreach ($tache->durees as $key => $index) {
+                    if ($index->id === $duree->id) {
+                        if($key != 0 && $key != ($tache->durees->count()-1)){
+                            if($this->verifieDuree(($tache->durees[$key-1])->toArray(), $attributs)){
+                                throw new Exception("Durée antérieur à celle qui était la", 500);
+                            }
+                            if($attributs['fin'] >= $tache->durees[$key+1]['debut']) {
+                                throw new Exception("Durée superieur à celle qui suit", 500);
+                            }
+                        }
+                        else if($key === 0){
+                            if($attributs['fin'] >= $tache->durees[$key+1]['debut']) {
+                                throw new Exception("Durée superieur à celle qui suit", 500);
+                            }
+                        }
+                        else if($key === $tache->durees->count()){
+                            if($this->verifieDuree(($tache->durees[$key-2])->toArray(), $attributs)){
+                                throw new Exception("Durée antérieur à celle qui était la", 500);
+                            }
+                        }
+                    }
+                }
             }
 
             $duree->debut = $attributs['debut'];

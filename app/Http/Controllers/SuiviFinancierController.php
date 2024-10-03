@@ -36,7 +36,7 @@ class SuiviFinancierController extends Controller
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
-     */
+     */App\Http\Controllers\SuiviFinancierController@store
     public function index()
     {
         return $this->suiviFinancierService->all();
