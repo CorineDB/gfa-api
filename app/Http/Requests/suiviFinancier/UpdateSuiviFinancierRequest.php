@@ -29,7 +29,7 @@ class UpdateSuiviFinancierRequest extends FormRequest
     public function rules()
     {
         return [
-            'activiteId' => ['sometimes|required', new HashValidatorRule(new Activite())],
+            'activiteId' => ['required', new HashValidatorRule(new Activite())],
             'consommer' => 'sometimes|required|integer',
             'dateDeSuivie'    => [Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
                 $this->merge([

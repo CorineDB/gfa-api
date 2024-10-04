@@ -15,6 +15,7 @@ use App\Notifications\SuiviFinancierNotification;
 use App\Repositories\ActiviteRepository;
 use App\Repositories\SuiviFinancierRepository;
 use App\Traits\Helpers\HelperTrait;
+use App\Traits\Helpers\LogActivity;
 use App\Traits\Helpers\Pta;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
 use Carbon\Carbon;
@@ -24,7 +25,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Exception;
-use Illuminate\Notifications\Action;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -210,7 +211,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                                                             ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee'] - 1]])
                                             ->pluck('trimestre')->count();
 
-                if($passTrimestresCount < 4){
+                if($passTrimestresCount == 0){
                     throw new Exception("Vous devez d'abord faire le suivi de l'annee " . ($attributs['annee'] - 1), 500);
                 }
             }
@@ -265,24 +266,24 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
             //$plan = $activite->planDeDecaissement($attributs['trimestre'], $attributs['annee']);
 
-            if(!array_key_exists('dateSuivie', $attributs))
+            if(!array_key_exists('dateDeSuivie', $attributs))
             {
 
                 switch ($attributs['trimestre']) {
                     case 1:
-                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-03-31 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-03-31 ".date('h:i:s')]);
                         break;
 
                     case 2:
-                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-06-30 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-06-30 ".date('h:i:s')]);
                         break;
 
                     case 3:
-                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-09-30 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-09-30 ".date('h:i:s')]);
                         break;
 
                     case 4:
-                        $attributs = array_merge($attributs, ['dateSuivie' => $attributs['annee']."-12-31 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-12-31 ".date('h:i:s')]);
                         break;
 
                     default:
@@ -361,18 +362,57 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             if(array_key_exists('programmeId', $attributs))
                 unset($attributs['programmeId']);
 
-            if(array_key_exists('activiteId', $attributs))
+            if(!array_key_exists('activiteId', $attributs))
             {
-                $activite = Activite::find($attributs['activiteId']);
-
-                if($activite->composante->projet->programmeId != Auth::user()->programmeId) throw new Exception( "Cette activite n'est pas dans le programme en cours", 500);
+                throw new Exception( "L\identifiant de l'activite n'a pas ete renseigne.", 500);
             }
-            if(!($suivi = $this->repository->findById($suiviFinancierId))) throw new Exception( "Cet suivi n'existe pas", 500);
+
+            $activite = Activite::find($attributs['activiteId']);
+
+            if($activite->composante->projet->programmeId != Auth::user()->programmeId) throw new Exception( "Cette activite n'est pas dans le programme en cours", 500);
+
+            $durees = $activite->durees;
+            foreach($durees as $duree)
+            {
+                $debutTab = explode('-', $duree->debut);
+                $finTab = explode('-', $duree->fin);
+
+                if($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee'])
+                {
+                    $controle = 0;
+                    break;
+                }
+            }
+
+            if($controle){
+                throw new Exception("L'activite n'a aucune durée d'execution dans l'année precisé", 500);
+            }
+
+            if(!is_object($suiviFinancierId)){
+                if(!($suivi = $this->repository->findById($suiviFinancierId))) throw new Exception( "Cet suivi n'existe pas", 500);
+            }
+            else{
+                $suivi =$suiviFinancierId;
+            }
+
+            if($suivi->activiteId !== $activite->id) throw new Exception( "Ce suivi n'est pas celui de cette activite", 500);
 
             if(array_key_exists('trimestre', $attributs)) unset($attributs['trimestre']);
+            if(array_key_exists('annee', $attributs)) unset($attributs['annee']);
+            if(array_key_exists('dateDeSuivie', $attributs)) unset($attributs['dateDeSuivie']);
 
-            $suivi = $suivi->fill($attributs);
+            $suivi->fill($attributs)->save();
+            
+            $suivi->refresh();
+
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+
+            $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($activite));
+
+            LogActivity::addToLog("Modification", $message, get_class($activite), $activite->id);
+
             DB::commit();
+
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $suivi, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)

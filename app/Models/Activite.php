@@ -154,7 +154,7 @@ class Activite extends Model
                 'budgetNational' => $budgetNational];
     }
 
-    public function suiviFinanciers($annee, $type)
+    public function suiviFinanciers($annee = null, $type= null)
     {
         if(!isset($annee))
         {

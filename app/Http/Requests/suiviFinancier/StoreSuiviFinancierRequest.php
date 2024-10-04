@@ -37,7 +37,7 @@ class StoreSuiviFinancierRequest extends FormRequest
                     "annee" => Carbon::parse(request('dateDeSuivie'))->format('Y')
                 ]);
             }],
-            'annee' => ["required", "integer", "digits:4", /*'between:1900,' . now()->year*/], // Validates year between 1900 and the current year
+            'annee' => ["required", "integer", "digits:4", 'between:1900,' . now()->year], // Validates year between 1900 and the current year
             'trimestre' => 'integer|min:1|max:4',
             'type' => 'sometimes|integer|min:0|max:1',
             'commentaire'          => 'sometimes',
