@@ -37,9 +37,10 @@ class UpdateSuiviFinancierRequest extends FormRequest
                     "annee" => Carbon::parse(request('dateDeSuivie'))->format('Y')
                 ]);
             }],
-            'trimestre' => 'sometimes|required|integer|min:1|max:4',
-            'commentaire'          => 'sometimes',
-            'type' => 'sometimes|required|integer|min:0|max:1'
+            'annee' => ["required", "integer", "digits:4", 'between:1900,' . now()->year], // Validates year between 1900 and the current year
+            'trimestre' => 'sometimes|integer|min:1|max:4',
+            'type' => 'sometimes|integer|min:0|max:1',
+            'commentaire'          => 'nullable'
         ];
 
     }

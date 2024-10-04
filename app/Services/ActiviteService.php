@@ -207,7 +207,6 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
     {
         DB::beginTransaction();
 
-
         try {
 
             if (array_key_exists('position', $attributs))

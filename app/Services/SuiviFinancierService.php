@@ -17,6 +17,7 @@ use App\Repositories\SuiviFinancierRepository;
 use App\Traits\Helpers\HelperTrait;
 use App\Traits\Helpers\Pta;
 use Box\Spout\Reader\Common\Creator\ReaderEntityFactory;
+use Carbon\Carbon;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\SuiviFinancierServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -179,6 +180,10 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
             $activite = Activite::find($attributs['activiteId']);
 
+            if($activite->statut < 0 ){
+                throw new Exception("L'activite n'a pas encore démarré", 500);
+            }
+
             $durees = $activite->durees;
             foreach($durees as $duree)
             {
@@ -192,17 +197,28 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 }
             }
 
-            if($controle)
+            if($controle){
                 throw new Exception("L'activite n'a aucune durée d'execution dans l'année precisé", 500);
+            }
 
 
             /*if($activite->statut != 0 && $activite->statut != 1 )
                 throw new Exception("L'activite n'est ni en cours ni en retard, le suivi ne peux etre faire", 500);*/
+            
+            if((Carbon::parse($activite->dureeActivite->debut)->year <= $attributs['annee']-1)){
+                $passTrimestresCount = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+                                                            ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee'] - 1]])
+                                            ->pluck('trimestre')->count();
 
-            if($activite->statut < 0 )
-                throw new Exception("L'activite n'a pas encore démarré", 500);
+                if($passTrimestresCount < 4){
+                    throw new Exception("Vous devez d'abord faire le suivi de l'annee " . ($attributs['annee'] - 1), 500);
+                }
+            }
 
-            if($attributs['type'])
+            $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+                                                           ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']]])
+                                           ->pluck('trimestre');
+            /*if($attributs['type'])
                 $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
                                                            ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
                                                            ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Gouvernement())]])
@@ -212,13 +228,17 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
                                                            ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
                                                            ['attribut' => 'suivi_financierable_type', 'operateur' => '=', 'valeur' => get_class(new Bailleur())]])
-                                           ->pluck('trimestre');
+                                           ->pluck('trimestre');*/
 
             // if(!(count($trimestres)) && $attributs['trimestre'] != 1)
             //     throw new Exception("Vous devez d'abord faire le suivi du trimestre 1", 500);
-            if(in_array($attributs['trimestre'], $trimestres))
-                throw new Exception(" suivi du trimestre {$attributs['trimestre']} a été déja effectufié", 500);
 
+            // Ensure $trimestres is an array
+            $trimestresArray = is_array($trimestres) ? $trimestres : $trimestres->toArray();
+
+            if(in_array($attributs['trimestre'], $trimestresArray)){
+                throw new Exception(" suivi du trimestre {$attributs['trimestre']} a été déja effectufié", 500);
+            }
 
 
             $nombreDeTrimestre = count($trimestres);
