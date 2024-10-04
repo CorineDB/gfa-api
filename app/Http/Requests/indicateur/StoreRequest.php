@@ -4,6 +4,7 @@ namespace App\Http\Requests\indicateur;
 
 use App\Models\Bailleur;
 use App\Models\Categorie;
+use App\Models\IndicateurValueKey;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
@@ -38,13 +39,23 @@ class StoreRequest extends FormRequest
 
             'anneeDeBase'   => 'required|date_format:Y|before_or_equal:'.now()->format("Y"),
 
-            'valeurDeBase'  => 'required',
+            "type_de_variable" => ["required", "in:quantitatif,qualitatif,dichotomique"],
+
+            "hasMultipleValue" => ["required", "boolean:false"],
+
+            'valeurDeBase'          => ['required', "array", "min:1"],
+            'valeurDeBase.*.key'    => ['distinct', new HashValidatorRule(new IndicateurValueKey())],
+            'valeurDeBase.*.value'  => ['required'],
 
             'uniteeMesureId'   => ['required', new HashValidatorRule(new Unitee())],
 
             'categorieId'   => ['nullable', new HashValidatorRule(new Categorie())],
 
-            'bailleurId'    => [Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
+            'value_keys'                    => [Rule::requiredIf(request()->input('hasMultipleValue')), "array", "min:1"],
+            'value_keys.*.id'               => [Rule::requiredIf(request()->input('hasMultipleValue')), "string", 'distinct', new HashValidatorRule(new IndicateurValueKey())],
+            'value_keys.*.uniteeMesureId'   => ["nullable", "string", new HashValidatorRule(new Unitee())],
+
+            //'bailleurId'    => [Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
 
         ];
     }

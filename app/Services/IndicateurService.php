@@ -7,6 +7,7 @@ use App\Http\Resources\indicateur\IndicateursResource;
 use App\Http\Resources\suivi\SuiviIndicateurResource;
 use App\Http\Resources\suivis\SuivisResource;
 use App\Models\Indicateur;
+use App\Models\IndicateurValueKey;
 use App\Models\Unitee;
 use App\Repositories\BailleurRepository;
 use App\Repositories\CategorieRepository;
@@ -239,11 +240,42 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $unitee = Unitee::find($attributs['uniteeMesureId']);
 
-            if ($unitee->type && !ctype_digit($attributs['valeurDeBase'])) {
+            /*if ($unitee->type && !ctype_digit($attributs['valeurDeBase'])) {
                 throw new Exception("La valeur de base ne doit pas contenir de lettre à cause de l'unitée de mesure sélectionnée", 422);
+            }*/
+
+            //$indicateur = $this->repository->fill(array_merge($attributs, ["bailleurId" => $attributs['bailleurId'], "uniteeMesureId" => $attributs['uniteeMesureId'], "categorieId" => $attributs['categorieId']]));
+
+            $valeursDeBase = $attributs["valeurDeBase"];
+            unset($attributs["valeurDeBase"]);
+            unset($attributs["bailleurId"]);
+            $indicateur =  auth()->user()->profilable->indicateurs()->create($attributs);
+            //$indicateur = $this->repository->fill($attributs);
+
+            foreach ($attributs["value_keys"] as $key => $value_key) {
+
+                $indicateurValueKey = IndicateurValueKey::find($value_key['id']);
+                $uniteeMesure = isset($value_key["uniteeMesureId"]) ? (optional(Unitee::find($value_key['uniteeMesureId'])) ?? $indicateurValueKey->uniteeMesure) : $indicateurValueKey->uniteeMesure;
+                $indicateur->valueKeys()->attach($indicateurValueKey->id, ["uniteeMesureId" => $uniteeMesure->id, "type" => $uniteeMesure->nom ]);
+            }
+            
+            $indicateur->refresh();
+
+            $valeurDeBase = [];
+
+            //$indicateurKeys = $indicateur->valueKeys()->whereIn("indicateur_value_keys.id", collect($valeursDeBase)->pluck('key')->toArray())->get();
+
+            foreach ($valeursDeBase as $key => $item) {
+                if(($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $item['key'])->first())){
+                    $valeur = $indicateur->valeursDeBase()->create(["value" => $item["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+
+                    array_push($valeurDeBase, ["key" => $key->key, "value" => $valeur->value]);
+                }
             }
 
-            $indicateur = $this->repository->fill(array_merge($attributs, ["bailleurId" => $attributs['bailleurId'], "uniteeMesureId" => $attributs['uniteeMesureId'], "categorieId" => $attributs['categorieId']]));
+            $indicateur->refresh();
+
+            $indicateur->valeurDeBase = $valeurDeBase;
 
             $this->changeState(0);
 

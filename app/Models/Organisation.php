@@ -96,7 +96,7 @@ class Organisation extends Model
 
     public function indicateurs()
     {
-        return $this->hasMany(Indicateur::class, 'indicateurable');
+        return $this->morphMany(Indicateur::class, 'indicateurable');
     }
 
     /**

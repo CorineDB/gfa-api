@@ -85,4 +85,9 @@ class SuiviIndicateur extends Model
     }
 
 
+    public function valeursCible()
+    {
+        return $this->morphMany(IndicateurValeur::class, 'indicateur_valueable');
+    }
+
 }

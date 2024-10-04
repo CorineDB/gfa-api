@@ -24,7 +24,7 @@ class OrganisationResource extends JsonResource
             'code' => $this->when($this->code, $this->code),
             'user' => $this->whenLoaded('user', new UserResource($this->user)),
             //"user" => new UserResource($this->user),
-            'projet' => $this->whenLoaded($this->projet, $this->projet),
+            'projet' => $this->whenLoaded("projet", $this->projet),
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }

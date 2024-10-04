@@ -69,7 +69,7 @@ class IndicateurController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        $request["bailleurId"] = (array_key_exists("bailleurId", $request->all()) && isset($request["bailleurId"])) ? $request["bailleurId"] : Auth::user()->bailleur->id;
+        //$request["bailleurId"] = (array_key_exists("bailleurId", $request->all()) && isset($request["bailleurId"])) ? $request["bailleurId"] : Auth::user()->bailleur->id;
 
         return $this->indicateurService->create($request->all());
     }

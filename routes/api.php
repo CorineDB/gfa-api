@@ -711,6 +711,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
             });
 
+            Route::apiResource('indicateur-value-keys', 'IndicateurValueKeyController')->names('indicateur-value-keys')
+                ->parameters([
+                    'indicateur-value-keys' => 'indicateur_value_key',
+                ]);
+
             Route::apiResource('types-de-gouvernance', 'TypeDeGouvernanceController')->names('types-de-gouvernance')
                 ->parameters([
                     'types-de-gouvernance' => 'type_de_gouvernance',

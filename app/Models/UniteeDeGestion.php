@@ -81,6 +81,11 @@ class UniteeDeGestion extends Model
     {
         return $this->morphOne(Projet::class, 'projetable');//->where('programmeId', $this->user->programmeId)->first();
     }
+
+    public function indicateurs()
+    {
+        return $this->morphMany(Indicateur::class, 'indicateurable');
+    }
     
     /**
      * Charger la liste des outcomes d'un projet

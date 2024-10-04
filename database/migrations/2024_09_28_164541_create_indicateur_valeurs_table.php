@@ -17,17 +17,23 @@ class CreateIndicateurValeursTable extends Migration
             Schema::create('indicateur_valeurs', function (Blueprint $table) {
                 $table->id();
                 $table->morphs('indicateur_valueable', 'valueable');
-                $table->bigInteger('indicateurValueKeyId')->unsigned();
-                $table->foreign('indicateurValueKeyId')->references('id')->on('indicateur_value_keys')
+                $table->bigInteger('indicateurValueKeyMapId')->unsigned();
+                $table->foreign('indicateurValueKeyMapId', 'indicateurKeyId')->references('id')->on('indicateur_value_keys_mapping')
                     ->onDelete('cascade')
                     ->onUpdate('cascade');
                 $table->string('value')->nullable();
                 $table->text('commentaire')->nullable();
-                $table->bigInteger('indicateurId')->unsigned()->nullable();
-                $table->foreign('indicateurId')->references('id')->on('indicateurs')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade');
                 $table->timestamps();
+                $table->softDeletes();
+            });
+        }
+
+
+        if(Schema::hasTable('indicateurs')){
+            Schema::table('indicateurs', function (Blueprint $table) {
+                if(!Schema::hasColumn('indicateurs', 'hasMultipleValue')){
+                    $table->boolean('hasMultipleValue')->default(false);
+                }
             });
         }
     }

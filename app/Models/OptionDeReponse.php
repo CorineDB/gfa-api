@@ -41,7 +41,7 @@ class OptionDeReponse extends Model
                 $option_de_reponse->update([
                     'nom' => time() . '::' . $option_de_reponse->nom
                 ]);
-                $option_de_reponse->indicateurs_de_reponse()->delete();
+                $option_de_reponse->indicateurs_de_gouvernance()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {

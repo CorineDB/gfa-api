@@ -16,7 +16,7 @@ class ValeurCibleIndicateur extends Model
 
 
 
-        /**
+    /**
     * Transtypage des attributs de type json
     *
     * @var array
@@ -89,5 +89,10 @@ class ValeurCibleIndicateur extends Model
     public function scopeSuivisTrimestrielIndicateurMOD($query, $trimestre)
     {
         return $query->where('trimestre', $trimestre);
+    }
+
+    public function valeursCible()
+    {
+        return $this->morphMany(IndicateurValeur::class, 'indicateur_valueable');
     }
 }

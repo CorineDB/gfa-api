@@ -20,7 +20,7 @@ class Indicateur extends Model
 
     protected $dates = ["deleted_at"];
 
-    protected $fillable = ["nom", "description", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", "sourceDeVerification", "kobo", "koboVersion", "valeurCibleTotal"];
+    protected $fillable = ["nom", "description", "type_de_variable", "hasMultipleValue", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", "sourceDeVerification", "kobo", "koboVersion", "valeurCibleTotal", "indicateurable_id", "indicateurable_type"];
 
     protected static function boot() {
         parent::boot();
@@ -98,9 +98,23 @@ class Indicateur extends Model
         return $this->morphMany(ValeurCibleIndicateur::class, 'cibleable');
     }
 
+    public function valeursDeBase()
+    {
+        return $this->morphMany(IndicateurValeur::class, 'indicateur_valueable');
+    }
+
     public function programme()
     {
         return $this->belongsTo(Programme::class, 'programmeId');
     }
 
+    public function indicateurable()
+    {
+        return $this->morphTo();
+    }
+
+    public function valueKeys()
+    {
+        return $this->belongsToMany(IndicateurValueKey::class, 'indicateur_value_keys_mapping', 'indicateurId', 'indicateurValueKeyId')->withPivot(["id", "uniteeMesureId", "type"]);
+    }
 }

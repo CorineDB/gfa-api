@@ -58,10 +58,10 @@ class UpdateRequest extends FormRequest
     {
 
         return [
-            'nom'                       => 'sometimes|required|max:255',
-            'contact'                   => ['sometimes|required', 'min:8', 'max:24', Rule::unique('users')->ignore($this->unitee_de_gestion->user)->whereNull('deleted_at')],
-            'email'                     => ['sometimes|required','email','max:255', Rule::unique('users')->ignore($this->unitee_de_gestion->user)->whereNull('deleted_at')],
-            'programmeId'               => ['sometimes|required', new HashValidatorRule(new Programme()), function(){
+            'nom'                       => 'sometimes|max:255',
+            'contact'                   => ['sometimes', 'min:8', 'max:24', Rule::unique('users')->ignore($this->unitee_de_gestion->user)->whereNull('deleted_at')],
+            'email'                     => ['sometimes','email','max:255', Rule::unique('users')->ignore($this->unitee_de_gestion->user)->whereNull('deleted_at')],
+            'programmeId'               => ['sometimes', new HashValidatorRule(new Programme()), function(){
 
                 if(is_string($this->unitee_de_gestion))
                 {

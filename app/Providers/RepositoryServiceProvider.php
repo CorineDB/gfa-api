@@ -57,9 +57,12 @@ use App\Repositories\AuditRepository;
 use App\Repositories\CritereDeGouvernanceRepository;
 use App\Repositories\EnqueteDeCollecteRepository;
 use App\Repositories\IndicateurDeGouvernanceRepository;
+use App\Repositories\IndicateurValeurRepository;
+use App\Repositories\IndicateurValueKeyRepository;
 use App\Repositories\OptionDeReponseRepository;
 use App\Repositories\OrganisationRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
+use App\Repositories\SuiviCheckListComRepository;
 use App\Repositories\TypeDeGouvernanceRepository;
 use App\Services\AuthService;
 use App\Services\CategorieService;
@@ -125,6 +128,7 @@ use App\Services\AuditService;
 use App\Services\CritereDeGouvernanceService;
 use App\Services\EnqueteDeCollecteService;
 use App\Services\IndicateurDeGouvernanceService;
+use App\Services\IndicateurValueKeyService;
 use App\Services\OptionDeReponseService;
 use App\Services\OrganisationService;
 use App\Services\PrincipeDeGouvernanceService;
@@ -196,6 +200,7 @@ use Core\Services\Interfaces\AuditServiceInterface;
 use Core\Services\Interfaces\CritereDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\EnqueteDeCollecteServiceInterface;
 use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\IndicateurValueKeyServiceInterface;
 use Core\Services\Interfaces\OptionDeReponseServiceInterface;
 use Core\Services\Interfaces\OrganisationServiceInterface;
 use Core\Services\Interfaces\PrincipeDeGouvernanceServiceInterface;
@@ -264,6 +269,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, AlerteConfigRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, ReponseRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, AuditRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, IndicateurValeurRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, IndicateurValueKeyRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, OrganisationRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, TypeDeGouvernanceRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, PrincipeDeGouvernanceRepository::class);
@@ -342,6 +349,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(IndicateurDeGouvernanceServiceInterface::class, IndicateurDeGouvernanceService::class);
         $this->app->bind(OptionDeReponseServiceInterface::class, OptionDeReponseService::class);
         $this->app->bind(EnqueteDeCollecteServiceInterface::class, EnqueteDeCollecteService::class);
+        $this->app->bind(IndicateurValueKeyServiceInterface::class, IndicateurValueKeyService::class);
         
     }
 
