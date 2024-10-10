@@ -20,7 +20,15 @@ class IndicateursDeGouvernanceResource extends JsonResource
             'description'               => $this->description,
             'type'                      => $this->type,
             'can_have_multiple_reponse' => $this->can_have_multiple_reponse,
-            'options_de_reponse'        => OptionsDeReponseResource::collection($this->options_de_reponse)
+            'principeable' => $this->when($this->principeable, function(){
+                return [
+
+                    'id'                        => $this->principeable->secure_id,
+                    'nom'                       => $this->principeable->nom,
+                    'description'               => $this->principeable->description,
+                ];
+            }),
+            'options_de_reponse'        => OptionDeReponseResource::collection($this->options_de_reponse)
         ];
     }
 }

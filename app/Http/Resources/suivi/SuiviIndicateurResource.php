@@ -19,6 +19,7 @@ class SuiviIndicateurResource extends JsonResource
         return [
             "id" => $this->secure_id,
             "trimestre" => $this->trimestre,
+            "dateSuivie" => $this->dateSuivie,
             "cumul" => $this->cumul(),
             "valeurRealise" => $this->valeurRealise,
             "valeurCible" => $this->valeurCible ? [

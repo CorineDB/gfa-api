@@ -4,7 +4,7 @@ namespace App\Http\Resources\gouvernance;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PrincipesDeGouvernanceResource extends JsonResource
+class OptionDeReponseResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,8 @@ class PrincipesDeGouvernanceResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'nom' => $this->nom,
-            'description' => $this->description,
-            'typeDeGouvernanceId' => $this->type_de_gouvernance->secure_id
+            'libelle' => $this->libelle,
+            'note' => $this->note
         ];
     }
 }

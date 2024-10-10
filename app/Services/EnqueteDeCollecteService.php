@@ -2,17 +2,16 @@
 
 namespace App\Services;
 
+use App\Http\Resources\gouvernance\EnqueteDeCollecteResource;
 use App\Http\Resources\gouvernance\EnqueteDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationDePerceptionResource;
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationFactuelleResource;
-use App\Models\Organisation;
 use App\Models\ReponseCollecter;
 use App\Repositories\EnqueteDeCollecteRepository;
 use App\Repositories\OrganisationRepository;
 use App\Repositories\OptionDeReponseRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
 use App\Repositories\TypeDeGouvernanceRepository;
-use App\Repositories\UserRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\EnqueteDeCollecteServiceInterface;
 use Exception;
@@ -46,6 +45,92 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
         parent::__construct($enqueteDeCollecteRepository);
     }
 
+    public function all(array $columns = ['*'], array $relations = []): JsonResponse
+    {
+        try
+        {
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => EnqueteDeCollecteResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function findById($enqueteDeCollecte, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($enqueteDeCollecte) && !($enqueteDeCollecte = $this->repository->findById($enqueteDeCollecte))) throw new Exception("Enquete introuvable", Response::HTTP_NOT_FOUND);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new EnqueteDeCollecteResource($enqueteDeCollecte), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function create(array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $enqueteDeCollecte = $this->repository->create($attributs);
+
+            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+
+            $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($enqueteDeCollecte));
+
+            LogActivity::addToLog("Enrégistrement", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
+
+            DB::commit();
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EnqueteDeCollecteResource($enqueteDeCollecte), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function update($enqueteDeCollecte, array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+
+            if(!is_object($enqueteDeCollecte) && !($enqueteDeCollecte = $this->repository->findById($enqueteDeCollecte))) throw new Exception("Enquete introuvable", Response::HTTP_NOT_FOUND);
+
+            $this->repository->update($enqueteDeCollecte->id, $attributs);
+
+            $enqueteDeCollecte->refresh();
+
+            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+
+            $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($enqueteDeCollecte));
+
+            LogActivity::addToLog("Modification", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
+
+            DB::commit();
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EnqueteDeCollecteResource($enqueteDeCollecte), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Liste des reponses de l'enquete.
      *
@@ -57,7 +142,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
         try {
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
-                throw new Exception("Cette enquete n'existe pas", 500);
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
 
             $responses = new EnqueteDeGouvernanceResource($enqueteDeCollecte);
 
@@ -83,24 +168,26 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
         try {
 
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
-                throw new Exception("Cette enquete n'existe pas", 500);
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
 
             if (!($organisation = app(OrganisationRepository::class)->findById($attributs["organisationId"])))
-                throw new Exception("Cette organisation n'existe pas", 500);
+                throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
 
 
             $data = [];
             foreach ($attributs["response_data"]["factuel"] as $key => $factuel_data) {
 
                 if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($factuel_data["optionDeReponseId"])))
-                    throw new Exception("Not found", 500);
+                    throw new Exception("Not found", Response::HTTP_NOT_FOUND);
+
+                dd($optionDeReponse);
 
                 array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $factuel_data)));
             }
 
             foreach ($attributs["response_data"]["perception"] as $key => $perception_data) {
                 if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($perception_data["optionDeReponseId"])))
-                    throw new Exception("Not found", 500);
+                    throw new Exception("Not found", Response::HTTP_NOT_FOUND);
                 array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $perception_data)));
             }
 
@@ -135,10 +222,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
         try {
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
-                throw new Exception("Cette enquete n'existe pas", 500);
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
             
             if (!($organisation = app(OrganisationRepository::class)->findById($organisationId)))
-                throw new Exception("Cette orgsnisation n'existe pas", 500);
+                throw new Exception("Cette orgsnisation n'existe pas", Response::HTTP_NOT_FOUND);
 
             $resultats = $enqueteDeCollecte->notes_resultat()->where($attributs)->get("*");
 
@@ -153,10 +240,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
         try {
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
-                throw new Exception("Cette enquete n'existe pas", 500);
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
             
             if (!($organisation = app(OrganisationRepository::class)->findById($organisationId)))
-                throw new Exception("Cette orgsnisation n'existe pas", 500);
+                throw new Exception("Cette orgsnisation n'existe pas", Response::HTTP_NOT_FOUND);
 
             $resultats = [
                 'id' => $organisation->secure_id,
@@ -182,11 +269,15 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                 'principes_de_gouvernance.indicateurs_criteres_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
                     $query->selectRaw('
                         indicateurs_de_gouvernance.*, 
+                        SUM(options_de_reponse.note) as note
+                    ')/*
+                    $query->selectRaw('
+                        indicateurs_de_gouvernance.*, 
                         SUM(CASE 
                             WHEN options_de_reponse.slug = "oui" THEN 1 
                             ELSE 0 
                         END) as note
-                    ')
+                    ')*/
                     ->leftJoin('reponses_collecter', 'indicateurs_de_gouvernance.id', '=', 'reponses_collecter.indicateurDeGouvernanceId')
                     ->leftJoin('options_de_reponse', 'reponses_collecter.optionDeReponseId', '=', 'options_de_reponse.id')
                     ->where('reponses_collecter.enqueteDeCollecteId', $enqueteId)
@@ -222,10 +313,8 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                 } else {
                     $type->indice_factuel = 0; // Handle case with no indicators
                 }
-            });            
+            });
 
-            return $types;
-    
             return FicheSyntheseEvaluationFactuelleResource::collection($types);
     }
 
@@ -241,6 +330,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                                 $query->where('reponses_collecter.enqueteDeCollecteId', $enqueteId)
                                     ->where('reponses_collecter.organisationId', $organisationId);
                             }])->addSelect([\DB::raw("
+                                        (options_de_reponse.note) AS note
+                                    ")
+                                ]);/*
+                                ->addSelect([\DB::raw("
                                         (
                                             CASE 
                                                 WHEN options_de_reponse.slug = 'ne-peux-repondre' THEN 1
@@ -253,7 +346,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                                             END
                                         ) AS note
                                     ")
-                                ]); // Ensure correct fields are selected
+                                ]);*/
                         }]);
                     }
                 ])
@@ -263,7 +356,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                     $principe->indicateurs_de_gouvernance->each(function($indicateur) use(&$moyPQO){ // Iterate over each principle
                         
                         $nbreR = $indicateur->options_de_reponse->sum('reponses_count'); // Sum the notes
-                        $moyPQO += $indicateur->moyPQO = $indicateur->options_de_reponse->each(function($option) use(&$nbreR){
+                        $moyPQOi = $indicateur->moyPQO = $indicateur->options_de_reponse->each(function($option) use(&$nbreR){
 
                             if ($option->note > 0 && $option->reponses_count > 0) {
         
@@ -272,7 +365,17 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                                 $option->moyPQOi = 0; // Handle case with no indicators
                             }
 
-                        })->sum('moyPQOi') / $nbreR;
+                        })->sum('moyPQOi');
+    
+                        // Calculate indice_de_perception
+                        if ($nbreR > 0 && $moyPQOi > 0) {
+        
+                            $moyPQO += $moyPQOi / $nbreR;
+                        } else {
+                            $moyPQO += 0; // Handle case with no indicators
+                        }
+                        
+                        //$moyPQO += $moyPQOi / $nbreR;
 
                     });
     
@@ -303,10 +406,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
         try {
 
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
-                throw new Exception("Cette enquete n'existe pas", 500);
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
 
             if (!app(OrganisationRepository::class)->findById($attributs["organisationId"]))
-                throw new Exception("Cette organisation n'existe pas", 500);
+                throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
 
 
             $note = $enqueteDeCollecte->notes_resultat()->create(array_merge($attributs, ["userId" => auth()->id()]));

@@ -14,8 +14,6 @@ class ValeurCibleIndicateur extends Model
 
     protected $table = "valeur_cible_d_indicateurs";
 
-
-
     /**
     * Transtypage des attributs de type json
     *
@@ -23,6 +21,15 @@ class ValeurCibleIndicateur extends Model
     */
     protected $casts = [
         'valeurCible'  => 'array'
+    ];
+
+    /**
+    * Transtypage des attributs de type json
+    *
+    * @var array
+    */
+    protected $appends = [
+        'valeur_realiser'
     ];
 
     /* Les attributs qui sont assignés en masse */
@@ -94,5 +101,25 @@ class ValeurCibleIndicateur extends Model
     public function valeursCible()
     {
         return $this->morphMany(IndicateurValeur::class, 'indicateur_valueable');
+    }
+
+    public function getValeurRealiserAttribute()
+    {
+        $totals = [];
+
+        //return $this->suivisIndicateur;
+
+        $this->suivisIndicateur->pluck("valeurRealise")->each(function ($item) use (&$totals) {
+            foreach ($item as $key => $value) {
+                if (is_numeric($value)) {
+                    if (!isset($totals[$key])) {
+                        $totals[$key] = 0;
+                    }
+                    $totals[$key] += $value;
+                }
+            }
+        });
+        
+        return $totals;
     }
 }

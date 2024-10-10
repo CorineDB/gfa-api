@@ -31,6 +31,7 @@ class SuiviIndicateur extends Model
     /* Les attributs qui sont assignés en masse */
     protected $fillable = [
         'trimestre',
+        'estValider',
         'valeurRealise',
         'valeurCibleId', 'commentaire', 'dateSuivie'
     ];
@@ -62,9 +63,14 @@ class SuiviIndicateur extends Model
 
     public function cumul()
     {
+        /*$suivis = SuiviIndicateur::/*where('dateSuivie', '<=', $this->dateSuivie)->
+                                   where('id', '!=', $this->id)->
+                                   get();*/
+
         $suivis = SuiviIndicateur::/*where('dateSuivie', '<=', $this->dateSuivie)->*/
                                    where('id', '!=', $this->id)->
                                    get();
+
         $cumul = [];
 
         foreach($this->valeurRealise as $key => $valeur)
@@ -84,8 +90,7 @@ class SuiviIndicateur extends Model
         return $cumul;
     }
 
-
-    public function valeursCible()
+    public function valeursRealiser()
     {
         return $this->morphMany(IndicateurValeur::class, 'indicateur_valueable');
     }

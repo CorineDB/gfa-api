@@ -20,27 +20,38 @@ class IndicateurResource extends JsonResource
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "description" => $this->description,
-            "valeurCibleTotal" => $this->valeurCibleTotal,
             "kobo" => $this->kobo,
             "koboVersion" => $this->koboVersion,
-            "anneeDeBase" => $this->anneeDeBase,
-            "valeurDeBase" => $this->valeurDeBase,
-            "valueKeys" => $this->valueKeys,
-            "indicateur_owner" => $this->indicateurable,
             "categorie" => $this->categorie ? [
                 "id" => $this->categorie->secure_id,
-                "nom" => $this->categorie->nom
+                "nom" => $this->categorie->nom,
+                "categorieId" => $this->categorie->secure_id,
             ] : null,
+            "agreger" => $this->agreger,
+            "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
+            "unitee_mesure" => $this->when($this->unitee_mesure, [
+                "id" => $this->unitee_mesure->secure_id,
+                "nom" => $this->unitee_mesure->nom
+            ]),
+            "anneeDeBase" => $this->anneeDeBase,
+            "valeurDeBase" => $this->valeurDeBase,
+            "valeursCible" => $this->valeursCible ? $this->valeursCible->map(function($valeurCible){
+                return [
+                    "id" => $valeurCible->secure_id,
+                    "annee" => $valeurCible->annee,
+                    "valeurCible" => $valeurCible->valeurCible,
+                    "valeur_realiser" => $valeurCible->valeur_realiser
+                ];
+            })  : null,
+            "valeurCibleTotal" => $this->valeurCibleTotal(),
+            "valeurRealiserTotal" => $this->valeurRealiserTotal(),
+            
+            "taux_realisation" => $this->taux_realisation,
             /*"bailleur" => [
                 "id" => $this->bailleur->secure_id,
                 "nom" => $this->bailleur->user->nom
-            ],
-            "unitee_mesure" => [
-                "id" => $this->unitee_mesure->secure_id,
-                "nom" => $this->unitee_mesure->nom
             ],*/
-            //"unitees_mesure" => UniteeMesureResource::collection($this->unitees_mesure),
-              "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
 }

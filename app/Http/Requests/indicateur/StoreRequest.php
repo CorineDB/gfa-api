@@ -8,6 +8,7 @@ use App\Models\IndicateurValueKey;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -34,29 +35,55 @@ class StoreRequest extends FormRequest
     public function rules()
     {
 
+        $programme = auth()->user()->programme;
+
         return [
-            'nom'           => 'required',
+            'nom'                       => 'required|max:255|unique:indicateurs,nom',
+            'sources_de_donnee'             => 'required',
+            'frequence_de_la_collecte'      => 'required',
+            'methode_de_la_collecte'        => 'required',
+            'responsable'                   => 'required',
 
-            'anneeDeBase'   => 'required|date_format:Y|before_or_equal:'.now()->format("Y"),
+            'anneeDeBase'                   => ['required', 'date_format:Y', 'after_or_equal:'.Carbon::parse($programme->debut)->year, 'before_or_equal:'.Carbon::parse($programme->fin)->year, 'before_or_equal:'.now()->format("Y")],
 
-            "type_de_variable" => ["required", "in:quantitatif,qualitatif,dichotomique"],
+            "type_de_variable"              => ["required", "in:quantitatif,qualitatif,dichotomique"],
 
-            "hasMultipleValue" => ["required", "boolean:false"],
+            "agreger"                       => ["required", "boolean:false"],
 
-            'valeurDeBase'          => ['required', "array", "min:1"],
-            'valeurDeBase.*.key'    => ['distinct', new HashValidatorRule(new IndicateurValueKey())],
-            'valeurDeBase.*.value'  => ['required'],
+            'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
 
-            'uniteeMesureId'   => ['required', new HashValidatorRule(new Unitee())],
-
-            'categorieId'   => ['nullable', new HashValidatorRule(new Categorie())],
-
-            'value_keys'                    => [Rule::requiredIf(request()->input('hasMultipleValue')), "array", "min:1"],
-            'value_keys.*.id'               => [Rule::requiredIf(request()->input('hasMultipleValue')), "string", 'distinct', new HashValidatorRule(new IndicateurValueKey())],
+            'categorieId'                   => ['nullable', new HashValidatorRule(new Categorie())],
+            
+            'value_keys'                    => [Rule::requiredIf(request()->input('agreger')), request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
+                if(!request()->input('agreger') && (is_array(request()->input('value_keys')))){
+                    $fail("Champ non requis.");
+                }
+            }, request()->input('agreger') ? "min:1" : ""],
+            'value_keys.*.id'               => [Rule::requiredIf(request()->input('agreger')), "string", 'distinct', new HashValidatorRule(new IndicateurValueKey())],
             'value_keys.*.uniteeMesureId'   => ["nullable", "string", new HashValidatorRule(new Unitee())],
 
-            //'bailleurId'    => [Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
 
+            'valeurDeBase'                  => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
+                if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){
+                    $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
+                }
+                
+            }, request()->input('agreger') ? "min:".count(request()->input('value_keys')) : "", request()->input('agreger') ? "max:".count(request()->input('value_keys')) : ""],
+            'valeurDeBase.*.keyId'            => ['distinct', new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
+
+                // Get the index from the attribute name
+                preg_match('/valeurDeBase\.(\d+)\.keyId/', $attribute, $matches);
+                $index = $matches[1] ?? null; // Get the index if it exists
+                
+                // Ensure each keyId in valeurDeBase is one of the value_keys.id
+                if (!in_array(request()->input('valeurDeBase.*.keyId')[$index], collect(request()->input('value_keys.*.id'))->toArray())) {
+                    $fail("Le keyId n'est pas dans value_keys.");
+                }
+    
+            }],
+            'valeurDeBase.*.value'          => ['required'],
+
+            //'bailleurId'    => [Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
         ];
     }
 

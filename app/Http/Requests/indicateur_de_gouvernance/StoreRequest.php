@@ -29,13 +29,30 @@ class StoreRequest extends FormRequest
     {
 
         // Base rules
-        $rules = [
+        return [
             'nom'                       => 'required|max:255|unique:indicateurs_de_gouvernance,nom',
             'type'                      => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description'               => 'nullable|max:255',
-            'can_have_multiple_reponse' => 'boolean',
+            'can_have_multiple_reponse' => ['required','boolean'],
             'options_de_reponse'        => ['required', 'array', 'min:2'],
-            'options_de_reponse.*'      => ['required', 'distinct', new HashValidatorRule(new OptionDeReponse())]
+            'options_de_reponse.*'      => ['required', 'distinct', new HashValidatorRule(new OptionDeReponse())],
+            'principeable_id'           => ['required',
+                                            function ($attribute, $value, $fail) {
+                                                if ($this->type === 'perception') {
+                                                    $validatorRule = new HashValidatorRule(new PrincipeDeGouvernance());
+                                                } elseif ($this->type === 'factuel') {
+                                                    $validatorRule = new HashValidatorRule(new CritereDeGouvernance());
+                                                } else {
+                                                    $fail('Invalid type specified for validation.');
+                                                    return;
+                                                }
+                                                
+                                                // Apply the validator rule manually
+                                                if (!$validatorRule->passes($attribute, $value)) {
+                                                    $fail($validatorRule->message());
+                                                }
+                                            }
+                                        ]
         ];
 
         // Conditionally apply validation based on 'type'

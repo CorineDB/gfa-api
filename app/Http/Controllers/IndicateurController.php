@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\indicateur\AddValueKeysRequest;
 use App\Http\Requests\indicateur\FiltreRequest;
 use App\Http\Requests\indicateur\StoreRequest;
 use App\Http\Requests\indicateur\UpdateRequest;
@@ -113,5 +114,19 @@ class IndicateurController extends Controller
     public function filtre(FiltreRequest $request)
     {
         return $this->indicateurService->filtre($request->all());
+    }
+
+    /**
+     * Add new keys
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addValueKeys(AddValueKeysRequest $request, $idIndicateur)
+    {
+        //$request["bailleurId"] = ((array_key_exists("bailleurId", $request->all()) && isset($request["bailleurId"])) ? $request["bailleurId"] : Auth::user()->bailleur) ? Auth::user()->bailleur->id : $request["bailleurId"];
+
+        return $this->indicateurService->addValueKeys($idIndicateur, $request->all());
     }
 }

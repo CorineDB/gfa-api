@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
@@ -11,7 +12,7 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 class Categorie extends Model
 {
 
-    use HasSecureIds ;
+    use HasSecureIds, HasFactory;
 
     protected $table = 'categories';
 
@@ -19,7 +20,7 @@ class Categorie extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['nom'];
+    protected $fillable = ['nom', "indice", 'categorieId'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -62,6 +63,16 @@ class Categorie extends Model
             }
 
         });
+    }
+
+    public function categorie()
+    {
+        return $this->belongsTo(Categorie::class, 'categorieId');
+    }
+
+    public function categories()
+    {
+        return $this->hasMany(Categorie::class, 'categorieId');
     }
 
     /**

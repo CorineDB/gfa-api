@@ -31,14 +31,16 @@ class UpdateSuiviFinancierRequest extends FormRequest
         return [
             'activiteId' => ['required', new HashValidatorRule(new Activite())],
             'consommer' => 'sometimes|required|integer',
-            'dateDeSuivie'    => [Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
+            'dateDeSuivi'    => [Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
                 $this->merge([
-                    "trimestre" => Carbon::parse(request('dateDeSuivie'))->quarter,
-                    "annee" => Carbon::parse(request('dateDeSuivie'))->format('Y')
+                    "trimestre" => Carbon::parse(request('dateDeSuivi'))->quarter,
+                    "annee" => Carbon::parse(request('dateDeSuivi'))->format('Y')
                 ]);
             }],
-            'annee' => ["required", "integer", "digits:4", 'between:1900,' . now()->year], // Validates year between 1900 and the current year
-            'trimestre' => 'sometimes|integer|min:1|max:4',
+
+            'annee'         => ['sometimes', Rule::requiredIf(!request('dateDeSuivi')), "integer", "digits:4", "date_format:Y", 'between:1900,' . now()->year, "gte:1940"], // Validates year between 1900 and the current year
+            'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateDeSuivi')), 'integer", "min:1", "max:4'],
+
             'type' => 'sometimes|integer|min:0|max:1',
             'commentaire'          => 'nullable'
         ];

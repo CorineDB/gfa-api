@@ -14,6 +14,7 @@ use App\Traits\Helpers\LogActivity;
 use Carbon\Carbon;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\OrganisationServiceInterface;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -66,6 +67,21 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
         }
     }
 
+    public function findById($organisationId, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($organisationId) && !($organisationId = $this->repository->findById($organisationId))) throw new Exception("Organisatiob introuvable.", Response::HTTP_NOT_FOUND);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new OrganisationResource($organisationId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function create(array $attributs) : JsonResponse
     {
         DB::beginTransaction();
@@ -108,7 +124,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             LogActivity::addToLog("Enrégistrement", $message, get_class($organisation), $organisation->id);
 
-            return response()->json(['statut' => 'success', 'message' => "Compte créé", 'data' => $organisation, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => "Compte créé", 'data' => new OrganisationResource($organisation), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
 
@@ -147,7 +163,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             LogActivity::addToLog("Modification", $message, get_class($organisation), $organisation->id);
 
-            return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => $organisation, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => new OrganisationResource($organisation), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
             //throw $th;

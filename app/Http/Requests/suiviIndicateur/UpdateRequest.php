@@ -37,15 +37,14 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'annee' => 'sometimes|required|required|date_format:Y|gte:1940',
-
             'dateSuivie'    => ['sometimes', Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
                 $this->merge([
                     "trimestre" => Carbon::parse(request('dateSuivie'))->quarter
                 ]);
             }],
 
-            'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateSuivie')), 'integer', 'min:1', 'max:4'],
+            'annee'         => ['sometimes', Rule::requiredIf(!request('dateSuivie')), "date_format:Y", "gte:1940"],
+            'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateSuivie')), 'integer", "min:1", "max:4'],
 
             'valeurCible' => ['sometimes', Rule::requiredIf($this->suivi_indicateur->valeurCible->where('cibleable_id', $this->indicateurId)->where('annee', $this->annee)->first() === null),'array','min:1'],
             'valeurRealise' => 'sometimes|required|array|min:1',

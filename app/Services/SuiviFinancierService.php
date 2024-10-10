@@ -202,7 +202,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 throw new Exception("L'activite n'a aucune durée d'execution dans l'année precisé", 500);
             }
 
-
             /*if($activite->statut != 0 && $activite->statut != 1 )
                 throw new Exception("L'activite n'est ni en cours ni en retard, le suivi ne peux etre faire", 500);*/
             
@@ -216,9 +215,20 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 }
             }
 
-            $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
-                                                           ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']]])
-                                           ->pluck('trimestre');
+            if(!array_key_exists('dateDeSuivi', $attributs)){
+                $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
+                                                            ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']]])
+                                            ->pluck('trimestre');
+
+
+                // Ensure $trimestres is an array
+                $trimestresArray = is_array($trimestres) ? $trimestres : $trimestres->toArray();
+
+                if(in_array($attributs['trimestre'], $trimestresArray)){
+                    throw new Exception(" suivi du trimestre {$attributs['trimestre']} a été déja effectufié", 500);
+                }
+            }
+
             /*if($attributs['type'])
                 $trimestres = $this->repository->allFiltredBy([['attribut' => 'activiteId', 'operateur' => '=', 'valeur' => $attributs['activiteId']],
                                                            ['attribut' => 'annee', 'operateur' => '=', 'valeur' => $attributs['annee']],
@@ -234,17 +244,11 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             // if(!(count($trimestres)) && $attributs['trimestre'] != 1)
             //     throw new Exception("Vous devez d'abord faire le suivi du trimestre 1", 500);
 
-            // Ensure $trimestres is an array
-            $trimestresArray = is_array($trimestres) ? $trimestres : $trimestres->toArray();
-
-            if(in_array($attributs['trimestre'], $trimestresArray)){
-                throw new Exception(" suivi du trimestre {$attributs['trimestre']} a été déja effectufié", 500);
-            }
 
 
-            $nombreDeTrimestre = count($trimestres);
+            /*$nombreDeTrimestre = count($trimestres);
 
-            /*if($nombreDeTrimestre == 0 && $attributs['trimestre'] > 1) throw new Exception("Vous devez d'abord faire le suivi du premier trimestre", 500);
+            if($nombreDeTrimestre == 0 && $attributs['trimestre'] > 1) throw new Exception("Vous devez d'abord faire le suivi du premier trimestre", 500);
 
             else if( $nombreDeTrimestre == 0 && $attributs['trimestre'] == 1 );
 
@@ -266,24 +270,24 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
             //$plan = $activite->planDeDecaissement($attributs['trimestre'], $attributs['annee']);
 
-            if(!array_key_exists('dateDeSuivie', $attributs))
+            if(!array_key_exists('dateDeSuivi', $attributs))
             {
 
                 switch ($attributs['trimestre']) {
                     case 1:
-                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-03-31 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivi' => $attributs['annee']."-03-31 ".date('h:i:s')]);
                         break;
 
                     case 2:
-                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-06-30 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivi' => $attributs['annee']."-06-30 ".date('h:i:s')]);
                         break;
 
                     case 3:
-                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-09-30 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivi' => $attributs['annee']."-09-30 ".date('h:i:s')]);
                         break;
 
                     case 4:
-                        $attributs = array_merge($attributs, ['dateDeSuivie' => $attributs['annee']."-12-31 ".date('h:i:s')]);
+                        $attributs = array_merge($attributs, ['dateDeSuivi' => $attributs['annee']."-12-31 ".date('h:i:s')]);
                         break;
 
                     default:
@@ -399,7 +403,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
             if(array_key_exists('trimestre', $attributs)) unset($attributs['trimestre']);
             if(array_key_exists('annee', $attributs)) unset($attributs['annee']);
-            if(array_key_exists('dateDeSuivie', $attributs)) unset($attributs['dateDeSuivie']);
+            if(array_key_exists('dateDeSuivi', $attributs)) unset($attributs['dateDeSuivi']);
 
             $suivi->fill($attributs)->save();
             

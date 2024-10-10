@@ -3,8 +3,9 @@
 namespace App\Http\Resources\gouvernance;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Carbon\Carbon;
 
-class PrincipesDeGouvernanceResource extends JsonResource
+class EnqueteDeCollecteResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -17,8 +18,12 @@ class PrincipesDeGouvernanceResource extends JsonResource
         return [
             'id' => $this->secure_id,
             'nom' => $this->nom,
+            'objectif' => $this->objectif,
             'description' => $this->description,
-            'typeDeGouvernanceId' => $this->type_de_gouvernance->secure_id
+            'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
+            'fin' => Carbon::parse($this->fin)->format("Y-m-d"),
+            'programmeId' => $this->programme->secure_id,
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
         ];
     }
 }

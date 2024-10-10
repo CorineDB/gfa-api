@@ -16,7 +16,12 @@ class OptionsDeReponseResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'libelle' => $this->libelle
+            'libelle' => $this->libelle,
+            'slug' => $this->slug,
+            'description' => $this->description,
+            'note' => $this->note,
+            'programmeId' => $this->programme->secure_id,
+            'created_at' => $this->created_at
         ];
     }
 }

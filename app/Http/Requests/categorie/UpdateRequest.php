@@ -3,6 +3,7 @@
 namespace App\Http\Requests\categorie;
 
 use App\Models\Categorie;
+use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -31,7 +32,9 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom'  => ['required','max:255', Rule::unique('categories')->ignore($this->categorie)->whereNull('deleted_at')],
+            'nom'  => ['sometimes','max:255', Rule::unique('categories','nom')->ignore($this->categorie)->whereNull('deleted_at')],
+            'indice'  => ['sometimes','max:255', Rule::unique('categories','indice')->ignore($this->categorie)->whereNull('deleted_at')],
+            'categorieId' => ['sometimes','nullable', new HashValidatorRule(new Categorie())],
         ];
     }
 

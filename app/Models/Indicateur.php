@@ -20,7 +20,7 @@ class Indicateur extends Model
 
     protected $dates = ["deleted_at"];
 
-    protected $fillable = ["nom", "description", "type_de_variable", "hasMultipleValue", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", "sourceDeVerification", "kobo", "koboVersion", "valeurCibleTotal", "indicateurable_id", "indicateurable_type"];
+    protected $fillable = ["nom", "indice", "description", "type_de_variable", "agreger", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", 'responsable', 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', "kobo", "koboVersion", "valeurCibleTotal"];
 
     protected static function boot() {
         parent::boot();
@@ -60,7 +60,18 @@ class Indicateur extends Model
         "created_at" => "datetime:Y-m-d",
         "updated_at" => "datetime:Y-m-d",
         "deleted_at" => "datetime:Y-m-d",
+        'valeurDeBase' =>  'array',
+        'valeurCibleTotal' =>  'array',
         //"anneeDeBase" => "datetime:Y-m-d"
+    ];
+
+    /**
+    * Transtypage des attributs de type json
+    *
+    * @var array
+    */
+    protected $appends = [
+        'taux_realisation'
     ];
 
     /**
@@ -98,6 +109,18 @@ class Indicateur extends Model
         return $this->morphMany(ValeurCibleIndicateur::class, 'cibleable');
     }
 
+    public function valeursRealiser(){
+
+        return $this->hasManyThrough(
+            SuiviIndicateur::class,    // Final Model
+            ValeurCibleIndicateur::class,       // Intermediate Model
+            'cibleable_id',                  // Foreign key on the types_de_gouvernance table
+            'valeurCibleId',          // Foreign key on the principes_de_gouvernance table
+            'id',                              // Local key on the principes_de_gouvernance table
+            'id'                               // Local key on the types_de_gouvernance table
+        );
+    }
+
     public function valeursDeBase()
     {
         return $this->morphMany(IndicateurValeur::class, 'indicateur_valueable');
@@ -108,13 +131,91 @@ class Indicateur extends Model
         return $this->belongsTo(Programme::class, 'programmeId');
     }
 
-    public function indicateurable()
-    {
-        return $this->morphTo();
-    }
-
     public function valueKeys()
     {
         return $this->belongsToMany(IndicateurValueKey::class, 'indicateur_value_keys_mapping', 'indicateurId', 'indicateurValueKeyId')->withPivot(["id", "uniteeMesureId", "type"]);
+    }
+
+    public function valueKey()
+    {
+        return $this->valueKeys->first();
+    }
+
+    public function valeurDeBase()
+    {
+        return $this->morphOne(IndicateurValeur::class, 'indicateur_valueable');
+        return $this->valeursDeBase->first();
+    }
+
+    public function valeurCibleTotal()
+    {
+
+        $totals = [];
+
+        $this->valeursCible->pluck("valeurCible")->each(function ($item) use (&$totals) {
+            foreach ($item as $key => $value) {
+                if (is_numeric($value)) {
+                    if (!isset($totals[$key])) {
+                        $totals[$key] = 0;
+                    }
+                    $totals[$key] += $value;
+                }
+            }
+        });
+        return $totals;
+    }
+
+    public function valeurRealiserTotal()
+    {
+        $totals = [];
+
+        $this->valeursCible->pluck("valeurRealiser")->each(function ($item) use (&$totals) {
+            foreach ($item as $key => $value) {
+                if (is_numeric($value)) {
+                    if (!isset($totals[$key])) {
+                        $totals[$key] = 0;
+                    }
+                    $totals[$key] += $value;
+                }
+            }
+        });
+        return $totals;
+    }
+
+    public function getTauxRealisationAttribute()
+    {
+        $data = [
+            $this->valeurCibleTotal(),
+            $this->valeurRealiserTotal()
+        ];
+
+        $taux_realisation = [];
+
+        // Dynamically iterate over valeurCibleTotal keys
+        foreach ($data[0] as $key => $valeurCible) {
+            $valeurRealiser = $data[1][$key] ?? 0; // Get the corresponding valeurRealiserTotal value
+
+            // Perform the division, check if valeurCible is not zero to avoid division by zero
+            $taux_realisation[$key] = $valeurCible != 0 ? $valeurRealiser / $valeurCible : 0;
+        }
+
+        return $taux_realisation;
+
+        return $this->valeurCibleTotal();
+
+        $totals = [];
+
+        $this->valeursCible->pluck("valeurCible")->each(function ($item) use (&$totals) {
+            
+            foreach ($item as $key => $value) {
+                if (is_numeric($value)) {
+                    if (!isset($totals[$key])) {
+                        $totals[$key] = 0;
+                    }
+                    $totals[$key] += $value;
+                }
+            }
+        });
+        return $totals;
     }
 }

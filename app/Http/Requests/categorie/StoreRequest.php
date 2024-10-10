@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\categorie;
 
+use App\Models\Categorie;
+use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -25,6 +27,8 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom' => 'required|max:255|unique:categories,nom',
+            'indice' => 'required|integer|min:0|unique:categories,indice',
+            'categorieId' => ['nullable', new HashValidatorRule(new Categorie())],
         ];
     }
 

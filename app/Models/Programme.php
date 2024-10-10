@@ -223,6 +223,7 @@ class Programme extends Model
 
     public function indicateurs()
     {
+        return $this->hasMany(Indicateur::class, 'programmeId');
         return $this->morphMany(CadreLogiqueIndicateur::class, 'indicatable');
     }
 

@@ -20,8 +20,9 @@ class OptionDeReponse extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = array('libelle', 'slug', 'note', 'description', 'programmeId');
+    protected $casts = array('note'=>"integer");
 
-    protected $appends = ['note'];
+    //protected $appends = ['note'];
 
     protected static function boot()
     {
@@ -54,7 +55,7 @@ class OptionDeReponse extends Model
 
     public function indicateurs_de_gouvernance()
     {
-        return $this->belongsToMany(IndicateurDeGouvernance::class, 'optionId');
+        return $this->belongsToMany(IndicateurDeGouvernance::class,'indicateur_options_de_reponse', 'optionId', 'indicateurId');
     }
 
     public function programme()
@@ -67,7 +68,7 @@ class OptionDeReponse extends Model
         return $this->hasMany(ReponseCollecter::class, 'optionDeReponseId', 'id');
     }
 
-    public function getNoteAttribute()
+    /*public function getNoteAttribute()
     {
         $value = 0;
 
@@ -113,5 +114,5 @@ class OptionDeReponse extends Model
         }
         // Return a default value if no observation matches
         return $value; // or null, depending on your requirement
-    }
+    }*/
 }

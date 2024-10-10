@@ -617,6 +617,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
         Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
 
+            Route::apiResource('unitees-de-mesure', 'UniteeMesureController', ['except' => ['index']])->names('unitees_de_mesure')->middleware(['role:unitee-de-gestion']);
+
+            Route::apiResource('unitees-de-mesure', 'UniteeMesureController', ['only' => ['index']])->names('unitees_de_mesure');
+
+
             Route::apiResource('organisations', 'OrganisationController')->names('organisations')->middleware(['role:unitee-de-gestion']);
 
             Route::apiResource('programmes', 'ProgrammeController')->names('programmes');
@@ -715,6 +720,37 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ->parameters([
                     'indicateur-value-keys' => 'indicateur_value_key',
                 ]);
+
+            Route::apiResource('indicateurs', 'IndicateurController')->names('indicateurs');
+
+            Route::group(['prefix' =>  'indicateurs', 'as' => 'indicateurs.'], function () {
+        
+                Route::controller('IndicateurController')->group(function () {
+        
+                        Route::get('{id}/checkSuivi/{year}', 'checkSuivi')->name('checkSuivi')->middleware('permission:voir-un-suivi-indicateur');
+        
+                        Route::get('{id}/suivis', 'suivis')->name('suivis')->middleware('permission:modifier-un-suivi-indicateur');
+        
+                        Route::post('filtres', 'filtre')->name('filtre')->middleware('permission:modifier-un-suivi-indicateur');
+        
+                        Route::post('{indicateur}/addValueKeys', 'addValueKeys')->name('addValueKeys')->middleware('permission:add-indicateur-value-keys');
+                });
+            });
+
+            Route::apiResource('suivi-indicateurs', 'SuiviIndicateurController')->names('suivi-indicateurs');
+
+            Route::controller('SuiviIndicateurController')->group(function () {
+
+                Route::post('suivi-indicateurs/filter', 'filtre')->name('filtre');
+
+                Route::post('suivi-indicateurs/dateSuivie', 'dateSuivie')->name('dateSuivie');
+            });
+
+            Route::apiResource('categories', 'CategorieController', ['except' => ['index']])->names('categories')->middleware(['role:unitee-de-gestion']);
+
+            Route::apiResource('categories', 'CategorieController', ['only' => ['index']])->names('categories');
+        
+            Route::apiResource('commentaires', 'CommentaireController')->names('commentaires');
 
             Route::apiResource('types-de-gouvernance', 'TypeDeGouvernanceController')->names('types-de-gouvernance')
                 ->parameters([

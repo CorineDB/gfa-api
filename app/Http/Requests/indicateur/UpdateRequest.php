@@ -4,9 +4,12 @@ namespace App\Http\Requests\indicateur;
 
 use App\Models\Bailleur;
 use App\Models\Categorie;
+use App\Models\Indicateur;
+use App\Models\IndicateurValueKey;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -30,21 +33,45 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
+        if(is_string($this->indicateur))
+        {
+            $this->indicateur = Indicateur::findByKey($this->indicateur);
+        }
+
+        $programme = auth()->user()->programme;
+
+        $nbreKeys = $this->indicateur->valueKeys->count() ?? 1;
 
         return [
-            'nom'           => 'sometimes|required',
+            'nom'                       => ['sometimes', 'max:255', Rule::unique('indicateurs', 'nom')->ignore($this->indicateur)->whereNull('deleted_at')],
+            'sources_de_donnee'             => 'sometimes',
+            'frequence_de_la_collecte'      => 'sometimes',
+            'methode_de_la_collecte'        => 'sometimes',
+            'responsable'                   => 'sometimes',
+            'anneeDeBase'                   => ['sometimes', 'date_format:Y', 'after_or_equal:'.Carbon::parse($programme->debut)->year, 'before_or_equal:'.Carbon::parse($programme->fin)->year, 'before_or_equal:'.now()->format("Y")],
 
-            'anneeDeBase'   => 'sometimes|required|date_format:Y|before_or_equal:now()->format(Y).',
+            "type_de_variable"              => ["sometimes", "in:quantitatif,qualitatif,dichotomique"],
 
-            'valeurDeBase'  => 'sometimes|required',
+            "agreger"                       => ["sometimes", "boolean:false"],
 
-            'uniteeMesureId'   => ['sometimes', 'required', new HashValidatorRule(new Unitee())],
+            'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
 
-            //'unitees_mesure'=> 'required|array',
+            'categorieId'                   => ['nullable', new HashValidatorRule(new Categorie())],
 
-            'categorieId'   => ['sometimes', 'required', new HashValidatorRule(new Categorie())],
+            'valeurDeBase'                  => ['sometimes', request()->input('agreger') ? "array" : ($this->indicateur->agreger ? "array" :""), function($attribute, $value, $fail){
+                if(!(request()->input('agreger')??$this->indicateur->agreger) && (is_array(request()->input('valeurDeBase')))){
+                    $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
+                }
+                
+            }, request()->input('agreger') ? "min:".$nbreKeys : ($this->indicateur->agreger ? "min:".$nbreKeys : ""), request()->input('agreger') ? "max:".$nbreKeys : ($this->indicateur->agreger ? "max:".$nbreKeys : "")],
 
-            'bailleurId'    => ['sometimes', 'required', Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])),  new HashValidatorRule(new Bailleur())]
+            'valeurDeBase.*.keyId'            => ['distinct', new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
+
+                if (!($this->indicateur->valueKeys()->where('indicateurValueKeyId', request()->input($attribute))->exists())) {
+                    $fail('The selected keyId is not for the given Indicateur.');
+                }
+            }],
+            'valeurDeBase.*.value'          => ['required'],
         ];
     }
 

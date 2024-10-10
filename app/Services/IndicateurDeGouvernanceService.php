@@ -39,6 +39,33 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
         parent::__construct($indicateurDeGouvernanceRepository);
     }
 
+    public function all(array $columns = ['*'], array $relations = []): JsonResponse
+    {
+        try
+        {
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function findById($indicateurId, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($indicateurId) && !($indicateurId = $this->repository->findById($indicateurId))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateursDeGouvernanceResource($indicateurId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function create(array $attributs, $message = null) : JsonResponse
     {
