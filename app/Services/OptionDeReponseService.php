@@ -40,7 +40,15 @@ class OptionDeReponseService extends BaseService implements OptionDeReponseServi
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => OptionsDeReponseResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if(Auth::user()->hasRole('administrateur')){
+                $optionsDeReponse = $this->repository->all();
+            }
+            else{
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $optionsDeReponse = Auth::user()->programme->optionsDeReponse;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OptionsDeReponseResource::collection($optionsDeReponse), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -70,6 +78,10 @@ class OptionDeReponseService extends BaseService implements OptionDeReponseServi
 
         try {
 
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            
             $optionDeReponse = $this->repository->create($attributs);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";

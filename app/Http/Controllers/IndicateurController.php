@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\indicateur\AddValueKeysRequest;
 use App\Http\Requests\indicateur\FiltreRequest;
+use App\Http\Requests\indicateur\RemoveValueKeysRequest;
 use App\Http\Requests\indicateur\StoreRequest;
 use App\Http\Requests\indicateur\UpdateRequest;
 use Core\Services\Interfaces\IndicateurServiceInterface;
@@ -128,5 +129,19 @@ class IndicateurController extends Controller
         //$request["bailleurId"] = ((array_key_exists("bailleurId", $request->all()) && isset($request["bailleurId"])) ? $request["bailleurId"] : Auth::user()->bailleur) ? Auth::user()->bailleur->id : $request["bailleurId"];
 
         return $this->indicateurService->addValueKeys($idIndicateur, $request->all());
+    }
+
+    /**
+     * Remove new keys
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function removeValueKeys(RemoveValueKeysRequest $request, $idIndicateur)
+    {
+        //$request["bailleurId"] = ((array_key_exists("bailleurId", $request->all()) && isset($request["bailleurId"])) ? $request["bailleurId"] : Auth::user()->bailleur) ? Auth::user()->bailleur->id : $request["bailleurId"];
+
+        return $this->indicateurService->removeValueKeys($idIndicateur, $request->all());
     }
 }

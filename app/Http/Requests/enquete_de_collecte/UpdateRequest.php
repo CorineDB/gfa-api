@@ -38,8 +38,7 @@ class UpdateRequest extends FormRequest
             'objectif' => 'sometimes|max:255',
             'description' => 'sometimes|nullable|max:255',
             'debut' => 'required|date|date_format:Y-m-d',
-            'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
-            'programmeId'   => ['required', new HashValidatorRule(new Programme())]
+            'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut'
         ];
     }
 

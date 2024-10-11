@@ -34,8 +34,7 @@ class UpdateRequest extends FormRequest
 
         return [
             'nom'  => ['sometimes','max:255', Rule::unique('types_de_gouvernance', 'nom')->ignore($this->type_de_gouvernance)->whereNull('deleted_at')],
-            'description' => 'sometimes|nullable|max:255',
-            'programmeId'   => ['sometimes', new HashValidatorRule(new Programme())]
+            'description' => 'sometimes|nullable|max:255'
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\gouvernance\AppreciationResource;
 use App\Http\Resources\gouvernance\EnqueteDeCollecteResource;
 use App\Http\Resources\gouvernance\EnqueteDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationDePerceptionResource;
@@ -79,6 +80,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
         try {
 
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+
             $enqueteDeCollecte = $this->repository->create($attributs);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
@@ -108,6 +113,8 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             if(!is_object($enqueteDeCollecte) && !($enqueteDeCollecte = $this->repository->findById($enqueteDeCollecte))) throw new Exception("Enquete introuvable", Response::HTTP_NOT_FOUND);
 
+            unset($attributs['programmeId'])
+            ;
             $this->repository->update($enqueteDeCollecte->id, $attributs);
 
             $enqueteDeCollecte->refresh();
@@ -229,7 +236,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             $resultats = $enqueteDeCollecte->notes_resultat()->where($attributs)->get("*");
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => AppreciationResource::collection($resultats), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             DB::rollback();
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
@@ -423,7 +430,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             LogActivity::addToLog("Enregistrement", $message, get_class($note), $note->id);
 
-            return response()->json(['statut' => 'success', 'message' => "Les données collectée on ete enregistrer avec succes", 'data' =>  $note, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => "Les données collectée on ete enregistrer avec succes", 'data' => new AppreciationResource($note), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
             DB::rollback();

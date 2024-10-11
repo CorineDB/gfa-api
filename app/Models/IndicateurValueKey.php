@@ -49,7 +49,7 @@ class IndicateurValueKey extends Model
 
     public function indicateurs()
     {
-        return $this->belongsToMany(Indicateur::class, 'indicateur_value_keys_mapping', 'indicateurValueKeyId', 'indicateurId')->withPivot(["id", "uniteeMesureId", "type"]);
+        return $this->belongsToMany(Indicateur::class, 'indicateur_value_keys_mapping', 'indicateurValueKeyId', 'indicateurId')->withPivot(["id", "uniteeMesureId", "type"])->wherePivotNull('deleted_at');
     }
 
     public function uniteeMesure()

@@ -481,7 +481,7 @@ class Projet extends Model
 
     public function getCodePtaAttribute()
     {
-        return $this->programme->code.'.'.optional($this->organisation)->code ?? 1;
+        return $this->programme->code.'.'. (optional($this->organisation)->code ?? 1);
         $programme = $this->programme;
         $code = $this->bailleur->codes($programme->id)->first();
         return $programme->code.'.'.optional($code)->codePta;
@@ -675,7 +675,7 @@ class Projet extends Model
     }
 
     public function organisation(){
-        return optional($this->where("projetable_type", Organisation::class)->first())->projetable() ?? null;
+        return optional($this->where("projetable_type", Organisation::class)->first())->projetable() ?: null;;
     }
 
 }

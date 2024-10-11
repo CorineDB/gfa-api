@@ -21,7 +21,7 @@ class Indicateur extends Model
     protected $dates = ["deleted_at"];
 
     protected $fillable = ["nom", "indice", "description", "type_de_variable", "agreger", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", 'responsable', 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', "kobo", "koboVersion", "valeurCibleTotal"];
-
+    
     protected static function boot() {
         parent::boot();
 
@@ -96,7 +96,7 @@ class Indicateur extends Model
 
     public function unitee()
     {
-        return $this->belongsTo(Unitee::class, 'uniteeId');
+        return $this->belongsTo(Unitee::class, 'uniteeMesureId');
     }
 
     public function suivis()
@@ -133,7 +133,7 @@ class Indicateur extends Model
 
     public function valueKeys()
     {
-        return $this->belongsToMany(IndicateurValueKey::class, 'indicateur_value_keys_mapping', 'indicateurId', 'indicateurValueKeyId')->withPivot(["id", "uniteeMesureId", "type"]);
+        return $this->belongsToMany(IndicateurValueKey::class, 'indicateur_value_keys_mapping', 'indicateurId', 'indicateurValueKeyId')->withPivot(["id", "uniteeMesureId", "type"])->wherePivotNull('deleted_at');
     }
 
     public function valueKey()

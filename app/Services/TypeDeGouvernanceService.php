@@ -41,7 +41,15 @@ class TypeDeGouvernanceService extends BaseService implements TypeDeGouvernanceS
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => TypesDeGouvernanceResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if(Auth::user()->hasRole('administrateur')){
+                $types_de_gouvernance = $this->repository->all();
+            }
+            else{
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $types_de_gouvernance = Auth::user()->programme->types_de_gouvernance;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => TypesDeGouvernanceResource::collection($types_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -70,6 +78,10 @@ class TypeDeGouvernanceService extends BaseService implements TypeDeGouvernanceS
         DB::beginTransaction();
 
         try {
+
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             $type = $this->repository->create($attributs);
 
@@ -100,6 +112,8 @@ class TypeDeGouvernanceService extends BaseService implements TypeDeGouvernanceS
             
             if(!is_object($typeDeGouvernance) && !($typeDeGouvernance = $this->repository->findById($typeDeGouvernance))) throw new Exception("Ce type de gouvernance n'existe pas", Response::HTTP_NOT_FOUND);
 
+            unset($attributs["programmeId"]);
+            
             $this->repository->update($typeDeGouvernance->id, $attributs);
 
             $typeDeGouvernance->refresh();

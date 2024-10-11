@@ -7,6 +7,7 @@ use App\Models\IndicateurValueKey;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
+use Illuminate\Validation\ValidationException;
 
 class RemoveValueKeysRequest extends FormRequest
 {
@@ -32,11 +33,12 @@ class RemoveValueKeysRequest extends FormRequest
             $this->indicateur = Indicateur::findByKey($this->indicateur);
         }
 
+        if($this->indicateur->suivis->isNotEmpty()) throw ValidationException::withMessages(["Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour."]);
+        
         return [
             
             'value_keys'                    => ["array", "min:1"],
             'value_keys.*'               => ["required", "string", 'distinct', new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
-
                 if (!$this->indicateur->valueKeys()->where('indicateurValueKeyId', request()->input($attribute))->exists()) {
                     $fail("Cette cle est pas rattacher a l'indicateur.");
                 }

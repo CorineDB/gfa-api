@@ -35,4 +35,12 @@ interface IndicateurServiceInterface
      * @return Illuminate\Http\JsonResponse
      */
     public function addValueKeys($indicateurId, array $attributs = ['*'], array $relations = []): JsonResponse;
+
+    /**
+     * add new keys
+     *
+     * @param  $indicateurId
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function removeValueKeys($indicateurId, array $attributs = ['*'], array $relations = []): JsonResponse;
 }

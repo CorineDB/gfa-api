@@ -19,19 +19,19 @@ class ComposanteResource extends JsonResource
             return [
                 "id" => $this->secure_id,
                 "nom" => $this->nom,
-                "codePta" => $this->codePta,
+                //"codePta" => $this->codePta,
                 "poids" => $this->poids,
                 "budgetNational" => $this->budgetNational,
                 "description" => $this->description,
                 "statut" => $this->statut,
                 "tep" => $this->tep,
 
-                $this->mergeWhen($this->projet && $this->projet->organisation, function(){
-                    return ["sigle" => $this->projet->organisation->sigle];
+                $this->mergeWhen($this->projet && optional($this->projet->organisation), function(){
+                    return ["sigle" => optional($this->projet->organisation)->sigle ?? null];
                 }),
 
                 $this->mergeWhen($this->composante && $this->composante->projet->organisation, function(){
-                    return ["sigle" => $this->composante->projet->organisation->sigle];
+                    return ["sigle" => optional($this->composante->projet->organisation)->sigle ?? null];
                 }),
                 "projetId" => optional($this->projet)->secure_id,
                 "composanteId" => optional($this->composante)->secure_id,

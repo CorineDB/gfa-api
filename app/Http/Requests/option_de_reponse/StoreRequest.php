@@ -28,8 +28,7 @@ class StoreRequest extends FormRequest
         return [
             'libelle' => 'required|max:255|unique:options_de_reponse,libelle',
             'description' => 'nullable|max:255',
-            'note' => 'integer|min:0',
-            'programmeId'   => ['sometimes', new HashValidatorRule(new Programme())]
+            'note' => 'integer|min:0'
         ];
     }
 

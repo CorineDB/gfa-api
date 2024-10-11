@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Http\Requests\pta;
+namespace App\Http\Requests\organisation;
 
-use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,7 +25,6 @@ class GenererRequest extends FormRequest
     public function rules()
     {
         return [
-            //'programmeId' => ['required', new HashValidatorRule(new Programme())],
             'annee' => 'required'
         ];
     }

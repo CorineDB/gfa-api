@@ -55,7 +55,7 @@ class OptionDeReponse extends Model
 
     public function indicateurs_de_gouvernance()
     {
-        return $this->belongsToMany(IndicateurDeGouvernance::class,'indicateur_options_de_reponse', 'optionId', 'indicateurId');
+        return $this->belongsToMany(IndicateurDeGouvernance::class,'indicateur_options_de_reponse', 'optionId', 'indicateurId')->wherePivotNull('deleted_at');
     }
 
     public function programme()

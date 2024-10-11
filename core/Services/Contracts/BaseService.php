@@ -108,6 +108,37 @@ class BaseService implements AbstractServiceInterface{
     }
 
     /**
+     * Filtrer toutes les occurences de données d'une table grâce à ses attributs.
+     *
+     * @param array $filtres
+     * @param array $columns
+     * @param array $relations
+     * 
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function allFiltredBy(array $filtres, array $columns = ['*'], array $relations = []) : JsonResponse
+    {
+        try {
+
+            /*$collection = new \Illuminate\Database\Eloquent\Collection();
+
+            foreach ($filtres as $key => $filtre) {
+
+                if($key == 0)
+
+                    $collection = $this->repository->model->where( $filtre['attribut'], $filtre['operateur'], $filtre['valeur'] );
+
+                else $collection->where( $filtre['attribut'], $filtre['operateur'], $filtre['valeur'] );
+
+            }*/
+
+            return response()->json(['statut' => 'success','message'=> null, 'data' => $this->repository->filterBy($filtres, $columns, $relations), 'statutCode' => Response::HTTP_OK],Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error','message'=> $th->getMessage(),'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
      * Récupérer toutes les occurences de données partiellement supprimé d'une table.
      *
      * @return Illuminate\Http\JsonResponse

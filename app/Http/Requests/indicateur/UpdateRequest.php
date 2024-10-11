@@ -52,22 +52,32 @@ class UpdateRequest extends FormRequest
 
             "type_de_variable"              => ["sometimes", "in:quantitatif,qualitatif,dichotomique"],
 
-            "agreger"                       => ["sometimes", "boolean:false"],
+            "agreger"                       => ["sometimes", "boolean:false", function($attribute, $value, $fail){
+
+                if(request()->input($attribute) != null && request()->input('agreger') != $this->indicateur->agreger && $this->indicateur->suivis->isNotEmpty()) {
+                    $fail('Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.');
+                }
+            }],
 
             'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
 
             'categorieId'                   => ['nullable', new HashValidatorRule(new Categorie())],
 
-            'valeurDeBase'                  => ['sometimes', request()->input('agreger') ? "array" : ($this->indicateur->agreger ? "array" :""), function($attribute, $value, $fail){
-                if(!(request()->input('agreger')??$this->indicateur->agreger) && (is_array(request()->input('valeurDeBase')))){
-                    $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
-                }
-                
-            }, request()->input('agreger') ? "min:".$nbreKeys : ($this->indicateur->agreger ? "min:".$nbreKeys : ""), request()->input('agreger') ? "max:".$nbreKeys : ($this->indicateur->agreger ? "max:".$nbreKeys : "")],
+            'valeurDeBase'                  => ['sometimes', (request()->input('agreger') != null && request()->input('agreger')) ? "array" : "", function($attribute, $value, $fail){
+                    if(!request()->input('agreger') && is_array(request()->input('valeurDeBase'))){
+                        $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
+                    }
+
+                    /*if(!(request()->input('agreger') && $this->indicateur->agreger) && (is_array(request()->input('valeurDeBase')))){
+                        $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
+                    }*/
+                    
+                }, (request()->input('agreger') != null && request()->input('agreger') == $this->indicateur->agreger) ? (request()->input('agreger') ? "min:".$nbreKeys : ($this->indicateur->agreger ? "min:".$nbreKeys : "")) : (request()->input('agreger') ? "min:1":""), (request()->input('agreger') != null && request()->input('agreger') == $this->indicateur->agreger) ? (request()->input('agreger') ? "max:".$nbreKeys : ($this->indicateur->agreger ? "max:".$nbreKeys : "")) : ""//request()->input('agreger') ? "min:".$nbreKeys : ($this->indicateur->agreger ? "min:".$nbreKeys : ""), request()->input('agreger') ? "max:".$nbreKeys : ($this->indicateur->agreger ? "max:".$nbreKeys : "")
+            ],
 
             'valeurDeBase.*.keyId'            => ['distinct', new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
 
-                if (!($this->indicateur->valueKeys()->where('indicateurValueKeyId', request()->input($attribute))->exists())) {
+                if (request()->input('agreger') != null && request()->input('agreger') != $this->indicateur->agreger && !($this->indicateur->valueKeys()->where('indicateurValueKeyId', request()->input($attribute))->exists())) {
                     $fail('The selected keyId is not for the given Indicateur.');
                 }
             }],

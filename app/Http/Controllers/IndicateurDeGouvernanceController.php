@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\indicateur_de_gouvernance\StoreRequest;
 use App\Http\Requests\indicateur_de_gouvernance\UpdateRequest;
+use App\Traits\Eloquents\FilterTrait;
 use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
 
 class IndicateurDeGouvernanceController extends Controller
 {
+    use FilterTrait; // Use the trait
+    
     /**
      * @var service
      */
@@ -29,7 +32,17 @@ class IndicateurDeGouvernanceController extends Controller
      */
     public function index()
     {
-        return $this->indicateurDeGouvernanceService->all();
+        // Retrieve query parameters with defaults
+        $columns = explode(',', request()->query('columns', '*'));
+
+        $relations = request()->query('relations', null) ? explode(',', request()->query('relations')): []; // Default to no relations
+
+        if(request()->query('filters')){
+            $filters = request()->query('filters', []);
+            return $this->indicateurDeGouvernanceService->allFiltredBy($filters, $columns, $relations);
+        }
+
+        return $this->indicateurDeGouvernanceService->all($columns, $relations);
     }
 
     /**

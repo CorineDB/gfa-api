@@ -621,6 +621,25 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
             Route::apiResource('unitees-de-mesure', 'UniteeMesureController', ['only' => ['index']])->names('unitees_de_mesure');
 
+            Route::group(['prefix' =>  'ptas', 'as' => 'ptas.'], function () {
+                Route::controller('PtaController')->group(function () {
+
+                    Route::post('/generer', 'generer')->name('generer')->middleware('permission:voir-ptab');
+
+                    Route::post('/filtre', 'filtre')->name('filtre')->middleware('permission:voir-ptab');
+                });
+
+                Route::controller('PtabRevisionController')->group(function () {
+
+                    Route::post('/getOldPtaReviser', 'getOldPtaReviser')->name('getOldPtaReviser')->middleware('permission:voir-revision-ptab');
+
+                    Route::post('/getPtabReviser', 'getPtabReviser')->name('getPtabReviser')->middleware('permission:voir-revision-ptab');
+
+                    Route::post('/reviserPtab', 'reviserPtab')->name('reviserPtab')->middleware('permission:faire-revision-ptab');
+
+                    Route::get('/listVersionPtab', 'getListVersionPtab')->name('getListVersionPtab')->middleware('permission:voir-revision-ptab');
+                });
+            });
 
             Route::apiResource('organisations', 'OrganisationController')->names('organisations')->middleware(['role:unitee-de-gestion']);
 
@@ -734,6 +753,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::post('filtres', 'filtre')->name('filtre')->middleware('permission:modifier-un-suivi-indicateur');
         
                         Route::post('{indicateur}/addValueKeys', 'addValueKeys')->name('addValueKeys')->middleware('permission:add-indicateur-value-keys');
+        
+                        Route::post('{indicateur}/removeValueKeys', 'removeValueKeys')->name('removeValueKeys')->middleware('permission:remove-indicateur-value-keys');
                 });
             });
 

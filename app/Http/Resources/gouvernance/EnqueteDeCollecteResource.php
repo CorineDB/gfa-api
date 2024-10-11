@@ -22,6 +22,7 @@ class EnqueteDeCollecteResource extends JsonResource
             'description' => $this->description,
             'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
             'fin' => Carbon::parse($this->fin)->format("Y-m-d"),
+            'statut' => $this->statut,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
         ];

@@ -23,7 +23,6 @@ use Illuminate\Support\Str;
 */
 class IndicateurDeGouvernanceService extends BaseService implements IndicateurDeGouvernanceServiceInterface
 {
-
     /**
      * @var service
      */
@@ -44,6 +43,19 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
         try
         {
             return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function allFiltredBy(array $filtres = [], array $columns = ['*'], array $relations = []) : JsonResponse
+    {
+        try
+        {
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($this->repository->filterBy($filtres, $columns, $relations)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

@@ -17,7 +17,8 @@ class CriteresDeGouvernanceResource extends JsonResource
         return [
             'id' => $this->secure_id,
             'nom' => $this->nom,
-            'description' => $this->description
+            'description' => $this->description,
+            'principeDeGouvernanceId' => $this->principe_de_gouvernance->secure_id
         ];
     }
 }

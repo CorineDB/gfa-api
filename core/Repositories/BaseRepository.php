@@ -2,6 +2,7 @@
 
 namespace Core\Repositories;
 
+use App\Traits\Eloquents\FilterTrait;
 use App\Traits\Helpers\LogActivity;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
@@ -16,6 +17,8 @@ use Illuminate\Support\Str;
  */
 class BaseRepository implements EloquentRepositoryInterface {
 
+    use FilterTrait; // Use the trait
+    
     /**
      * @var Model
      */
@@ -111,6 +114,61 @@ class BaseRepository implements EloquentRepositoryInterface {
     public function allTrashed(): Collection
     {
         return $this->model->onlyTrashed()->orderByDesc('created_at')->get();
+    }
+
+
+    /**
+     * Filtrer toutes les occurences de données d'une table grâce à ses attributs.
+     *
+     * @param array $filtres => {
+     *      attribut =>
+     *      valeur =>
+     *      operateur =>
+     * }
+     * @return Collection
+     */
+    public function filterBy(array $filtres = [], array $attributs = ['*'], array $relations = []) : Collection {
+
+        // Initialize the query from the model
+        $query = $this->model->query();
+    
+        // Format the filters using the trait
+        $filters = $this->formatFilters($filtres);
+
+        // Get the list of valid attributes (columns) from the model
+        $validAttributes = $this->model->getConnection()->getSchemaBuilder()->getColumnListing($this->model->getTable());
+
+        // Loop through the filters and apply them to the query
+        foreach ($filters as $filter) {
+            $attribute = $filter[0];
+            $operator = $filter[1];
+            $value = $filter[2] ?? null;
+    
+            // Check if the attribute is a valid column
+            if (in_array($attribute, $validAttributes)) {
+
+                $value = $this->castValue($this->model, $attribute, $value);
+
+                if (is_null($value)) {
+                    if ($operator === 'IS NOT NULL') {
+                        $query->whereNotNull($attribute);
+                    } else {
+                        $query->whereNull($attribute);
+                    }
+                } else {
+                    // Regular comparisons
+                    $query->where($attribute, $operator, $value);
+                }
+            }
+        }
+
+        // Check for valid relationships before calling with()
+        if (!empty($relations)) {
+            $query->with($relations);
+        }
+
+        // Execute the query with selected attributes and load relations
+        return $query->select(array_merge($attributs,['id']))->get();
     }
 
 

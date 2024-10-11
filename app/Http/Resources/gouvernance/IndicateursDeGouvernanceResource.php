@@ -16,11 +16,11 @@ class IndicateursDeGouvernanceResource extends JsonResource
     {
         return [
             'id'                        => $this->secure_id,
-            'nom'                       => $this->nom,
-            'description'               => $this->description,
-            'type'                      => $this->type,
-            'can_have_multiple_reponse' => $this->can_have_multiple_reponse,
-            'principeable' => $this->when($this->principeable, function(){
+            'nom'                       => $this->when($this->nom, $this->nom),
+            'description'               => $this->when($this->description, $this->description),
+            'type'                      => $this->when($this->type, $this->type),
+            'can_have_multiple_reponse' => $this->when($this->can_have_multiple_reponse, $this->can_have_multiple_reponse),
+            'principeable' => $this->whenLoaded('principeable', function(){
                 return [
 
                     'id'                        => $this->principeable->secure_id,
@@ -28,7 +28,7 @@ class IndicateursDeGouvernanceResource extends JsonResource
                     'description'               => $this->principeable->description,
                 ];
             }),
-            'options_de_reponse'        => OptionDeReponseResource::collection($this->options_de_reponse)
+            'options_de_reponse'        => $this->whenLoaded('options_de_reponse', OptionDeReponseResource::collection($this->options_de_reponse))
         ];
     }
 }

@@ -11,6 +11,7 @@ use App\Repositories\ProgrammeRepository;
 use App\Repositories\UserRepository;
 use App\Traits\Helpers\IdTrait;
 use App\Traits\Helpers\LogActivity;
+use App\Models\Projet;
 use Carbon\Carbon;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\OrganisationServiceInterface;
@@ -21,6 +22,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Traits\Helpers\Pta;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+
 
 /**
 * Interface OrganisationServiceInterface
@@ -88,6 +93,10 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
         try {
 
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+
             $role = $this->roleRepository->findByAttribute('slug', 'organisation');
 
             $password = strtoupper($this->hashId(4)); // Générer le mot de passe
@@ -151,7 +160,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             unset($attributs['email']);
 
-            //unset($attributs['programmeId']);
+            unset($attributs['programmeId']);
 
             $organisation->user->fill($attributs)->save();
 

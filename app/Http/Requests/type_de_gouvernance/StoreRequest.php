@@ -27,8 +27,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom' => 'required|max:255|unique:types_de_gouvernance,nom',
-            'description' => 'nullable|max:255',
-            'programmeId'   => ['required', new HashValidatorRule(new Programme())]
+            'description' => 'nullable|max:255'
         ];
     }
 

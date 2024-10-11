@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\organisation\GenererRequest;
 use App\Http\Requests\organisation\StoreRequest;
 use App\Http\Requests\organisation\UpdateRequest;
 use Core\Services\Interfaces\OrganisationServiceInterface;
@@ -46,6 +47,11 @@ class OrganisationController extends Controller
     public function store(StoreRequest $request)
     {
         return $this->organisation->create($request->all());
+    }
+
+    public function generer(GenererRequest $request)
+    {
+        return $this->organisation->generer($request->all());
     }
 
     /**

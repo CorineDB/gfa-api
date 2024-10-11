@@ -56,6 +56,18 @@ interface AbstractServiceInterface {
      */
     public function all(array $columns = ['*'], array $relations = []): JsonResponse;
 
+
+    /**
+     * Filtrer toutes les occurences de données d'une table grâce à ses attributs.
+     *
+     * @param array $filtres
+     * @param array $columns
+     * @param array $relations
+     * 
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function allFiltredBy(array $filtres, array $columns = ['*'], array $relations = []) : JsonResponse;
+
     /**
      * Récupérer toutes les occurences de données partiellement supprimé d'une table.
      *

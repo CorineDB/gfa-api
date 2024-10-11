@@ -82,10 +82,17 @@ class ProjetService extends BaseService implements ProjetServiceInterface
     {
         try
         {
-            if(Auth::user()->hasRole('bailleur'))
-                return response()->json(['statut' => 'success', 'message' => null, 'data' => new ProjetResource((Auth::user()->profilable->projets)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if(Auth::user()->hasRole('bailleur')){
+                $projets = Auth::user()->profilable->projets;
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ProjetsResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            }else if(!Auth::user()->hasRole('administrateur')){
+                $projets = Auth::user()->programme->projets;
+            }
+            else{
+                $projets = $this->repository->all();
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ProjetResource::collection($projets), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {

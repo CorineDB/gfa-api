@@ -21,10 +21,11 @@ class EnqueteDeGouvernanceResource extends JsonResource
 
         // Group the responses by organization
         $groupedResponses = $responses->groupBy('organisation.id')->map(function ($organisationResponses, $organisationId) {
+            
             // Collect organisation information without using an 'organisation' key
             $organisationInfo = [
-                'id' => $organisationId,
-                'nom' => optional(optional($organisationResponses->first())->organisation)->nom ?? null,
+                'id' => optional(optional($organisationResponses->first())->organisation)->secure_id ?? null,
+                'nom' => optional(optional($organisationResponses->first())->organisation)->user->nom ?? null,
             ];
 
             // Group observations by category
@@ -34,11 +35,11 @@ class EnqueteDeGouvernanceResource extends JsonResource
                         return [
                             'indicateurDeGouvernance' => [
 
-                                'id' => $response->indicateurDeGouvernance->id,
+                                'id' => $response->indicateurDeGouvernance->secure_id,
                                 'nom' => $response->indicateurDeGouvernance->nom
                             ],
                             'reponse' => [
-                                'id' => $response->optionDeReponse->id,
+                                'id' => $response->optionDeReponse->secure_id,
                                 'libelle' => $response->optionDeReponse->libelle,
                                 'slug' => $response->optionDeReponse->slug
                             ],
@@ -60,7 +61,7 @@ class EnqueteDeGouvernanceResource extends JsonResource
             'description' => $this->description,
             'debut' => Carbon::parse($this->debut),
             'fin' => Carbon::parse($this->fin),
-            'programmeId' => $this->programmeId,
+            'programmeId' => $this->programme->secure_id,
             'reponses' => $groupedResponses, // This is already an array
         ];
     }

@@ -17,9 +17,9 @@ class Enquete extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'objectif', 'description', 'debut', 'fin', 'programmeId');
+    protected $fillable = array('nom', 'objectif', 'description', 'debut', 'fin', 'statut', 'programmeId');
 
-    protected $casts = ['debut'  => 'datetime', 'fin'  => 'datetime' ];
+    protected $casts = ['debut'  => 'datetime', 'fin'  => 'datetime'];
 
     protected static function boot()
     {
@@ -35,7 +35,7 @@ class Enquete extends Model
                     'nom' => time() . '::' . $enquete->nom
                 ]);
 
-                $enquete->responses()->delete();
+                $enquete->reponses_collecter()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {

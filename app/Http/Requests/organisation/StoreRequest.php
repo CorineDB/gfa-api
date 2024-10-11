@@ -36,7 +36,6 @@ class StoreRequest extends FormRequest
 
             'sigle'         => ['required','string','max:15', Rule::unique('organisations', 'sigle')->whereNull('deleted_at')],
             'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
-            'programmeId'   => ['required', new HashValidatorRule(new Programme())],
         ];
 
         return $rules;
