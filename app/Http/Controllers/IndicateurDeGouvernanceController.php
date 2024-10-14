@@ -6,6 +6,7 @@ use App\Http\Requests\indicateur_de_gouvernance\StoreRequest;
 use App\Http\Requests\indicateur_de_gouvernance\UpdateRequest;
 use App\Traits\Eloquents\FilterTrait;
 use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
+use Illuminate\Http\Response;
 
 class IndicateurDeGouvernanceController extends Controller
 {

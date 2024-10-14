@@ -106,6 +106,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
         try
         {
+
             if(isset($attributs['organisationId']) && !empty($attributs['organisationId'])){
                 if(!($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId']))) {
                     throw new Exception( "Cette organisation n'existe pas", 500);
@@ -114,17 +115,27 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 if($organisation->user->programmeId !== Auth::user()->programme->id){
                     throw new Exception( "Cette organisation ne fait pas partir de ce programme", 500);
                 }
-            }
 
-            if(($projet = $organisation->projet)) {
-                throw new Exception( "Cette organisation est déja associé a un projet dans le programme", 500);
+                if(($projet = $organisation->projet)) {
+                    throw new Exception( "Cette organisation est déja associé a un projet dans le programme", 500);
+                }
+
+                $owner = $organisation;
+            }
+            else{
+                if(auth()->user()->type != 'unitee-de-gestion'){
+                    throw new Exception("Vous n'avez pas les permissions pour effectuer cette action", 1);
+                    
+                }
+
+                $owner = auth()->user()->profilable;
             }
 
             $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
 
             $attributs = array_merge($attributs, ['statut' => -2]);
             
-            $projet = $organisation->projet()->create($attributs);
+            $projet = $owner->projet()->create($attributs);
 
             /*$statut = ['etat' => -2];
 

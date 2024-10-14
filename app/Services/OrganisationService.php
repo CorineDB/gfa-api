@@ -105,6 +105,8 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             unset($attributs['code']);
 
+            //dd(array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'profilable_type' => get_class($organisation), 'profilable_id' => $organisation->id]));
+
             $organisation->user()->create(array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'profilable_type' => get_class($organisation), 'profilable_id' => $organisation->id]));
 
             $organisation->user->roles()->attach([$role->id]);

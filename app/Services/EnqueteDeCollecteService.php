@@ -177,27 +177,35 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
                 throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
 
+            $organisationId = Auth::user()->profilable_id;
+
+            if(!isset($attributs["organisationId"])){
+                $attributs = array_merge($attributs, ['organisationId' => $organisationId]);
+            }
+
             if (!($organisation = app(OrganisationRepository::class)->findById($attributs["organisationId"])))
                 throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
 
 
             $data = [];
-            foreach ($attributs["response_data"]["factuel"] as $key => $factuel_data) {
+            if (isset($attributs["response_data"]["factuel"])) {
+                foreach ($attributs["response_data"]["factuel"] as $key => $factuel_data) {
 
-                if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($factuel_data["optionDeReponseId"])))
-                    throw new Exception("Not found", Response::HTTP_NOT_FOUND);
+                    if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($factuel_data["optionDeReponseId"])))
+                        throw new Exception("Not found", Response::HTTP_NOT_FOUND);
 
-                dd($optionDeReponse);
-
-                array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $factuel_data)));
+                    array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $factuel_data)));
+                }
             }
 
-            foreach ($attributs["response_data"]["perception"] as $key => $perception_data) {
-                if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($perception_data["optionDeReponseId"])))
-                    throw new Exception("Not found", Response::HTTP_NOT_FOUND);
-                array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $perception_data)));
+            if (isset($attributs["response_data"]["perception"])) {
+                foreach ($attributs["response_data"]["perception"] as $key => $perception_data) {
+                    if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($perception_data["optionDeReponseId"])))
+                        throw new Exception("Not found", Response::HTTP_NOT_FOUND);
+                    array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $perception_data)));
+                }
             }
-
+            
             $collected = $enqueteDeCollecte->reponses_collecter()->saveMany($data);
 
 

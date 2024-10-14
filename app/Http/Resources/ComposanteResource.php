@@ -20,7 +20,7 @@ class ComposanteResource extends JsonResource
             return [
                 "id" => $this->secure_id,
                 "nom" => $this->nom,
-                //"codePta" => $this->codePta,
+                "codePta" => $this->codePta,
                 "poids" => $this->poids,
                 "budgetNational" => $this->budgetNational,
                 "description" => $this->description,
@@ -36,7 +36,9 @@ class ComposanteResource extends JsonResource
                 }),
                 "projetId" => optional($this->projet)->secure_id,
                 "composanteId" => optional($this->composante)->secure_id,
-                  "souscomposantes" => !$this?->composanteId ? ComposanteResource::collection($this?->sousComposantes) : [],
+                "souscomposantes" => ComposanteResource::collection($this->sousComposantes),
+                "activites" => ActiviteResource::collection($this->activites),
+                  //"souscomposantes" => !$this?->composanteId ? ComposanteResource::collection($this?->sousComposantes) : [],
 
                 "position" => $this->position,
                   "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")

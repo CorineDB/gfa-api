@@ -35,7 +35,7 @@ class StoreRequest extends FormRequest
             'email'         => ['required','email','max:50', Rule::unique('users', 'email')->whereNot("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
 
             'sigle'         => ['required','string','max:15', Rule::unique('organisations', 'sigle')->whereNull('deleted_at')],
-            'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
+            'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', "min:2", Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
         ];
 
         return $rules;

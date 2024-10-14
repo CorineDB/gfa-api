@@ -19,6 +19,8 @@ class IndicateurDeGouvernance extends Model
 
     protected $fillable = array('nom', 'description', 'type', 'can_have_multiple_reponse', 'principeable_id', 'principeable_type');
 
+    protected $attributes = ["can_have_multiple_reponse" => false];
+
     protected $casts = ["can_have_multiple_reponse" => 'boolean'];
 
     protected $with = ['options_de_reponse'];

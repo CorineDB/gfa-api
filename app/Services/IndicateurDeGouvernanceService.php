@@ -97,6 +97,8 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
             $indicateur = $principe->indicateurs_de_gouvernance()->create($attributs);
 
             $options = [];
+            
+            unset($attributs["can_have_multiple_reponse"]);
 
             foreach ($attributs["options_de_reponse"] as $key => $option_de_reponse) {
                 
@@ -108,6 +110,7 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
                 else if($attributs["type"] == "factuel"){
                     if($principe->principe_de_gouvernance->type_de_gouvernance->programmeId != $option->programmeId) throw new Exception( "Cette option n'est pas dans le programme", 500);
                 }
+
                 array_push($options, $option->id);
             }
 
@@ -149,6 +152,8 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
             else{
                 $indicateur = $indicateurId;
             }
+            
+            unset($attributs["can_have_multiple_reponse"]);
 
             if($indicateur->type != $attributs["type"]){
                     
