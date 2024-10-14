@@ -168,6 +168,7 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
 
         try
         {
+            // return  $attributs ;
             if(array_key_exists('projetId', $attributs))
             {
                 if(!($projet = $this->projetRepository->findById($attributs['projetId']))) throw new Exception( "Ce projet n'existe pas", 500);

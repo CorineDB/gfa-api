@@ -204,6 +204,7 @@ class Projet extends Model
         return $this->morphMany(Statut::class, 'statuttable');
     }
 
+
     public function suivis()
     {
 

@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ActiviteResource;
+use App\Models\Code;
 use Carbon\Carbon;
 
 class ComposanteResource extends JsonResource
@@ -35,6 +36,8 @@ class ComposanteResource extends JsonResource
                 }),
                 "projetId" => optional($this->projet)->secure_id,
                 "composanteId" => optional($this->composante)->secure_id,
+                  "souscomposantes" => !$this?->composanteId ? ComposanteResource::collection($this?->sousComposantes) : [],
+
                 "position" => $this->position,
                   "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
             ];

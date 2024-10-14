@@ -332,7 +332,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                     "composantes" => $composantestab]);
                 }
             }
-            
+
             if (!file_exists(storage_path('app')."/pta"))
             {
                 //mkdir (".".Storage::url('app')."/pta", 0777);
@@ -641,7 +641,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                     "composantes" => $composantestab]);
                 }
             }
-            
+
             if (!file_exists(storage_path('app')."/pta"))
             {
                 //mkdir (".".Storage::url('app')."/pta", 0777);
