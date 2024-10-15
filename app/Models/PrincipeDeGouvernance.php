@@ -62,6 +62,9 @@ class PrincipeDeGouvernance extends Model
             'id'                               // Local key on the criteres_de_gouvernance table
         )->where('principeable_type', CritereDeGouvernance::class);
     }
+    public function indicateurs_criteres_de_gouvernance_count(){
+        $this->criteres_de_gouvernance->each->count();
+    }
 
     public function type_de_gouvernance()
     {
