@@ -4,7 +4,9 @@ namespace App\Http\Requests\site;
 
 use App\Models\Bailleur;
 use App\Models\EntrepriseExecutant;
+use App\Models\Indicateur;
 use App\Models\Programme;
+use App\Models\Projet;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -40,10 +42,12 @@ class StoreRequest extends FormRequest
             'longitude'     => 'required|max:255',
 
             'latitude'      => 'required|max:255',
+            'projetId' => ['sometimes', new HashValidatorRule(new Projet())],
+            'indicateurId' => ['sometimes', new HashValidatorRule(new Indicateur())],/*
 
             'bailleurId' => ['required', new HashValidatorRule(new Bailleur())],
 
-            'entrepriseExecutanteId.*' => 'required'
+            'entrepriseExecutanteId.*' => 'required'*/
 
         ];
     }

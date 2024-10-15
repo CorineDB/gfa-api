@@ -15,7 +15,7 @@ class CreateResultatsCadreDeRendementTable extends Migration
     {
         Schema::create('resultats_cadre_de_rendement', function (Blueprint $table) {
             $table->id();
-			$table->text('libelle')->unique();
+			$table->text('libelle');
 			$table->text('description');
             $table->bigInteger('programmeId')->unsigned();
             $table->foreign('programmeId')->references('id')->on('programmes')

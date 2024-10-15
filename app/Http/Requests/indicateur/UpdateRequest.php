@@ -6,6 +6,7 @@ use App\Models\Bailleur;
 use App\Models\Categorie;
 use App\Models\Indicateur;
 use App\Models\IndicateurValueKey;
+use App\Models\Site;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
@@ -62,6 +63,8 @@ class UpdateRequest extends FormRequest
             'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
 
             'categorieId'                   => ['nullable', new HashValidatorRule(new Categorie())],
+            'sites'                         => ['required', 'array', 'min:1'],
+            'sites.*'                         => ['distinct', new HashValidatorRule(new Site())],
 
             'valeurDeBase'                  => ['sometimes', (request()->input('agreger') != null && request()->input('agreger')) ? "array" : "", function($attribute, $value, $fail){
                     if(!request()->input('agreger') && is_array(request()->input('valeurDeBase'))){

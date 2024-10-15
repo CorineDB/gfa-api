@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SiteResource extends JsonResource
+class SitesResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -30,11 +30,11 @@ class SiteResource extends JsonResource
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "longitude" => $this->longitude,
-            "latitude" => $this->latitude,/*
+            "latitude" => $this->latitude,
             "entreprise" => $entreprise,
             "bailleur" => $this->bailleurs->first()->sigle,
             "bailleurId" => $this->bailleurs()->first()->secure_id,
-            "entrepriseId" => $this->entreprises*/
+            "entrepriseId" => $this->entreprises
         ];
     }
 }

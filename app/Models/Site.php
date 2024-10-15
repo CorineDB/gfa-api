@@ -75,7 +75,7 @@ class Site extends Model
      */
     public function indicateurs(): MorphToMany
     {
-        return $this->morphedByMany(Site::class, 'siteable');
+        return $this->morphedByMany(Indicateur::class, 'siteable');
     }
  
     /**
@@ -83,7 +83,7 @@ class Site extends Model
      */
     public function projets(): MorphToMany
     {
-        return $this->morphedByMany(Site::class, 'siteable');
+        return $this->morphedByMany(Projet::class, 'siteable');
     }
  
     /**
@@ -91,6 +91,6 @@ class Site extends Model
      */
     public function activites(): MorphToMany
     {
-        return $this->morphedByMany(Site::class, 'siteable');
+        return $this->morphedByMany(Activite::class, 'siteable');
     }
 }

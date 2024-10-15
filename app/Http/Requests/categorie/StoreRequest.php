@@ -27,7 +27,6 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom' => 'required|max:255|unique:categories,nom',
-            'indice' => 'required|integer|min:0|unique:categories,indice',
             'categorieId' => ['nullable', new HashValidatorRule(new Categorie())],
         ];
     }

@@ -18,7 +18,7 @@ class CreateCadresDeMesureRendementTable extends Migration
 			$table->integer('position')->default(0);
 			$table->enum('type', ['impact', 'effet', 'produit']);
 
-			$table->morphs('rendementable'); // ca peut etre un projet ou programme
+			$table->morphs('rendementable', 'rendement'); // ca peut etre un projet ou programme
             $table->bigInteger('resultatCadreDeRendementId')->unsigned();
             $table->foreign('resultatCadreDeRendementId')->references('id')->on('resultats_cadre_de_rendement')
                 ->onDelete('cascade')

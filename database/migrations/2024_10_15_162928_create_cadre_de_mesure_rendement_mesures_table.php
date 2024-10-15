@@ -17,7 +17,7 @@ class CreateCadreDeMesureRendementMesuresTable extends Migration
             $table->id();
 			$table->integer('position');
             $table->bigInteger('cadreDeMesureRendementId')->unsigned();
-            $table->foreign('cadreDeMesureRendementId')->references('id')->on('cadres_de_mesure_rendement')
+            $table->foreign('cadreDeMesureRendementId', 'cadreDeRendementId')->references('id')->on('cadres_de_mesure_rendement')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('indicateurId')->unsigned();

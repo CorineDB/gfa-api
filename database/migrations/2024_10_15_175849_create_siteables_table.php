@@ -15,8 +15,8 @@ class CreateSiteablesTable extends Migration
     {
         Schema::create('siteables', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('siteId')->unsigned();
-            $table->foreign('siteId')->references('id')->on('sites')
+            $table->bigInteger('site_id')->unsigned();
+            $table->foreign('site_id')->references('id')->on('sites')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->morphs('siteable');
@@ -27,6 +27,22 @@ class CreateSiteablesTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        if(Schema::hasTable('indicateurs')){
+            Schema::table('indicateurs', function (Blueprint $table) {
+                if(Schema::hasColumn('indicateurs', 'indice')){
+                    $table->dropColumn(['indice']);
+                }
+            });
+        }
+
+        if(Schema::hasTable('categories')){
+            Schema::table('categories', function (Blueprint $table) {
+                if(Schema::hasColumn('categories', 'indice')){
+                    $table->dropColumn(['indice']);
+                }
+            });
+        }
     }
 
     /**
