@@ -59,9 +59,12 @@ class PtaService extends BaseService implements PtaServiceInterface
                 }
             }
 
-            //if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
-
-            $programme = Auth::user()->programme;
+            if(isset($attributs['programmeId'])){
+                if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
+            }
+            else{
+                $programme = Auth::user()->programme;
+            }
 
             if(Auth::user()->hasRole('organisation'))
             {
@@ -69,7 +72,6 @@ class PtaService extends BaseService implements PtaServiceInterface
                                  ->where('projetable_id', Auth::user()->profilable->id)
                                  ->get();
             }
-
             else
             {
                 $projets = Projet::where('programmeId', $programme->id)->where('statut', '>=' , -1)
@@ -339,7 +341,6 @@ class PtaService extends BaseService implements PtaServiceInterface
             {
                 //mkdir (".".Storage::url('app')."/pta", 0777);
                 File::makeDirectory(storage_path('app').'/pta',0777,true);
-
             }
 
             $file = json_encode($pta);

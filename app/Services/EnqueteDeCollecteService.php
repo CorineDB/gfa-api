@@ -276,6 +276,9 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
     private function analyse_donnees_factuelle($enqueteId, $organisationId)
     {
+        // Initialize variables for summing the perception indices and counting the principles
+        $totalIndiceFactuel = 0;
+        $nbreDeTypes = 0;
         
         $types = app(TypeDeGouvernanceRepository::class)
             ->all()
@@ -300,7 +303,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                     ->groupBy('indicateurs_de_gouvernance.id'); // Group by the indicator ID
                 }
             ])
-            ->each(function($type) { // Iterate over each governance type
+            ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
                 $nbrePrincipe = 0;
                 $totalScoreFactuel = 0;
                 $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
@@ -328,14 +331,25 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                 } else {
                     $type->indice_factuel = 0; // Handle case with no indicators
                 }
+
+                // Add the calculated factuel index to the total sum
+                $totalIndiceFactuel += $type->indice_factuel;
+                $nbreDeTypes++; // Count the number of governance principles
             });
 
-            return FicheSyntheseEvaluationFactuelleResource::collection($types);
+            return [
+                "indice_factuel" => $totalIndiceFactuel ? $totalIndiceFactuel/$nbreDeTypes : 0,
+                "fiche_de_synthese_factuel" => FicheSyntheseEvaluationFactuelleResource::collection($types)
+            ];
     }
 
     private function analyse_donnees_de_perception($enqueteId, $organisationId)
     {
-        $types = app(PrincipeDeGouvernanceRepository::class)
+        // Initialize variables for summing the perception indices and counting the principles
+        $totalIndiceDePerception = 0;
+        $nbreDePrincipes = 0;
+        
+        $principes = app(PrincipeDeGouvernanceRepository::class)
                 ->all()
                 ->load([
                     'indicateurs_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
@@ -365,7 +379,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                         }]);
                     }
                 ])
-                ->each(function($principe) { // Iterate over each governance type
+                ->each(function($principe) use (&$totalIndiceDePerception, &$nbreDePrincipes) { // Iterate over each governance type
                     $nbreQO = $principe->indicateurs_de_gouvernance->count('reponses_count');
                     $moyPQO = 0;
                     $principe->indicateurs_de_gouvernance->each(function($indicateur) use(&$moyPQO){ // Iterate over each principle
@@ -401,9 +415,16 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                     } else {
                         $principe->indice_de_perception = 0; // Handle case with no indicators
                     }
+
+                    // Add the calculated perception index to the total sum
+                    $totalIndiceDePerception += $principe->indice_de_perception;
+                    $nbreDePrincipes++; // Count the number of governance principles
                 });
 
-            return FicheSyntheseEvaluationDePerceptionResource::collection($types);
+            return [
+                "indice_de_perception" => $totalIndiceDePerception ? $totalIndiceDePerception/$nbreDePrincipes : 0,
+                "fiche_de_synthese_de_perception" => FicheSyntheseEvaluationDePerceptionResource::collection($principes)
+            ];
     }
 
     /**

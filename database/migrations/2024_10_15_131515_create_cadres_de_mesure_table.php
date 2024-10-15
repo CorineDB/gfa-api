@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateResultatsCadreDeRendementTable extends Migration
+class CreateCadresDeMesureTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,18 @@ class CreateResultatsCadreDeRendementTable extends Migration
      */
     public function up()
     {
-        Schema::create('resultats_cadre_de_rendement', function (Blueprint $table) {
+        Schema::create('cadres_de_mesure', function (Blueprint $table) {
             $table->id();
 			$table->text('libelle')->unique();
 			$table->text('description');
+			$table->text('objectif');
+			$table->morphs('mesureable');
             $table->bigInteger('programmeId')->unsigned();
             $table->foreign('programmeId')->references('id')->on('programmes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-			$table->timestamps();
-			$table->softDeletes();
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -33,6 +35,6 @@ class CreateResultatsCadreDeRendementTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('resultats_cadre_de_rendement');
+        Schema::dropIfExists('cadres_de_mesure');
     }
 }
