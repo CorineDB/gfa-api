@@ -156,7 +156,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             if((file_exists(storage_path('app')."/pta/pta.json") && Storage::disk('local')->get('pta/pta.json') == "") || !file_exists(storage_path('app')."/pta/pta.json"))
             {
-                if(Auth::user()->programme) dispatch(new GenererPta(Auth::user()->programme))->delay(now()->addSeconds(3));
+                // if(Auth::user()->programme) dispatch(new GenererPta(Auth::user()->programme))->delay(now()->addSeconds(3));
             }
 
             //event(new Login(Auth::user()->programme));
