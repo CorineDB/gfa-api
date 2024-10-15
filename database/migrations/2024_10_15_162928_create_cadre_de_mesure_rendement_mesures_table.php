@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCadreDeMesureRendementsTable extends Migration
+class CreateCadreDeMesureRendementMesuresTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateCadreDeMesureRendementsTable extends Migration
      */
     public function up()
     {
-        Schema::create('cadre_de_mesure_rendements', function (Blueprint $table) {
+        Schema::create('cadre_de_mesure_rendement_mesures', function (Blueprint $table) {
             $table->id();
 			$table->integer('position');
-            $table->bigInteger('cadreDeMesureResultatId')->unsigned();
-            $table->foreign('cadreDeMesureResultatId')->references('id')->on('cadre_de_mesure_resultats')
+            $table->bigInteger('cadreDeMesureRendementId')->unsigned();
+            $table->foreign('cadreDeMesureRendementId')->references('id')->on('cadres_de_mesure_rendement')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('indicateurId')->unsigned();

@@ -5,7 +5,7 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
@@ -217,5 +217,18 @@ class Indicateur extends Model
             }
         });
         return $totals;
+    }
+
+    /**
+     * Get all of the sites for the indicateur.
+     */
+    public function sites(): MorphToMany
+    {
+        return $this->morphToMany(Site::class, 'siteable');
+    }
+
+    public function cadres_de_mesure_rendement()
+    {
+        return $this->belongsToMany(CadreDeMesureRendement::class, 'cadre_de_mesure_rendement_mesures', 'indicateurId', 'cadreDeMesureRendementId')->wherePivotNull('deleted_at')->withPivot(['position']);
     }
 }

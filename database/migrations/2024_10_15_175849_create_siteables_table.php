@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCadresDeMesureTable extends Migration
+class CreateSiteablesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,17 @@ class CreateCadresDeMesureTable extends Migration
      */
     public function up()
     {
-        Schema::create('cadres_de_mesure', function (Blueprint $table) {
+        Schema::create('siteables', function (Blueprint $table) {
             $table->id();
-			$table->text('libelle')->unique();
-			$table->text('description');
-			$table->text('objectif');
-			$table->morphs('mesureable');
-            $table->bigInteger('programmeId')->unsigned();
-            $table->foreign('programmeId')->references('id')->on('programmes')
+            $table->bigInteger('siteId')->unsigned();
+            $table->foreign('siteId')->references('id')->on('sites')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+            $table->morphs('siteable');
+            $table->bigInteger('programmeId')->unsigned();
+            $table->foreign('programmeId')->references('id')->on('programmes')
+						->onDelete('cascade')
+						->onUpdate('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -35,6 +36,6 @@ class CreateCadresDeMesureTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('cadres_de_mesure');
+        Schema::dropIfExists('siteables');
     }
 }

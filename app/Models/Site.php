@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Site extends Model
@@ -70,4 +70,27 @@ class Site extends Model
         return $this->hasMany(Sinistre::class, 'siteId');
     }
 
+    /**
+     * Get all of the indicateurs that are assigned this site.
+     */
+    public function indicateurs(): MorphToMany
+    {
+        return $this->morphedByMany(Site::class, 'siteable');
+    }
+ 
+    /**
+     * Get all of the projets that are assigned this site.
+     */
+    public function projets(): MorphToMany
+    {
+        return $this->morphedByMany(Site::class, 'siteable');
+    }
+ 
+    /**
+     * Get all of the activites that are assigned this site.
+     */
+    public function activites(): MorphToMany
+    {
+        return $this->morphedByMany(Site::class, 'siteable');
+    }
 }
