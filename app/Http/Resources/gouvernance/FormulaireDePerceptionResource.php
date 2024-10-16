@@ -6,6 +6,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class FormulaireDePerceptionResource extends JsonResource
 {
+    protected $enqueteId;
+    protected $organisationId;
+
+    // Modify the constructor to accept the additional external value
+    public function __construct($resource, $enqueteId=null, $organisationId=null)
+    {
+        parent::__construct($resource);
+        $this->enqueteId = $enqueteId;
+        $this->organisationId = $organisationId;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -32,7 +43,16 @@ class FormulaireDePerceptionResource extends JsonResource
             "can_have_multiple_reponse" => $indicateur->can_have_multiple_reponse ? true : false,
             'options_de_reponse'        => $indicateur->options_de_reponse->map(function($option_de_reponse){
                 return $this->option_de_reponse($option_de_reponse);
-            })
+            }),
+            'reponses_collecter' => $this->when(($this->enqueteId != null && $this->organisationId != null), $indicateur->observations/*->where('enqueteDeCollecteId', $this->enqueteId)->where('organisationId', $this->organisationId)->map(function($reponse){
+                return [
+                    'id'                        => $reponse->secure_id,
+                    'libelle'                   => $reponse->libelle,
+                    'note'                      => $reponse->note,
+                    'source'                    => $reponse->source,
+                    'optionDeReponseId'         => $reponse->optionDeReponse->secure_id,
+                ];
+            })*/)
         ];
     }
 

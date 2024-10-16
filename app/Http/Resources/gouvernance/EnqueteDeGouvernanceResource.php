@@ -62,7 +62,7 @@ class EnqueteDeGouvernanceResource extends JsonResource
             'debut' => Carbon::parse($this->debut),
             'fin' => Carbon::parse($this->fin),
             'programmeId' => $this->programme->secure_id,
-            'reponses' => $groupedResponses, // This is already an array
+            'reponses' => $groupedResponses
         ];
     }
 }

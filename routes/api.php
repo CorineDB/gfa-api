@@ -789,7 +789,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'types-de-gouvernance' => 'type_de_gouvernance',
                 ]);
 
-
             Route::group(['prefix' =>  'types-de-gouvernance', 'as' => 'types-de-gouvernance.'], function () {
 
                 Route::controller('TypeDeGouvernanceController')->group(function () {
@@ -846,7 +845,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'options-de-reponse' => 'option_de_reponse',
                 ]);
 
-
             Route::apiResource('enquetes-de-collecte', 'EnqueteDeCollecteController')->names('enquetes-de-reponse')
                 ->parameters([
                     'enquetes-de-collecte' => 'enquete_de_collecte',
@@ -868,16 +866,32 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('{enquete_de_collecte}/resultats/{organisationId}', 'resultats')->name('resultats'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
+                    Route::controller('PrincipeDeGouvernanceController')->group(function () {
+
+                        Route::get('{enquete_de_collecte?}/formulaire-factuel/{organisationId?}', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
+                        Route::get('{enquete_de_collecte?}/formulaire-de-perception/{organisationId?}', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
+                    });
                 });
             });
 
+            Route::apiResource('resultats-cadre-de-rendement', 'ResultatCadreDeRendementController')->names('resultats-cadre-de-rendement')
+                ->parameters([
+                    'resultats-cadre-de-rendement' => 'resultat_cadre_de-rendement',
+                ]);
 
+            
+                Route::group(['prefix' =>  'cadre-de-mesure-rendement', 'as' => 'cadre-de-mesure-rendement.'], function () {
 
-            Route::controller('PrincipeDeGouvernanceController')->group(function () {
+                    Route::controller('ResultatCadreDeRendementController')->group(function () {
+    
+                        Route::post('', 'constituerCadreDeMesureRendement')->name('constituerCadreDeMesureRendement'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
-                Route::get('formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
-                Route::get('formulaire-de-perception', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
-            });
+                        Route::get('', 'cadreDeMesureRendement')->name('cadreDeMesureRendement'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+                        Route::get('{projetId}', 'cadreDeMesureRendementProjet')->name('cadreDeMesureRendementProjet'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                    });
+                });
+                
         });
     });
 });

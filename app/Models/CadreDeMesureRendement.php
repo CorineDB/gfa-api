@@ -38,4 +38,9 @@ class CadreDeMesureRendement extends Model
     {
         return $this->belongsToMany(Indicateur::class, 'cadre_de_mesure_rendement_mesures', 'cadreDeMesureRendementId', 'indicateurId')->wherePivotNull('deleted_at')->withPivot(['position']);
     }
+
+    public function cadreDeMesures()
+    {
+        return $this->hasMany(CadreDeMesureRendementMesure::class, 'cadreDeMesureRendementId');
+    }
 }

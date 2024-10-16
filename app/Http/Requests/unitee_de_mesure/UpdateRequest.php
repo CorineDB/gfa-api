@@ -33,7 +33,6 @@ class UpdateRequest extends FormRequest
 
         return [
             'nom' => ['required', 'max:255', Rule::unique('unitees','nom')->ignore($this->unitees_de_mesure)->whereNull('deleted_at')],
-            'type' => 'required|min:0|max:1'
         ];
     }
 

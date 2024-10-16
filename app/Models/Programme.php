@@ -467,6 +467,21 @@ class Programme extends Model
 
     public function cadre_de_mesure_rendement()
     {
-        return $this->hasOne(CadreDeMesureRendement::class, 'rendementable_id');
+        return $this->hasMany(CadreDeMesureRendement::class, 'rendementable_id')->where('rendementable_type', get_class($this));
+    }
+    
+    public function resultats_cadre_de_mesure_rendement()
+    {
+        return $this->belongsToMany(ResultatCadreDeRendement::class, 'cadres_de_mesure_rendement', 'rendementable_id', 'resultatCadreDeRendementId')->wherePivotNull('deleted_at')->wherePivot('rendementable_type', get_class($this))->withPivot(['id', 'position', 'type']);
+    }
+
+    /**
+     * Get the cadre de mesure rendement associated with this resultat cadre de rendement.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function resultats_cadre_de_rendement()
+    {
+        return $this->hasMany(ResultatCadreDeRendement::class, 'programmeId');
     }
 }

@@ -35,7 +35,6 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-
         $programme = auth()->user()->programme;
 
         return [

@@ -106,9 +106,9 @@ class PrincipeDeGouvernanceController extends Controller
      * @param  String  $progammeId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function formulaire_factuel()
+    public function formulaire_factuel($enqueteId = null, $organisationId = null)
     {
-        return $this->principeDeGouvernanceService->formulaire_factuel();
+        return $this->principeDeGouvernanceService->formulaire_factuel($enqueteId, $organisationId);
     }
 
     /**
@@ -117,8 +117,8 @@ class PrincipeDeGouvernanceController extends Controller
      * @param  String  $progammeId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function formulaire_de_perception()
+    public function formulaire_de_perception($enqueteId = null, $organisationId = null)
     {
-        return $this->principeDeGouvernanceService->formulaire_de_perception();
+        return $this->principeDeGouvernanceService->formulaire_de_perception($enqueteId, $organisationId);
     }
 }
