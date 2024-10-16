@@ -30,7 +30,9 @@ class SitesResource extends JsonResource
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "longitude" => $this->longitude,
-            "latitude" => $this->latitude,/*
+            "latitude" => $this->latitude,
+            "projets" => $this->whenLoaded('projets', ProjetsResource::collection($this->projets))
+            /*
             "entreprise" => $entreprise,
             "bailleur" => $this->bailleurs->first()->sigle,
             "bailleurId" => $this->bailleurs()->first()->secure_id,

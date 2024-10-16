@@ -244,6 +244,14 @@ class Programme extends Model
 
     public function sites()
     {
+        // Get the related sites through the projets of the programme
+        return Site::whereHas('projets', function($query) {
+            $query->whereIn('projets.id', $this->projets->pluck('id'));
+        })->get();
+    }
+
+    public function oldSites()
+    {
         return $this->hasMany(BailleurSite::class, 'programmeId');
     }
 
