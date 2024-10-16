@@ -113,8 +113,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             if(!is_object($enqueteDeCollecte) && !($enqueteDeCollecte = $this->repository->findById($enqueteDeCollecte))) throw new Exception("Enquete introuvable", Response::HTTP_NOT_FOUND);
 
-            unset($attributs['programmeId'])
-            ;
+            unset($attributs['programmeId']);
             $this->repository->update($enqueteDeCollecte->id, $attributs);
 
             $enqueteDeCollecte->refresh();
@@ -171,7 +170,6 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
         
         DB::beginTransaction();
 
-
         try {
 
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
@@ -186,9 +184,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($organisation = app(OrganisationRepository::class)->findById($attributs["organisationId"])))
                 throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
 
-
             $data = [];
+
             if (isset($attributs["response_data"]["factuel"])) {
+
                 foreach ($attributs["response_data"]["factuel"] as $key => $factuel_data) {
 
                     if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($factuel_data["optionDeReponseId"])))
@@ -196,6 +195,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
                     array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $factuel_data)));
                 }
+
             }
 
             if (isset($attributs["response_data"]["perception"])) {
@@ -208,12 +208,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             
             $collected = $enqueteDeCollecte->reponses_collecter()->saveMany($data);
 
-
             // Optionally, retrieve the inserted data if needed
             $collected = $enqueteDeCollecte->reponses_collecter()->where('organisationId', $organisation->id)
                                     ->where('userId', auth()->id())
                                     ->get();
-
             DB::commit();
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
@@ -223,8 +221,6 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             LogActivity::addToLog("Enregistrement", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
 
             return response()->json(['statut' => 'success', 'message' => "Les données collectée on ete enregistrer avec succes", 'data' =>  $collected, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
-
 
             return response()->json(['statut' => 'success', 'message' => "Donnee enregistrer modifié", 'data' => [], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -280,8 +276,10 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
         $totalIndiceFactuel = 0;
         $nbreDeTypes = 0;
         
-        $types = app(TypeDeGouvernanceRepository::class)
-            ->all()
+        $programme = auth()->user()->programme;
+
+        $types = app(TypeDeGouvernanceRepository::class)->getInstance()->where("programmeId", $programme->id)
+            ->get()
             ->load([
                 'principes_de_gouvernance.criteres_de_gouvernance.indicateurs_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
                     $query->selectRaw('
@@ -388,8 +386,12 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
         $totalIndiceDePerception = 0;
         $nbreDePrincipes = 0;
         
-        $principes = app(PrincipeDeGouvernanceRepository::class)
-                ->all()
+        $programme = auth()->user()->programme;
+        
+        $principes = app(PrincipeDeGouvernanceRepository::class)->getInstance()->whereHas("type_de_gouvernance", function($query) use ($programme){
+            $query->where("programmeId", $programme->id);
+        })
+                ->get()
                 ->load([
                     'indicateurs_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
                         $query->with(['options_de_reponse' => function ($subquery) use ($enqueteId, $organisationId) {

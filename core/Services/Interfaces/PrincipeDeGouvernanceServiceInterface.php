@@ -30,7 +30,7 @@ interface PrincipeDeGouvernanceServiceInterface
      * @param array $relations listes des relations a charger
      * @return JsonResponse
      */
-    public function formulaire_factuel(array $attributs = ['*'], array $relations = []): JsonResponse;
+    public function formulaire_factuel($enqueteId = null, $organisationId = null): JsonResponse;
 
     /**
      * Charger le formulaire de l'outil de perception du programme associé à l'utilisateur connecté
@@ -39,6 +39,6 @@ interface PrincipeDeGouvernanceServiceInterface
      * @param array $relations Liste des relations à charger
      * @return JsonResponse
      */
-    public function formulaire_de_perception(array $attributs = ['*'], array $relations = []): JsonResponse;
+    public function formulaire_de_perception($enqueteId = null, $organisationId = null): JsonResponse;
 
 }

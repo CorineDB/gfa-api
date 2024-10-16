@@ -64,6 +64,7 @@ use App\Repositories\OrganisationRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
 use App\Repositories\SuiviCheckListComRepository;
 use App\Repositories\TypeDeGouvernanceRepository;
+use App\Repositories\ResultatCadreDeRendementRepository;
 use App\Services\AuthService;
 use App\Services\CategorieService;
 use App\Services\IndicateurService;
@@ -132,6 +133,7 @@ use App\Services\IndicateurValueKeyService;
 use App\Services\OptionDeReponseService;
 use App\Services\OrganisationService;
 use App\Services\PrincipeDeGouvernanceService;
+use App\Services\ResultatCadreDeRendementService;
 use App\Services\TypeDeGouvernanceService;
 use Core\Services\Contracts\BaseService;
 
@@ -205,6 +207,8 @@ use Core\Services\Interfaces\OptionDeReponseServiceInterface;
 use Core\Services\Interfaces\OrganisationServiceInterface;
 use Core\Services\Interfaces\PrincipeDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\TypeDeGouvernanceServiceInterface;
+
+use Core\Services\Interfaces\ResultatCadreDeRendementServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -278,6 +282,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, IndicateurDeGouvernanceRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, OptionDeReponseRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, EnqueteDeCollecteRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, ResultatCadreDeRendementRepository::class);
 
         $this->app->bind(AbstractServiceInterface::class, BaseService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
@@ -350,6 +355,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OptionDeReponseServiceInterface::class, OptionDeReponseService::class);
         $this->app->bind(EnqueteDeCollecteServiceInterface::class, EnqueteDeCollecteService::class);
         $this->app->bind(IndicateurValueKeyServiceInterface::class, IndicateurValueKeyService::class);
+
+        $this->app->bind(ResultatCadreDeRendementServiceInterface::class, ResultatCadreDeRendementService::class);
         
     }
 

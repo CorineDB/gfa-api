@@ -1,13 +1,22 @@
 <?php
 
-namespace App\Http\Resources\indicateur;
+namespace App\Http\Resources\cadre_de_mesure_rendement;
 
-use App\Http\Resources\UniteeMesureResource;
+use App\Http\Resources\indicateur\IndicateurValueKeyResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class IndicateurResource extends JsonResource
 {
+    protected $indice; // Define a property for the external value
+
+    // Modify the constructor to accept the additional external value
+    public function __construct($resource, $indice)
+    {
+        parent::__construct($resource);
+        $this->indice = $indice; // Set the external value
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -16,18 +25,11 @@ class IndicateurResource extends JsonResource
      */
     public function toArray($request)
     {
-        //"hypothese", 'responsable', 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', 
         return [
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "description" => $this->description,
-            "kobo" => $this->kobo,
-            "koboVersion" => $this->koboVersion,
-            "categorie" => $this->categorie ? [
-                "id" => $this->categorie->secure_id,
-                "nom" => $this->categorie->nom,
-                "categorieId" => $this->categorie->secure_id,
-            ] : null,
+            "indice" => "{$this->indice}.{$this->pivot->position}",
             "agreger" => $this->agreger,
             "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
             "unitee_mesure" => $this->when($this->unitee_mesure, [
@@ -44,15 +46,11 @@ class IndicateurResource extends JsonResource
                     "valeur_realiser" => $valeurCible->valeur_realiser
                 ];
             })  : null,
-            "valeurCibleTotal" => $this->valeurCibleTotal(),
-            "valeurRealiserTotal" => $this->valeurRealiserTotal(),
-            
-            "taux_realisation" => $this->taux_realisation,
-            /*"bailleur" => [
-                "id" => $this->bailleur->secure_id,
-                "nom" => $this->bailleur->user->nom
-            ],*/
-            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            "sources_de_donnee"         => $this->sources_de_donnee,
+            "methode_de_la_collecte"    => $this->methode_de_la_collecte,
+            "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
+            "responsable"               => $this->responsable,
+            "hypothese"                 => $this->hypothese
         ];
     }
 }

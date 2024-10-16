@@ -31,7 +31,11 @@ class Indicateur extends Model
             try {
 
                 $indicateur->valeursCible()->delete();
-
+                $indicateur->valueKeys()->delete();
+                $indicateur->valeursDeBase()->delete();
+                $indicateur->sites()->delete();
+                $indicateur->cadres_de_mesure_rendement()->delete();
+                
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -230,5 +234,14 @@ class Indicateur extends Model
     public function cadres_de_mesure_rendement()
     {
         return $this->belongsToMany(CadreDeMesureRendement::class, 'cadre_de_mesure_rendement_mesures', 'indicateurId', 'cadreDeMesureRendementId')->wherePivotNull('deleted_at')->withPivot(['position']);
+    }
+
+    public function cadreDeMesures()
+    {
+        return $this->hasMany(CadreDeMesureRendementMesure::class, 'indicateurId');
+    }
+
+    public function getIndice(){
+        
     }
 }

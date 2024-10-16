@@ -7,6 +7,8 @@ use App\Http\Resources\gouvernance\FormulaireDePerceptionResource;
 use App\Http\Resources\gouvernance\FormulaireFactuelResource;
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipesDeGouvernanceResource;
+use App\Repositories\EnqueteDeCollecteRepository;
+use App\Repositories\OrganisationRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
 use App\Repositories\ProgrammeRepository;
 use Core\Services\Contracts\BaseService;
@@ -167,16 +169,21 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
      * @param array $relations Liste des relations à charger
      * @return JsonResponse
      */
-    public function formulaire_factuel(array $attributs = ['*'], array $relations = []): JsonResponse
+    public function formulaire_factuel($enqueteId = null, $organisationId = null): JsonResponse
     {
         try {
 
             $programme = Auth::user()->programme;
 
-            /*if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
-                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);*/
+            if ($enqueteId && !($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)->id))
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulaireFactuelResource::collection($programme->types_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if ($organisationId && !($organisationId = app(OrganisationRepository::class)->findById($organisationId)->id))
+                throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $programme->types_de_gouvernance->map(function($item) use ($enqueteId, $organisationId) {
+                return new FormulaireFactuelResource($item, $enqueteId, $organisationId);
+            }), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -189,7 +196,7 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
      * @param array $relations Liste des relations à charger
      * @return JsonResponse
      */
-    public function formulaire_de_perception(array $attributs = ['*'], array $relations = []): JsonResponse
+    public function formulaire_de_perception($enqueteId = null, $organisationId = null): JsonResponse
     {
         try {
             // Vérifier si le programme existe
@@ -197,6 +204,16 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
                 throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);*/
 
             $programme = Auth::user()->programme;
+
+            if ($enqueteId && !($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)->id))
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+
+            if ($organisationId && !($organisationId = app(OrganisationRepository::class)->findById($organisationId)->id))
+                throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $programme->principes_de_gouvernance->map(function($principeDeGouvernance) use ($enqueteId, $organisationId) {
+                return new FormulaireDePerceptionResource($principeDeGouvernance, $enqueteId, $organisationId);
+            }), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             
             // Retourner le formulaire de perception
             return response()->json(
