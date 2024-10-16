@@ -4,7 +4,9 @@ namespace App\Http\Requests\site;
 
 use App\Models\Bailleur;
 use App\Models\EntrepriseExecutant;
+use App\Models\Indicateur;
 use App\Models\Programme;
+use App\Models\Projet;
 use App\Models\Site;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -45,6 +47,8 @@ class UpdateRequest extends FormRequest
             'longitude'     => 'sometimes|required|max:255',
 
             'latitude'      => 'sometimes|required|max:255',
+            'projetId' => ['sometimes', new HashValidatorRule(new Projet())],
+            'indicateurId' => ['sometimes', new HashValidatorRule(new Indicateur())],
 
             /*'bailleurId' => ['sometimes|required', new HashValidatorRule(new Bailleur())],
 

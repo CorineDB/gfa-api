@@ -26,6 +26,7 @@ use App\Models\Decaissement;
 use App\Models\EntrepriseExecutant;
 use App\Models\Organisation;
 use App\Models\Sinistre;
+use App\Models\Site;
 use App\Models\Suivi;
 use App\Models\SuiviIndicateur;
 use App\Models\UniteeDeGestion;
@@ -33,6 +34,7 @@ use App\Models\User;
 use App\Notifications\FichierNotification;
 use App\Repositories\EntrepriseExecutantRepository;
 use App\Repositories\OrganisationRepository;
+use App\Repositories\SiteRepository;
 use App\Traits\Helpers\HelperTrait;
 use App\Traits\Helpers\IdTrait;
 use App\Traits\Helpers\LogActivity;
@@ -129,6 +131,20 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
 
                 $owner = auth()->user()->profilable;
+            }
+
+            if(isset($attributs['sites'])){
+
+                $sites = [];
+                foreach($attributs['sites'] as $id)
+                {
+                    if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
+                    
+                    array_push($sites, $site->id);
+                }
+
+                $projet->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
+
             }
 
             /*$statut = ['etat' => -2];

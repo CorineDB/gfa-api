@@ -5,6 +5,7 @@ namespace App\Http\Requests\indicateur;
 use App\Models\Bailleur;
 use App\Models\Categorie;
 use App\Models\IndicateurValueKey;
+use App\Models\Site;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
@@ -83,6 +84,9 @@ class StoreRequest extends FormRequest
             }],
             'valeurDeBase.*.value'          => ['required'],
 
+            'sites'                         => ['sometimes', 'array', 'min:1'],
+            'sites.*'                       => ['distinct', new HashValidatorRule(new Site())],
+            
             //'bailleurId'    => [Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
         ];
     }

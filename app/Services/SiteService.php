@@ -78,10 +78,13 @@ class SiteService extends BaseService implements SiteServiceInterface
 
             $site->refresh();
 
-            $site->projets()->attach($attributs['projetId'], ["programmeId" => $attributs['programmeId']]);
+            if(isset($attributs['projetId'])){
+                $site->projets()->attach($attributs['projetId'], ["programmeId" => $attributs['programmeId']]);
+            }
 
-            $site->indicateurs()->attach($attributs['indicateurId'], ["programmeId" => $attributs['programmeId']]);
-
+            if(isset($attributs['indicateurId'])){
+                $site->indicateurs()->attach($attributs['indicateurId'], ["programmeId" => $attributs['programmeId']]);
+            }
 
             /*$site->bailleurs()->attach($attributs['bailleurId'], ["programmeId" => $attributs['programmeId']]);
 

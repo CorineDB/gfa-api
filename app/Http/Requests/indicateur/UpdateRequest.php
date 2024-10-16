@@ -63,7 +63,7 @@ class UpdateRequest extends FormRequest
             'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
 
             'categorieId'                   => ['nullable', new HashValidatorRule(new Categorie())],
-            'sites'                         => ['required', 'array', 'min:1'],
+            'sites'                         => ['sometimes', 'array', 'min:1'],
             'sites.*'                         => ['distinct', new HashValidatorRule(new Site())],
 
             'valeurDeBase'                  => ['sometimes', (request()->input('agreger') != null && request()->input('agreger')) ? "array" : "", function($attribute, $value, $fail){
