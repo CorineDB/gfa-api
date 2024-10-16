@@ -162,14 +162,19 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
     }
 
     /**
-     * Charger le formulaire de l'outil factuel
-     * 
+     * Charger le formulaire de l'outil de perception du programme associé à l'utilisateur connecté
+     * @param array $attributs Liste des attributs à récupérer
+     * @param array $relations Liste des relations à charger
+     * @return JsonResponse
      */
-    public function formulaire_factuel($programmeId, array $attributs = ['*'], array $relations = []): JsonResponse
+    public function formulaire_factuel(array $attributs = ['*'], array $relations = []): JsonResponse
     {
         try {
-            if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
-                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);
+
+            $programme = Auth::user()->programme;
+
+            /*if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
+                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);*/
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulaireFactuelResource::collection($programme->types_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -178,18 +183,43 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
     }
 
     /**
-     * Charger le formulaire de l'outil de perception
+     * Charger le formulaire de l'outil de perception du programme associé à l'utilisateur connecté
      * 
+     * @param array $attributs Liste des attributs à récupérer
+     * @param array $relations Liste des relations à charger
+     * @return JsonResponse
      */
-    public function formulaire_de_perception($programmeId, array $attributs = ['*'], array $relations = []): JsonResponse
+    public function formulaire_de_perception(array $attributs = ['*'], array $relations = []): JsonResponse
     {
         try {
-            if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
-                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);
+            // Vérifier si le programme existe
+            /*if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
+                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);*/
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulaireDePerceptionResource::collection($programme->principes_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $programme = Auth::user()->programme;
+            
+            // Retourner le formulaire de perception
+            return response()->json(
+                [
+                    'statut' => 'success',
+                    'message' => null,
+                    'data' => FormulaireDePerceptionResource::collection(
+                        $programme->principes_de_gouvernance // Les principes de gouvernance
+                    ),
+                    'statutCode' => Response::HTTP_OK
+                ],
+                Response::HTTP_OK
+            );
         } catch (\Throwable $th) {
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+            // Gestion des erreurs
+            return response()->json(
+                [
+                    'statut' => 'error',
+                    'message' => $th->getMessage(),
+                    'errors' => []
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 

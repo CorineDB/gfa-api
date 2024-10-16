@@ -617,6 +617,17 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
         Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
 
+            Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
+
+                Route::controller('ProgrammeController')->group(function () {
+    
+                    Route::get('{id}/projets', 'projets')->name('projets')->middleware('permission:voir-un-projet');
+    
+                    Route::get('{id}/sites', 'sites')->name('sites')->middleware('permission:voir-un-site');
+    
+                });
+            });
+
             Route::apiResource('unitees-de-mesure', 'UniteeMesureController', ['except' => ['index']])->names('unitees_de_mesure')->middleware(['role:unitee-de-gestion']);
 
             Route::apiResource('unitees-de-mesure', 'UniteeMesureController', ['only' => ['index']])->names('unitees_de_mesure');
@@ -861,13 +872,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             });
 
 
-            Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
 
-                Route::controller('PrincipeDeGouvernanceController')->group(function () {
+            Route::controller('PrincipeDeGouvernanceController')->group(function () {
 
-                    Route::get('{programmeId}/formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
-                    Route::get('{programmeId}/formulaire-de-perception', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
-                });
+                Route::get('formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
+                Route::get('formulaire-de-perception', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
             });
         });
     });
