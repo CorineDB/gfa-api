@@ -18,14 +18,18 @@ class OrganisationResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->secure_id,
-            'nom' => $this->whenLoaded('user', $this->user->nom),
-            'sigle' => $this->when($this->sigle, $this->sigle),
-            'code' => $this->when($this->code, $this->code),
-            'user' => $this->whenLoaded('user', new UserResource($this->user)),
+            "id"                    => $this->secure_id,
+            'nom'                   => $this->whenLoaded('user', $this->user->nom),
+            'sigle'                 => $this->when($this->sigle, $this->sigle),
+            'code'                  => $this->when($this->code, $this->code),
+            'nom_point_focal'       => $this->nom_point_focal,
+            'prenom_point_focal'    => $this->prenom_point_focal,
+            'contact_point_focal'   => $this->contact_point_focal,
+
+            'user'                  => $this->whenLoaded('user', new UserResource($this->user)),
             //"user" => new UserResource($this->user),
-            'projet' => $this->whenLoaded("projet", $this->projet),
-            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            'projet'                => $this->whenLoaded("projet", $this->projet),
+            "created_at"            => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
 }
