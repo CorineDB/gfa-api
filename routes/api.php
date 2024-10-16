@@ -861,13 +861,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             });
 
 
-            Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
 
-                Route::controller('PrincipeDeGouvernanceController')->group(function () {
+            Route::controller('PrincipeDeGouvernanceController')->group(function () {
 
-                    Route::get('{programmeId}/formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
-                    Route::get('{programmeId}/formulaire-de-perception', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
-                });
+                Route::get('formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
+                Route::get('formulaire-de-perception', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
             });
         });
     });
