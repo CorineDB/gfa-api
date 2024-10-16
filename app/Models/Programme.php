@@ -456,4 +456,9 @@ class Programme extends Model
             'id'                               // Local key on the types_de_gouvernance table
         );
     }
+
+    public function cadre_de_mesure_rendement()
+    {
+        return $this->hasOne(CadreDeMesureRendement::class, 'rendementable_id');
+    }
 }

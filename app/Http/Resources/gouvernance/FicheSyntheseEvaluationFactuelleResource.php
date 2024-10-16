@@ -32,7 +32,20 @@ class FicheSyntheseEvaluationFactuelleResource extends JsonResource
             'id'                        => $principe->secure_id,
             'nom'                       => $principe->nom,
             "score_factuel"             => $principe->score_factuel,
+            'criteres_de_gouvernance'  => $principe->criteres_de_gouvernance->map(function($indicateur){
+                return $this->critere($indicateur);
+            })/*
             'indicateurs_de_gouvernance'  => $principe->indicateurs_criteres_de_gouvernance->map(function($indicateur){
+                return $this->indicateur($indicateur);
+            })*/
+        ];
+    }
+
+    public function critere($critere){
+        return [
+            'id'                        => $critere->secure_id,
+            'nom'                       => $critere->nom,
+            'indicateurs_de_gouvernance'  => $critere->indicateurs_de_gouvernance->map(function($indicateur){
                 return $this->indicateur($indicateur);
             })
         ];

@@ -7,6 +7,7 @@ use App\Models\Organisation;
 use App\Models\IndicateurDeGouvernance;
 use App\Models\OptionDeReponse;
 use App\Rules\HashValidatorRule;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CollecteRequest extends FormRequest
@@ -36,11 +37,11 @@ class CollecteRequest extends FormRequest
         }
 
         return [
-            'organisationId'   => ['required', new HashValidatorRule(new Organisation())],
+            'organisationId'   => ['sometimes', Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
 
 
             'response_data'        => ['required', 'array', 'min:1'],
-            'response_data.factuel'      => ['required', 'array', 'min:1'],
+            'response_data.factuel'      => ['sometimes', Rule::requiredIf(request()->input('response_data.perception')), 'array', 'min:1'],
 
             'response_data.factuel.*.indicateurDeGouvernanceId'      => ['required', 'distinct', 
                 new HashValidatorRule(new IndicateurDeGouvernance()), 
@@ -73,7 +74,7 @@ class CollecteRequest extends FormRequest
             }],
             'response_data.factuel.*.source'                => ['required', 'string', 'max:255'],
             
-            'response_data.perception'      => ['required', 'array', 'min:1'],
+            'response_data.perception'      => ['sometimes', Rule::requiredIf(request()->input('response_data.factuel')), 'array', 'min:1'],
             'response_data.perception.*.indicateurDeGouvernanceId'      => ['required', 'distinct', new HashValidatorRule(new IndicateurDeGouvernance()), 
                 function($attribute, $value, $fail) {
                     $indicateur = IndicateurDeGouvernance::where("type", "perception")->findByKey($value);
@@ -103,6 +104,7 @@ class CollecteRequest extends FormRequest
                 }
 
             }],
+            
             'response_data.perception.commentaire'                => ['nullable', 'string', 'max:255'],
         ];
     }

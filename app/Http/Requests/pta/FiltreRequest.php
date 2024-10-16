@@ -3,6 +3,7 @@
 namespace App\Http\Requests\pta;
 
 use App\Models\Bailleur;
+use App\Models\Organisation;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -27,8 +28,9 @@ class FiltreRequest extends FormRequest
     public function rules()
     {
         return [
-            'programmeId' => ['required', new HashValidatorRule(new Programme())],
-            'bailleurId' => ['sometimes', 'required', new HashValidatorRule(new Bailleur())],
+            /*'programmeId' => ['required', new HashValidatorRule(new Programme())],
+            'bailleurId' => ['sometimes', 'required', new HashValidatorRule(new Bailleur())],*/
+            'organisationId' => ['sometimes', 'required', new HashValidatorRule(new Organisation())],
             'mois' => 'sometimes|required|integer',
             'annee' => 'sometimes|required',
             'debut' => 'sometimes|required|date|date_format:Y-m-d',

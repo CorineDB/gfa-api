@@ -177,27 +177,35 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
                 throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
 
+            $organisationId = Auth::user()->profilable_id;
+
+            if(!isset($attributs["organisationId"])){
+                $attributs = array_merge($attributs, ['organisationId' => $organisationId]);
+            }
+
             if (!($organisation = app(OrganisationRepository::class)->findById($attributs["organisationId"])))
                 throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
 
 
             $data = [];
-            foreach ($attributs["response_data"]["factuel"] as $key => $factuel_data) {
+            if (isset($attributs["response_data"]["factuel"])) {
+                foreach ($attributs["response_data"]["factuel"] as $key => $factuel_data) {
 
-                if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($factuel_data["optionDeReponseId"])))
-                    throw new Exception("Not found", Response::HTTP_NOT_FOUND);
+                    if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($factuel_data["optionDeReponseId"])))
+                        throw new Exception("Not found", Response::HTTP_NOT_FOUND);
 
-                dd($optionDeReponse);
-
-                array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $factuel_data)));
+                    array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $factuel_data)));
+                }
             }
 
-            foreach ($attributs["response_data"]["perception"] as $key => $perception_data) {
-                if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($perception_data["optionDeReponseId"])))
-                    throw new Exception("Not found", Response::HTTP_NOT_FOUND);
-                array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $perception_data)));
+            if (isset($attributs["response_data"]["perception"])) {
+                foreach ($attributs["response_data"]["perception"] as $key => $perception_data) {
+                    if (!($optionDeReponse = app(OptionDeReponseRepository::class)->findById($perception_data["optionDeReponseId"])))
+                        throw new Exception("Not found", Response::HTTP_NOT_FOUND);
+                    array_push($data, new ReponseCollecter(array_merge(["organisationId" => $organisation->id, "userId" => auth()->id(), "note" => $optionDeReponse->note??0], $perception_data)));
+                }
             }
-
+            
             $collected = $enqueteDeCollecte->reponses_collecter()->saveMany($data);
 
 
@@ -268,12 +276,14 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
     private function analyse_donnees_factuelle($enqueteId, $organisationId)
     {
+        // Initialize variables for summing the perception indices and counting the principles
+        $totalIndiceFactuel = 0;
+        $nbreDeTypes = 0;
         
         $types = app(TypeDeGouvernanceRepository::class)
             ->all()
             ->load([
-
-                'principes_de_gouvernance.indicateurs_criteres_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
+                'principes_de_gouvernance.criteres_de_gouvernance.indicateurs_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
                     $query->selectRaw('
                         indicateurs_de_gouvernance.*, 
                         SUM(options_de_reponse.note) as note
@@ -288,11 +298,11 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                     ->leftJoin('reponses_collecter', 'indicateurs_de_gouvernance.id', '=', 'reponses_collecter.indicateurDeGouvernanceId')
                     ->leftJoin('options_de_reponse', 'reponses_collecter.optionDeReponseId', '=', 'options_de_reponse.id')
                     ->where('reponses_collecter.enqueteDeCollecteId', $enqueteId)
-                    ->where('reponses_collecter.organisationId', $organisationId)
-                    ->groupBy('indicateurs_de_gouvernance.id'); // Group by the indicator ID
+                    ->where('reponses_collecter.organisationId', $organisationId) 
+                    ->groupBy('indicateurs_de_gouvernance.id'); // Group by the principle (or category) of governance
                 }
-            ])
-            ->each(function($type) { // Iterate over each governance type
+            ])/*
+            ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
                 $nbrePrincipe = 0;
                 $totalScoreFactuel = 0;
                 $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
@@ -320,14 +330,65 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                 } else {
                     $type->indice_factuel = 0; // Handle case with no indicators
                 }
+
+                // Add the calculated factuel index to the total sum
+                $totalIndiceFactuel += $type->indice_factuel;
+                $nbreDeTypes++; // Count the number of governance principles
+            })*/
+            ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
+                $nbrePrincipe = 0;
+                $totalScoreFactuel = 0;
+                $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
+                    // Calculate score_factuel for each principle
+                    $nbreIndicateurs = 0;//$principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
+                    $totalNote = 0;//$principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
+        
+
+                    $principle->criteres_de_gouvernance->each(function($critere) use(&$nbreIndicateurs, &$totalNote){ // Iterate over each principle
+                        // Calculate score_factuel for each principle
+                        $nbreIndicateurs+= $critere->indicateurs_de_gouvernance->count(); // Count the indicators
+                        $totalNote+= $critere->indicateurs_de_gouvernance->sum('note'); // Sum the notes
+                    });
+
+                    // Calculate score_factuel
+                    if ($nbreIndicateurs > 0 && $totalNote > 0) {
+
+                        $principle->score_factuel = $totalNote / $nbreIndicateurs;
+                    } else {
+                        $principle->score_factuel = 0; // Handle case with no indicators
+                    }
+
+                    $totalScoreFactuel+=$principle->score_factuel;
+
+                    $nbrePrincipe++;
+                });
+
+                // Calculate indice_factuel
+                if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
+
+                    $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
+                } else {
+                    $type->indice_factuel = 0; // Handle case with no indicators
+                }
+
+                // Add the calculated factuel index to the total sum
+                $totalIndiceFactuel += $type->indice_factuel;
+                $nbreDeTypes++; // Count the number of governance principles
             });
 
-            return FicheSyntheseEvaluationFactuelleResource::collection($types);
+            return [
+                "indice_factuel" => $totalIndiceFactuel ? $totalIndiceFactuel/$nbreDeTypes : 0,
+                "fiche_de_synthese_factuel" => FicheSyntheseEvaluationFactuelleResource::collection($types)
+            ];
     }
 
     private function analyse_donnees_de_perception($enqueteId, $organisationId)
     {
-        $types = app(PrincipeDeGouvernanceRepository::class)
+        // Initialize variables for summing the perception indices and counting the principles
+        $totalIndiceDePerception = 0;
+        $nbreDePrincipes = 0;
+        
+        $principes = app(PrincipeDeGouvernanceRepository::class)
                 ->all()
                 ->load([
                     'indicateurs_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
@@ -357,7 +418,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                         }]);
                     }
                 ])
-                ->each(function($principe) { // Iterate over each governance type
+                ->each(function($principe) use (&$totalIndiceDePerception, &$nbreDePrincipes) { // Iterate over each governance type
                     $nbreQO = $principe->indicateurs_de_gouvernance->count('reponses_count');
                     $moyPQO = 0;
                     $principe->indicateurs_de_gouvernance->each(function($indicateur) use(&$moyPQO){ // Iterate over each principle
@@ -393,9 +454,16 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                     } else {
                         $principe->indice_de_perception = 0; // Handle case with no indicators
                     }
+
+                    // Add the calculated perception index to the total sum
+                    $totalIndiceDePerception += $principe->indice_de_perception;
+                    $nbreDePrincipes++; // Count the number of governance principles
                 });
 
-            return FicheSyntheseEvaluationDePerceptionResource::collection($types);
+            return [
+                "indice_de_perception" => $totalIndiceDePerception ? $totalIndiceDePerception/$nbreDePrincipes : 0,
+                "fiche_de_synthese_de_perception" => FicheSyntheseEvaluationDePerceptionResource::collection($principes)
+            ];
     }
 
     /**

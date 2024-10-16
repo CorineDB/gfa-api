@@ -18,7 +18,7 @@ class OrganisationResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->id,
+            "id" => $this->secure_id,
             'nom' => $this->whenLoaded('user', $this->user->nom),
             'sigle' => $this->when($this->sigle, $this->sigle),
             'code' => $this->when($this->code, $this->code),

@@ -20,7 +20,7 @@ class IndicateursDeGouvernanceResource extends JsonResource
             'description'               => $this->when($this->description, $this->description),
             'type'                      => $this->when($this->type, $this->type),
             'can_have_multiple_reponse' => $this->when($this->can_have_multiple_reponse, $this->can_have_multiple_reponse),
-            'principeable' => $this->whenLoaded('principeable', function(){
+            'principeable' => $this->when($this->principeable, function(){
                 return [
 
                     'id'                        => $this->principeable->secure_id,

@@ -40,6 +40,7 @@ class Organisation extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        "code" => "integer",
         "created_at" => "datetime:Y-m-d",
         "updated_at" => "datetime:Y-m-d",
         "deleted_at" => "datetime:Y-m-d"

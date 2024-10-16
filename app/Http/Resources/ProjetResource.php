@@ -51,6 +51,7 @@ class ProjetResource extends JsonResource
             "programme" => $this->programme,
             "link" => $this->chemin,// new FichiersResource($this->chemin),
             "composantes" => ComposanteResource::collection($this->composantes),
+            "sites" => SiteResource::collection($this->sites),
             "audit" => $this->audits->last()
         ];
     }

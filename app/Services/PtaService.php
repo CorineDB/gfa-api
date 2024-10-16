@@ -59,9 +59,12 @@ class PtaService extends BaseService implements PtaServiceInterface
                 }
             }
 
-            //if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
-
-            $programme = Auth::user()->programme;
+            if(isset($attributs['programmeId'])){
+                if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
+            }
+            else{
+                $programme = Auth::user()->programme;
+            }
 
             if(Auth::user()->hasRole('organisation'))
             {
@@ -69,10 +72,9 @@ class PtaService extends BaseService implements PtaServiceInterface
                                  ->where('projetable_id', Auth::user()->profilable->id)
                                  ->get();
             }
-
             else
             {
-                $projets = Projet::where('programmeId', $programme->id)
+                $projets = Projet::where('programmeId', $programme->id)->where('statut', '>=' , -1)
                                  ->get();
             }
 
@@ -80,6 +82,7 @@ class PtaService extends BaseService implements PtaServiceInterface
 
             if(count($projets))
             {
+
                 foreach($projets as $projet)
                 {
                     if($projet->statut < -1) continue;
@@ -323,7 +326,8 @@ class PtaService extends BaseService implements PtaServiceInterface
                     }
 
                     array_push($pta, [//"bailleur" => $projet->bailleur->sigle,
-                    "projetable" => optional(optional($projet->projetable)->user)->nom,
+                    "owner_id" => $projet->projetable->secure_id,
+                    "owner_nom" => $projet->projetable->user->nom,
                     "projetId" => $projet->secure_id,
                     "nom" => $projet->nom,
                     "code" => $projet->codePta,
@@ -337,7 +341,6 @@ class PtaService extends BaseService implements PtaServiceInterface
             {
                 //mkdir (".".Storage::url('app')."/pta", 0777);
                 File::makeDirectory(storage_path('app').'/pta',0777,true);
-
             }
 
             $file = json_encode($pta);
@@ -664,6 +667,64 @@ class PtaService extends BaseService implements PtaServiceInterface
     }
 
     public function filtre(array $attributs) : JsonResponse
+    {
+        try
+        {
+            if( !(auth()->user()->hasRole("organisation", "unitee-de-gestion")) ){
+                throw new Exception("Vous n'avez pas les permissions pour effectuer cette action", 1);
+            }
+
+            $programme = Auth::user()->programme;
+            $attributs = array_merge($attributs, ["programmeId" => $programme->id]);
+            if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
+
+            $pta = [];
+
+            if(array_key_exists('ppm', $attributs))
+            {
+                if(!(array_key_exists('annee', $attributs))) throw new Exception( "L'année est obligatoire", 500);
+
+                $pta = $this->filtreByPpm($attributs);
+            }
+
+            else if(array_key_exists('annee', $attributs) && !(array_key_exists('mois', $attributs)))
+            {
+               $pta = $this->filtreByAnnee($attributs);
+            }
+
+            else
+            {
+               $pta = $this->filtreByAnnee(array_merge($attributs, ["annee" => date('Y')]));
+            }
+
+            /*else if(array_key_exists('mois', $attributs))
+            {
+               if(!(array_key_exists('annee', $attributs))) throw new Exception( "L'année est obligatoire", 500);
+
+               $pta = $this->filtreByMois($attributs);
+            }
+
+            else if(array_key_exists('debut', $attributs) && array_key_exists('fin', $attributs))
+            {
+               $pta = $this->filtreByDate($attributs);
+            }
+
+            else
+            {
+                $pta = $this->filtreAll($attributs);
+            }*/
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $pta, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            DB::rollback();
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function oldFiltre(array $attributs) : JsonResponse
     {
         try
         {
