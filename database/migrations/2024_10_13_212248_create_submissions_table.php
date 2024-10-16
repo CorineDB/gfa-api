@@ -19,11 +19,15 @@ class CreateSubmissionsTable extends Migration
             $table->foreign('enqueteDeCollecteId')->references('id')->on('enquete_de_collete_forms')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->bigInteger('organisationId')->unsigned()->after("enqueteDeCollecteId");
+            $table->bigInteger('organisationId')->unsigned();
             $table->foreign('organisationId')->references('id')->on('organisations')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->bigInteger('submittedBy')->unsigned();
+            $table->bigInteger('launchedBy')->unsigned()->nullable();
+            $table->foreign('launchedBy')->references('id')->on('users')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
+            $table->bigInteger('submittedBy')->unsigned()->nullable();
             $table->foreign('submittedBy')->references('id')->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
