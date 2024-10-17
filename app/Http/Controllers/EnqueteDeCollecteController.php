@@ -146,4 +146,26 @@ class EnqueteDeCollecteController extends Controller
     {
         return $this->enqueteDeCollecteService->appreciation($enqueteId, $request->all());
     }
+
+    /**
+     * Liste des organisations qui n'ont pas encore repondu a une enquete
+     * 
+     * @param  String  $enqueteId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function surveyEligibleParticipants($enqueteId)
+    {
+        return $this->enqueteDeCollecteService->surveyEligibleParticipants($enqueteId);
+    }
+
+    /**
+     * Retrieve a list of organizations that have submitted responses to a survey.
+     *
+     * @param  String  $enqueteId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function surveySubmittedParticipants($enqueteId)
+    {
+        return $this->enqueteDeCollecteService->surveySubmittedParticipants($enqueteId);
+    }
 }

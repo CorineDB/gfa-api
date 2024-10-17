@@ -860,7 +860,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('{enquete_de_collecte}/appreciation', 'appreciation')->name('appreciation'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::get('{enquete_de_collecte}/resultat-appreciations/{organisationId}', 'resultat_appreciations')->name('resultat_appreciations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-
+                    
+                    Route::get('{enquete_de_collecte}/eligible-participants', 'surveyEligibleParticipants'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                    
+                    Route::get('{enquete_de_collecte}/survey-submitted-organizations', 'surveySubmittedParticipants')->name('survey_participants');
 
                     Route::get('{enquete_de_collecte}/reponses-collecter', 'reponses_collecter')->name('reponses_collecter'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
