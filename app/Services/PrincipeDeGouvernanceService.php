@@ -175,12 +175,18 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
 
             $programme = Auth::user()->programme;
 
-            if ($enqueteId && !($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)->id))
-                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+            if($enqueteId != null && $enqueteId != 'null'){
+                if (!($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)))
+                    throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+                $enqueteId=$enqueteId->id;
+            }
 
-            if ($organisationId && !($organisationId = app(OrganisationRepository::class)->findById($organisationId)->id))
-                throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
+            if($organisationId != null && $organisationId != 'null'){
+                if (!($organisationId = app(OrganisationRepository::class)->findById($organisationId)))
+                    throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
 
+                $organisationId=$organisationId->id;
+            }
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $programme->types_de_gouvernance->map(function($item) use ($enqueteId, $organisationId) {
                 return new FormulaireFactuelResource($item, $enqueteId, $organisationId);
             }), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -205,12 +211,19 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
 
             $programme = Auth::user()->programme;
 
-            if ($enqueteId && !($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)->id))
-                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+            if($enqueteId != null && $enqueteId != 'null'){
+                if (!($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)))
+                    throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+                $enqueteId=$enqueteId->id;
+            }
 
-            if ($organisationId && !($organisationId = app(OrganisationRepository::class)->findById($organisationId)->id))
-                throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
+            if($organisationId != null && $organisationId != 'null'){
+                if (!($organisationId = app(OrganisationRepository::class)->findById($organisationId)))
+                    throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
 
+                $organisationId=$organisationId->id;
+            }
+            
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $programme->principes_de_gouvernance->map(function($principeDeGouvernance) use ($enqueteId, $organisationId) {
                 return new FormulaireDePerceptionResource($principeDeGouvernance, $enqueteId, $organisationId);
             }), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

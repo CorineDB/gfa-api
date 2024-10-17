@@ -449,6 +449,11 @@ class Programme extends Model
     {
         return $this->hasMany(OptionDeReponse::class, 'programmeId');
     }
+
+    public function enquetesDeCollecte()
+    {
+        return $this->hasMany(Enquete::class, 'programmeId');
+    }
     
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance

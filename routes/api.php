@@ -867,7 +867,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{enquete_de_collecte}/resultats/{organisationId}', 'resultats')->name('resultats'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::controller('PrincipeDeGouvernanceController')->group(function () {
-
                         Route::get('{enquete_de_collecte?}/formulaire-factuel/{organisationId?}', 'formulaire_factuel')->name('formulaire_factuel')/*->middleware('permission:voir-un-projet')*/;
                         Route::get('{enquete_de_collecte?}/formulaire-de-perception/{organisationId?}', 'formulaire_de_perception')->name('formulaire_de_perception')/*->middleware('permission:voir-un-projet')*/;
                     });

@@ -19,6 +19,7 @@ use App\Repositories\UserRepository;
 use App\Traits\Eloquents\DBStatementTrait;
 use App\Traits\Helpers\LogActivity;
 use Carbon\Carbon;
+use App\Repositories\ValeurCibleIndicateurRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\IndicateurServiceInterface;
 use Exception;
@@ -42,6 +43,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
     /**
      * @var service
      */
+    protected $valeurCibleIndicateurRepository;
     protected $categorieRepository;
     protected $uniteeMesureRepository;
     protected $userRepository;
@@ -53,7 +55,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      *
      * @param IndicateurRepository $indicateurRepository
      */
-    public function __construct(IndicateurRepository $indicateurRepository, UniteeMesureRepository $uniteeMesureRepository, CategorieRepository $categorieRepository, UserRepository $userRepository, BailleurRepository $bailleurRepository)
+    public function __construct(IndicateurRepository $indicateurRepository, UniteeMesureRepository $uniteeMesureRepository, CategorieRepository $categorieRepository, UserRepository $userRepository, BailleurRepository $bailleurRepository, ValeurCibleIndicateurRepository $valeurCibleIndicateurRepository)
     {
         parent::__construct($indicateurRepository);
         $this->repository = $indicateurRepository;
@@ -61,6 +63,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
         $this->userRepository = $userRepository;
         $this->bailleurRepository = $bailleurRepository;
         $this->categorieRepository = $categorieRepository;
+        $this->valeurCibleIndicateurRepository = $valeurCibleIndicateurRepository;
     }
 
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
@@ -355,6 +358,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             */
 
             $indicateur->valeurDeBase = $valeurDeBase;
+
+            $this->setIndicateurValeursCible($indicateur, $attributs["anneesCible"]);
 
             $this->changeState(0);
 
@@ -793,4 +798,100 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         return $valeurDeBase;
     }
+
+    /**
+     * Set Indicateur Value
+     * 
+     * @param Indicateur $indicateur
+     * @param array|id $valeursDeBase
+     * @param array $valeurDeBase
+     * 
+     * @return array
+     */
+    protected function setIndicateurValeursCible(Indicateur $indicateur, $annneesCible =[]){
+        if (is_array($annneesCible)) {
+            foreach ($annneesCible as $key => $anneeCible) {
+
+                if (!($valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->newInstance()->where("cibleable_id", $indicateur->id)->where("annee", $anneeCible['annee'])->first())) {
+
+                    if (!array_key_exists('valeurCible', $anneeCible) || !isset($anneeCible['valeurCible'])) throw new Exception("Veuillez préciser la valeur cible de l'année {$anneeCible['annee']}.", 400);
+
+                    $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($anneeCible, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur)]));
+                    $valeurCibleIndicateur->save();
+                    $valeurCibleIndicateur->refresh();
+
+                    $valeurCible = [];
+
+                    if ($indicateur->agreger && is_array($anneeCible["valeurCible"])) {
+
+                        foreach ($anneeCible["valeurCible"] as $key => $data) {
+
+                            if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $data['keyId'])->first())) {
+                                $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $data["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+
+                                $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
+                            }
+                        }
+                        
+                    }
+                    
+                    else if (!$indicateur->agreger && !is_array($anneeCible["valeurCible"])) {
+                        dd($anneeCible["valeurCible"]);
+                        $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"]["value"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
+                        
+                        $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
+                        //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
+                    }
+                    else{
+                        throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
+                    }
+
+                    $valeurCibleIndicateur->valeurCible = $valeurCible;
+
+                    $valeurCibleIndicateur->save();
+                }
+
+            }
+        }
+    }
+
+
+    /*if (!($valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->newInstance()->where("cibleable_id", $attributs['indicateurId'])->where("annee", $attributs['annee'])->first())) {
+
+        if (!array_key_exists('valeurCible', $attributs) || !isset($attributs['valeurCible'])) throw new Exception("Veuillez préciser la valeur cible de l'année {$attributs['annee']} de ce suivi.", 400);
+
+        $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($attributs, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur)]));
+        $valeurCibleIndicateur->save();
+        $valeurCibleIndicateur->refresh();
+        
+        $valeurCible = [];
+
+        if ($indicateur->agreger && is_array($attributs["valeurCible"])) {
+
+            foreach ($attributs["valeurCible"] as $key => $data) {
+
+                if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $data['keyId'])->first())) {
+                    $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $data["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+
+                    $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
+                }
+            }
+            
+        } 
+        else if (!$indicateur->agreger && !is_array($attributs["valeurCible"])) {
+            $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $attributs["valeurRealise"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
+            
+            $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
+            //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
+        }
+        else{
+            throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
+        }
+
+        $valeurCibleIndicateur->valeurCible = $valeurCible;
+
+        //$valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($attributs, ["cibleable_id" => $attributs['indicateurId'], "cibleable_type" => "App\\Models\\Indicateur"]));
+
+        $valeurCibleIndicateur->save();
+    }*/
 }

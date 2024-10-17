@@ -50,7 +50,15 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => EnqueteDeCollecteResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if(Auth::user()->hasRole('administrateur')){
+                $enquetesDeCollecte = $this->repository->all();
+            }
+            else{
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $enquetesDeCollecte = Auth::user()->programme->enquetesDeCollecte;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => EnqueteDeCollecteResource::collection($enquetesDeCollecte), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

@@ -70,7 +70,7 @@ class FormulaireFactuelResource extends JsonResource
                 return [
                     'id'                        => $reponse->secure_id,
                     'libelle'                   => $reponse->libelle,
-                    'note'                      => $reponse->note,
+                    "note"                      => intval($reponse->note),
                     'source'                    => $reponse->source,
                     'optionDeReponseId'         => $reponse->optionDeReponse->secure_id,
                 ];
