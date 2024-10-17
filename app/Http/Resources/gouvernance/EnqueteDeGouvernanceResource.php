@@ -25,11 +25,16 @@ class EnqueteDeGouvernanceResource extends JsonResource
 
         // Group the responses by organization
         $groupedResponses = $responses->groupBy('organisation.id')->map(function ($organisationResponses, $organisationId) {
-            
+            $organisation = optional(optional($organisationResponses->first())->organisation);
             // Collect organisation information without using an 'organisation' key
             $organisationInfo = [
-                'id' => optional(optional($organisationResponses->first())->organisation)->secure_id ?? null,
-                'nom' => optional(optional($organisationResponses->first())->organisation)->user->nom ?? null,
+                'id' => $organisation->secure_id ?? null,
+                'nom' => $organisation->user->nom ?? null,
+                'nom_point_focal' => $organisation->nom_point_focal ?? null,
+                'prenom_point_focal' => $organisation->prenom_point_focal ?? null,
+                'contact_point_focal' => $organisation->contact_point_focal ?? null,
+                "submitted_by"=>  ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $this->id)->orderByDesc("created_at")->first()->user,
+
                 "submitted_at"=>  Carbon::parse(ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $this->id)->orderByDesc("updated_at")->first()->updated_at)->format("Y-m-d H:i:s"),
                 'levelOfSubmission' => $this->getLevelOfSubmission($organisationId)
             ];
