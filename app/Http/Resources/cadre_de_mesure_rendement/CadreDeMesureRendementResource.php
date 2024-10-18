@@ -16,7 +16,7 @@ class CadreDeMesureRendementResource extends JsonResource
      */
     public function toArray($request)
     {
-        $indice=$this->pivot->position;
+        $indice = $this->pivot->position;
         return [
             'id' => $this->secure_id,
             'libelle' => $this->libelle,

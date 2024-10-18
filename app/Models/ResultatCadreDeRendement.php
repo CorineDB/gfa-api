@@ -40,6 +40,7 @@ class ResultatCadreDeRendement extends Model
         return Indicateur::whereHas('cadres_de_mesure_rendement', function($query) use ($pivotId){
             $query->where('cadre_de_mesure_rendement_mesures.cadreDeMesureRendementId', $pivotId ?: $this->pivot->id);
         })->get();
+        
         // Get the related sites through the projets of the programme
         return Indicateur::whereHas('cadreDeMesures', function($query) use ($pivotId){
             $query->where('cadreDeMesures.cadreDeMesureRendementId', $pivotId ?: $this->pivot->id);
@@ -64,5 +65,16 @@ class ResultatCadreDeRendement extends Model
     {
         // If the value is null or an empty string, set it to 'Not defined'
         $this->attributes['description'] = !empty($value) ? ucfirst(strtolower($value)) : 'Not defined';
+    }
+
+    public function resultats_de_mesure_rendement($projetId = null)
+    {
+        $results=$this->hasManyThrough(ResultatCadreDeRendement::class, 'resultatCadreDeRendementId')->with("indicateurs");
+
+        if($projetId){
+            return $results->where("projetId",$projetId);
+        }
+
+        return;
     }
 }

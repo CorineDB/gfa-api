@@ -267,16 +267,15 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($organisation = app(OrganisationRepository::class)->findById($organisationId)))
                 throw new Exception("Cette orgsnisation n'existe pas", Response::HTTP_NOT_FOUND);
 
+            $last_reponse=ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $enqueteDeCollecte->id)->orderByDesc("created_at")->first();
             $resultats = [
                 'id' => $organisation->secure_id,
                 'nom' => $organisation->user->nom,
                 'nom_point_focal' => $organisation->nom_point_focal ?? null,
                 'prenom_point_focal' => $organisation->prenom_point_focal ?? null,
                 'contact_point_focal' => $organisation->contact_point_focal ?? null,
-                "submitted_by"=>  ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $this->id)->orderByDesc("created_at")->first()->user,
-
-                "submitted_at"=>  Carbon::parse(ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $this->id)->orderByDesc("updated_at")->first()->updated_at)->format("Y-m-d H:i:s"),
-                
+                "submitted_by"=> optional($last_reponse)->user,
+                "submitted_at"=> $last_reponse ? Carbon::parse(optional($last_reponse)->updated_at)->format("Y-m-d") : "null",                
                 'analyse_factuel' => $this->analyse_donnees_factuelle($enqueteDeCollecte->id, $organisation->id),
                 'analyse_perception' => $this->analyse_donnees_de_perception($enqueteDeCollecte->id, $organisation->id)
             ];
