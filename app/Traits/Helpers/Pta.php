@@ -511,7 +511,9 @@ trait Pta{
                                             "code" => $tache->codePta,
                                             "poids" => $tache->poids,
                                             "poidsActuel" => optional($tache->suivis->last())->poidsActuel ?? 0,
-                                            "durees" => $this->dureePta($tache->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray())
+                                            "durees" => $this->dureePta($tache->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray()),
+                                            "tep" => $tache->tep,
+                                            "suivis" => $tache->suivis,
                                         ]);
                                 }
 
@@ -519,6 +521,8 @@ trait Pta{
                                                       "nom" => $activite->nom,
                                                       "code" => $activite->codePta,
                                                       "budgetNational" => $activite->budgetNational,
+                                                      "depenses" => $activite->consommer,
+                                                      "tep" => $activite->tep,
                                                       /*"pret" => $activite->pret,
                                                       "trimestre1" => $activite->planDeDecaissement(1, $attributs['annee']),
                                                       "trimestre2" => $activite->planDeDecaissement(2, $attributs['annee']),
@@ -536,6 +540,8 @@ trait Pta{
                             array_push($sctab, ["id" => $sousComposante->secure_id,
                                                   "nom" => $sousComposante->nom,
                                                   "budgetNational" => $sousComposante->budgetNational,
+                                                  "depenses" => $sousComposante->consommer,
+                                                  "tep" => $sousComposante->tep,
                                                     /*"pret" => $sousComposante->pret,
                                                       "trimestre1" => $sousComposante->planDeDecaissement(1, $attributs['annee']),
                                                       "trimestre2" => $sousComposante->planDeDecaissement(2, $attributs['annee']),
@@ -610,7 +616,9 @@ trait Pta{
                                             "code" => $tache->codePta,
                                             "poids" => $tache->poids,
                                             "poidsActuel" => optional($tache->suivis->last())->poidsActuel ?? 0,
-                                            "durees" => $this->dureePta($tache->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray())
+                                            "durees" => $this->dureePta($tache->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray()),
+                                            "tep" => $tache->tep,
+                                            "suivis" => $tache->suivis,
                                         ]);
                             }
 
@@ -618,6 +626,8 @@ trait Pta{
                                                 "nom" => $activite->nom,
                                                 "code" => $activite->codePta,
                                                 "budgetNational" => $activite->budgetNational,
+                                                "depenses" => $activite->consommer,
+                                                "tep" => $activite->tep,
                                                 /*"pret" => $activite->pret,
                                                     "trimestre1" => $activite->planDeDecaissement(1, $attributs['annee']),
                                                     "trimestre2" => $activite->planDeDecaissement(2, $attributs['annee']),
@@ -636,6 +646,8 @@ trait Pta{
                                             "nom" => 0,
                                             "code" => 0,
                                             "budgetNational" => 0,
+                                            "depenses" => 0,
+                                            "tep" => 0,
                                             /*"pret" => 0,
                                             "trimestre1" => 0,
                                             "trimestre2" => 0,
@@ -651,6 +663,8 @@ trait Pta{
                                                       "nom" => $composante->nom,
                                                       "code" => $composante->codePta,
                                                       "budgetNational" => $composante->budgetNational,
+                                                      "depenses" => $composante->consommer,
+                                                      "tep" => $composante->tep,
                                                       /*"pret" => $composante->pret,
                                                       "trimestre1" => $composante->planDeDecaissement(1, $attributs['annee']),
                                                       "trimestre2" => $composante->planDeDecaissement(2, $attributs['annee']),
@@ -669,6 +683,8 @@ trait Pta{
                     "nom" => $projet->nom,
                     "code" => $projet->codePta,
                     "budgetNational" => $projet->budgetNational,
+                    "depenses" => $projet->consommer,
+                    "tep" => $projet->tep,
                     //"pret" => $projet->pret,
                     "composantes" => $composantestab]);
             }

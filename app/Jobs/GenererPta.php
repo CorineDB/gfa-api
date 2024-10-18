@@ -133,8 +133,10 @@ class GenererPta implements ShouldQueue
                                         "nom" => $tache->nom,
                                         "code" => $tache->codePta,
                                         "poids" => $tache->poids,
+                                        "tep" => $tache->tep,
                                         "poidsActuel" => optional($tache->suivis->last())->poidsActuel ?? 0,
-                                        "durees" => $this->dureePta($tache->durees->where('debut', '>=', date('Y') . '-01-01')->where('fin', '<=', date('Y') . '-12-31')->toArray())
+                                        "durees" => $this->dureePta($tache->durees->where('debut', '>=', date('Y') . '-01-01')->where('fin', '<=', date('Y') . '-12-31')->toArray()),
+                                        "suivis" => $tache->suivis,
                                     ]);
                                 }
 
@@ -142,7 +144,9 @@ class GenererPta implements ShouldQueue
                                     "id" => $activite->secure_id,
                                     "nom" => $activite->nom,
                                     "code" => $activite->codePta,
-                                    "budgetNational" => $activite->budgetNational,/*
+                                    "budgetNational" => $activite->budgetNational,
+                                    "depenses" => $activite->consommer,
+                                    "tep" => $activite->tep,/*
                                     "pret" => $activite->pret,
                                     "trimestre1" => $activite->planDeDecaissement(1, date('Y')),
                                     "trimestre2" => $activite->planDeDecaissement(2, date('Y')),
@@ -161,7 +165,9 @@ class GenererPta implements ShouldQueue
                             array_push($sctab, [
                                 "id" => $sousComposante->secure_id,
                                 "nom" => $sousComposante->nom,
-                                "budgetNational" => $sousComposante->budgetNational,/*
+                                "budgetNational" => $sousComposante->budgetNational,
+                                "depenses" => $sousComposante->consommer,
+                                "tep" => $sousComposante->tep,/*
                                 "pret" => $sousComposante->pret,
                                 "trimestre1" => $sousComposante->planDeDecaissement(1, date('Y')),
                                 "trimestre2" => $sousComposante->planDeDecaissement(2, date('Y')),
@@ -226,7 +232,9 @@ class GenererPta implements ShouldQueue
                                     "code" => $tache->codePta,
                                     "poids" => $tache->poids,
                                     "poidsActuel" => optional($tache->suivis->last())->poidsActuel ?? 0,
-                                    "durees" => $this->dureePta($tache->durees->where('debut', '>=', date('Y') . '-01-01')->where('fin', '<=', date('Y') . '-12-31')->toArray())
+                                    "tep" => $tache->tep,
+                                    "durees" => $this->dureePta($tache->durees->where('debut', '>=', date('Y') . '-01-01')->where('fin', '<=', date('Y') . '-12-31')->toArray()),
+                                    "suivis" => $tache->suivis,
                                 ]);
                             }
 
@@ -234,7 +242,9 @@ class GenererPta implements ShouldQueue
                                 "id" => $activite->id,
                                 "nom" => $activite->nom,
                                 "code" => $activite->codePta,
-                                "budgetNational" => $activite->budgetNational,/*
+                                "budgetNational" => $activite->budgetNational,
+                                "depenses" => $activite->consommer,
+                                "tep" => $activite->tep,/*
                                 "pret" => $activite->pret,
                                 "trimestre1" => $activite->planDeDecaissement(1, date('Y')),
                                 "trimestre2" => $activite->planDeDecaissement(2, date('Y')),
@@ -254,7 +264,9 @@ class GenererPta implements ShouldQueue
                             "id" => 0,
                             "nom" => 0,
                             "code" => 0,
-                            "budgetNational" => 0,/*
+                            "budgetNational" => 0,
+                            "depenses" => 0,
+                            "tep" => 0,/*
                             "pret" => 0,
                             "trimestre1" => 0,
                             "trimestre2" => 0,
@@ -271,7 +283,9 @@ class GenererPta implements ShouldQueue
                         "id" => $composante->secure_id,
                         "nom" => $composante->nom,
                         "code" => $composante->codePta,
-                        "budgetNational" => $composante->budgetNational,/*
+                        "budgetNational" => $composante->budgetNational,
+                        "depenses" => $composante->consommer,
+                        "tep" => $composante->tep,/*
                         "pret" => $composante->pret,
                         "trimestre1" => $composante->planDeDecaissement(1, date('Y')),
                         "trimestre2" => $composante->planDeDecaissement(2, date('Y')),
@@ -291,6 +305,8 @@ class GenererPta implements ShouldQueue
                     "nom" => $projet->nom,
                     "code" => $projet->codePta,
                     "budgetNational" => $projet->budgetNational,
+                    "depenses" => $projet->consommer,
+                    "tep" => round($projet->tep, 2),
                     //"pret" => $projet->pret,
                     "composantes" => $composantestab]);
             }

@@ -25,6 +25,7 @@ class ComposanteResource extends JsonResource
                 "budgetNational" => $this->budgetNational,
                 "description" => $this->description,
                 "statut" => $this->statut,
+                "depenses" => $this->consommer,
                 "tep" => $this->tep,
 
                 $this->mergeWhen($this->projet && optional($this->projet->organisation), function(){
