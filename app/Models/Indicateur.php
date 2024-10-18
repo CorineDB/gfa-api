@@ -34,7 +34,6 @@ class Indicateur extends Model
                 $indicateur->valueKeys()->delete();
                 $indicateur->valeursDeBase()->delete();
                 $indicateur->sites()->delete();
-                $indicateur->cadres_de_mesure_rendement()->delete();
                 
                 DB::commit();
             } catch (\Throwable $th) {

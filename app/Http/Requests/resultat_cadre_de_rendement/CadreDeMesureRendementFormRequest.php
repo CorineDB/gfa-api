@@ -30,14 +30,14 @@ class CadreDeMesureRendementFormRequest extends FormRequest
     public function rules()
     {
         return [
-            'projetId'                                                          => ['sometimes', new HashValidatorRule(new Projet())],
+            'projetId'                                                                    => ['required', new HashValidatorRule(new Projet())],
             'resultats_cadre_de_mesure_rendement'                                         => ['required', 'array', 'min:1'],
-            'resultats_cadre_de_mesure_rendement.*.resultatCadreDeRendementId'            => ['distinct', new HashValidatorRule(new ResultatCadreDeRendement())],
+            'resultats_cadre_de_mesure_rendement.*.resultatCadreDeMesureRendementId'      => ['required', new HashValidatorRule(new ResultatCadreDeRendement())],
             'resultats_cadre_de_mesure_rendement.*.type'                                  => ['required', 'string', 'in:impact,effet,produit'],
             'resultats_cadre_de_mesure_rendement.*.position'                              => ['required', 'integer', 'min:0'],
-            'resultats_cadre_de_mesure_rendement.*.parentResultatCadreDeRendementId'      => ['sometimes', 'nullable', new HashValidatorRule(new ResultatCadreDeRendement())],
+            'resultats_cadre_de_mesure_rendement.*.resultatCadreDeRendementId'            => ['sometimes', 'nullable', new HashValidatorRule(new ResultatCadreDeRendement())],
             'resultats_cadre_de_mesure_rendement.*.indicateurs'                           => ['required', 'array', 'min:1'],
-            'resultats_cadre_de_mesure_rendement.*.indicateurs.*.indicateurId'            => ['required', new HashValidatorRule(new Indicateur())],
+            'resultats_cadre_de_mesure_rendement.*.indicateurs.*.indicateurId'            => ['required', 'distinct', new HashValidatorRule(new Indicateur()), Rule::unique("cadre_de_mesure_rendement_mesures", "indicateurId")],
             'resultats_cadre_de_mesure_rendement.*.indicateurs.*.position'                => ['required', 'integer', 'min:1']
         ];
     }

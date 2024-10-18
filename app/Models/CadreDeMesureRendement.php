@@ -15,7 +15,7 @@ class CadreDeMesureRendement extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('position', 'type', 'rendementable_id', 'rendementable_type', 'resultatCadreDeRendementId');
+    protected $fillable = array('position', 'type', 'rendementable_id', 'rendementable_type', 'resultatCadreDeRendementId', 'resultatCadreDeMesureRendementId');
 
     protected $casts = ['position' => 'integer'];
 
@@ -30,6 +30,11 @@ class CadreDeMesureRendement extends Model
     }
 
     public function resultat_cadre_de_rendement()
+    {
+        return $this->belongsTo(ResultatCadreDeRendement::class, 'resultatCadreDeMesureRendementId');
+    }
+
+    public function parent_resultat_cadre_de_rendement()
     {
         return $this->belongsTo(ResultatCadreDeRendement::class, 'resultatCadreDeRendementId');
     }
