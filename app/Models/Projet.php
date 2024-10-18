@@ -370,6 +370,14 @@ class Projet extends Model
         ];
     }
 
+    public function getConsommerAttribute()
+    {
+        // Sum 'comsommer' for the current composante's activites
+        return $this->composantes->sum(function ($composante) {
+            return $composante->consommer;
+        });
+    }
+
     public function getTefAttribute()
     {
 

@@ -58,7 +58,7 @@ class FicheSyntheseEvaluationFactuelleResource extends JsonResource
             'nom'                       => $indicateur->nom,
             "type"                      => $indicateur->type,
             "can_have_multiple_reponse" => $indicateur->can_have_multiple_reponse,
-            "note"                      => $indicateur->note,
+            "note"                      => intval($indicateur->note),
         ];
     }
 }

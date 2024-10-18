@@ -33,10 +33,12 @@ class ProjetsResource extends JsonResource
             "link" => $this->chemin,// new FichiersResource($this->chemin),
             //"pret" => $this->pret ?? 0,
             "budgetNational" => $this->budgetNational ?? 0,
+            "depenses" => $this->consommer,
             "objectifGlobaux" => $this->objectifGlobaux,
             "tauxEngagement" => $this->tauxEngagement,
             "debut" => $this->debut,
             "fin" => $this->fin,
+            "tep" => round($this->tep, 2),
         ];
     }
 }

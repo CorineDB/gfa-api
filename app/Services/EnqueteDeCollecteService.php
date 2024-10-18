@@ -7,6 +7,8 @@ use App\Http\Resources\gouvernance\EnqueteDeCollecteResource;
 use App\Http\Resources\gouvernance\EnqueteDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationDePerceptionResource;
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationFactuelleResource;
+use App\Http\Resources\OrganisationResource;
+use App\Models\Organisation;
 use App\Models\ReponseCollecter;
 use App\Repositories\EnqueteDeCollecteRepository;
 use App\Repositories\OrganisationRepository;
@@ -22,6 +24,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use App\Traits\Helpers\LogActivity;
+use Carbon\Carbon;
 
 /**
 * Interface EnqueteDeCollecteServiceInterface
@@ -50,7 +53,15 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => EnqueteDeCollecteResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if(Auth::user()->hasRole('administrateur')){
+                $enquetesDeCollecte = $this->repository->all();
+            }
+            else{
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $enquetesDeCollecte = Auth::user()->programme->enquetesDeCollecte;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => EnqueteDeCollecteResource::collection($enquetesDeCollecte), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -256,9 +267,15 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             if (!($organisation = app(OrganisationRepository::class)->findById($organisationId)))
                 throw new Exception("Cette orgsnisation n'existe pas", Response::HTTP_NOT_FOUND);
 
+            $last_reponse=ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $enqueteDeCollecte->id)->orderByDesc("created_at")->first();
             $resultats = [
                 'id' => $organisation->secure_id,
                 'nom' => $organisation->user->nom,
+                'nom_point_focal' => $organisation->nom_point_focal ?? null,
+                'prenom_point_focal' => $organisation->prenom_point_focal ?? null,
+                'contact_point_focal' => $organisation->contact_point_focal ?? null,
+                "submitted_by"=> optional($last_reponse)->user,
+                "submitted_at"=> $last_reponse ? Carbon::parse(optional($last_reponse)->updated_at)->format("Y-m-d") : "null",                
                 'analyse_factuel' => $this->analyse_donnees_factuelle($enqueteDeCollecte->id, $organisation->id),
                 'analyse_perception' => $this->analyse_donnees_de_perception($enqueteDeCollecte->id, $organisation->id)
             ];
@@ -507,4 +524,80 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    
+    /**
+     * Retrieve a list of organisations that have not yet responded to a survey.
+     *
+     * This method will return a list of organisations that are part of the same
+     * programme as the authenticated user, and that have not yet submitted a
+     * response to the given survey.
+     *
+     * @param  String  $enqueteId The ID of the survey (enquete) to retrieve the waiting list for.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the list of organisations that have not yet submitted responses to the survey.
+     */
+    public function surveyEligibleParticipants($enqueteId): JsonResponse
+    {
+        try {
+            // Retrieve the survey record from the database
+            if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+
+            // Filter organisations that are part of the same programme as the authenticated user
+            // and have not yet submitted a response to the given survey
+            $organisations = Organisation::whereHas("user", function($query) {
+                return $query->where("programmeId", auth()->user()->programmeId);
+            })->whereNotExists(function($query) use ($enqueteDeCollecte) {
+                $query->select(DB::raw(1))
+                    ->from("reponses_collecter")
+                    ->whereRaw("reponses_collecter.organisationId = organisations.id")
+                    ->where("reponses_collecter.enqueteDeCollecteId", $enqueteDeCollecte->id);
+            })
+            ->get();
+
+            /*$enqueteId = $enqueteDeCollecte->id;
+            
+            $organisations = Organisation::whereHas("user", function($query) {
+                return $query->where("programmeId", auth()->user()->programmeId);
+            })->join("reponses_collecter", function($join) use ($enqueteId) {
+                $join->on("organisations.id", "=", "reponses_collecter.organisationId")
+                     ->where("reponses_collecter.enqueteDeCollecteId", $enqueteId);
+            })
+            ->get("id","nom");*/
+
+            // Return the list of organisations in a JSON response
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationResource::collection($organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            // Handle any errors that may occur
+            DB::rollback();
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Renvoie la liste des organisations qui ont deja repondu a l'enquête
+     * 
+     * @param  String  $enqueteId The ID of the survey (enquete) to retrieve the submitted list for.
+     * @return \Illuminate\Http\JsonResponse A JSON response containing the list of organizations that have submitted responses to the survey.
+     */
+    public function surveySubmittedParticipants($enqueteId): JsonResponse{
+        // Retrieve the list of submitted organisations for the given survey ID
+        // The query will join the organisations and responses_collecter tables
+        // and will filter out the organisations that have not submitted a response
+        // for the given survey ID
+        try {
+            if (!($enqueteDeCollecte = $this->repository->findById($enqueteId)))
+                throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+
+            $enqueteId = $enqueteDeCollecte->id;
+            $organisations = Organisation::join("reponses_collecter", "organisations.id", "=", "reponses_collecter.organisationId")
+            ->where("reponses_collecter.enqueteDeCollecteId", $enqueteId)
+            ->get();
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationResource::collection($organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            DB::rollback();
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }
