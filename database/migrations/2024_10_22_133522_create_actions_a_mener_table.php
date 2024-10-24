@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateEvaluationsTable extends Migration
+class CreateActionsAMenerTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class CreateEvaluationsTable extends Migration
      */
     public function up()
     {
-
-        if(!Schema::hasTable('evaluations')){
-            Schema::create('evaluations', function (Blueprint $table) {
+        if(!Schema::hasTable('actions_a_mener')){
+            Schema::create('actions_a_mener', function (Blueprint $table) {
                 $table->id();
-                $table->text('intitule')->unique();
-                $table->longText('description')->nullable();
-                $table->float('objectif_attendu');
-                $table->integer('annee_exercice');
-                $table->date('debut');
-                $table->date('fin');
+                $table->longText('action');
+                $table->nullableMorphs('actionable');
+                $table->datetime('start_at')->nullable();
+                $table->datetime('end_at')->nullable();
+                $table->boolean('statut')->default(0);
+                $table->boolean('est_valider')->default(0);
+                $table->datetime('validated_at')->nullable();
                 $table->bigInteger('programmeId')->unsigned();
                 $table->foreign('programmeId')->references('id')->on('programmes')
                     ->onDelete('cascade')
@@ -40,6 +40,6 @@ class CreateEvaluationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('evaluations');
+        Schema::dropIfExists('actions_a_mener');
     }
 }

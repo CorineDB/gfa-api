@@ -19,10 +19,7 @@ class OptionDeReponse extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('libelle', 'slug', 'note', 'description', 'programmeId');
-    protected $casts = array('note'=>"integer");
-
-    //protected $appends = ['note'];
+    protected $fillable = array('libelle', 'slug', 'description', 'programmeId');
 
     protected static function boot()
     {
@@ -66,6 +63,11 @@ class OptionDeReponse extends Model
     public function reponses()
     {
         return $this->hasMany(ReponseCollecter::class, 'optionDeReponseId', 'id');
+    }
+
+    public function formulaires_de_gouvernance()
+    {
+        return $this->belongsToMany(FormulaireDeGouvernance::class,'formulaire_options_de_reponse', 'optionId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "point"]);
     }
 
     /*public function getNoteAttribute()

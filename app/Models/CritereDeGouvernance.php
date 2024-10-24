@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
-
 class CritereDeGouvernance extends Model
 {
     protected $table = 'criteres_de_gouvernance';
@@ -18,7 +17,7 @@ class CritereDeGouvernance extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'description', 'principeDeGouvernanceId');
+    protected $fillable = array('nom', 'description', 'programmeId');
 
     protected static function boot()
     {
@@ -44,13 +43,73 @@ class CritereDeGouvernance extends Model
         });
     }
 
-    public function principe_de_gouvernance()
+    public function programme()
     {
-        return $this->belongsTo(PrincipeDeGouvernance::class, 'principeDeGouvernanceId');
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
-    public function indicateurs_de_gouvernance()
+    public function categories_de_gouvernance($annee_exercice = null)
     {
-        return $this->morphMany(IndicateurDeGouvernance::class, 'principeable');
+        $categories_de_gouvernance = $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
+
+        if($annee_exercice){
+            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+                $query->where('annee_exercice', $annee_exercice);
+            });
+        }
+
+        return $categories_de_gouvernance;
+    }
+
+    // Relationship to parent categories through child categories
+    public function parentCategories($annee_exercice = null)
+    {
+        $query = $this->hasManyThrough(
+            CategorieDeGouvernance::class,
+            CategorieDeGouvernance::class, 
+            'categorieDeGouvernanceId', // Foreign key on child categories
+            'id', // Foreign key on parent categories
+            'id',
+            'categorieDeGouvernanceId'
+        );
+
+        // Optionally filter by 'annee_exercice'
+        if ($annee_exercice) {
+            $query->whereHas('questions_de_gouvernance.formulaire_de_gouvernance', function ($query) use ($annee_exercice) {
+                $query->where('annee_exercice', $annee_exercice);
+            });
+        }
+
+        return $query;
+    }
+
+    /**
+     * Return the list of QuestionDeGouvernance of type "indicateur"
+     * which are linked to the current CritereDeGouvernance
+     * and which are linked to a FormulaireDeGouvernance of the given year
+     * If the year is not given, return all the QuestionDeGouvernance of type "indicateur"
+     * which are linked to the current CritereDeGouvernance
+     *
+     * @param int|null $annee_exercice The year of the FormulaireDeGouvernance
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function indicateurs_de_gouvernance($annee_exercice = null)
+    {
+        $indicateurs_de_gouvernance = $this->hasManyThrough(
+            QuestionDeGouvernance::class,// Final Model
+            CategorieDeGouvernance::class,// Intermediate Model
+            'categorieable_id',
+            'categorieDeGouvernanceId',
+            'id',
+            'id'
+        )->where("type", "indicateur");
+
+        if($annee_exercice){
+            $indicateurs_de_gouvernance = $indicateurs_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+                $query->where('annee_exercice', $annee_exercice);
+            });
+        }
+
+        return $indicateurs_de_gouvernance;
     }
 }

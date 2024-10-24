@@ -15,7 +15,11 @@ class CreateQuestionsDeGouvernanceTable extends Migration
     {
         Schema::create('questions_de_gouvernance', function (Blueprint $table) {
             $table->id();
-			$table->enum('type', ['indicateur', 'qo']);
+			$table->enum('type', ['indicateur', 'question_operationnelle']);
+            $table->bigInteger('formulaireDeGouvernanceId')->unsigned();
+            $table->foreign('formulaireDeGouvernanceId')->references('id')->on('formulaires_de_gouvernance')
+                ->onDelete('cascade')
+                ->onUpdate('cascade');
             $table->bigInteger('categorieDeGouvernanceId')->unsigned();
             $table->foreign('categorieDeGouvernanceId')->references('id')->on('categories_de_gouvernance')
                 ->onDelete('cascade')

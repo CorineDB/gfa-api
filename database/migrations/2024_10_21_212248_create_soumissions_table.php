@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSubmissionsTable extends Migration
+class CreateSoumissionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,20 +13,31 @@ class CreateSubmissionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('submissions', function (Blueprint $table) {
+        Schema::create('soumissions', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('enqueteDeCollecteId')->unsigned();
-            $table->foreign('enqueteDeCollecteId')->references('id')->on('enquete_de_collete_forms')
+            
+            $table->bigInteger('evaluationId')->unsigned();
+            $table->foreign('evaluationId')->references('id')->on('evaluations_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+
+            $table->bigInteger('formulaireDeGouvernanceId')->unsigned();
+            $table->foreign('formulaireDeGouvernanceId')->references('id')->on('formulaires_de_gouvernance')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
+
             $table->bigInteger('organisationId')->unsigned();
             $table->foreign('organisationId')->references('id')->on('organisations')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->bigInteger('launchedBy')->unsigned()->nullable();
-            $table->foreign('launchedBy')->references('id')->on('users')
+            
+            $table->bigInteger('programmeId')->unsigned();
+            $table->foreign('programmeId')->references('id')->on('programmes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
+
+            $table->enum('type', ['factuel', 'perception']);
+            $table->json('comite_members')->nullable();
             $table->bigInteger('submittedBy')->unsigned()->nullable();
             $table->foreign('submittedBy')->references('id')->on('users')
                 ->onDelete('cascade')
@@ -37,15 +48,6 @@ class CreateSubmissionsTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-
-        if(Schema::hasTable('reponses_collecter')){
-            Schema::table('reponses_collecter', function (Blueprint $table) {
-                $table->bigInteger('submissionId')->nullable()->unsigned();
-                $table->foreign('submissionId')->references('id')->on('submissions')
-                    ->onDelete('cascade')
-                    ->onUpdate('cascade');
-            });
-        }
     }
 
     /**
@@ -55,6 +57,6 @@ class CreateSubmissionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('submissions');
+        Schema::dropIfExists('soumissions');
     }
 }

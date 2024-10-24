@@ -15,11 +15,11 @@ class CreateCategoriesDeGouvernanceTable extends Migration
     {
         Schema::create('categories_de_gouvernance', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('categorieDeGouvernanceId')->unsigned();
+            $table->bigInteger('categorieDeGouvernanceId')->nullable()->unsigned();
             $table->foreign('categorieDeGouvernanceId')->references('id')->on('categories_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->morphs('categorieable');
+            $table->morphs('categorieable', 'categorie');
             $table->bigInteger('programmeId')->unsigned();
             $table->foreign('programmeId')->references('id')->on('programmes')
                 ->onDelete('cascade')

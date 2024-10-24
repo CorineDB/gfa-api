@@ -59,7 +59,7 @@ class UpdateColumnsOfMigrationsTable extends Migration
             Schema::create('formulaire_options_de_reponse', function (Blueprint $table) {
                 $table->id();
             
-                $table->integer('note');
+                $table->integer('point');
                 $table->bigInteger('formulaireDeGouvernanceId')->unsigned();
                 $table->foreign('formulaireDeGouvernanceId')->references('id')->on('formulaires_de_gouvernance')
                     ->onDelete('cascade')
@@ -71,6 +71,53 @@ class UpdateColumnsOfMigrationsTable extends Migration
                     ->onUpdate('cascade');
                 $table->timestamps();
                 $table->softDeletes();
+            });
+        }
+
+        if(!Schema::hasTable("evaluation_organisations")){
+            
+            Schema::create('evaluation_organisations', function (Blueprint $table) {
+                $table->id();
+            
+                $table->integer('nbreParticipants')->default(0);
+                $table->bigInteger('evaluationDeGouvernanceId')->unsigned();
+                $table->foreign('evaluationDeGouvernanceId')->references('id')->on('evaluations_de_gouvernance')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
+                    
+                $table->bigInteger('organisationId')->unsigned();
+                $table->foreign('organisationId')->references('id')->on('organisations')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
+
+        if(!Schema::hasTable("fond_organisations")){
+            Schema::create('fond_organisations', function (Blueprint $table) {
+                $table->id();
+                $table->integer('budgetAllouer')->default(0);
+                $table->bigInteger('fondId')->unsigned();
+                $table->foreign('fondId')->references('id')->on('fonds')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
+                $table->bigInteger('organisationId')->unsigned();
+                $table->foreign('organisationId')->references('id')->on('organisations')
+                    ->onDelete('cascade')
+                    ->onUpdate('cascade');
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
+
+        if(Schema::hasTable('indicateurs_de_gouvernance')){
+            Schema::table('indicateurs_de_gouvernance', function (Blueprint $table) {
+
+                if((Schema::hasColumn('indicateurs_de_gouvernance', 'principeable_id') && Schema::hasColumn('indicateurs_de_gouvernance', 'principeable_type'))){
+                    $table->dropColumn(["principeable_id", "principeable_type"]);
+                }
+
             });
         }
     }
@@ -90,6 +137,7 @@ class UpdateColumnsOfMigrationsTable extends Migration
                 }
             });
         }
+
         if(Schema::hasTable('organisations')){
             Schema::table('organisations', function (Blueprint $table) {
                 if(Schema::hasColumn('organisations', 'type')){
@@ -119,6 +167,15 @@ class UpdateColumnsOfMigrationsTable extends Migration
                 if(Schema::hasColumn('organisations', 'latitude')){
                     $table->dropColumn('latitude');
                 }
+            });
+        }
+
+        if(Schema::hasTable('indicateurs_de_gouvernance')){
+            Schema::table('indicateurs_de_gouvernance', function (Blueprint $table) {
+                if((!Schema::hasColumn('indicateurs_de_gouvernance', 'principeable_id') && Schema::hasColumn('indicateurs_de_gouvernance', 'principeable_type'))){
+                    $table->morphs('principeable');
+                }
+
             });
         }
     }

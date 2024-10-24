@@ -18,6 +18,7 @@ class CreateFormulairesDeGouvernanceTable extends Migration
             $table->text('libelle');
             $table->longText('description')->nullable();
 			$table->enum('type', ['factuel', 'perception']);
+            $table->text('lien')->nullable();
             $table->bigInteger('created_by')->unsigned();
             $table->foreign('created_by')->references('id')->on('users')
                 ->onDelete('cascade')
@@ -26,8 +27,7 @@ class CreateFormulairesDeGouvernanceTable extends Migration
             $table->foreign('programmeId')->references('id')->on('programmes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->integer('annee_exercice');
-            $table->longText('commentaire')->nullable();
+            $table->integer('annee_exercice')->default(now()->year);
             $table->timestamps();
             $table->softDeletes();
         });
