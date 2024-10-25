@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
+use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
 use App\Repositories\EvaluationDeGouvernanceRepository;
@@ -86,6 +87,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             
             $evaluationDeGouvernance = $this->repository->create($attributs);
             $evaluationDeGouvernance->organisations()->attach($attributs['organisations']);
+            $evaluationDeGouvernance->formulaires_de_gouvernance()->attach($attributs['formulaires_de_gouvernance']);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -118,6 +120,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $evaluationDeGouvernance->refresh();
             $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
+            $evaluationDeGouvernance->formulaires_de_gouvernance()->syncWithoutDetaching($attributs['formulaires_de_gouvernance']);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -174,6 +177,26 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionsResource($evaluationDeGouvernance->soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des formulaires d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function formulaires_de_gouvernance($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

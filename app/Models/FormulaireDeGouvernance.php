@@ -19,6 +19,7 @@ class FormulaireDeGouvernance extends Model
     protected $fillable = array('libelle', 'description', 'type', 'lien', 'created_by', 'programmeId', 'annee_exercice');
 
     protected $casts = [];
+    protected $with = ['questions_de_gouvernance'];
 
     protected static function boot()
     {
@@ -42,11 +43,16 @@ class FormulaireDeGouvernance extends Model
 
     public function programme()
     {
-        return $this->hasMany(Programme::class, 'programmeId');
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function createdBy()
     {
-        return $this->hasMany(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function evaluations_de_gouvernance()
+    {
+        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'formulaireDeGouvernanceId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at');
     }
 }

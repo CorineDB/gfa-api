@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\evaluations_de_gouvernance;
 
+use App\Models\FormulaireDeGouvernance;
 use App\Models\Organisation;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
@@ -28,11 +29,13 @@ class StoreRequest extends FormRequest
     {
         return [
             'intitule'          => 'required|max:255|unique:evaluations_de_gouvernance,intitule',
-            'objectif_attendu'  => 'required|integer|min:0',
+            'objectif_attendu'  => 'required|numeric|min:0|max:1',
             'annee_exercice'    => 'required|integer',
             'description'       => 'nullable|max:255',
             'debut'             => 'required|date|date_format:Y-m-d',
             'fin'               => 'required|date|date_format:Y-m-d|after_or_equal:debut',
+            'formulaires_de_gouvernance'     => ['required', 'array', 'min:2'],
+            'formulaires_de_gouvernance.*'   => ['required', 'distinct', new HashValidatorRule(new FormulaireDeGouvernance())],
             'organisations'     => ['required', 'array', 'min:1'],
             'organisations.*'   => ['required', 'distinct', new HashValidatorRule(new Organisation())]
         ];

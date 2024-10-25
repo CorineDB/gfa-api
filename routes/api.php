@@ -927,6 +927,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('{evaluation_de_gouvernance}/organisations', 'organisations')->name('organisations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
+                    Route::get('{evaluation_de_gouvernance}/formulaires_de_gouvernance', 'formulaires_de_gouvernance')->name('formulaires_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
                     Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionController')->names('evalution.soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                 });

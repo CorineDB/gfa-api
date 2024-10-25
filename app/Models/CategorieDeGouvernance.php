@@ -51,8 +51,21 @@ class CategorieDeGouvernance extends Model
         return $this->belongsToMany(FormulaireDeGouvernance::class, 'questions_de_gouvernance', 'categorieDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(['id', 'type', 'indicateurDeGouvernanceId', 'programmeId']);
     }
 
-    public function questions_de_gouvernance()
+    public function questions_de_gouvernance($formulaireDeGouvernanceId = null, $annee_exercice = null)
     {
-        return $this->hasMany(QuestionDeGouvernance::class, 'categorieDeGouvernanceId');
+        $questions_de_gouvernance = $this->hasMany(QuestionDeGouvernance::class, 'categorieDeGouvernanceId');
+
+        if($formulaireDeGouvernanceId){
+
+            $questions_de_gouvernance = $questions_de_gouvernance->where("formulaireDeGouvernanceId", $formulaireDeGouvernanceId);
+        }
+
+        if($annee_exercice){
+            $questions_de_gouvernance = $questions_de_gouvernance->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
+                $query->where('annee_exercice', $annee_exercice);
+            });
+        }
+
+        return $questions_de_gouvernance;
     }
 }

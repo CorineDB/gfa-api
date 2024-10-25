@@ -86,4 +86,9 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->soumissions($id);
     }
+
+    public function formulaires_de_gouvernance($id)
+    {
+        return $this->evaluationDeGouvernanceService->formulaires_de_gouvernance($id);
+    }
 }
