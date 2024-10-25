@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
+use App\Http\Resources\gouvernance\SoumissionsResource;
+use App\Http\Resources\OrganisationResource;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
@@ -83,6 +85,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
             
             $evaluationDeGouvernance = $this->repository->create($attributs);
+            $evaluationDeGouvernance->organisations()->attach($attributs['organisations']);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -114,6 +117,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $this->repository->update($evaluationDeGouvernance->id, $attributs);
 
             $evaluationDeGouvernance->refresh();
+            $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -134,4 +138,47 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
+    /**
+     * Renvoie les organisations liées à une evaluation de gouvernance
+     *
+     * @param mixed $evaluationDeGouvernance
+     * @param array $columns
+     * @param array $relations
+     * @param array $appends
+     * @return JsonResponse
+     */
+    public function organisations($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new OrganisationResource($evaluationDeGouvernance->organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des soumissions d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function soumissions($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionsResource($evaluationDeGouvernance->soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

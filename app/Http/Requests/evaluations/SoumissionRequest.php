@@ -33,9 +33,9 @@ class SoumissionRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->evaluation))
+        if(is_string($this->evaluation_de_gouvernance))
         {
-            $this->evaluation = Enquete::findByKey($this->evaluation);
+            $this->evaluation_de_gouvernance = Enquete::findByKey($this->evaluation_de_gouvernance);
         }
 
         return [
@@ -72,12 +72,13 @@ class SoumissionRequest extends FormRequest
                 if (!($this->indicateurCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                     $fail('The selected option is invalid for the given Indicateur.');
                 }
-
             }],
-            'response_data.factuel.*.sourceDeVerificationId'      => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerification')), 'distinct', new HashValidatorRule(new SourceDeVerification())], 
-            'response_data.factuel.*.sourceDeVerification'                => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerificationId'))],
-            
-            'response_data.perception'      => ['sometimes', Rule::requiredIf(request()->input('response_data.factuel')), 'array', 'min:1'],
+            'response_data.factuel.*.sourceDeVerificationId'        => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerification')), 'distinct', new HashValidatorRule(new SourceDeVerification())], 
+            'response_data.factuel.*.sourceDeVerification'          => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerificationId'))],
+            'response_data.factuel.*.preuves'                       => ['required', "array", "min:0"],
+            'response_data.factuel.*.preuves.*'                     => ['distinct', "file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20000', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20000"],
+
+            'response_data.perception'                              => ['sometimes', Rule::requiredIf(request()->input('response_data.factuel')), 'array', 'min:1'],
             'response_data.perception.*.indicateurDeGouvernanceId'      => ['required', 'distinct', new HashValidatorRule(new IndicateurDeGouvernance()), 
                 function($attribute, $value, $fail) {
                     $indicateur = IndicateurDeGouvernance::where("type", "perception")->findByKey($value);

@@ -4,6 +4,7 @@ namespace App\Http\Requests\evaluations_de_gouvernance;
 
 use App\Models\Enquete;
 use App\Models\EvaluationDeGouvernance;
+use App\Models\Organisation;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -28,18 +29,20 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->evaluation))
+        if(is_string($this->evaluation_de_gouvernance))
         {
-            $this->evaluation = EvaluationDeGouvernance::findByKey($this->evaluation);
+            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
 
         return [
-            'intitule'  => ['sometimes','max:255', Rule::unique('evaluations', 'intitule')->ignore($this->evaluation)->whereNull('deleted_at')],
-            'objectif_attendu' => 'sometimes|integer|min:0',
-            'annee_exercice' => 'sometimes|integer',
-            'description' => 'nullable|max:255',
-            'debut' => 'sometimes|date|date_format:Y-m-d',
-            'fin' => 'sometimes|date|date_format:Y-m-d|after_or_equal:debut'
+            'intitule'              => ['sometimes','max:255', Rule::unique('evaluations_de_gouvernance', 'intitule')->ignore($this->evaluation_de_gouvernance)->whereNull('deleted_at')],
+            'objectif_attendu'      => 'sometimes|integer|min:0',
+            'annee_exercice'        => 'sometimes|integer',
+            'description'           => 'nullable|max:255',
+            'debut'                 => 'sometimes|date|date_format:Y-m-d',
+            'fin'                   => 'sometimes|date|date_format:Y-m-d|after_or_equal:debut',
+            'organisations'         => ['required', 'array', 'min:1'],
+            'organisations.*'       => ['required', 'distinct', new HashValidatorRule(new Organisation())]
         ];
     }
 
