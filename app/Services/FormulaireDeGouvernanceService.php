@@ -83,6 +83,10 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
             
             $formulaireDeGouvernance = $this->repository->create($attributs);
+            if(isset($attributs['factuel']) && $attributs['factuel'] !== null){
+                dd($attributs['factuel']['options_de_reponse']);
+                $formulaireDeGouvernance->options_de_reponse()->attach($attributs['organisations']);
+            }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
