@@ -831,6 +831,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'indicateurs-de-gouvernance' => 'indicateur_de_gouvernance',
                 ]);
 
+            Route::apiResource('questions-operationnelle', 'IndicateurDeGouvernanceController')->names('questions-operationnelle')
+                ->parameters([
+                    'questions-operationnelle' => 'indicateur_de_gouvernance',
+                ]);
+
             Route::group(['prefix' =>  'indicateurs-de-gouvernance', 'as' => 'indicateurs-de-gouvernance.'], function () {
 
                 Route::controller('IndicateurDeGouvernanceController')->group(function () {
@@ -843,6 +848,16 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::apiResource('options-de-reponse', 'OptionDeReponseController')->names('options-de-reponse')
                 ->parameters([
                     'options-de-reponse' => 'option_de_reponse',
+                ]);
+
+            Route::apiResource('sources-de-verification', 'FondController')->names('sources-de-verification')
+                ->parameters([
+                    'sources-de-verification' => 'source_de_verification',
+                ]);
+
+            Route::apiResource('fonds', 'FondController')->names('fonds')
+                ->parameters([
+                    'fonds' => 'fond',
                 ]);
 
             Route::apiResource('enquetes-de-collecte', 'EnqueteDeCollecteController')->names('enquetes-de-reponse')
@@ -882,7 +897,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ]);
 
             
-                Route::group(['prefix' =>  'cadre-de-mesure-rendement', 'as' => 'cadre-de-mesure-rendement.'], function () {
+            Route::group(['prefix' =>  'cadre-de-mesure-rendement', 'as' => 'cadre-de-mesure-rendement.'], function () {
 
                     Route::controller('ResultatCadreDeRendementController')->group(function () {
     
@@ -892,7 +907,30 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                         Route::get('{projetId}', 'cadreDeMesureRendementProjet')->name('cadreDeMesureRendementProjet'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
                     });
+            });
+
+
+
+            Route::apiResource('formulaires-de-gouvernance', 'FormulaireDeGouvernanceController')->names('formulaires-de-gouvernance')
+                ->parameters([
+                    'formulaires-de-gouvernance' => 'formulaire_de_gouvernance',
+                ]);
+
+            Route::apiResource('evaluations-de-gouvernance', 'EvaluationDeGouvernanceController')->names('evaluations-de-gouvernance')
+                ->parameters([
+                    'evaluations-de-gouvernance' => 'evaluation_de_gouvernance',
+                ]);
+
+            Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
+
+                Route::controller('EvaluationDeGouvernanceController')->group(function () {
+
+                    Route::get('{evaluation_de_gouvernance}/organisations', 'organisations')->name('organisations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+                    Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionController')->names('evalution.soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
                 });
+            });
                 
         });
     });

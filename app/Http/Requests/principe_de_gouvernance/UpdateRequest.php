@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\principe_de_gouvernance;
 
-use App\Models\TypeDeGouvernance;
 use App\Models\PrincipeDeGouvernance;
-use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -36,8 +34,7 @@ class UpdateRequest extends FormRequest
 
         return [
             'nom'  => ['sometimes','max:255', Rule::unique('principes_de_gouvernance', 'nom')->ignore($this->principe_de_gouvernance)->whereNull('deleted_at')],
-            'description' => 'sometimes|nullable|max:255',
-            'typeDeGouvernanceId'   => ['sometimes', new HashValidatorRule(new TypeDeGouvernance())]
+            'description' => 'sometimes|nullable|max:255'
         ];
     }
 

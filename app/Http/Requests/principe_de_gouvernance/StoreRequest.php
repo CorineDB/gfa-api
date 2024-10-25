@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\principe_de_gouvernance;
 
-use App\Models\TypeDeGouvernance;
-use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -27,8 +25,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom' => 'required|max:255|unique:principes_de_gouvernance,nom',
-            'description' => 'nullable|max:255',
-            'typeDeGouvernanceId'   => ['required', new HashValidatorRule(new TypeDeGouvernance())]
+            'description' => 'nullable|max:255'
         ];
     }
 

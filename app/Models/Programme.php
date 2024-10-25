@@ -445,6 +445,21 @@ class Programme extends Model
         return $this->hasMany(TypeDeGouvernance::class, 'programmeId');
     }
 
+    public function sources_de_verification()
+    {
+        return $this->hasMany(OptionDeReponse::class, 'programmeId');
+    }
+
+    public function formualaires_de_gouvernance()
+    {
+        return $this->hasMany(FormulaireDeGouvernance::class, 'programmeId');
+    }
+
+    public function evaluations_de_gouvernance()
+    {
+        return $this->hasMany(EvaluationDeGouvernance::class, 'programmeId');
+    }
+
     public function optionsDeReponse()
     {
         return $this->hasMany(OptionDeReponse::class, 'programmeId');
@@ -460,6 +475,7 @@ class Programme extends Model
      */
     public function principes_de_gouvernance()
     {
+        return $this->hasMany(PrincipeDeGouvernance::class, 'programmeId');
         return $this->hasManyThrough(
             PrincipeDeGouvernance::class,    // Final Model
             TypeDeGouvernance::class,       // Intermediate Model
@@ -468,6 +484,22 @@ class Programme extends Model
             'id',                              // Local key on the principes_de_gouvernance table
             'id'                               // Local key on the types_de_gouvernance table
         );
+    }
+    
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function criteres_de_gouvernance()
+    {
+        return $this->hasMany(CritereDeGouvernance::class, 'programmeId');
+    }
+    
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function indicatieurs_de_gouvernance()
+    {
+        return $this->hasMany(IndicateurDeGouvernance::class, 'programmeId');
     }
 
     public function cadre_de_mesure_rendement()

@@ -35,8 +35,7 @@ class UpdateRequest extends FormRequest
 
         return [
             'libelle'  => ['sometimes','max:255', Rule::unique('options_de_reponse', 'libelle')->ignore($this->option_de_reponse)->whereNull('deleted_at')],
-            'description' => 'sometimes|nullable|max:255',
-            'note' => 'integer|min:0'
+            'description' => 'sometimes|nullable|max:255'
         ];
     }
 
