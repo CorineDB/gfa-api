@@ -16,12 +16,8 @@ class FondsResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'libelle' => $this->libelle,
-            'description' => $this->description,
-            'type' => $this->type,
-            'lien' => $this->lien,
-            'annee_exercice' => $this->annee_exercice,
-            'created_by' => $this->created_by->secure_id,
+            'nom_du_fond' => $this->nom_du_fond,
+            'fondDisponible' => $this->fondDisponible,
             'programmeId' => $this->programme->secure_id,
             'created_at' => $this->created_at
         ];
