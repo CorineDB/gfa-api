@@ -46,8 +46,6 @@ class IndicateurDeGouvernance extends Model
                     'nom' => time() . '::' . $indicateur_de_gouvernance->nom
                 ]);
 
-                $indicateur_de_gouvernance->options_de_reponse()->delete();
-
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -55,6 +53,27 @@ class IndicateurDeGouvernance extends Model
                 throw new Exception($th->getMessage(), 1);
             }
         });
+    }
+
+    /**
+     * Renvoie la liste des catégories de gouvernance liées au indicateur de gouvernance
+     * Si l'année d'exercice est fournie, seules les catégories liées  des formulaires
+     * de gouvernance de l'année d'exercice sont renvoyées.
+     *
+     * @param int|null $annee_exercice L'année d'exercice
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function categories_de_gouvernance($annee_exercice = null)
+    {
+        $categories_de_gouvernance = $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
+
+        if($annee_exercice){
+            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+                $query->where('annee_exercice', $annee_exercice);
+            });
+        }
+
+        return $categories_de_gouvernance;
     }
 
     public function options_de_reponse()

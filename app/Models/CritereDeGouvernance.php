@@ -32,8 +32,6 @@ class CritereDeGouvernance extends Model
                     'nom' => time() . '::' . $critere_de_gouvernance->nom
                 ]);
 
-                $critere_de_gouvernance->indicateurs_de_gouvernance()->delete();
-
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
