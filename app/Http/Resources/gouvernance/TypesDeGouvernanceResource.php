@@ -18,7 +18,7 @@ class TypesDeGouvernanceResource extends JsonResource
             'id' => $this->secure_id,
             'nom' => $this->nom,
             'description' => $this->description,
-            'programmeId' => $this->programme->secure_id
+            'programmeId'   => $this->programme ? $this->programme->secure_id : null
         ];
     }
 }

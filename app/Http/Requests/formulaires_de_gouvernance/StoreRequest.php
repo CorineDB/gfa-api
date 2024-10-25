@@ -40,33 +40,30 @@ class StoreRequest extends FormRequest
             /*'options_de_reponse' => ["array", "min:1"],
             'options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],
             'options_de_reponse.*.point' => ["required", "distinct", "decimal:0,2", "min:0", "max:1"],*/
-            'factuel' => ["required", Rule::requiredIf(request()->input('type') == 'factuel')],
-            'factuel.options_de_reponse' => ["array", "min:1"],
+            'factuel' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:2"],
+            'factuel.options_de_reponse' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:1"],
             'factuel.options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],
-            'factuel.options_de_reponse.*.point' => ["required", "distinct", "decimal:0,2", "min:0", "max:1"],
+            'factuel.options_de_reponse.*.point' => ["required", "distinct", "numeric", "min:0", "max:1"],
 
-            'factuel.types_de_gouvernance' => ["array", "min:1"],
+            'factuel.types_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:1"],
             'factuel.types_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new TypeDeGouvernance())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance' => ["required", "array", "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernance())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance' => ["required", "array", "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new CritereDeGouvernance())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())],
 
-            'perception' => ["required", Rule::requiredIf(request()->input('type') == 'perception')],
-            'perception.options_de_reponse' => ["array", "min:1"],
+            'perception' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:2"],
+            //'perception' => ["required", Rule::requiredIf(request()->input('type') == 'perception')],
+            'perception.options_de_reponse' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:1"],
             'perception.options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],
-            'perception.options_de_reponse.*.point' => ["required", "distinct", "decimal:0,2", "min:0", "max:1"],
+            'perception.options_de_reponse.*.point' => ["required", "distinct", "numeric", "min:0", "max:1"],
 
-            'perception.principes_de_gouvernance' => ["required", "array", "min:1"],
+            'perception.principes_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:1"],
             'perception.principes_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernance())],
-            'perception.principes_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
-            'perception.principes_de_gouvernance.*.indicateurs_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())],
-
-            'perception.indicateurs_de_gouvernance' => ["array", "min:1"],
-            'perception.indicateurs_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())],
-            'perception.indicateurs_de_gouvernance.*.principeDeGouvernanceId' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernance())]
+            'perception.principes_de_gouvernance.*.questions_operationnelle' => ["required", "array", "min:1"],
+            'perception.principes_de_gouvernance.*.questions_operationnelle.*' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())]
         ];
     }
 
