@@ -5,6 +5,7 @@ namespace App\Http\Requests\indicateur;
 use App\Models\Bailleur;
 use App\Models\Categorie;
 use App\Models\IndicateurValueKey;
+use App\Models\Site;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
@@ -34,7 +35,6 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-
         $programme = auth()->user()->programme;
 
         return [
@@ -81,8 +81,36 @@ class StoreRequest extends FormRequest
                 }
     
             }],
-            'valeurDeBase.*.value'          => ['required'],
+            'valeurDeBase.*.value'              => ['required'],
 
+
+            'anneesCible'                    => ['required', "array", "min:1"],
+
+            'anneesCible.*.valeurCible'      => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
+                if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){
+                    $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
+                }
+                
+            }, request()->input('agreger') ? "min:".count(request()->input('value_keys')) : "", request()->input('agreger') ? "max:".count(request()->input('value_keys')) : ""],
+            'anneesCible.*.valeurCible.*.keyId'            => [new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
+
+                // Get the index from the attribute name
+                preg_match('/anneesCible\.(\d+)\.valeurCible\.(\d+)\.keyId/', $attribute, $matches);
+                $index = $matches[1] ?? null; // Get the index if it exists
+                
+                // Ensure each keyId in valeurDeBase is one of the value_keys.id
+                if (!in_array(request()->input('anneesCible.*.valeurCible.*.keyId')[$index], collect(request()->input('value_keys.*.id'))->toArray())) {
+                    $fail("Le keyId n'est pas dans value_keys.");
+                }
+    
+            }],
+            'anneesCible.*.valeurCible.*.value'              => ['required'],
+
+            'anneesCible.*.annee'            => ['required', 'distinct', 'date_format:Y', 'after_or_equal:anneeDeBase'],
+
+            'sites'                         => ['sometimes', 'array', 'min:1'],
+            'sites.*'                       => ['distinct', new HashValidatorRule(new Site())],
+            
             //'bailleurId'    => [Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
         ];
     }

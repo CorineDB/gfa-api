@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Resources\SitesResource;
 use App\Models\BailleurSite;
 use App\Models\EntrepriseExecutant;
 use App\Models\Programme;
@@ -62,22 +63,32 @@ class SiteService extends BaseService implements SiteServiceInterface
 
             //if((BailleurSite::where('bailleurId', $attributs['bailleurId'])->where('programmeId', $attributs['programmeId'])->first())) throw new Exception( "Le bailleur a deja un site dans ce programme", 500);
 
-            foreach($attributs['entrepriseExecutantId'] as $id)
+            /*foreach($attributs['entrepriseExecutantId'] as $id)
             {
                 $entreprise = EntrepriseExecutant::findByKey($id);
                 if($programme->id != $entreprise->user->programmeId) throw new Exception( "Cet entreprise n'est pas dans le programme", 500);
                 array_push($entreprises, $entreprise->id);
-            }
+            }*/
 
-            $attributs = array_merge($attributs, ['entrepriseExecutantId' => $entreprises]);
+            //$attributs = array_merge($attributs, ['entrepriseExecutantId' => $entreprises]);
 
             $site = $this->repository->fill($attributs);
 
             $site->save();
 
-            $site->bailleurs()->attach($attributs['bailleurId'], ["programmeId" => $attributs['programmeId']]);
+            $site->refresh();
 
-            $site->entreprises()->attach($attributs['entrepriseExecutantId'], ["programmeId" => $attributs['programmeId']]);
+            if(isset($attributs['projetId'])){
+                $site->projets()->attach($attributs['projetId'], ["programmeId" => $attributs['programmeId']]);
+            }
+
+            if(isset($attributs['indicateurId'])){
+                $site->indicateurs()->attach($attributs['indicateurId'], ["programmeId" => $attributs['programmeId']]);
+            }
+
+            /*$site->bailleurs()->attach($attributs['bailleurId'], ["programmeId" => $attributs['programmeId']]);
+
+            $site->entreprises()->attach($attributs['entrepriseExecutantId'], ["programmeId" => $attributs['programmeId']]);*/
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -87,7 +98,7 @@ class SiteService extends BaseService implements SiteServiceInterface
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Site crée", 'data' => $site, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => "Site crée", 'data' => new SitesResource($site), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
 

@@ -7,7 +7,7 @@ use App\Http\Resources\ComposanteResource;
 use App\Http\Resources\ActiviteResource;
 use App\Http\Resources\activites\ActivitesResource;
 use App\Http\Resources\PapResource;
-use App\Http\Resources\SiteResource;
+use App\Http\Resources\SitesResource;
 use App\Http\Resources\bailleurs\BailleursResource;
 use App\Http\Resources\EActiviteResource;
 use App\Http\Resources\MaitriseOeuvreResource;
@@ -501,15 +501,16 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             if(!($programme = $this->repository->findById(Auth::user()->programmeId))) throw new Exception( "Ce programme n'existe pas", 500);
 
-            $siteProgramme = $programme->sites;
+            $siteProgramme = $programme->sites()->load('projets');
+            
 
-            foreach($siteProgramme as $site)
+            /*foreach($siteProgramme as $site)
             {
 
                 array_push($sites, Site::find($site->siteId));
-            }
+            }*/
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SiteResource::collection($sites), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SitesResource::collection($siteProgramme), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {

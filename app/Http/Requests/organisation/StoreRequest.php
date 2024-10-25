@@ -34,8 +34,12 @@ class StoreRequest extends FormRequest
             'contact'       => ['required', 'numeric','digits_between:8,24', Rule::unique('users', 'contact')->whereNot("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             'email'         => ['required','email','max:50', Rule::unique('users', 'email')->whereNot("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
 
+            'nom_point_focal'       => ['nullable','max:50', Rule::unique('organisations', 'nom_point_focal')->whereNull('deleted_at')],
+            'prenom_point_focal'    => ['nullable','max:50', Rule::unique('organisations', 'prenom_point_focal')->whereNull('deleted_at')],
+            'contact_point_focal'   => ['nullable', 'numeric','digits_between:8,24', Rule::unique('organisations', 'contact_point_focal')->whereNull('deleted_at')],
+
             'sigle'         => ['required','string','max:15', Rule::unique('organisations', 'sigle')->whereNull('deleted_at')],
-            'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
+            'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', "min:2", Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
         ];
 
         return $rules;

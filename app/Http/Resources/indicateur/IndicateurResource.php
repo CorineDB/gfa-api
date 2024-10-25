@@ -16,6 +16,7 @@ class IndicateurResource extends JsonResource
      */
     public function toArray($request)
     {
+        //"hypothese", 'responsable', 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', 
         return [
             "id" => $this->secure_id,
             "nom" => $this->nom,
@@ -45,7 +46,6 @@ class IndicateurResource extends JsonResource
             })  : null,
             "valeurCibleTotal" => $this->valeurCibleTotal(),
             "valeurRealiserTotal" => $this->valeurRealiserTotal(),
-            
             "taux_realisation" => $this->taux_realisation,
             /*"bailleur" => [
                 "id" => $this->bailleur->secure_id,

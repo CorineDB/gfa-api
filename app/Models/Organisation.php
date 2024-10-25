@@ -19,7 +19,7 @@ class Organisation extends Model
 
     public $timestamps = true;
 
-    protected $fillable = ["sigle", "code"];
+    protected $fillable = ["sigle", "code", "nom_point_focal", "prenom_point_focal", "contact_point_focal", 'type', 'pays', 'departement', 'commune', 'arrondissement', 'quartier', 'secteurActivite', 'longitude', 'latitude'];
 
     protected $dates = ['deleted_at'];
 
@@ -40,6 +40,7 @@ class Organisation extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        "code" => "integer",
         "created_at" => "datetime:Y-m-d",
         "updated_at" => "datetime:Y-m-d",
         "deleted_at" => "datetime:Y-m-d"
@@ -125,5 +126,30 @@ class Organisation extends Model
             'id',                              // Local key on the principes_de_gouvernance table
             'id'                               // Local key on the types_de_gouvernance table
         )->whereNull("composanteId");
+    }
+
+    public function fonds()
+    {
+        return $this->belongsToMany(Fond::class,'fond_organisations', 'organisationId', 'fondId')->wherePivotNull('deleted_at')->withPivot(["id", "budgetAllouer"]);
+    }
+
+    public function evaluations_de_gouvernance()
+    {
+        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants"]);
+    }
+
+    public function sousmissions()
+    {
+        return $this->hasMany(Soumission::class, 'organisationId');
+    }
+
+    public function sousmissions_factuel()
+    {
+        return $this->hasMany(Soumission::class, 'organisationId')->where("type", "factuel");
+    }
+
+    public function sousmissions_de_perception()
+    {
+        return $this->hasMany(Soumission::class, 'organisationId')->where("type", "perception");
     }
 }

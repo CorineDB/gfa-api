@@ -24,6 +24,8 @@ class Activite extends Model
 
     protected $fillable = ['nom', 'position', 'poids', 'type', 'pret', 'budgetNational', 'userId', 'composanteId', 'statut'];
 
+    protected $appends = ['consommer'];
+
     protected static function boot() {
         parent::boot();
 
@@ -331,7 +333,14 @@ class Activite extends Model
         return ($sommeActuel * $this->poids) / $somme;
     }
 
-    public function consommer($annee, $type)
+    public function getConsommerAttribute($annee = null, $type = null)
+    {
+        $suiviFinanciers = $this->suiviFinanciers($annee, $type)->pluck('consommer');
+
+        return array_sum($suiviFinanciers->all());
+    }
+
+    public function consommer($annee = null, $type = null)
     {
         $suiviFinanciers = $this->suiviFinanciers($annee, $type)->pluck('consommer');
 

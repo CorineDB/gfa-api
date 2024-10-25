@@ -7,6 +7,8 @@ use App\Http\Resources\gouvernance\FormulaireDePerceptionResource;
 use App\Http\Resources\gouvernance\FormulaireFactuelResource;
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipesDeGouvernanceResource;
+use App\Repositories\EnqueteDeCollecteRepository;
+use App\Repositories\OrganisationRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
 use App\Repositories\ProgrammeRepository;
 use Core\Services\Contracts\BaseService;
@@ -162,34 +164,92 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
     }
 
     /**
-     * Charger le formulaire de l'outil factuel
-     * 
+     * Charger le formulaire de l'outil de perception du programme associé à l'utilisateur connecté
+     * @param array $attributs Liste des attributs à récupérer
+     * @param array $relations Liste des relations à charger
+     * @return JsonResponse
      */
-    public function formulaire_factuel($programmeId, array $attributs = ['*'], array $relations = []): JsonResponse
+    public function formulaire_factuel($enqueteId = null, $organisationId = null): JsonResponse
     {
         try {
-            if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
-                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulaireFactuelResource::collection($programme->types_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $programme = Auth::user()->programme;
+
+            if($enqueteId != null && $enqueteId != 'null'){
+                if (!($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)))
+                    throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+                $enqueteId=$enqueteId->id;
+            }
+
+            if($organisationId != null && $organisationId != 'null'){
+                if (!($organisationId = app(OrganisationRepository::class)->findById($organisationId)))
+                    throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
+
+                $organisationId=$organisationId->id;
+            }
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $programme->types_de_gouvernance->map(function($item) use ($enqueteId, $organisationId) {
+                return new FormulaireFactuelResource($item, $enqueteId, $organisationId);
+            }), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     /**
-     * Charger le formulaire de l'outil de perception
+     * Charger le formulaire de l'outil de perception du programme associé à l'utilisateur connecté
      * 
+     * @param array $attributs Liste des attributs à récupérer
+     * @param array $relations Liste des relations à charger
+     * @return JsonResponse
      */
-    public function formulaire_de_perception($programmeId, array $attributs = ['*'], array $relations = []): JsonResponse
+    public function formulaire_de_perception($enqueteId = null, $organisationId = null): JsonResponse
     {
         try {
-            if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
-                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);
+            // Vérifier si le programme existe
+            /*if (!($programme = app(ProgrammeRepository::class)->findById($programmeId)))
+                throw new Exception("Ce programme n'existe pas", Response::HTTP_NOT_FOUND);*/
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulaireDePerceptionResource::collection($programme->principes_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $programme = Auth::user()->programme;
+
+            if($enqueteId != null && $enqueteId != 'null'){
+                if (!($enqueteId = app(EnqueteDeCollecteRepository::class)->findById($enqueteId)))
+                    throw new Exception("Cette enquete n'existe pas", Response::HTTP_NOT_FOUND);
+                $enqueteId=$enqueteId->id;
+            }
+
+            if($organisationId != null && $organisationId != 'null'){
+                if (!($organisationId = app(OrganisationRepository::class)->findById($organisationId)))
+                    throw new Exception("Cette organisation n'existe pas", Response::HTTP_NOT_FOUND);
+
+                $organisationId=$organisationId->id;
+            }
+            
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $programme->principes_de_gouvernance->map(function($principeDeGouvernance) use ($enqueteId, $organisationId) {
+                return new FormulaireDePerceptionResource($principeDeGouvernance, $enqueteId, $organisationId);
+            }), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            
+            // Retourner le formulaire de perception
+            return response()->json(
+                [
+                    'statut' => 'success',
+                    'message' => null,
+                    'data' => FormulaireDePerceptionResource::collection(
+                        $programme->principes_de_gouvernance // Les principes de gouvernance
+                    ),
+                    'statutCode' => Response::HTTP_OK
+                ],
+                Response::HTTP_OK
+            );
         } catch (\Throwable $th) {
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+            // Gestion des erreurs
+            return response()->json(
+                [
+                    'statut' => 'error',
+                    'message' => $th->getMessage(),
+                    'errors' => []
+                ],
+                Response::HTTP_INTERNAL_SERVER_ERROR
+            );
         }
     }
 

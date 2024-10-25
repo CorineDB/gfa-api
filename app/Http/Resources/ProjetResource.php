@@ -27,6 +27,7 @@ class ProjetResource extends JsonResource
             "nombreEmploie" => $this->nombreEmploie ?? 0,
             //"statistiqueActivite" => $this->statistiqueActivite(),
             "budgetNational" => $this->budgetNational ?? 0,
+            "depenses" => $this->consommer,
             "objectifGlobaux" => $this->objectifGlobaux,
             "pays" => $this->pays,
             "commune" => $this->commune,
@@ -51,6 +52,7 @@ class ProjetResource extends JsonResource
             "programme" => $this->programme,
             "link" => $this->chemin,// new FichiersResource($this->chemin),
             "composantes" => ComposanteResource::collection($this->composantes),
+            "sites" => SiteResource::collection($this->sites),
             "audit" => $this->audits->last()
         ];
     }

@@ -7,6 +7,7 @@ use App\Models\Organisation;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class StoreProjetRequest extends FormRequest
@@ -35,11 +36,12 @@ class StoreProjetRequest extends FormRequest
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
             'ville' => 'required|max:255',
             'bailleurId' => ['sometimes', 'nullable', new HashValidatorRule(new Bailleur())],
-            'organisationId' => ['required', new HashValidatorRule(new Organisation()), function($attribute, $value, $fail) {
-                
-                $organisation = Organisation::findByKey(request()->input($attribute));
-                if ($organisation->projet) {
-                    $fail('Cette organisation est déja assigné a un projet du programme');
+            'organisationId'   => ['sometimes', Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation()), function($attribute, $value, $fail) {
+                if(request()->input($attribute)){
+                    $organisation = Organisation::findByKey(request()->input($attribute));
+                    if ($organisation->projet) {
+                        $fail('Cette organisation est déja assigné a un projet du programme');
+                    }
                 }
             }],
             'nombreEmploie' => 'integer',

@@ -9,6 +9,7 @@ use App\Models\Projet;
 use App\Models\Tache;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 trait Pta{
 
@@ -406,11 +407,306 @@ trait Pta{
 
     public function filtreByAnnee(array $attributs)
     {
+        $projets = Projet::where('programmeId', $attributs['programmeId'])
+                           ->get();
+        
+        if(Auth::user()->hasRole('organisation'))
+        {
+            $projets = $projets->where('projetable_id', Auth::user()->profilable->id);
+            /*$programme = Auth::user()->programme;
+            $projets = Projet::where('programmeId', $programme->id)
+                             ->where('projetable_id', Auth::user()->profilable->id)
+                             ->get();*/
+        }
+        else if(isset($attributs['organisationId']) && !empty($attributs["organisationId"])){
+            $projets = $projets->where('projetable_id', $attributs['organisationId']);
+        }
+
+        $pta = [];
+
+        if(count($projets))
+        {
+            foreach($projets as $projet)
+            {
+                if($projet->statut < -1) continue;
+
+                $debutTab = explode('-', $projet->debut);
+                $finTab = explode('-', $projet->fin);
+
+                if($debutTab[0] > $attributs['annee'] || $finTab[0] < $attributs['annee'])
+                {
+                    continue;
+                }
+
+                $composantes = $this->triPta($projet->composantes);
+                $composantestab = [];
+
+                foreach($composantes as $composante)
+                {
+                    if($composante->statut < -1) continue;
+
+                    $sousComposantes = $this->triPta($composante->sousComposantes);
+                    if(count($sousComposantes))
+                    {
+                        $sctab = [];
+                        foreach($sousComposantes as $sousComposante)
+                        {
+                            if($sousComposante->statut < -1) continue;
+
+                            $activites = $this->triPta($sousComposante->activites);
+                            $activitestab = [];
+                            foreach($activites as $activite)
+                            {
+                                if($activite->statut < -1) continue;
+
+                                $controle = 1;
+
+                                $durees = $activite->durees;
+                                foreach($durees as $duree)
+                                {
+                                    $debutTab = explode('-', $duree->debut);
+                                    $finTab = explode('-', $duree->fin);
+
+                                    if($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee'])
+                                    {
+                                        $controle = 0;
+                                        break;
+                                    }
+                                }
+
+                                if($controle)
+                                {
+                                    continue;
+                                }
+
+                                $taches = $this->triPta($activite->taches);
+                                $tachestab = [];
+                                foreach($taches as $tache)
+                                {
+                                    if($tache->statut < -1) continue;
+
+                                    $controle = 1;
+
+                                    $durees = $tache->durees;
+                                    foreach($durees as $duree)
+                                    {
+                                        $debutTab = explode('-', $duree->debut);
+                                        $finTab = explode('-', $duree->fin);
+
+                                        if($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee'])
+                                        {
+                                            $controle = 0;
+                                            break;
+                                        }
+                                    }
+
+                                    if($controle)
+                                    {
+                                        continue;
+                                    }
+
+                                    array_push($tachestab, [
+                                            "id" => $tache->secure_id,
+                                            "nom" => $tache->nom,
+                                            "code" => $tache->codePta,
+                                            "poids" => $tache->poids,
+                                            "poidsActuel" => optional($tache->suivis->last())->poidsActuel ?? 0,
+                                            "durees" => $this->dureePta($tache->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray()),
+                                            "tep" => $tache->tep,
+                                            "suivis" => $tache->suivis,
+                                        ]);
+                                }
+
+                                array_push($activitestab, ["id" => $activite->secure_id,
+                                                      "nom" => $activite->nom,
+                                                      "code" => $activite->codePta,
+                                                      "budgetNational" => $activite->budgetNational,
+                                                      "depenses" => $activite->consommer,
+                                                      "tep" => $activite->tep,
+                                                      /*"pret" => $activite->pret,
+                                                      "trimestre1" => $activite->planDeDecaissement(1, $attributs['annee']),
+                                                      "trimestre2" => $activite->planDeDecaissement(2, $attributs['annee']),
+                                                      "trimestre3" => $activite->planDeDecaissement(3, $attributs['annee']),
+                                                      "trimestre4" => $activite->planDeDecaissement(4, $attributs['annee']),
+                                                      "budgetise" => $activite->planDeDecaissementParAnnee($attributs['annee']),*/
+                                                      "poids" => $activite->poids,
+                                                      "poidsActuel" => optional($activite->suivis->last())->poidsActuel ?? 0,
+                                                      "durees" => $this->dureePta($activite->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray()),
+                                                      /*"structureResponsable" => $activite->structureResponsable()->nom,
+                                                      "structureAssocie" => $activite->structureAssociee()->nom,*/
+                                                      "taches" => $tachestab]);
+                            }
+
+                            array_push($sctab, ["id" => $sousComposante->secure_id,
+                                                  "nom" => $sousComposante->nom,
+                                                  "budgetNational" => $sousComposante->budgetNational,
+                                                  "depenses" => $sousComposante->consommer,
+                                                  "tep" => $sousComposante->tep,
+                                                    /*"pret" => $sousComposante->pret,
+                                                      "trimestre1" => $sousComposante->planDeDecaissement(1, $attributs['annee']),
+                                                      "trimestre2" => $sousComposante->planDeDecaissement(2, $attributs['annee']),
+                                                      "trimestre3" => $sousComposante->planDeDecaissement(3, $attributs['annee']),
+                                                      "trimestre4" => $sousComposante->planDeDecaissement(4, $attributs['annee']),
+                                                      "budgetise" => $sousComposante->planDeDecaissementParAnnee($attributs['annee']),
+                                                    */"poids" => $sousComposante->poids,
+                                                      "poidsActuel" => optional($sousComposante->suivis->last())->poidsActuel ?? 0,
+                                                  "code" => $sousComposante->codePta,
+                                                "activites" => $activitestab]);
+                        }
+                    }
+
+                    else
+                    {
+                        $activites = $this->triPta($composante->activites);
+                        $sctab = [];
+                        $act = [];
+
+                        foreach($activites as $activite)
+                        {
+                            if($activite->statut < -1) continue;
+                            $controle = 1;
+
+                            $durees = $activite->durees;
+                            foreach($durees as $duree)
+                            {
+                                $debutTab = explode('-', $duree->debut);
+                                $finTab = explode('-', $duree->fin);
+
+                                if($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee'])
+                                {
+                                    $controle = 0;
+                                    break;
+                                }
+                            }
+
+                            if($controle)
+                            {
+                                continue;
+                            }
+
+                            $taches = $this->triPta($activite->taches);
+                            $tachestab = [];
+                            foreach($taches as $tache)
+                            {
+                                if($tache->statut < -1) continue;
+
+                                $controle = 1;
+
+                                $durees = $tache->durees;
+                                foreach($durees as $duree)
+                                {
+                                    $debutTab = explode('-', $duree->debut);
+                                    $finTab = explode('-', $duree->fin);
+
+                                    if($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee'])
+                                    {
+                                        $controle = 0;
+                                        break;
+                                    }
+                                }
+
+                                if($controle)
+                                {
+                                    continue;
+                                }
+
+                                array_push($tachestab, [
+                                            "id" => $tache->secure_id,
+                                            "nom" => $tache->nom,
+                                            "code" => $tache->codePta,
+                                            "poids" => $tache->poids,
+                                            "poidsActuel" => optional($tache->suivis->last())->poidsActuel ?? 0,
+                                            "durees" => $this->dureePta($tache->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray()),
+                                            "tep" => $tache->tep,
+                                            "suivis" => $tache->suivis,
+                                        ]);
+                            }
+
+                            array_push($act, ["id" => $activite->id,
+                                                "nom" => $activite->nom,
+                                                "code" => $activite->codePta,
+                                                "budgetNational" => $activite->budgetNational,
+                                                "depenses" => $activite->consommer,
+                                                "tep" => $activite->tep,
+                                                /*"pret" => $activite->pret,
+                                                    "trimestre1" => $activite->planDeDecaissement(1, $attributs['annee']),
+                                                    "trimestre2" => $activite->planDeDecaissement(2, $attributs['annee']),
+                                                    "trimestre3" => $activite->planDeDecaissement(3, $attributs['annee']),
+                                                    "trimestre4" => $activite->planDeDecaissement(4, $attributs['annee']),
+                                                    "budgetise" => $activite->planDeDecaissementParAnnee($attributs['annee']),*/
+                                                      "poids" => $activite->poids,
+                                                      "poidsActuel" => optional($activite->suivis->last())->poidsActuel ?? 0,
+                                                      /*"structureResponsable" => $activite->structureResponsable()->nom,
+                                                      "structureAssocie" => $activite->structureAssociee()->nom,*/
+                                                      "durees" => $this->dureePta($activite->durees->where('debut', '>=', $attributs['annee'].'-01-01')->where('fin', '<=', $attributs['annee'].'-12-31')->toArray()),
+                                                  "taches" => $tachestab]);
+                        }
+
+                        array_push($sctab, ["id" => 0,
+                                            "nom" => 0,
+                                            "code" => 0,
+                                            "budgetNational" => 0,
+                                            "depenses" => 0,
+                                            "tep" => 0,
+                                            /*"pret" => 0,
+                                            "trimestre1" => 0,
+                                            "trimestre2" => 0,
+                                            "trimestre3" => 0,
+                                            "trimestre4" => 0,
+                                            "budgetise" => 0,*/
+                                            "poids" => 0,
+                                            "poidsActuel" => 0,
+                                            "activites" => $act]);
+                    }
+
+                    array_push($composantestab, ["id" => $composante->secure_id,
+                                                      "nom" => $composante->nom,
+                                                      "code" => $composante->codePta,
+                                                      "budgetNational" => $composante->budgetNational,
+                                                      "depenses" => $composante->consommer,
+                                                      "tep" => $composante->tep,
+                                                      /*"pret" => $composante->pret,
+                                                      "trimestre1" => $composante->planDeDecaissement(1, $attributs['annee']),
+                                                      "trimestre2" => $composante->planDeDecaissement(2, $attributs['annee']),
+                                                      "trimestre3" => $composante->planDeDecaissement(3, $attributs['annee']),
+                                                      "trimestre4" => $composante->planDeDecaissement(4, $attributs['annee']),
+                                                      "budgetise" => $composante->planDeDecaissementParAnnee($attributs['annee']),*/
+                                                      "poids" => $composante->poids,
+                                                      "poidsActuel" => optional($composante->suivis->last())->poidsActuel ?? 0,
+                                                      "sousComposantes" => $sctab]);
+                }
+
+                array_push($pta, [
+                    "owner_id" => $projet->projetable->secure_id,
+                    "owner_nom" => $projet->projetable->user->nom,
+                    "projetId" => $projet->secure_id,
+                    "nom" => $projet->nom,
+                    "code" => $projet->codePta,
+                    "budgetNational" => $projet->budgetNational,
+                    "depenses" => $projet->consommer,
+                    "tep" => $projet->tep,
+                    //"pret" => $projet->pret,
+                    "composantes" => $composantestab]);
+            }
+        }
+        return $pta;
+    }
+
+    public function oldFiltreByAnnee(array $attributs)
+    {
         if(array_key_exists('bailleurId', $attributs))
         {
             $projets = Projet::where('programmeId', $attributs['programmeId'])
                                ->where('bailleurId', $attributs['bailleurId'])
                                ->get();
+        }
+
+        else if(Auth::user()->hasRole('organisation'))
+        {
+            $programme = Auth::user()->programme;
+            $projets = Projet::where('programmeId', $programme->id)
+                             ->where('projetable_id', Auth::user()->profilable->id)
+                             ->get();
         }
 
         else

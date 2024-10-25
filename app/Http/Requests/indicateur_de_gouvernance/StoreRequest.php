@@ -27,14 +27,13 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-
         // Base rules
         return [
             'nom'                       => 'required|max:255|unique:indicateurs_de_gouvernance,nom',
             'type'                      => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description'               => 'nullable|max:255',
-            'can_have_multiple_reponse' => ['required','boolean'],
-            'options_de_reponse'        => ['required', 'array', 'min:2'],
+            //'can_have_multiple_reponse' => ['sometimes','boolean'],
+            /*'options_de_reponse'        => ['required', 'array', 'min:2'],
             'options_de_reponse.*'      => ['required', 'distinct', new HashValidatorRule(new OptionDeReponse())],
             'principeable_id'           => ['required',
                                             function ($attribute, $value, $fail) {
@@ -52,7 +51,7 @@ class StoreRequest extends FormRequest
                                                     $fail($validatorRule->message());
                                                 }
                                             }
-                                        ]
+                                        ]*/
         ];
 
         // Conditionally apply validation based on 'type'

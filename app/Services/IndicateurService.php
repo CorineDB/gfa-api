@@ -8,15 +8,18 @@ use App\Http\Resources\suivi\SuiviIndicateurResource;
 use App\Http\Resources\suivis\SuivisResource;
 use App\Models\Indicateur;
 use App\Models\IndicateurValueKey;
+use App\Models\Site;
 use App\Models\Unitee;
 use App\Repositories\BailleurRepository;
 use App\Repositories\CategorieRepository;
 use App\Repositories\IndicateurRepository;
+use App\Repositories\SiteRepository;
 use App\Repositories\UniteeMesureRepository;
 use App\Repositories\UserRepository;
 use App\Traits\Eloquents\DBStatementTrait;
 use App\Traits\Helpers\LogActivity;
 use Carbon\Carbon;
+use App\Repositories\ValeurCibleIndicateurRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\IndicateurServiceInterface;
 use Exception;
@@ -40,6 +43,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
     /**
      * @var service
      */
+    protected $valeurCibleIndicateurRepository;
     protected $categorieRepository;
     protected $uniteeMesureRepository;
     protected $userRepository;
@@ -51,7 +55,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      *
      * @param IndicateurRepository $indicateurRepository
      */
-    public function __construct(IndicateurRepository $indicateurRepository, UniteeMesureRepository $uniteeMesureRepository, CategorieRepository $categorieRepository, UserRepository $userRepository, BailleurRepository $bailleurRepository)
+    public function __construct(IndicateurRepository $indicateurRepository, UniteeMesureRepository $uniteeMesureRepository, CategorieRepository $categorieRepository, UserRepository $userRepository, BailleurRepository $bailleurRepository, ValeurCibleIndicateurRepository $valeurCibleIndicateurRepository)
     {
         parent::__construct($indicateurRepository);
         $this->repository = $indicateurRepository;
@@ -59,6 +63,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
         $this->userRepository = $userRepository;
         $this->bailleurRepository = $bailleurRepository;
         $this->categorieRepository = $categorieRepository;
+        $this->valeurCibleIndicateurRepository = $valeurCibleIndicateurRepository;
     }
 
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
@@ -271,86 +276,110 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $this->attachValueKeys($indicateur, $attributs);
 
-            /*if (isset($attributs["value_keys"])) {
-                foreach ($attributs["value_keys"] as $key => $value_key) {
+            /*
+                if (isset($attributs["value_keys"])) {
+                    foreach ($attributs["value_keys"] as $key => $value_key) {
 
-                    $indicateurValueKey = IndicateurValueKey::find($value_key['id']);
+                        $indicateurValueKey = IndicateurValueKey::find($value_key['id']);
+
+                        if (!$indicateurValueKey) {
+                            throw new Exception("Cle d'indicateur inconnue.", 404);
+                        }
+
+                        $uniteeMesure = isset($value_key["uniteeMesureId"]) ? (optional(Unitee::find($value_key['uniteeMesureId'])) ?? $indicateurValueKey->uniteeMesure) : ($unitee ? $unitee : $indicateurValueKey->uniteeMesure);
+                        $indicateur->valueKeys()->attach($indicateurValueKey->id, ["uniteeMesureId" => $uniteeMesure->id, "type" => $uniteeMesure->nom]);
+                    }
+                } else {
+
+                    $indicateurValueKey = IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first();
 
                     if (!$indicateurValueKey) {
-                        throw new Exception("Cle d'indicateur inconnue.", 404);
+                        throw new Exception("Cle d'indicateur inconnu.", 404);
                     }
 
-                    $uniteeMesure = isset($value_key["uniteeMesureId"]) ? (optional(Unitee::find($value_key['uniteeMesureId'])) ?? $indicateurValueKey->uniteeMesure) : ($unitee ? $unitee : $indicateurValueKey->uniteeMesure);
-                    $indicateur->valueKeys()->attach($indicateurValueKey->id, ["uniteeMesureId" => $uniteeMesure->id, "type" => $uniteeMesure->nom]);
-                }
-            } else {
+                    if (!$unitee) {
+                        if (!isset($attributs["uniteeMesureId"])) {
+                            throw new Exception("Veuillez preciser l'unite de mesure de l'indicateur inconnue", 404);
+                        }
 
-                $indicateurValueKey = IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first();
-
-                if (!$indicateurValueKey) {
-                    throw new Exception("Cle d'indicateur inconnu.", 404);
-                }
-
-                if (!$unitee) {
-                    if (!isset($attributs["uniteeMesureId"])) {
-                        throw new Exception("Veuillez preciser l'unite de mesure de l'indicateur inconnue", 404);
+                        if (!($unitee = Unitee::find($attributs['uniteeMesureId']))) {
+                            throw new Exception("Unitee de mesure inconnue", 404);
+                        }
                     }
-
-                    if (!($unitee = Unitee::find($attributs['uniteeMesureId']))) {
-                        throw new Exception("Unitee de mesure inconnue", 404);
-                    }
+                    $indicateur->valueKeys()->attach($indicateurValueKey->id, ["uniteeMesureId" => $unitee->id, "type" => $unitee->nom]);
                 }
-                $indicateur->valueKeys()->attach($indicateurValueKey->id, ["uniteeMesureId" => $unitee->id, "type" => $unitee->nom]);
-            }*/
+            */
 
             //$indicateurKeys = $indicateur->valueKeys()->whereIn("indicateur_value_keys.id", collect($valeursDeBase)->pluck('key')->toArray())->get();
 
-            // Check if the number of items in 'value_keys' exceeds the number of items in 'valeursDeBase'
-            if (count($attributs['value_keys']) > count($valeursDeBase)) {
-                // If the condition is true, throw an exception with an error message
-                // The message indicates that each value key of the indicator should have a corresponding base value
-                throw new Exception("La demande n'a pas pu être traitée : les valeurs de chaque clé de l'indicateur doivent être précisées dans la valeur de base. Veuillez vérifier les données fournies.", 1);
-            }
+            if(isset($attributs['value_keys'])){
 
-            // Extract the 'id' field from 'value_keys' and 'keyId' field from 'valeursDeBase' into collections
-            // Then, compute the difference to identify any 'value_keys' that are missing in 'valeursDeBase'
-            $diff = collect($attributs['value_keys'])->pluck('id')->diff(collect($valeursDeBase)->pluck('keyId'));
+                // Check if the number of items in 'value_keys' exceeds the number of items in 'valeursDeBase'
+                if (count($attributs['value_keys']) > count($valeursDeBase)) {
+                    // If the condition is true, throw an exception with an error message
+                    // The message indicates that each value key of the indicator should have a corresponding base value
+                    throw new Exception("La demande n'a pas pu être traitée : les valeurs de chaque clé de l'indicateur doivent être précisées dans la valeur de base. Veuillez vérifier les données fournies.", 1);
+                }
 
-            // Check if the $diff collection is not empty, which means some 'value_keys' are missing in 'valeursDeBase'
-            if ($diff->isNotEmpty()) {
-                // If the condition is true, throw an exception with an error message
-                // The message explains that the base values must correspond to all the value keys for the indicator
-                throw new Exception("La demande n'a pas pu être traitée : les valeurs de chaque clé de l'indicateur doivent être précisées dans la valeur de base. Veuillez vérifier les données fournies.", 1);
+                // Extract the 'id' field from 'value_keys' and 'keyId' field from 'valeursDeBase' into collections
+                // Then, compute the difference to identify any 'value_keys' that are missing in 'valeursDeBase'
+                $diff = collect($attributs['value_keys'])->pluck('id')->diff(collect($valeursDeBase)->pluck('keyId'));
+
+                // Check if the $diff collection is not empty, which means some 'value_keys' are missing in 'valeursDeBase'
+                if ($diff->isNotEmpty()) {
+                    // If the condition is true, throw an exception with an error message
+                    // The message explains that the base values must correspond to all the value keys for the indicator
+                    throw new Exception("La demande n'a pas pu être traitée : les valeurs de chaque clé de l'indicateur doivent être précisées dans la valeur de base. Veuillez vérifier les données fournies.", 1);
+                }
+
             }
 
             $valeurDeBase = $this->setIndicateurValue($indicateur, $valeursDeBase);
 
-            /*if (is_array($valeursDeBase)) {
-                foreach ($valeursDeBase as $key => $item) {
-                    if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $item['keyId'])->first())) {
-                        $valeur = $indicateur->valeursDeBase()->create(["value" => $item["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+            /*
+                if (is_array($valeursDeBase)) {
+                    foreach ($valeursDeBase as $key => $item) {
+                        if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $item['keyId'])->first())) {
+                            $valeur = $indicateur->valeursDeBase()->create(["value" => $item["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
 
-                        $valeurDeBase = array_merge($valeurDeBase, ["{$key->key}" => $valeur->value]);
+                            $valeurDeBase = array_merge($valeurDeBase, ["{$key->key}" => $valeur->value]);
+                        }
                     }
+                } else {
+
+                    $mapKey = optional($indicateur->valueKey()->pivot)->id ?? (optional((IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first())->pivot)->id ?? null);
+
+                    if (is_null($mapKey)) throw new Exception("Cle d'indicateur inconnu.", 404);
+
+                    $valeur = $indicateur->valeursDeBase()->create(["value" => $valeursDeBase, "indicateurValueKeyMapId" => $mapKey]);
+
+                    $valeurDeBase = array_merge($valeurDeBase, ["{$indicateur->valueKey()->key}" => $valeur->value]);
                 }
-            } else {
-
-                $mapKey = optional($indicateur->valueKey()->pivot)->id ?? (optional((IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first())->pivot)->id ?? null);
-
-                if (is_null($mapKey)) throw new Exception("Cle d'indicateur inconnu.", 404);
-
-                $valeur = $indicateur->valeursDeBase()->create(["value" => $valeursDeBase, "indicateurValueKeyMapId" => $mapKey]);
-
-                $valeurDeBase = array_merge($valeurDeBase, ["{$indicateur->valueKey()->key}" => $valeur->value]);
-            }*/
+            */
 
             $indicateur->valeurDeBase = $valeurDeBase;
+
+            $this->setIndicateurValeursCible($indicateur, $attributs["anneesCible"]);
 
             $this->changeState(0);
 
             $indicateur->save();
 
             $this->changeState(1);
+
+            if(isset($attributs['sites'])){
+
+                $sites = [];
+                foreach($attributs['sites'] as $id)
+                {
+                    if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
+                    
+                    array_push($sites, $site->id);
+                }
+
+                $indicateur->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
+
+            }
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
@@ -363,7 +392,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             Cache::forget('indicateurs');
 
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateursResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             DB::rollback();
@@ -562,7 +591,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Indicateur modifié", 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => "Indicateur modifié", 'data' => new IndicateursResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             DB::rollback();
@@ -729,6 +758,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     throw new Exception("Unitee de mesure inconnue", 404);
                 }
             }
+            else{
+                $unitee = $indicateur->unitee_mesure;
+            }
 
             $indicateur->valueKeys()->attach($indicateurValueKey->id, ["uniteeMesureId" => $unitee->id, "type" => $unitee->nom]);
         }
@@ -738,11 +770,12 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      * Set Indicateur Value
      * 
      * @param Indicateur $indicateur
-     * @param array $a
+     * @param array|id $valeursDeBase
+     * @param array $valeurDeBase
      * 
      * @return array
      */
-    protected function setIndicateurValue(Indicateur $indicateur, array $valeursDeBase, array $valeurDeBase =[]){
+    protected function setIndicateurValue(Indicateur $indicateur, $valeursDeBase, array $valeurDeBase =[]){
 
         if (is_array($valeursDeBase)) {
             foreach ($valeursDeBase as $key => $item) {
@@ -765,4 +798,100 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         return $valeurDeBase;
     }
+
+    /**
+     * Set Indicateur Value
+     * 
+     * @param Indicateur $indicateur
+     * @param array|id $valeursDeBase
+     * @param array $valeurDeBase
+     * 
+     * @return array
+     */
+    protected function setIndicateurValeursCible(Indicateur $indicateur, $annneesCible =[]){
+        if (is_array($annneesCible)) {
+            foreach ($annneesCible as $key => $anneeCible) {
+
+                if (!($valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->newInstance()->where("cibleable_id", $indicateur->id)->where("annee", $anneeCible['annee'])->first())) {
+
+                    if (!array_key_exists('valeurCible', $anneeCible) || !isset($anneeCible['valeurCible'])) throw new Exception("Veuillez préciser la valeur cible de l'année {$anneeCible['annee']}.", 400);
+
+                    $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($anneeCible, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur)]));
+                    $valeurCibleIndicateur->save();
+                    $valeurCibleIndicateur->refresh();
+
+                    $valeurCible = [];
+
+                    if ($indicateur->agreger && is_array($anneeCible["valeurCible"])) {
+
+                        foreach ($anneeCible["valeurCible"] as $key => $data) {
+
+                            if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $data['keyId'])->first())) {
+                                $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $data["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+
+                                $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
+                            }
+                        }
+                        
+                    }
+                    
+                    else if (!$indicateur->agreger && !is_array($anneeCible["valeurCible"])) {
+                        dd($anneeCible["valeurCible"]);
+                        $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"]["value"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
+                        
+                        $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
+                        //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
+                    }
+                    else{
+                        throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
+                    }
+
+                    $valeurCibleIndicateur->valeurCible = $valeurCible;
+
+                    $valeurCibleIndicateur->save();
+                }
+
+            }
+        }
+    }
+
+
+    /*if (!($valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->newInstance()->where("cibleable_id", $attributs['indicateurId'])->where("annee", $attributs['annee'])->first())) {
+
+        if (!array_key_exists('valeurCible', $attributs) || !isset($attributs['valeurCible'])) throw new Exception("Veuillez préciser la valeur cible de l'année {$attributs['annee']} de ce suivi.", 400);
+
+        $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($attributs, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur)]));
+        $valeurCibleIndicateur->save();
+        $valeurCibleIndicateur->refresh();
+        
+        $valeurCible = [];
+
+        if ($indicateur->agreger && is_array($attributs["valeurCible"])) {
+
+            foreach ($attributs["valeurCible"] as $key => $data) {
+
+                if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $data['keyId'])->first())) {
+                    $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $data["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+
+                    $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
+                }
+            }
+            
+        } 
+        else if (!$indicateur->agreger && !is_array($attributs["valeurCible"])) {
+            $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $attributs["valeurRealise"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
+            
+            $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
+            //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
+        }
+        else{
+            throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
+        }
+
+        $valeurCibleIndicateur->valeurCible = $valeurCible;
+
+        //$valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($attributs, ["cibleable_id" => $attributs['indicateurId'], "cibleable_type" => "App\\Models\\Indicateur"]));
+
+        $valeurCibleIndicateur->save();
+    }*/
 }

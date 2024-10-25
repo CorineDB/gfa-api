@@ -6,6 +6,7 @@ use App\Http\Resources\ActiviteResource;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
@@ -369,6 +370,14 @@ class Projet extends Model
         ];
     }
 
+    public function getConsommerAttribute()
+    {
+        // Sum 'comsommer' for the current composante's activites
+        return $this->composantes->sum(function ($composante) {
+            return $composante->consommer;
+        });
+    }
+
     public function getTefAttribute()
     {
 
@@ -482,7 +491,8 @@ class Projet extends Model
 
     public function getCodePtaAttribute()
     {
-        return $this->programme->code.'.'. (optional($this->organisation)->code ?? 1);
+        $code = optional($this->projetable)->code ?? 1;
+        return $this->programme->code.'.'. $code;
         $programme = $this->programme;
         $code = $this->bailleur->codes($programme->id)->first();
         return $programme->code.'.'.optional($code)->codePta;
@@ -676,7 +686,24 @@ class Projet extends Model
     }
 
     public function organisation(){
-        return optional($this->where("projetable_type", Organisation::class)->first())->projetable() ?: null;;
+        return optional($this->where("projetable_type", Organisation::class)->first())->projetable() ?: null;
     }
 
+    /**
+     * Get all of the sites for the projet.
+     */
+    public function sites(): MorphToMany
+    {
+        return $this->morphToMany(Site::class, 'siteable');
+    }
+
+    public function cadre_de_mesure_rendement()
+    {
+        return $this->hasMany(CadreDeMesureRendement::class, 'rendementable_id')->where('rendementable_type', get_class($this));
+    }
+    
+    public function resultats_cadre_de_mesure_rendement()
+    {
+        return $this->belongsToMany(ResultatCadreDeRendement::class, 'cadres_de_mesure_rendement', 'rendementable_id', 'resultatCadreDeRendementId')->wherePivotNull('deleted_at')->wherePivot('rendementable_type', get_class($this))->withPivot(['id','position', 'type']);
+    }
 }

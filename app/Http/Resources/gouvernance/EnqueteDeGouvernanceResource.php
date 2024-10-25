@@ -2,6 +2,10 @@
 
 namespace App\Http\Resources\gouvernance;
 
+use App\Models\Indicateur;
+use App\Models\IndicateurDeGouvernance;
+use App\Models\ReponseCollecter;
+use App\Models\TypeDeGouvernance;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Carbon\Carbon;
 
@@ -21,11 +25,18 @@ class EnqueteDeGouvernanceResource extends JsonResource
 
         // Group the responses by organization
         $groupedResponses = $responses->groupBy('organisation.id')->map(function ($organisationResponses, $organisationId) {
-            
+            $organisation = optional(optional($organisationResponses->first())->organisation);
             // Collect organisation information without using an 'organisation' key
             $organisationInfo = [
-                'id' => optional(optional($organisationResponses->first())->organisation)->secure_id ?? null,
-                'nom' => optional(optional($organisationResponses->first())->organisation)->user->nom ?? null,
+                'id' => $organisation->secure_id ?? null,
+                'nom' => $organisation->user->nom ?? null,
+                'nom_point_focal' => $organisation->nom_point_focal ?? null,
+                'prenom_point_focal' => $organisation->prenom_point_focal ?? null,
+                'contact_point_focal' => $organisation->contact_point_focal ?? null,
+                "submitted_by"=>  ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $this->id)->orderByDesc("created_at")->first()->user,
+
+                "submitted_at"=>  Carbon::parse(ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $this->id)->orderByDesc("updated_at")->first()->updated_at)->format("Y-m-d H:i:s"),
+                'levelOfSubmission' => $this->getLevelOfSubmission($organisationId)
             ];
 
             // Group observations by category
@@ -62,7 +73,45 @@ class EnqueteDeGouvernanceResource extends JsonResource
             'debut' => Carbon::parse($this->debut),
             'fin' => Carbon::parse($this->fin),
             'programmeId' => $this->programme->secure_id,
-            'reponses' => $groupedResponses, // This is already an array
+            'reponses' => $groupedResponses
         ];
     }
+
+    public function getLevelOfSubmission($organisationId)
+    {
+        // Step 1: Count the number of responses collected for the organization
+        $responsesCount = ReponseCollecter::where('organisationId', $organisationId)->where('enqueteDeCollecteId', $this->id)->count();
+
+        // Step 2: Count the number of indicators in the form associated with the organization
+        //$form = TypeDeGouvernance::where('programmeId', auth()->user()->programme->id)->loadCount('indicateurs', $organisationId);
+
+        $indicateursCount = IndicateurDeGouvernance::where(function($query){
+            $query->where("principeable_type", "App\\Models\\PrincipeDeGouvernance")->with('principeable', function ($query) {
+                $query->whereHas('type_de_gouvernance', function ($type_query) {
+                    //dd(auth()->user()->programme->id);
+                    $type_query->where('programmeId', auth()->user()->programme->id);
+                });
+            });
+        })->orWhere(function($cq){
+            $cq->where("principeable_type", "App\\Models\\CritereDeGouvernance")
+                ->with('principeable', function ($query) {
+                    $query->whereHas('principe_de_gouvernance', function ($type_query) {
+                        $type_query->whereHas("type_de_gouvernance", function($type_query){
+                            $type_query->where('programmeId', auth()->user()->programme->id);
+                        });
+                    });
+                });
+        })->count();
+
+        // Step 3: Calculate the level of submission
+        if ($indicateursCount > 0) {
+            $levelOfSubmission = ($responsesCount / $indicateursCount) * 100;
+        } else {
+            $levelOfSubmission = 0; // If there are no indicators, the submission level is 0
+        }
+
+        // Return the calculated level of submission
+        return $levelOfSubmission;
+    }
+
 }

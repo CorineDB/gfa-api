@@ -26,8 +26,6 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom' => ['required', 'max:255', Rule::unique('unitees','nom')->whereNull('deleted_at')],
-            'nom' => 'required|max:255|unique:unitees,nom',
-            'type' => 'required|min:0|max:1'
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Exception;
+use App\Model\CategorieDeGouvernance as CategorieDeGouvernanceParent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -43,9 +44,42 @@ class TypeDeGouvernance extends Model
         });
     }
 
-    public function principes_de_gouvernance()
+    public function categories_de_gouvernance($annee_exercice = null)
     {
-        return $this->hasMany(PrincipeDeGouvernance::class, 'typeDeGouvernanceId');
+        $categories_de_gouvernance = $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
+
+        if($annee_exercice){
+            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+                $query->where('annee_exercice', $annee_exercice);
+            });
+        }
+
+        return $categories_de_gouvernance;
+    }
+
+    public function sous_categories_de_gouvernance($annee_exercice = null)
+    {
+        $sous_categories = $this->hasManyThrough(
+            CategorieDeGouvernance::class,// Final Model
+            CategorieDeGouvernance::class,// Intermediate Model
+            'categorieable_id',
+            'categorieDeGouvernanceId',
+            'id',
+            'id'
+        );//->where("categorieable_type", get_class(new PrincipeDeGouvernance));
+
+        if($annee_exercice){
+            $sous_categories = $sous_categories->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+                $query->where('annee_exercice', $annee_exercice);
+            });
+        }
+
+        return $sous_categories;
+    }
+
+    public function principes_de_gouvernance($annee_exercice = null)
+    {
+        return $this->sous_categories_de_gouvernance($annee_exercice)->where("categorieable_type", get_class(new PrincipeDeGouvernance));
     }
 
     public function programme()

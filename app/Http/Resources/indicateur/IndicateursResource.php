@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\indicateur;
 
+use App\Http\Resources\SiteResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -45,6 +46,7 @@ class IndicateursResource extends JsonResource
             "valeurCibleTotal" => $this->valeurCibleTotal(),
             "valeurRealiserTotal" => $this->valeurRealiserTotal(),
             "taux_realisation" => $this->taux_realisation,
+            "sites" => SiteResource::collection($this->sites),
             /*"bailleur" => [
                 "id" => $this->bailleur->secure_id,
                 "sigle" => $this->bailleur->sigle,

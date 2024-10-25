@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Repositories\ActionAMenerRepository;
 use Core\Repositories\BaseRepository;
 use Core\Repositories\EloquentRepositoryInterface;
 use App\Repositories\CategorieRepository;
@@ -56,14 +57,21 @@ use App\Repositories\ReponseRepository;
 use App\Repositories\AuditRepository;
 use App\Repositories\CritereDeGouvernanceRepository;
 use App\Repositories\EnqueteDeCollecteRepository;
+use App\Repositories\EvaluationDeGouvernanceRepository;
+use App\Repositories\FondRepository;
+use App\Repositories\FormulaireDeGouvernanceRepository;
 use App\Repositories\IndicateurDeGouvernanceRepository;
 use App\Repositories\IndicateurValeurRepository;
 use App\Repositories\IndicateurValueKeyRepository;
 use App\Repositories\OptionDeReponseRepository;
 use App\Repositories\OrganisationRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
+use App\Repositories\RecommandationRepository;
 use App\Repositories\SuiviCheckListComRepository;
 use App\Repositories\TypeDeGouvernanceRepository;
+use App\Repositories\ResultatCadreDeRendementRepository;
+use App\Repositories\SoumissionRepository;
+use App\Repositories\SourceDeVerificationRepository;
 use App\Services\AuthService;
 use App\Services\CategorieService;
 use App\Services\IndicateurService;
@@ -127,11 +135,17 @@ use App\Services\ReponseService;
 use App\Services\AuditService;
 use App\Services\CritereDeGouvernanceService;
 use App\Services\EnqueteDeCollecteService;
+use App\Services\EvaluationDeGouvernanceService;
+use App\Services\FondService;
+use App\Services\FormulaireDeGouvernanceService;
 use App\Services\IndicateurDeGouvernanceService;
 use App\Services\IndicateurValueKeyService;
 use App\Services\OptionDeReponseService;
 use App\Services\OrganisationService;
 use App\Services\PrincipeDeGouvernanceService;
+use App\Services\ResultatCadreDeRendementService;
+use App\Services\SoumissionService;
+use App\Services\SourceDeVerificationService;
 use App\Services\TypeDeGouvernanceService;
 use Core\Services\Contracts\BaseService;
 
@@ -199,12 +213,19 @@ use Core\Services\Interfaces\ReponseServiceInterface;
 use Core\Services\Interfaces\AuditServiceInterface;
 use Core\Services\Interfaces\CritereDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\EnqueteDeCollecteServiceInterface;
+use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\FondServiceInterface;
+use Core\Services\Interfaces\FormulaireDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\IndicateurValueKeyServiceInterface;
 use Core\Services\Interfaces\OptionDeReponseServiceInterface;
 use Core\Services\Interfaces\OrganisationServiceInterface;
 use Core\Services\Interfaces\PrincipeDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\TypeDeGouvernanceServiceInterface;
+
+use Core\Services\Interfaces\ResultatCadreDeRendementServiceInterface;
+use Core\Services\Interfaces\SoumissionServiceInterface;
+use Core\Services\Interfaces\SourceDeVerificationServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -278,6 +299,15 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, IndicateurDeGouvernanceRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, OptionDeReponseRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, EnqueteDeCollecteRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, ResultatCadreDeRendementRepository::class);
+
+        $this->app->bind(EloquentRepositoryInterface::class, SourceDeVerificationRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, ActionAMenerRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, RecommandationRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EvaluationDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, FormulaireDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, FondRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, SoumissionRepository::class);
 
         $this->app->bind(AbstractServiceInterface::class, BaseService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
@@ -350,7 +380,17 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OptionDeReponseServiceInterface::class, OptionDeReponseService::class);
         $this->app->bind(EnqueteDeCollecteServiceInterface::class, EnqueteDeCollecteService::class);
         $this->app->bind(IndicateurValueKeyServiceInterface::class, IndicateurValueKeyService::class);
+
+        $this->app->bind(ResultatCadreDeRendementServiceInterface::class, ResultatCadreDeRendementService::class);
         
+
+
+        $this->app->bind(SourceDeVerificationServiceInterface::class, SourceDeVerificationService::class);
+        $this->app->bind(SoumissionServiceInterface::class, SoumissionService::class);
+        $this->app->bind(EvaluationDeGouvernanceServiceInterface::class, EvaluationDeGouvernanceService::class);
+
+        $this->app->bind(FondServiceInterface::class, FondService::class);
+        $this->app->bind(FormulaireDeGouvernanceServiceInterface::class, FormulaireDeGouvernanceService::class);
     }
 
     /**

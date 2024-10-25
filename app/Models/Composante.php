@@ -169,6 +169,23 @@ class Composante extends Model
         return $this->morphMany(Commentaire::class, 'commentable');
     }
 
+
+
+    public function getConsommerAttribute($annee = null, $type = null)
+    {
+        // Sum 'comsommer' for the current composante's activites
+        $total = $this->activites->sum(function ($activite) {
+            return $activite->consommer;
+        });
+
+        // Recursively sum 'comsommer' for all souscomposantes
+        foreach ($this->souscomposantes as $souscomposante) {
+            $total += $souscomposante->consommer; // Recursive call
+        }
+
+        return $total;
+    }
+
     public function getTepAttribute()
     {
         $activites = $this->activites;

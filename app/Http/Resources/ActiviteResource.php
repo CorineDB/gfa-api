@@ -26,6 +26,7 @@ class ActiviteResource extends JsonResource
             "pret" => $this->pret,
             "position" => $this->position,
             "budgetNational" => $this->budgetNational,
+            "depenses" => $this->consommer,
             "description" => $this->description,
             "statut" => $this->statut,
             "tep" => $this->tep,
