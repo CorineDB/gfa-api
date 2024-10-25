@@ -85,18 +85,20 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
 
         try {
             
-            $principe = null;
+            /*$principe = null;
 
             if($attributs["type"]  == "factuel"){
                 $principe = app(CritereDeGouvernanceRepository::class)->findById($attributs['principeable_id']);
             }
             else if($attributs["type"] == "perception"){
                 $principe = app(PrincipeDeGouvernanceRepository::class)->findById($attributs['principeable_id']);
-            }
+            }*/
 
-            $indicateur = $principe->indicateurs_de_gouvernance()->create($attributs);
+            $indicateur = $this->repository->create($attributs);
 
-            $options = [];
+            //$indicateur = $principe->indicateurs_de_gouvernance()->create($attributs);
+
+            /*$options = [];
             
             unset($attributs["can_have_multiple_reponse"]);
 
@@ -116,7 +118,7 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
 
             $indicateur->options_de_reponse()->attach($options);
 
-            $indicateur->refresh();
+            $indicateur->refresh();*/
 
 
             DB::commit();
@@ -155,7 +157,11 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
             
             unset($attributs["can_have_multiple_reponse"]);
 
-            if($indicateur->type != $attributs["type"]){
+            $indicateur->fill($attributs)->save();
+
+            $indicateur->refresh();
+
+            /*if($indicateur->type != $attributs["type"]){
                     
                 $principe = null;
 
@@ -180,7 +186,7 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
                 //$indicateur = $indicateur->fresh();
             }
 
-            $options = [];
+            /*$options = [];
 
             foreach ($attributs["options_de_reponse"] as $key => $option_de_reponse) {
                 
@@ -195,7 +201,7 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
                 array_push($options, $option->id);
             }
 
-            $indicateur->options_de_reponse()->sync($options);
+            $indicateur->options_de_reponse()->sync($options);*/
 
             $indicateur->refresh();
 

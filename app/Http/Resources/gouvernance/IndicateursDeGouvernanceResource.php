@@ -19,7 +19,7 @@ class IndicateursDeGouvernanceResource extends JsonResource
             'nom'                       => $this->when($this->nom, $this->nom),
             'description'               => $this->when($this->description, $this->description),
             'type'                      => $this->when($this->type, $this->type),
-            'programmeId'               => $this->programme->secure_id
+            'programmeId'               => $this->programme ? $this->programme->secure_id : null
         ];
     }
 }

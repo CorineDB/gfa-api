@@ -17,7 +17,7 @@ class IndicateurDeGouvernance extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'description', 'type', 'can_have_multiple_reponse', 'principeable_id', 'principeable_type');
+    protected $fillable = array('nom', 'description', 'type', 'can_have_multiple_reponse');
 
     protected $attributes = ["can_have_multiple_reponse" => false];
 
@@ -60,11 +60,6 @@ class IndicateurDeGouvernance extends Model
     public function options_de_reponse()
     {
         return $this->belongsToMany(OptionDeReponse::class,'indicateur_options_de_reponse', 'indicateurId', 'optionId')->wherePivotNull('deleted_at');
-    }
-
-    public function principeable()
-    {
-        return $this->morphTo();
     }
 
     public function observations()

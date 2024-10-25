@@ -15,10 +15,10 @@ class CritereDeGouvernanceResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->secure_id,
-            'nom' => $this->nom,
-            'description' => $this->description,
-            'programmeId' => $this->programme->secure_id
+            'id'            => $this->secure_id,
+            'nom'           => $this->nom,
+            'description'   => $this->description,
+            'programmeId'   => $this->programme ? $this->programme->secure_id : null
         ];
     }
 }
