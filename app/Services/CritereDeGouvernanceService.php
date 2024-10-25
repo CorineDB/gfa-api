@@ -70,6 +70,9 @@ class CritereDeGouvernanceService extends BaseService implements CritereDeGouver
         DB::beginTransaction();
 
         try {
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             $critereDeGouvernance = $this->repository->create($attributs);
 

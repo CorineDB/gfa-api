@@ -32,8 +32,6 @@ class PrincipeDeGouvernance extends Model
                     'nom' => time() . '::' . $principe_de_gouvernance->nom
                 ]);
 
-                $principe_de_gouvernance->criteres_de_gouvernance()->delete();
-
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();

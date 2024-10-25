@@ -33,8 +33,6 @@ class TypeDeGouvernance extends Model
                     'nom' => time() . '::' . $type_de_gouvernance->nom
                 ]);
 
-                $type_de_gouvernance->principes_de_gouvernance()->delete();
-
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();

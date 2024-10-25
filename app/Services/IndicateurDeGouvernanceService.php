@@ -94,6 +94,10 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
                 $principe = app(PrincipeDeGouvernanceRepository::class)->findById($attributs['principeable_id']);
             }*/
 
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            
             $indicateur = $this->repository->create($attributs);
 
             //$indicateur = $principe->indicateurs_de_gouvernance()->create($attributs);

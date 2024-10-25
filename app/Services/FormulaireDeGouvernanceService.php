@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Repositories\FormulaireDeGouvernanceRepository;
+use App\Repositories\OptionDeReponseRepository;
+use App\Repositories\TypeDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\FormulaireDeGouvernanceServiceInterface;
 use Exception;
@@ -80,12 +82,35 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'created_by' => Auth::id()]);
             
             $formulaireDeGouvernance = $this->repository->create($attributs);
+
             if(isset($attributs['factuel']) && $attributs['factuel'] !== null){
-                dd($attributs['factuel']['options_de_reponse']);
-                $formulaireDeGouvernance->options_de_reponse()->attach($attributs['organisations']);
+
+                $options = [];
+
+                foreach ($attributs['factuel']["options_de_reponse"] as $key => $option_de_reponse) {
+                    
+                    $option = app(OptionDeReponseRepository::class)->findById($option_de_reponse['id']);
+
+                    if(!($option = app(OptionDeReponseRepository::class)->findById($option_de_reponse['id']))) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+
+                    array_push($options, ["{$option->id}" => $option_de_reponse['point']]);
+                }
+
+                $formulaireDeGouvernance->options_de_reponse()->attach($options);
+
+                foreach ($attributs['factuel']["types_de_gouvernance"] as $key => $type_de_gouvernance) {
+                    
+
+                    if(!($typeDeGouvernance = app(TypeDeGouvernanceRepository::class)->findById($type_de_gouvernance['id']))) throw new Exception( "Ce type de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+
+
+                }
+                /**
+                 * Check if type
+                 */
             }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
