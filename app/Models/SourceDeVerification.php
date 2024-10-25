@@ -28,4 +28,9 @@ class SourceDeVerification extends Model
     {
         return $this->hasMany(ReponseDeLaCollecte::class, 'sourceDeVerificationId');
     }
+
+    public function programme()
+    {
+        return $this->hasMany(Programme::class, 'programmeId');
+    }
 }

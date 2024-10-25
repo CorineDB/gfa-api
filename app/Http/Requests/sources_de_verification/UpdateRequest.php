@@ -1,12 +1,16 @@
 <?php
 
-namespace App\Http\Requests\option_de_reponse;
+namespace App\Http\Requests\sources_de_verification;
 
+use App\Models\CritereDeGouvernance;
+use App\Models\OptionDeReponse;
 use App\Models\Programme;
+use App\Models\SourceDeVerification;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +29,14 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
+        if(is_string($this->source_de_verification))
+        {
+            $this->source_de_verification = SourceDeVerification::findByKey($this->source_de_verification);
+        }
+
         return [
-            'libelle' => 'required|max:255|unique:options_de_reponse,libelle',
-            'description' => 'nullable|max:255'
+            'intitule'  => ['sometimes','max:255', Rule::unique('sources_de_verification', 'intitule')->ignore($this->source_de_verification)->whereNull('deleted_at')],
+            'description' => 'sometimes|nullable|max:255'
         ];
     }
 

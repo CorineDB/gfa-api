@@ -27,8 +27,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom' => 'required|max:255|unique:criteres_de_gouvernance,nom',
-            'description' => 'nullable|max:255',
-            'principeDeGouvernanceId'   => ['required', new HashValidatorRule(new PrincipeDeGouvernance())]
+            'description' => 'nullable|max:255'
         ];
     }
 

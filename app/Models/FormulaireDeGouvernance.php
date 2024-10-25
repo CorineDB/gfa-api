@@ -39,4 +39,14 @@ class FormulaireDeGouvernance extends Model
     {
         return $this->belongsToMany(OptionDeReponse::class,'formulaire_options_de_reponse', 'formulaireDeGouvernanceId', 'optionId')->wherePivotNull('deleted_at')->withPivot(["id", "point"]);
     }
+
+    public function programme()
+    {
+        return $this->hasMany(Programme::class, 'programmeId');
+    }
+
+    public function createdBy()
+    {
+        return $this->hasMany(User::class, 'created_by');
+    }
 }

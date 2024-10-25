@@ -39,17 +39,17 @@ class UpdateRequest extends FormRequest
             'nom'                       => ['sometimes', 'max:255', Rule::unique('indicateurs_de_gouvernance', 'nom')->ignore($this->indicateur_de_gouvernance)->whereNull('deleted_at')],
             'type'                      => 'sometimes|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description'               => 'sometimes|nullable|max:255',
-            'can_have_multiple_reponse' => 'sometimes|boolean',
+            /*'can_have_multiple_reponse' => 'sometimes|boolean',
             'options_de_reponse'        => ['sometimes', 'array', 'min:2'],
-            'options_de_reponse.*'      => ['required', 'distinct', new HashValidatorRule(new OptionDeReponse())]
+            'options_de_reponse.*'      => ['required', 'distinct', new HashValidatorRule(new OptionDeReponse())]*/
         ];
 
         // Conditionally apply validation based on 'type'
-        if ($this->type === 'perception') {
+        /*if ($this->type === 'perception') {
             $rules['principeable_id'] = ['required', new HashValidatorRule(new PrincipeDeGouvernance())];
         } elseif ($this->type === 'factuel') {
             $rules['principeable_id'] = ['required', new HashValidatorRule(new CritereDeGouvernance())];
-        }
+        }*/
 
         return $rules;
     }

@@ -40,7 +40,7 @@ class Soumission extends Model
         return $this->belongsTo(FormulaireDeGouvernance::class, 'formulaireDeGouvernanceId');
     }
 
-    public function submittedBy()
+    public function authoredBy()
     {
         return $this->belongsTo(User::class, 'submittedBy');
     }

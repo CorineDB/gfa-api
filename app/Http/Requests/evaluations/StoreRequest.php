@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Requests\principe_de_gouvernance;
+namespace App\Http\Requests\evaluations_de_gouvernance;
 
+use App\Models\Programme;
+use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -24,8 +26,12 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom' => 'required|max:255|unique:principes_de_gouvernance,nom',
-            'description' => 'nullable|max:255'
+            'intitule' => 'required|max:255|unique:evaluations,intitule',
+            'objectif_attendu' => 'required|integer|min:0',
+            'annee_exercice' => 'required|integer',
+            'description' => 'nullable|max:255',
+            'debut' => 'required|date|date_format:Y-m-d',
+            'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut'
         ];
     }
 
@@ -45,8 +51,8 @@ class StoreRequest extends FormRequest
             // Custom messages for the 'description' field
             'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
 
-            // Custom messages for the 'typeDeGouvernanceId' field
-            'typeDeGouvernanceId.required' => 'Le champ type de gouvernance est obligatoire.',
+            // Custom messages for the 'principeDeGouvernanceId' field
+            'principeDeGouvernanceId.required' => 'Le champ principe de gouvernance est obligatoire.',
         
         ];
     }

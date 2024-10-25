@@ -1,12 +1,16 @@
 <?php
 
-namespace App\Http\Requests\option_de_reponse;
+namespace App\Http\Requests\fonds;
 
+use App\Models\CritereDeGouvernance;
+use App\Models\OptionDeReponse;
 use App\Models\Programme;
+use App\Models\SourceDeVerification;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,9 +29,14 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
+        if(is_string($this->fond))
+        {
+            $this->fond = SourceDeVerification::findByKey($this->fond);
+        }
+
         return [
-            'libelle' => 'required|max:255|unique:options_de_reponse,libelle',
-            'description' => 'nullable|max:255'
+            'nom_du_fond'  => ['sometimes','max:255', Rule::unique('fonds', 'nom_du_fond')->ignore($this->fond)->whereNull('deleted_at')],
+            'fondDisponible' => 'sometimes|integer|min:0'
         ];
     }
 

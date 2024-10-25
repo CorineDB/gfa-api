@@ -1,7 +1,9 @@
 <?php
 
-namespace App\Http\Requests\principe_de_gouvernance;
+namespace App\Http\Requests\fonds;
 
+use App\Models\Programme;
+use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -24,8 +26,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom' => 'required|max:255|unique:principes_de_gouvernance,nom',
-            'description' => 'nullable|max:255'
+            'nom_du_fond' => 'required|max:255|unique:fonds,nom_du_fond',
+            'fondDisponible' => 'required|integer|min:0'
         ];
     }
 
@@ -37,17 +39,16 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            // Custom messages for the 'nom' field
-            'nom.required'      => 'Le champ nom est obligatoire.',
-            'nom.max'           => 'Le nom ne doit pas dépasser 255 caractères.',
-            'nom.unique'        => 'Ce nom est déjà utilisé dans les résultats.',
+            // Custom messages for the 'libelle' field
+            'libelle.required'      => 'Le champ libelle est obligatoire.',
+            'libelle.max'           => 'Le libelle ne doit pas dépasser 255 caractères.',
+            'libelle.unique'        => 'Ce libelle est déjà utilisé dans les résultats.',
 
             // Custom messages for the 'description' field
             'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
 
-            // Custom messages for the 'typeDeGouvernanceId' field
-            'typeDeGouvernanceId.required' => 'Le champ type de gouvernance est obligatoire.',
-        
+            // Custom messages for the 'programmeId' field
+            'programmeId.required' => 'Le champ programme est obligatoire.',
         ];
     }
 }

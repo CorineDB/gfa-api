@@ -1,10 +1,15 @@
 <?php
 
-namespace App\Http\Requests\principe_de_gouvernance;
+namespace App\Http\Requests\evaluations;
 
+use App\Models\Enquete;
+use App\Models\EvaluationDeGouvernance;
+use App\Models\Programme;
+use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,9 +28,18 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
+        if(is_string($this->evaluation))
+        {
+            $this->evaluation = EvaluationDeGouvernance::findByKey($this->evaluation);
+        }
+
         return [
-            'nom' => 'required|max:255|unique:principes_de_gouvernance,nom',
-            'description' => 'nullable|max:255'
+            'intitule'  => ['sometimes','max:255', Rule::unique('evaluations', 'intitule')->ignore($this->evaluation)->whereNull('deleted_at')],
+            'objectif_attendu' => 'sometimes|integer|min:0',
+            'annee_exercice' => 'sometimes|integer',
+            'description' => 'nullable|max:255',
+            'debut' => 'sometimes|date|date_format:Y-m-d',
+            'fin' => 'sometimes|date|date_format:Y-m-d|after_or_equal:debut'
         ];
     }
 
@@ -45,9 +59,8 @@ class StoreRequest extends FormRequest
             // Custom messages for the 'description' field
             'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
 
-            // Custom messages for the 'typeDeGouvernanceId' field
-            'typeDeGouvernanceId.required' => 'Le champ type de gouvernance est obligatoire.',
-        
+            // Custom messages for the 'principeDeGouvernanceId' field
+            'principeDeGouvernanceId.required' => 'Le champ principe de gouvernance est obligatoire.',        
         ];
     }
 }
