@@ -23,8 +23,6 @@ class IndicateurDeGouvernance extends Model
 
     protected $casts = ["can_have_multiple_reponse" => 'boolean'];
 
-    protected $with = ['options_de_reponse'];
-
     /**
      * The attributes that should be appended to the model's array form.
      *

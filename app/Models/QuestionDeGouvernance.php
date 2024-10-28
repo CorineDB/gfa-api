@@ -19,7 +19,7 @@ class QuestionDeGouvernance extends Model
 
     protected $casts = [];
 
-    protected $with = ["indicateurDeGouvernance"];
+    protected $with = ["indicateur_de_gouvernance"];
 
     protected static function boot()
     {
@@ -48,7 +48,7 @@ class QuestionDeGouvernance extends Model
 
     public function reponses()
     {
-        return $this->hasMany(ReponseDeLaCollecte::class, 'programmeId');
+        return $this->hasMany(ReponseDeLaCollecte::class, 'questionId');
     }
 
 }

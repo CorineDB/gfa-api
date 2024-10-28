@@ -450,7 +450,7 @@ class Programme extends Model
         return $this->hasMany(OptionDeReponse::class, 'programmeId');
     }
 
-    public function formualaires_de_gouvernance()
+    public function formulaires_de_gouvernance()
     {
         return $this->hasMany(FormulaireDeGouvernance::class, 'programmeId');
     }

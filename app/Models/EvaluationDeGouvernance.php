@@ -40,6 +40,11 @@ class EvaluationDeGouvernance extends Model
         return $this->belongsToMany(Organisation::class,'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants']);
     }
 
+    public function formulaires_de_gouvernance()
+    {
+        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at');
+    }
+
     public function recommandations()
     {
         return $this->morphMany(Recommandation::class, "recommandable");
