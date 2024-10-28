@@ -18,17 +18,16 @@ class SoumissionsResource extends JsonResource
         //'submittedBy', 'evaluationId', 'formulaireDeGouvernanceId', 'organisationId'
         return [
             'id' => $this->secure_id,
-            'libelle' => $this->libelle,
-            'description' => $this->description,
             'type' => $this->type,
             'statut' => $this->statut,
             'comite_members' => $this->comite_members,
             'commentaire' => $this->commentaire,
             'submitted_at' => Carbon::parse($this->submitted_at)->format("Y-m-d"),
-            'submittedBy' => $this->authoredBy->secure_id,
+            'submittedBy' => $this->authoredBy ? $this->authoredBy->secure_id : null,
             'formulaireDeGouvernanceId' => $this->formulaireDeGouvernance->secure_id,
-            'evaluationId' => $this->evaluation->secure_id,
+            'evaluationId' => $this->evaluation_de_gouvernance->secure_id,
             'programmeId' => $this->programme->secure_id,
+            'reponses_de_la_collecte' => $this->reponses_de_la_collecte ? $this->reponses_de_la_collecte : [],
             'created_at' => $this->created_at
         ];
     }

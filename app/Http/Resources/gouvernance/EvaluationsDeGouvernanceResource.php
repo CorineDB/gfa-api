@@ -24,7 +24,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'annee_exercice' => $this->annee_exercice,
             'statut' => $this->statut,
             'programmeId' => $this->programme->secure_id,
-            'created_at' => $this->created_at
+            'created_at' => $this->created_at,
+            'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance)
         ];
     }
 }

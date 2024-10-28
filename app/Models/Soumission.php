@@ -64,4 +64,9 @@ class Soumission extends Model
     {
         return $this->morphMany(ActionAMener::class, "actionable");
     }
+
+    public function reponses_de_la_collecte()
+    {
+        return $this->hasMany(ReponseDeLaCollecte::class, 'soumissionId');
+    }
 }

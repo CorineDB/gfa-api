@@ -26,6 +26,7 @@ class FormulairesDeGouvernanceResource extends JsonResource
             'created_by' => $this->createdBy->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'options_de_reponse' => $this->options_de_reponse,
             'categories_de_gouvernance' => CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance->load([
                 'questions_de_gouvernance' => function($query) use ($formulaireDeGouvernanceId) {
                     $query->when($formulaireDeGouvernanceId, function($q) use ($formulaireDeGouvernanceId) {
