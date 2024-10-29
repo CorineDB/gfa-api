@@ -234,13 +234,62 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         }
     }
 
-    private function analyse_donnees_factuelle($enqueteId, $organisationId)
+    private function depouillement_interpretation($soumissionId)
     {
-        // Initialize variables for summing the perception indices and counting the principles
-        $totalIndiceFactuel = 0;
-        $nbreDeTypes = 0;
-        
         $programme = auth()->user()->programme;
+
+        if(is_string($soumissionId)){
+
+            if(!(($soumission = app(EvaluationDeGouvernanceRepository::class)->findById($soumissionId)) && $soumission->programmeId == $programme->id))
+            {
+                throw new Exception( "Soumission introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+            }
+        }
+        else $soumission = $soumissionId;
+
+        $reponsesDeLaCollecte = $soumission->reponses_de_la_collecte;
+
+        $soumission->formulaireDeGouvernance->categories_de_gouvernance
+        ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
+            $nbrePrincipe = 0;
+            $totalScoreFactuel = 0;
+            $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
+                // Calculate score_factuel for each principle
+                $nbreIndicateurs = 0;//$principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
+                $totalNote = 0;//$principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
+    
+
+                $principle->criteres_de_gouvernance->each(function($critere) use(&$nbreIndicateurs, &$totalNote){ // Iterate over each principle
+                    // Calculate score_factuel for each principle
+                    $nbreIndicateurs+= $critere->indicateurs_de_gouvernance->count(); // Count the indicators
+                    $totalNote+= $critere->indicateurs_de_gouvernance->sum('note'); // Sum the notes
+                });
+
+                // Calculate score_factuel
+                if ($nbreIndicateurs > 0 && $totalNote > 0) {
+
+                    $principle->score_factuel = $totalNote / $nbreIndicateurs;
+                } else {
+                    $principle->score_factuel = 0; // Handle case with no indicators
+                }
+
+                $totalScoreFactuel+=$principle->score_factuel;
+
+                $nbrePrincipe++;
+            });
+
+            // Calculate indice_factuel
+            if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
+
+                $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
+            } else {
+                $type->indice_factuel = 0; // Handle case with no indicators
+            }
+
+            // Add the calculated factuel index to the total sum
+            $totalIndiceFactuel += $type->indice_factuel;
+            $nbreDeTypes++; // Count the number of governance principles
+        });
 
         $types = app(TypeDeGouvernanceRepository::class)->getInstance()->where("programmeId", $programme->id)
             ->get()
