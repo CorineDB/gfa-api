@@ -83,7 +83,7 @@ class PrincipeDeGouvernance extends Model
         $categories_de_gouvernance = $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
 
         if($annee_exercice){
-            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
                 $query->where('annee_exercice', $annee_exercice);
             });
         }
@@ -112,7 +112,7 @@ class PrincipeDeGouvernance extends Model
         );
 
         if($annee_exercice){
-            $sous_categories = $sous_categories->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+            $sous_categories = $sous_categories->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
                 $query->where('annee_exercice', $annee_exercice);
             });
         }
@@ -155,7 +155,7 @@ class PrincipeDeGouvernance extends Model
         )->where("type", "indicateur");
 
         if($annee_exercice){
-            $indicateurs_de_gouvernance = $indicateurs_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+            $indicateurs_de_gouvernance = $indicateurs_de_gouvernance->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
                 $query->where('annee_exercice', $annee_exercice);
             });
         }
