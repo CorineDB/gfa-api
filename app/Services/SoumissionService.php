@@ -3,7 +3,11 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\SoumissionsResource;
+use App\Models\QuestionDeGouvernance;
+use App\Repositories\FormulaireDeGouvernanceRepository;
 use App\Repositories\OptionDeReponseRepository;
+use App\Repositories\OrganisationRepository;
+use App\Repositories\QuestionDeGouvernanceRepository;
 use App\Repositories\SoumissionRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\SoumissionServiceInterface;
@@ -81,6 +85,20 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $programme = Auth::user()->programme;
 
+            if(isset($attributs['formulaireDeGouvernanceId'])){
+                if(!$formulaireDeGouvernance = app(FormulaireDeGouvernanceRepository::class)->findById($attributs['formulaireDeGouvernanceId'])->where("programmeId", $programme->id)->first())
+                {
+                    throw new Exception( "Formulaire de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                }
+            }
+
+            if(isset($attributs['organisationId'])){
+                if(!$organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])->where("programmeId", $programme->id)->first())
+                {
+                    throw new Exception( "Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                }
+            }
+
             $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'submitted_at' => now()]);
             
             $soumission = $this->repository->create($attributs);
@@ -94,17 +112,32 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             if($attributs['response_data']['factuel']){
                 foreach ($attributs['response_data']['factuel'] as $key => $item) {
 
+                    if(!($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first()))
+                    {
+                        throw new Exception( "Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                    }
+
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
 
-                    if(!$option ) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
-
-                    //$options[$option->id] = ['point' => $option_de_reponse['point']];
+                    if(!$option) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                     
-                    $soumission->reponses_de_la_collecte()->create(array_merge($item, ['questionId' => $item['indicateurDeGouvernanceId'], 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                    $soumission->reponses_de_la_collecte()->create(array_merge($item, ['type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                 }
             }
             else if($attributs['response_data']['perception']){
+                foreach ($attributs['response_data']['perception'] as $key => $item) {
 
+                    if(!($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first()))
+                    {
+                        throw new Exception( "Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                    }
+
+                    $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
+
+                    if(!$option) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                    
+                    $soumission->reponses_de_la_collecte()->create(array_merge($item, ['type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                }
             }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
