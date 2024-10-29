@@ -3,10 +3,8 @@
 namespace App\Http\Requests\evaluations_de_gouvernance;
 
 use App\Models\EvaluationDeGouvernance;
-use App\Models\Formulaire;
 use App\Models\FormulaireDeGouvernance;
 use App\Models\Organisation;
-use App\Models\IndicateurDeGouvernance;
 use App\Models\OptionDeReponse;
 use App\Models\QuestionDeGouvernance;
 use App\Models\SourceDeVerification;
@@ -55,14 +53,14 @@ class SoumissionRequest extends FormRequest
 
                 }
             ],
+            'comite_members'                                        => ['sometimes', 'array', 'min:1'],
+            'comite_members.*.nom'                                  => ['sometimes', 'string'],
+            'comite_members.*.prenom'                               => ['sometimes', 'string'],
+            'comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
 
             'response_data'                                         => ['required', 'array', 'min:1'],
             'response_data.factuel'                                 => [Rule::requiredIf(!request()->input('response_data.perception')), 'array', 'min:1'],
-            'response_data.factuel.*.comite_members'                => ['sometimes', 'array', 'min:1'],
-            'response_data.factuel.*.comite_members.*.nom'          => ['sometimes', 'string'],
-            'response_data.factuel.*.comite_members.*.prenom'       => ['sometimes', 'string'],
-            'response_data.factuel.*.comite_members.*.contact'       => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
-
+            
             'response_data.factuel.*.questionId'      => ['sometimes', Rule::requiredIf(!request()->input('response_data.perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {

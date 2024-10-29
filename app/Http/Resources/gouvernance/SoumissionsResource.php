@@ -26,9 +26,10 @@ class SoumissionsResource extends JsonResource
             'submittedBy' => $this->authoredBy ? $this->authoredBy->secure_id : null,
             'formulaireDeGouvernanceId' => $this->formulaireDeGouvernance->secure_id,
             'evaluationId' => $this->evaluation_de_gouvernance->secure_id,
+            'organisationId' => $this->organisation->secure_id,
             'programmeId' => $this->programme->secure_id,
-            'reponses_de_la_collecte' => $this->reponses_de_la_collecte ? $this->reponses_de_la_collecte : [],
-            'created_at' => $this->created_at
+            'reponses_de_la_collecte' => $this->reponses_de_la_collecte ? ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte) : [],
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
     }
 }
