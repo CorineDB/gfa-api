@@ -18,11 +18,22 @@ class CategoriesDeGouvernanceResource extends JsonResource
         return [
             'id' => $this->secure_id,
             'nom' => $this->categorieable->nom,
-            'categorieDeGouvernanceParent' => $this->categorieable->categorieDeGouvernanceParent,
+            /*'categorieDeGouvernanceParent' => $this->when($this->categorieDeGouvernanceParent, function(){
+                // Unset multiple relations individually
+                $this->categorieDeGouvernanceParent->unsetRelation('categorieable');
+                return [
+                    'id' => $this->categorieDeGouvernanceParent->secure_id,
+                    'nom' => $this->categorieDeGouvernanceParent->categorieable->nom,
+                ];
+            }),*/
+            'categorieDeGouvernanceId' => optional($this->categorieDeGouvernanceParent)->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => $this->created_at,
-            'questions_de_gouvernance' => $this->whenLoaded('questions_de_gouvernance', QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance))
+            'categories_de_gouvernance' => $this->when($this->sousCategoriesDeGouvernance->count(), CategoriesDeGouvernanceResource::collection($this->sousCategoriesDeGouvernance)),
 
+            'questions_de_gouvernance' => $this->when(!$this->sousCategoriesDeGouvernance->count(), QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance))
+
+            //'questions_de_gouvernance' => QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance)
         ];
     }
 }

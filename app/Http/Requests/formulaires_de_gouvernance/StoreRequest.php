@@ -8,6 +8,7 @@ use App\Models\OptionDeReponse;
 use App\Models\PrincipeDeGouvernance;
 use Illuminate\Validation\Rule;
 use App\Models\TypeDeGouvernance;
+use App\Rules\DistinctAttributeRule;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -32,7 +33,11 @@ class StoreRequest extends FormRequest
     {
         return [
             'libelle'          => 'required|max:255|unique:formulaires_de_gouvernance,libelle',
-            'annee_exercice'    => 'required|integer|unique:formulaires_de_gouvernance,annee_exercice',
+            'annee_exercice'   => ['required', 'integer', Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
+                ->where(function ($query) {
+                    return $query->where('type', request()->input('type'));
+                })
+            ],
             'description'       => 'nullable|max:255',
             'type'             => 'required|string|in:factuel,perception',
             'lien'             => 'nullable|string',
@@ -48,11 +53,11 @@ class StoreRequest extends FormRequest
             'factuel.types_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:1"],
             'factuel.types_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new TypeDeGouvernance())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance' => ["required", "array", "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernance())],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new PrincipeDeGouvernance())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance' => ["required", "array", "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new CritereDeGouvernance())],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new CritereDeGouvernance())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["required", /* "distinct",  */new HashValidatorRule(new IndicateurDeGouvernance())],
 
             'perception' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:2"],
             //'perception' => ["required", Rule::requiredIf(request()->input('type') == 'perception')],

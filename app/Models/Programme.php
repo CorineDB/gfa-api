@@ -460,6 +460,11 @@ class Programme extends Model
         return $this->hasMany(EvaluationDeGouvernance::class, 'programmeId');
     }
 
+    public function soumissions()
+    {
+        return $this->hasMany(Soumission::class, 'programmeId');
+    }
+
     public function optionsDeReponse()
     {
         return $this->hasMany(OptionDeReponse::class, 'programmeId');

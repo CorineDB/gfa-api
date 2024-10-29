@@ -15,7 +15,7 @@ class Soumission extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('type', 'commentaire', 'submitted_at', 'statut', 'comite_members', 'submittedBy', 'evaluationId', 'formulaireDeGouvernanceId', 'organisationId', 'programmeId');
+    protected $fillable = array('type', 'commentaire', 'submitted_at', 'statut', 'comite_members', 'sexe', 'age', 'categorieDeParticipant', 'submittedBy', 'evaluationId', 'formulaireDeGouvernanceId', 'organisationId', 'programmeId');
 
     protected $casts = [
         "comite_members" => "json",
@@ -63,5 +63,10 @@ class Soumission extends Model
     public function actions_a_mener()
     {
         return $this->morphMany(ActionAMener::class, "actionable");
+    }
+
+    public function reponses_de_la_collecte()
+    {
+        return $this->hasMany(ReponseDeLaCollecte::class, 'soumissionId');
     }
 }

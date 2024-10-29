@@ -15,7 +15,6 @@ class FormulairesDeGouvernanceResource extends JsonResource
      */
     public function toArray($request)
     {
-        $formulaireDeGouvernanceId=$this->id;
         return [
             'id' => $this->secure_id,
             'libelle' => $this->libelle,
@@ -26,6 +25,9 @@ class FormulairesDeGouvernanceResource extends JsonResource
             'created_by' => $this->createdBy->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'options_de_reponse' => $this->whenLoaded('options_de_reponse', $this->options_de_reponse),
+            'categories_de_gouvernance' => $this->whenLoaded('categories_de_gouvernance', CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance->load('questions_de_gouvernance'))),
+            /*
             'categories_de_gouvernance' => CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance->load([
                 'questions_de_gouvernance' => function($query) use ($formulaireDeGouvernanceId) {
                     $query->when($formulaireDeGouvernanceId, function($q) use ($formulaireDeGouvernanceId) {
@@ -33,7 +35,7 @@ class FormulairesDeGouvernanceResource extends JsonResource
                     });
                 }
             ])),
-            
+            */
             //'categories_de_gouvernance' => $this->categories_de_gouvernance->load(['questions_de_gouvernance'])//QuestionsDeGouvernanceResource::collection($this->questions_operationnelle)
         ];
     }

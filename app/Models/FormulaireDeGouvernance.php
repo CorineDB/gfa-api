@@ -10,6 +10,7 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 class FormulaireDeGouvernance extends Model
 {
     protected $table = 'formulaires_de_gouvernance';
+    
     public $timestamps = true;
 
     use HasSecureIds, HasFactory ;
@@ -19,7 +20,8 @@ class FormulaireDeGouvernance extends Model
     protected $fillable = array('libelle', 'description', 'type', 'lien', 'created_by', 'programmeId', 'annee_exercice');
 
     protected $casts = [];
-    protected $with = ['questions_de_gouvernance'];
+
+    protected $with = [];
 
     protected static function boot()
     {
@@ -27,6 +29,11 @@ class FormulaireDeGouvernance extends Model
     }
 
     public function categories_de_gouvernance()
+    {
+        return $this->hasMany(CategorieDeGouvernance::class, 'formulaireDeGouvernanceId');
+    }
+
+    public function categorie_de_gouvernance()
     {
         return $this->belongsToMany(CategorieDeGouvernance::class, 'questions_de_gouvernance', 'formulaireDeGouvernanceId', 'categorieDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(['id', 'type', 'indicateurDeGouvernanceId', 'programmeId']);
     }

@@ -15,7 +15,7 @@ class CategorieDeGouvernance extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('categorieable_id', 'categorieable_type', 'categorieDeGouvernanceId', 'programmeId');
+    protected $fillable = array('categorieable_id', 'categorieable_type', 'categorieDeGouvernanceId', 'formulaireDeGouvernanceId', 'programmeId');
 
     protected $casts = [];
 
@@ -44,6 +44,11 @@ class CategorieDeGouvernance extends Model
     public function categorieable()
     {
         return $this->morphTo();
+    }
+
+    public function formulaire_de_gouvernance()
+    {
+        return $this->belongsTo(FormulaireDeGouvernance::class, 'formulaireDeGouvernanceId');
     }
 
     public function formulaires_de_gouvernance()
