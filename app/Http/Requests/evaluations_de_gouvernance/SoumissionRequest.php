@@ -44,16 +44,17 @@ class SoumissionRequest extends FormRequest
         return [
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
-                
-                // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
-                $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
-                ->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
-                ->first();
-                
-                if(!$formulaire) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
+                    // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
+                    $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
+                                        ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
+                                        ->first();
 
-                $this->formulaireCache = $formulaire;
-            }],
+                    if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
+                    
+                    $this->formulaireCache = $formulaire;
+
+                }
+            ],
 
             'response_data'                                         => ['required', 'array', 'min:1'],
             'response_data.factuel'                                 => [Rule::requiredIf(!request()->input('response_data.perception')), 'array', 'min:1'],
@@ -65,10 +66,13 @@ class SoumissionRequest extends FormRequest
             'response_data.factuel.*.questionId'      => ['sometimes', Rule::requiredIf(!request()->input('response_data.perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {
-                    $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($value)->exists();
-                    if (!$question) {
-                        // Fail validation if no response options are available
-                        $fail("Cet Indicateur n'existe pas.");
+                    
+                    if($this->formulaireCache){
+                        $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($value)->exists();
+                        if (!$question) {
+                            // Fail validation if no response options are available
+                            $fail("Cet Indicateur n'existe pas.");
+                        }
                     }
 
                     /*$this->indicateurCache = $indicateur;
@@ -86,8 +90,10 @@ class SoumissionRequest extends FormRequest
                  * 
                  * If the provided optionDeReponseId is not valid, fail the validation
                  */
-                if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
-                    $fail('The selected option is invalid for the given formulaire.');
+                if($this->formulaireCache){
+                    if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
+                        $fail('The selected option is invalid for the given formulaire.');
+                    }
                 }
             }],
             'response_data.factuel.*.sourceDeVerificationId'        => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerification')), 'distinct', new HashValidatorRule(new SourceDeVerification())], 

@@ -93,15 +93,23 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             }
 
             if(isset($attributs['organisationId'])){
-                if(!$organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])->where("programmeId", $programme->id)->first())
+                if(!$organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])->whereHas("user", function($query) use($programme) {
+                    $query->where("programmeId", $programme->id);
+                })->first())
                 {
                     throw new Exception( "Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
             }
+            else if(Auth::user()->hasRole('organisation')){
+                $organisation = Auth::user()->profilable;
+            }
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'submitted_at' => now()]);
-            
-            $soumission = $this->repository->create($attributs);
+
+            if(!($soumission = $this->repository->getInstance()->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)));
+            {
+                $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+                $soumission = $this->repository->create($attributs);
+            }            
 
             $soumission->refresh();
 
@@ -120,8 +128,13 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
 
                     if(!$option) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
-                    
-                    $soumission->reponses_de_la_collecte()->create(array_merge($item, ['type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+
+                    if(!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())){
+                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                    }
+                    else{
+                        $reponseDeLaCollecte->fill(array_merge($item, ['type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                    }
                 }
             }
             else if($attributs['response_data']['perception']){
