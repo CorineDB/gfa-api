@@ -4,12 +4,14 @@ namespace App\Services;
 
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Models\FormulaireDeGouvernance;
+use App\Models\Programme;
 use App\Models\QuestionDeGouvernance;
 use App\Models\Soumission;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\FormulaireDeGouvernanceRepository;
 use App\Repositories\OptionDeReponseRepository;
 use App\Repositories\OrganisationRepository;
+use App\Repositories\ProgrammeRepository;
 use App\Repositories\QuestionDeGouvernanceRepository;
 use App\Repositories\SoumissionRepository;
 use Core\Services\Contracts\BaseService;
@@ -88,7 +90,12 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
         try {
 
-            $programme = Auth::user()->programme;
+            if(isset($attributs['programmeId']) && empty($attributs['programmeId'])){
+                $programme = $evaluationDeGouvernance = app(ProgrammeRepository::class)->findById($attributs['programmeId']);
+            }
+            else{
+                $programme = Auth::user()->programme;
+            }
 
             if(isset($attributs['evaluationId'])){
                 if(!(($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId'])) && $evaluationDeGouvernance->programmeId == $programme->id))
@@ -122,7 +129,15 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             if(($soumission = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first()) == null)
             {
                 $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+
                 $soumission = $this->repository->create($attributs);
+            }
+            else{
+                $soumission->fill($attributs);
+                $soumission->save();
+                if($soumission->statut){
+                    return response()->json(['statut' => 'success', 'message' => "La soumission a déjà été validée.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                }
             }
 
             $soumission->refresh();
@@ -132,6 +147,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             $soumission->save();
 
             if($attributs['response_data']['factuel']){
+                $soumission->fill($attributs['response_data']['factuel']);
+                $soumission->save();
                 foreach ($attributs['response_data']['factuel'] as $key => $item) {
 
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
@@ -162,6 +179,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 }
             }
             else if($attributs['response_data']['perception']){
+                $soumission->fill($attributs['response_data']['perception']);
+                $soumission->save();
                 foreach ($attributs['response_data']['perception'] as $key => $item) {
 
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
@@ -181,6 +200,31 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->fill(array_merge($item, ['type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
+                }
+            }
+
+            if(($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)){
+
+                $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function($query) use ($soumission) {
+                    $query->where(function($query){
+                        $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
+                    });
+
+                    //$query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
+
+                    // Conditionally apply whereHas('preuves_de_verification') if formulaireDeGouvernance type is 'factuel'
+                    if ($soumission->formulaireDeGouvernance->type == 'factuel') {
+                        $query->whereHas('preuves_de_verification');
+                    }
+
+                })->count();
+
+                if($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()){
+                    $soumission->submitted_at = now();
+                    $soumission->submittedBy  = auth()->id();
+                    $soumission->statut       = true;
+    
+                    $soumission->save();
                 }
             }
 

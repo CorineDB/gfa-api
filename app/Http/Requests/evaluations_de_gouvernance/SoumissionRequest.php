@@ -6,6 +6,7 @@ use App\Models\EvaluationDeGouvernance;
 use App\Models\FormulaireDeGouvernance;
 use App\Models\Organisation;
 use App\Models\OptionDeReponse;
+use App\Models\Programme;
 use App\Models\QuestionDeGouvernance;
 use App\Models\SourceDeVerification;
 use App\Rules\HashValidatorRule;
@@ -14,7 +15,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SoumissionRequest extends FormRequest
 {
-    protected $indicateurCache = null;
     protected $formulaireCache = null;
 
     /**
@@ -24,6 +24,11 @@ class SoumissionRequest extends FormRequest
      */
     public function authorize()
     {
+        if(is_string($this->evaluation_de_gouvernance))
+        {
+            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
+        }
+
         return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
     }
 
@@ -34,11 +39,6 @@ class SoumissionRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->evaluation_de_gouvernance))
-        {
-            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
-        }
-
         return [
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
@@ -51,16 +51,21 @@ class SoumissionRequest extends FormRequest
                     
                     $this->formulaireCache = $formulaire;
 
+                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisationId', request()->input('organisationId') ?? auth()->user()->profileable->id)->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+                        $fail('La soumission a déjà été validée.');
+                    }
+
                 }
             ],
-            'comite_members'                                        => ['sometimes', 'array', 'min:1'],
-            'comite_members.*.nom'                                  => ['sometimes', 'string'],
-            'comite_members.*.prenom'                               => ['sometimes', 'string'],
-            'comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
 
             'response_data'                                         => ['required', 'array', 'min:1'],
             'response_data.factuel'                                 => [Rule::requiredIf(!request()->input('response_data.perception')), 'array', 'min:1'],
             
+            'response_data.factuel.comite_members'                                        => ['sometimes', 'array', 'min:1'],
+            'response_data.factuel.comite_members.*.nom'                                  => ['sometimes', 'string'],
+            'response_data.factuel.comite_members.*.prenom'                               => ['sometimes', 'string'],
+            'response_data.factuel.comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
+
             'response_data.factuel.*.questionId'                    => ['sometimes', Rule::requiredIf(!request()->input('response_data.perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {
@@ -100,12 +105,12 @@ class SoumissionRequest extends FormRequest
             'response_data.factuel.*.preuves.*'                     => ['distinct', "file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20000', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20000"],
 
             'response_data.perception'                              => [Rule::requiredIf(!request()->input('response_data.factuel')), 'array', 'min:1'],
-            'response_data.perception.questionId'                   => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
-            'response_data.perception.sexe'                          => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:masculin,feminin'],
+            'response_data.perception.categorieDeParticipant'       => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
+            'response_data.perception.sexe'                         => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:masculin,feminin'],
             'response_data.perception.age'                          => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:<35,>35'],
 
             'response_data.perception.*.questionId'      => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'distinct',
-                new HashValidatorRule(new QuestionDeGouvernance()), 
+                new HashValidatorRule(new QuestionDeGouvernance()),
                 function($attribute, $value, $fail) {
                     $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "question_operationnelle")->findByKey($value)->exists();
                     if (!$question) {
@@ -134,7 +139,7 @@ class SoumissionRequest extends FormRequest
                 }
             }],
             
-            'response_data.perception.commentaire'                => ['nullable', 'string', 'max:255'],
+            'response_data.perception.commentaire'                => ['nullable', Rule::requiredIf(!request()->input('response_data.factuel')), 'string', 'max:255'],
         ];
     }
 

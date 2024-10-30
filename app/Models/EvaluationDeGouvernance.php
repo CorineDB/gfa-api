@@ -18,7 +18,7 @@ class EvaluationDeGouvernance extends Model
 
     protected $fillable = array('intitule', 'objectif_attendu', 'annee_exercice', 'description', 'debut', 'fin', 'statut', 'programmeId');
 
-    protected $casts = ['statut'  => 'boolean', 'debut'  => 'datetime', 'fin'  => 'datetime', 'annee_exercice' => 'integer', 'objectif_attendu' => 'integer'];
+    protected $casts = ['statut'  => 'integer', 'debut'  => 'datetime', 'fin'  => 'datetime', 'annee_exercice' => 'integer', 'objectif_attendu' => 'integer'];
 
     protected static function boot()
     {

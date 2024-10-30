@@ -6,6 +6,7 @@ use App\Models\EvaluationDeGouvernance;
 use App\Models\FormulaireDeGouvernance;
 use App\Models\Organisation;
 use App\Models\OptionDeReponse;
+use App\Models\Programme;
 use App\Models\QuestionDeGouvernance;
 use App\Models\SourceDeVerification;
 use App\Rules\HashValidatorRule;
@@ -14,7 +15,6 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class SoumissionValidationRequest extends FormRequest
 {
-    protected $indicateurCache = null;
     protected $formulaireCache = null;
 
     /**
@@ -24,7 +24,12 @@ class SoumissionValidationRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
+        if(is_string($this->evaluation_de_gouvernance))
+        {
+            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
+        }
+
+        return (!auth()->check() || request()->user()->hasRole("unitee-de-gestion")) && $this->evaluation_de_gouvernance->statut;
     }
 
     /**
@@ -34,12 +39,8 @@ class SoumissionValidationRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->evaluation_de_gouvernance))
-        {
-            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
-        }
-
         return [
+            'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
@@ -51,19 +52,25 @@ class SoumissionValidationRequest extends FormRequest
                     
                     $this->formulaireCache = $formulaire;
 
+                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisationId', request()->input('organisationId') ?? auth()->user()->profileable->id)->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+                        $fail('La soumission a déjà été validée.');
+                    }
+
                 }
             ],
-            'comite_members'                                        => ['required', 'array', 'min:1'],
-            'comite_members.*.nom'                                  => ['required', 'string'],
-            'comite_members.*.prenom'                               => ['required', 'string'],
-            'comite_members.*.contact'                              => ['required', 'distinct', 'numeric','digits_between:8,24'],
 
             'response_data'                                         => ['required', 'array', 'min:1'],
             'response_data.factuel'                                 => [Rule::requiredIf(!request()->input('response_data.perception')), 'array', function($attribute, $value, $fail) {
-                if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
-                    $fail("Veuillez remplir tout le formulaire.");
-                }}],
+                    if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
+                        $fail("Veuillez remplir tout le formulaire.");
+                    }
+                }
+            ],
             
+            'response_data.factuel.comite_members'                                        => ['required', 'array', 'min:1'],
+            'response_data.factuel.comite_members.*.nom'                                  => ['required', 'string'],
+            'response_data.factuel.comite_members.*.prenom'                               => ['required', 'string'],
+            'response_data.factuel.comite_members.*.contact'                              => ['required', 'distinct', 'numeric','digits_between:8,24'],
             'response_data.factuel.*.questionId'      => [Rule::requiredIf(!request()->input('response_data.perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()),
                 function($attribute, $value, $fail) {
@@ -108,7 +115,7 @@ class SoumissionValidationRequest extends FormRequest
                     }
                 }
             ],
-            'response_data.perception.questionId'                   => [Rule::requiredIf(!request()->input('response_data.factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
+            'response_data.perception.categorieDeParticipant'                   => [Rule::requiredIf(!request()->input('response_data.factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
             'response_data.perception.sexe'                         => [Rule::requiredIf(!request()->input('response_data.factuel')), 'in:masculin,feminin'],
             'response_data.perception.age'                          => [Rule::requiredIf(!request()->input('response_data.factuel')), 'in:<35,>35'],
 
@@ -131,7 +138,7 @@ class SoumissionValidationRequest extends FormRequest
                 }
             ],
 
-            'response_data.perception.*.optionDeReponseId'   => [ Rule::requiredIf(!request()->input('response_data.factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'response_data.perception.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('response_data.factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -142,7 +149,7 @@ class SoumissionValidationRequest extends FormRequest
                 }
             }],
             
-            'response_data.perception.commentaire'                => ['nullable', 'string', 'max:255'],
+            'response_data.perception.commentaire'                => [Rule::requiredIf(!request()->input('response_data.factuel')), 'string'],
         ];
     }
 

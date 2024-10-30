@@ -17,19 +17,24 @@ class SoumissionsResource extends JsonResource
     {
         //'submittedBy', 'evaluationId', 'formulaireDeGouvernanceId', 'organisationId'
         return [
-            'id' => $this->secure_id,
-            'type' => $this->type,
-            'statut' => $this->statut,
-            'comite_members' => $this->comite_members,
-            'commentaire' => $this->commentaire,
-            'submitted_at' => Carbon::parse($this->submitted_at)->format("Y-m-d"),
-            'submittedBy' => $this->authoredBy ? $this->authoredBy->secure_id : null,
+            'id'                    => $this->secure_id,
+            'type'                  => $this->type,
+            'statut'                => $this->statut,
+            'comite_members'        => $this->when($this->type === 'factuel',  $this->comite_members),
+            'commentaire'           => $this->when($this->type === 'perception',  $this->commentaire),
+            'sexe'                  => $this->when($this->type === 'perception',  $this->sexe),
+            'age'                   => $this->when($this->type === 'perception',  $this->age),
+            'submitted_at'          => Carbon::parse($this->submitted_at)->format("Y-m-d"),
+            'submittedBy'           => $this->authoredBy ? [
+                'id'                    => $this->authoredBy->secure_id,
+                'nom'                    => $this->authoredBy->nom
+            ] : null,
             'formulaireDeGouvernanceId' => $this->formulaireDeGouvernance->secure_id,
-            'evaluationId' => $this->evaluation_de_gouvernance->secure_id,
-            'organisationId' => $this->organisation->secure_id,
-            'programmeId' => $this->programme->secure_id,
+            'evaluationId'          => $this->evaluation_de_gouvernance->secure_id,
+            'organisationId'        => $this->organisation->secure_id,
+            'programmeId'           => $this->programme->secure_id,
             'reponses_de_la_collecte' => $this->reponses_de_la_collecte ? ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte) : [],
-            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
+            'created_at'            => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
     }
 }
