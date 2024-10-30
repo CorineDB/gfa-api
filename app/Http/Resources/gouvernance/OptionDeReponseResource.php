@@ -16,8 +16,7 @@ class OptionDeReponseResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'libelle' => $this->libelle,
-            'note' => $this->note
+            'libelle' => $this->libelle
         ];
     }
 }
