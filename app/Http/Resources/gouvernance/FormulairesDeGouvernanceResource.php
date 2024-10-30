@@ -25,8 +25,15 @@ class FormulairesDeGouvernanceResource extends JsonResource
             'created_by' => $this->createdBy->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
-            'options_de_reponse' => $this->whenLoaded('options_de_reponse', $this->options_de_reponse),
-            'categories_de_gouvernance' => $this->whenLoaded('categories_de_gouvernance', CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance->load('questions_de_gouvernance'))),
+            'options_de_reponse' => $this->options_de_reponse->map(function($option){
+                return [
+                    "id"                    => $option->secure_id,
+                    'libelle'               => $option->libelle,
+                    'slug'                  => $option->slug,
+                    'point'                 => $option->pivot->point
+                ];
+            }),
+            'categories_de_gouvernance' => CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance()->whereNull('categorieDeGouvernanceId')->with('questions_de_gouvernance')->get()),
             /*
             'categories_de_gouvernance' => CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance->load([
                 'questions_de_gouvernance' => function($query) use ($formulaireDeGouvernanceId) {

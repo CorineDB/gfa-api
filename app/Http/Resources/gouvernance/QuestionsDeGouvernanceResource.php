@@ -25,7 +25,7 @@ class QuestionsDeGouvernanceResource extends JsonResource
             ] : null,
             'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
             'programmeId' => $this->programme->secure_id,
-            'created_at' => $this->created_at
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
         ];
     }
 }

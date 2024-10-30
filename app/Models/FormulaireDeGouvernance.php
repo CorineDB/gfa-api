@@ -30,7 +30,7 @@ class FormulaireDeGouvernance extends Model
 
     public function categories_de_gouvernance()
     {
-        return $this->hasMany(CategorieDeGouvernance::class, 'formulaireDeGouvernanceId');
+        return $this->hasMany(CategorieDeGouvernance::class, 'formulaireDeGouvernanceId')->whereNull('categorieDeGouvernanceId');
     }
 
     public function categorie_de_gouvernance()

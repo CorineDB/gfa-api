@@ -28,7 +28,7 @@ class CategoriesDeGouvernanceResource extends JsonResource
             }),*/
             'categorieDeGouvernanceId' => optional($this->categorieDeGouvernanceParent)->secure_id,
             'programmeId' => $this->programme->secure_id,
-            'created_at' => $this->created_at,
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'categories_de_gouvernance' => $this->when($this->sousCategoriesDeGouvernance->count(), CategoriesDeGouvernanceResource::collection($this->sousCategoriesDeGouvernance)),
 
             'questions_de_gouvernance' => $this->when(!$this->sousCategoriesDeGouvernance->count(), QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance))

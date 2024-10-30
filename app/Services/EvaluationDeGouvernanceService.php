@@ -176,7 +176,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         {
             if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionsResource($evaluationDeGouvernance->soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SoumissionsResource::collection($evaluationDeGouvernance->soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -196,7 +196,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         {
             if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($evaluationDeGouvernance->formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
