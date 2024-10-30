@@ -31,6 +31,6 @@ class SourceDeVerification extends Model
 
     public function programme()
     {
-        return $this->hasMany(Programme::class, 'programmeId');
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

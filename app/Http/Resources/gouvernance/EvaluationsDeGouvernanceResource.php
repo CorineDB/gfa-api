@@ -25,7 +25,27 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'statut' => $this->statut,
             'programmeId' => $this->programme->secure_id,
             'created_at' => $this->created_at,
-            'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance)
+            'formulaires_de_gouvernance' => $this->formulaires_de_gouvernance->map(function($formulaire_de_gouvernance){
+                return [
+                    'id' => $formulaire_de_gouvernance->secure_id,
+                    'libelle' => $formulaire_de_gouvernance->libelle,
+                    'description' => $formulaire_de_gouvernance->description,
+                    'type' => $formulaire_de_gouvernance->type,
+                    'lien' => $formulaire_de_gouvernance->lien,
+                    'annee_exercice' => $this->annee_exercice
+                ];
+            }), 
+            'organisations' => $this->organisations->map(function($organisation){
+                return [
+                    "id"                    => $organisation->secure_id,
+                    'nom'                   => optional($organisation->user)->nom ?? null,
+                    'sigle'                 => $this->when($organisation->sigle, $organisation->sigle),
+                    'code'                  => $this->when($organisation->code, $organisation->code),
+                    'nom_point_focal'       => $organisation->nom_point_focal,
+                    'prenom_point_focal'    => $organisation->prenom_point_focal,
+                    'contact_point_focal'   => $organisation->contact_point_focal
+                ];
+            })// FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance)
         ];
     }
 }

@@ -46,9 +46,9 @@ class StoreRequest extends FormRequest
             'options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],
             'options_de_reponse.*.point' => ["required", "distinct", "decimal:0,2", "min:0", "max:1"],*/
             'factuel' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:2"],
-            'factuel.options_de_reponse' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:1"],
+            'factuel.options_de_reponse' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:2"],
             'factuel.options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],
-            'factuel.options_de_reponse.*.point' => ["required", "distinct", "numeric", "min:0", "max:1"],
+            'factuel.options_de_reponse.*.point' => ["required", "numeric", "min:0", "max:1"],
 
             'factuel.types_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:1"],
             'factuel.types_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new TypeDeGouvernance())],
@@ -61,9 +61,9 @@ class StoreRequest extends FormRequest
 
             'perception' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:2"],
             //'perception' => ["required", Rule::requiredIf(request()->input('type') == 'perception')],
-            'perception.options_de_reponse' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:1"],
+            'perception.options_de_reponse' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:2"],
             'perception.options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],
-            'perception.options_de_reponse.*.point' => ["required", "distinct", "numeric", "min:0", "max:1"],
+            'perception.options_de_reponse.*.point' => ["required", "numeric", "min:0", "max:1"],
 
             'perception.principes_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:1"],
             'perception.principes_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernance())],

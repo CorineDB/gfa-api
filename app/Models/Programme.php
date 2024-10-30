@@ -445,9 +445,14 @@ class Programme extends Model
         return $this->hasMany(TypeDeGouvernance::class, 'programmeId');
     }
 
-    public function sources_de_verification()
+    public function options_de_reponse()
     {
         return $this->hasMany(OptionDeReponse::class, 'programmeId');
+    }
+
+    public function sources_de_verification()
+    {
+        return $this->hasMany(SourceDeVerification::class, 'programmeId');
     }
 
     public function formulaires_de_gouvernance()
