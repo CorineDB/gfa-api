@@ -149,6 +149,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             if($attributs['response_data']['factuel']){
                 $soumission->fill($attributs['response_data']['factuel']);
                 $soumission->save();
+
                 foreach ($attributs['response_data']['factuel'] as $key => $item) {
 
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
@@ -169,7 +170,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->save();
                     }
 
-                    if(isset($attributs['preuves']))
+                    if(isset($attributs['preuves']) && empty($attributs['preuves']))
                     {
                         foreach($attributs['preuves'] as $preuve)
                         {
@@ -204,7 +205,9 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             }
 
             if(($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)){
-
+                
+                $soumission->refresh();
+                
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function($query) use ($soumission) {
                     $query->where(function($query){
                         $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');

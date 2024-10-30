@@ -930,7 +930,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{evaluation_de_gouvernance}/formulaires-de-gouvernance', 'formulaires_de_gouvernance')->name('formulaires_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionController')->names('evaluation.soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-                    
+                    Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions')->name('soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
                 });
 
                 Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('evaluation.validate-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');

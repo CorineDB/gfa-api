@@ -17,7 +17,7 @@ class ReponsesDeLaCollecteResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'type' => $this->type,
+            'type' => $this->type, 
             'point' => $this->point,
             "sourceDeVerification" => $this->sourceDeVerification,
             "sourceDeVerificationId" => $this->source_de_verification ? $this->source_de_verification->secure_id : null,
