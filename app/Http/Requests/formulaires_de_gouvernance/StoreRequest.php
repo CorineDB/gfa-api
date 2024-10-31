@@ -52,12 +52,17 @@ class StoreRequest extends FormRequest
 
             'factuel.types_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:1"],
             'factuel.types_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new TypeDeGouvernance())],
+            //'factuel.types_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance' => ["required", "array", "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new PrincipeDeGouvernance())],
+            //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance' => ["required", "array", "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new CritereDeGouvernance())],
+            //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["required", /* "distinct",  */new HashValidatorRule(new IndicateurDeGouvernance())],
+            
+            //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
 
             'perception' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:2"],
             //'perception' => ["required", Rule::requiredIf(request()->input('type') == 'perception')],
@@ -67,8 +72,10 @@ class StoreRequest extends FormRequest
 
             'perception.principes_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:1"],
             'perception.principes_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernance())],
+            //'perception.principes_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             'perception.principes_de_gouvernance.*.questions_operationnelle' => ["required", "array", "min:1"],
-            'perception.principes_de_gouvernance.*.questions_operationnelle.*' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())]
+            'perception.principes_de_gouvernance.*.questions_operationnelle.*' => ["required", "distinct", new HashValidatorRule(new IndicateurDeGouvernance())],
+            //'perception.principes_de_gouvernance.*.questions_operationnelle.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
         ];
     }
 

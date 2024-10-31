@@ -15,10 +15,10 @@ class CategorieDeGouvernance extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('categorieable_id', 'categorieable_type', 'position', 'categorieDeGouvernanceId', 'formulaireDeGouvernanceId', 'programmeId');
+    protected $fillable = array('categorieable_id', 'categorieable_type', /* 'position', */ 'categorieDeGouvernanceId', 'formulaireDeGouvernanceId', 'programmeId');
 
     protected $casts = [
-        "position" => "integer"
+        //"position" => "integer"
     ];
 
     protected $with = ["categorieable"];

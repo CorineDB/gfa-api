@@ -18,7 +18,7 @@ class ReponseDeLaCollecte extends Model
     protected $fillable = array("point", "type", 'sourceDeVerification', 'soumissionId', 'sourceDeVerificationId', 'questionId', 'optionDeReponseId', 'programmeId');
 
     protected $casts = [
-        "point" => 'decimal'
+        "point" => 'float'
     ];
 
     protected static function boot()

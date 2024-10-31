@@ -19,7 +19,11 @@ class EmptyMigrationsTable extends Migration
         DB::table('soumissions')->truncate();
         DB::table('questions_de_gouvernance')->truncate();
         DB::table('categories_de_gouvernance')->truncate();
+        DB::table('formulaire_options_de_reponse')->truncate();
         DB::table('formulaires_de_gouvernance')->truncate();
+        DB::table('formulaire_options_de_reponse')->truncate();
+        DB::table('evaluation_formulaires_de_gouvernance')->truncate();
+        DB::table('evaluation_organisations')->truncate();
         DB::table('evaluations_de_gouvernance')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }

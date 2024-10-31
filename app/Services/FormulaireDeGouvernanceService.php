@@ -125,13 +125,15 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         throw new Exception( "Ce type de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                     }
 
-                    $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->whereNull("categorieDeGouvernanceId")->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
+                    /*$typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->whereNull("categorieDeGouvernanceId")->where("position", $type_de_gouvernance['position'])->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
                         $query->where('programmeId', $programmeId);
                     })->first();
 
-                    if(!$typeDeGouvernanceCategorie){
-                        $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, 'categorieDeGouvernanceId' => null, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
-                    }
+                    dd($typeDeGouvernanceCategorie);
+
+                    if(!$typeDeGouvernanceCategorie){*/
+                        $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $type_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => null, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
+                    //}
 
                     foreach ($type_de_gouvernance["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
                         
@@ -142,13 +144,13 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             throw new Exception( "Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                         }
 
-                        $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->where("categorieDeGouvernanceId", $typeDeGouvernanceCategorie->id)->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
+                        /*$principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->where("categorieDeGouvernanceId", $typeDeGouvernanceCategorie->id)->where("position", $principe_de_gouvernance['position'])->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
                             $query->where('programmeId', $programmeId);
                         })->first();
     
-                        if(!$principeDeGouvernanceCategorie){
-                            $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, 'categorieDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
-                        }
+                        if(!$principeDeGouvernanceCategorie){*/
+                            $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $principe_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
+                        //}
 
                         foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
                         
@@ -159,13 +161,13 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 throw new Exception( "Ce critere de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                             }
 
-                            $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->where("categorieDeGouvernanceId", $principeDeGouvernanceCategorie->id)->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
+                            /*$critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->where("categorieDeGouvernanceId", $principeDeGouvernanceCategorie->id)->where("position", $critere_de_gouvernance['position'])->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
                                 $query->where('programmeId', $programmeId);
                             })->first();
         
-                            if(!$critereDeGouvernanceCategorie){
-                                $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, 'categorieDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
-                            }
+                            if(!$critereDeGouvernanceCategorie){*/
+                                $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $critere_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
+                            //}
 
                             foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
                         
@@ -176,7 +178,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                     throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                 }
 
-                                $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'indicateur', 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
+                                $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'indicateur', /* "position" => $indicateur_de_gouvernance['position'], */ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
 
                             }
                         }
@@ -208,29 +210,30 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         throw new Exception( "Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                     }
 
-                    $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->whereNull("categorieDeGouvernanceId")->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
+                    /*$principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->whereNull("categorieDeGouvernanceId")->where("position", $principe_de_gouvernance['position'])->whereHas("formulaire_de_gouvernance", function($query) use ($programmeId){
                         $query->where('programmeId', $programmeId);
                     })->first();
 
-                    if(!$principeDeGouvernanceCategorie){
-                        $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, 'categorieDeGouvernanceId' => null, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
-                    }
+                    if(!$principeDeGouvernanceCategorie){*/
+                        $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $principe_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => null, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
+                    //}
 
-                    foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $indicateur_de_gouvernance) {
+                    foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $question_operationnelle) {
                     
-                        //if(!($indicateurDeGouvernance = app(IndicateurDeGouvernanceRepository::class)->findById($indicateur_de_gouvernance))) throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                        //if(!($indicateurDeGouvernance = app(IndicateurDeGouvernanceRepository::class)->findById($question_operationnelle))) throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                        if(!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceRepository::class)->findById($indicateur_de_gouvernance))))
+                        if(!(($questionOperationnelle = app(IndicateurDeGouvernanceRepository::class)->findById($question_operationnelle))))
                         {
                             throw new Exception( "Cette question operationnelle n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                         }
-                        $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
 
+                        $question_operationnelle = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id]);
                     }
 
                 }
             }
-
+            
+            $formulaireDeGouvernance->save();
             $formulaireDeGouvernance->refresh();
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
