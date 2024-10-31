@@ -58,15 +58,15 @@ class SoumissionRequest extends FormRequest
                 }
             ],
 
-            'response_data'                                         => ['required', 'array', 'min:1'],
-            'response_data.factuel'                                 => [Rule::requiredIf(!request()->input('response_data.perception')), 'array', 'min:1'],
+            'factuel'                                         => [Rule::requiredIf(!request()->input('perception')), 'array'],
             
-            'response_data.factuel.comite_members'                                        => ['sometimes', 'array', 'min:1'],
-            'response_data.factuel.comite_members.*.nom'                                  => ['sometimes', 'string'],
-            'response_data.factuel.comite_members.*.prenom'                               => ['sometimes', 'string'],
-            'response_data.factuel.comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
+            'factuel.comite_members'                                        => ['sometimes', 'array', 'min:1'],
+            'factuel.comite_members.*.nom'                                  => ['sometimes', 'string'],
+            'factuel.comite_members.*.prenom'                               => ['sometimes', 'string'],
+            'factuel.comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
 
-            'response_data.factuel.*.questionId'                    => ['sometimes', Rule::requiredIf(!request()->input('response_data.perception')), 'distinct', 
+            'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', 'min:1'],
+            'factuel.response_data.*.questionId'                    => ['sometimes', Rule::requiredIf(!request()->input('perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {
                     
@@ -87,7 +87,7 @@ class SoumissionRequest extends FormRequest
                     }*/
                 }
             ],
-            'response_data.factuel.*.optionDeReponseId'             => ['sometimes', Rule::requiredIf(!request()->input('response_data.perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'factuel.response_data.*.optionDeReponseId'             => ['sometimes', Rule::requiredIf(!request()->input('perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -99,17 +99,17 @@ class SoumissionRequest extends FormRequest
                     }
                 }
             }],
-            'response_data.factuel.*.sourceDeVerificationId'        => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
-            'response_data.factuel.*.sourceDeVerification'          => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerificationId'))],
-            'response_data.factuel.*.preuves'                       => ['sometimes', "array", "min:0"],
-            'response_data.factuel.*.preuves.*'                     => ['distinct', "file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20000', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20000"],
+            'factuel.response_data.*.sourceDeVerificationId'        => ['sometimes', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
+            'factuel.response_data.*.sourceDeVerification'          => ['sometimes', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+            'factuel.response_data.*.preuves'                       => ['sometimes', "array", "min:0"],
+            'factuel.response_data.*.preuves.*'                     => ['distinct', "file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20000', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20000"],
 
-            'response_data.perception'                              => [Rule::requiredIf(!request()->input('response_data.factuel')), 'array', 'min:1'],
-            'response_data.perception.categorieDeParticipant'       => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
-            'response_data.perception.sexe'                         => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:masculin,feminin'],
-            'response_data.perception.age'                          => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'in:<35,>35'],
+            'perception'                                            => [Rule::requiredIf(!request()->input('factuel')), 'array'],
+            'perception.response_data.categorieDeParticipant'       => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
+            'perception.response_data.sexe'                         => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'in:masculin,feminin'],
+            'perception.response_data.age'                          => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'in:<35,>35'],
 
-            'response_data.perception.*.questionId'      => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), 'distinct',
+            'perception.response_data.*.questionId'      => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'distinct',
                 new HashValidatorRule(new QuestionDeGouvernance()),
                 function($attribute, $value, $fail) {
                     $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "question_operationnelle")->findByKey($value)->exists();
@@ -128,7 +128,7 @@ class SoumissionRequest extends FormRequest
                 }
             ],
 
-            'response_data.perception.*.optionDeReponseId'   => ['sometimes', Rule::requiredIf(!request()->input('response_data.factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'perception.response_data.*.optionDeReponseId'   => ['sometimes', Rule::requiredIf(!request()->input('factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -139,7 +139,7 @@ class SoumissionRequest extends FormRequest
                 }
             }],
             
-            'response_data.perception.commentaire'                => ['nullable', Rule::requiredIf(!request()->input('response_data.factuel')), 'string', 'max:255'],
+            'perception.response_data.commentaire'                => ['nullable', Rule::requiredIf(!request()->input('factuel')), 'string', 'max:255'],
         ];
     }
 

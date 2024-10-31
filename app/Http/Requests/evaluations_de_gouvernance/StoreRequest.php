@@ -102,6 +102,8 @@ class StoreRequest extends FormRequest
         $formulaire1 = FormulaireDeGouvernance::find($formulaireDeGouvernanceId);
         $formulaire2 = FormulaireDeGouvernance::find($perceptionFormulaire);
 
+        //dd($formulaire1->categories_de_gouvernance->first()->sousCategoriesDeGouvernance);
+        
         if (!$formulaire1 || !$formulaire2) {
             $validator->errors()->add(
                 'formulaires_de_gouvernance',
@@ -126,7 +128,8 @@ class StoreRequest extends FormRequest
         // Get perception IDs from Form 1 (perception form)
         $perceptionIds = DB::table('categories_de_gouvernance')
             ->where('formulaireDeGouvernanceId', $perceptionFormulaire->id)
-            ->pluck('id')
+            ->where('categorieDeGouvernanceId', null)
+            ->pluck('categorieable_id')
             ->toArray();
 
         // Get each 'type de gouvernance' in Form 2 and its perception IDs (subcategories)
@@ -137,10 +140,9 @@ class StoreRequest extends FormRequest
             ->where('types.formulaireDeGouvernanceId', $factuelFormulaire->id)
             ->where('perceptions.formulaireDeGouvernanceId', $factuelFormulaire->id)
             ->where('perceptions.categorieable_type', get_class(new PrincipeDeGouvernance))
-            ->select('types.id as type_id', 'perceptions.id as perception_id')
+            ->select('types.id as type_id', 'perceptions.categorieable_id as perception_id')
             ->get()
             ->groupBy('type_id');
-
         
             // Validate that each type de gouvernance's perception IDs in Form 2 match perception IDs in Form 1
         foreach ($form2TypesWithPerceptionIds as $typeId => $perceptions) {
