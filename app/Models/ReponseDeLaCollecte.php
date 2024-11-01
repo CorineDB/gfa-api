@@ -63,7 +63,7 @@ class ReponseDeLaCollecte extends Model
 
     public function recommandations()
     {
-        return $this->morphMany(Recommandation::class, "recommandable");
+        return $this->morphMany(Recommandation::class, "recommandationable");
     }
 
     public function actions_a_mener()

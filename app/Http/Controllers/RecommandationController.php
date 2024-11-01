@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\fonds\StoreRequest;
-use App\Http\Requests\fonds\UpdateRequest;
+use App\Http\Requests\recommandations\StoreRequest;
+use App\Http\Requests\recommandations\UpdateRequest;
 use Core\Services\Interfaces\RecommandationServiceInterface;
 
 class RecommandationController extends Controller

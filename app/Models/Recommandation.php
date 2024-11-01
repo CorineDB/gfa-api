@@ -15,7 +15,7 @@ class Recommandation extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array("recommandation", "recommandable_id", "recommandable_type", 'programmeId');
+    protected $fillable = array("recommandation", "recommandationable_id", "recommandationable_type", 'programmeId');
 
     protected $casts = [];
 
@@ -24,7 +24,7 @@ class Recommandation extends Model
         parent::boot();
     }
 
-    public function recommandable()
+    public function recommandationable()
     {
         return $this->morphTo();
     }

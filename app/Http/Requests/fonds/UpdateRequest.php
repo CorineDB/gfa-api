@@ -3,6 +3,7 @@
 namespace App\Http\Requests\fonds;
 
 use App\Models\CritereDeGouvernance;
+use App\Models\Fond;
 use App\Models\OptionDeReponse;
 use App\Models\Programme;
 use App\Models\SourceDeVerification;
@@ -31,7 +32,7 @@ class UpdateRequest extends FormRequest
     {
         if(is_string($this->fond))
         {
-            $this->fond = SourceDeVerification::findByKey($this->fond);
+            $this->fond = Fond::findByKey($this->fond);
         }
 
         return [

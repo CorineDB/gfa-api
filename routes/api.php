@@ -860,7 +860,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'fonds' => 'fond',
                 ]);
 
-            Route::apiResource('actions-a-mener', 'ActionAMenerController')->names('actions-a-mener')
+            /*Route::apiResource('actions-a-mener', 'ActionAMenerController')->names('actions-a-mener')
                 ->parameters([
                     'actions-a-mener' => 'action_a_mener',
                 ]);
@@ -868,7 +868,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::apiResource('recommandations', 'RecommandationController')->names('recommandations')
                 ->parameters([
                     'recommandations' => 'recommandation',
-                ]);
+                ]);*/
 
             Route::apiResource('enquetes-de-collecte', 'EnqueteDeCollecteController')->names('enquetes-de-reponse')
                 ->parameters([
