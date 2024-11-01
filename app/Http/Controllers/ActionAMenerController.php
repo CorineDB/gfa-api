@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\fonds\StoreRequest;
-use App\Http\Requests\fonds\UpdateRequest;
+use App\Http\Requests\actions_a_mener\StoreRequest;
+use App\Http\Requests\actions_a_mener\UpdateRequest;
 use Core\Services\Interfaces\ActionAMenerServiceInterface;
 
 class ActionAMenerController extends Controller
