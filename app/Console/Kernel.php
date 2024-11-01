@@ -12,6 +12,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\SendPasswordValidityExpirationSoonMail::class,
         Commands\ChangeStatut::class,
+        Commands\ChangeStatutEvaluations::class,
         Commands\Demarrage::class,
         Commands\RappelCron::class,
         Commands\Rapport::class,

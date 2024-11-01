@@ -127,4 +127,9 @@ class SoumissionController extends Controller
     {
         return $this->soumissionService->deleteById($id);
     }
+
+    public function fiche_de_synthese($id)
+    {
+        return $this->soumissionService->fiche_de_synthese($id);
+    }
 }

@@ -942,6 +942,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionController')->names('soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
                     
                     Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions')->name('soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                    
+                    Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::group(['prefix' =>  '{evaluation_de_gouvernance}/soumissions/{soumission}', 'as' => 'evaluations-de-gouvernance.soumissions.'], function () {
                         Route::apiResource('actions-a-mener', 'ActionAMenerController')->names('actions-a-mener')->parameters([
@@ -952,6 +954,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::controller('SoumissionController')->group(function () {
                             Route::get('recommandations', 'recommandations')->name('recommandations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
                             Route::get('actions-a-mener', 'actions_a_mener')->name('actions_a_mener'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                            Route::get('fiche-de-synthese', 'fiche_de_synthese')->name('fiche_de_synthese'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                         });
                     });

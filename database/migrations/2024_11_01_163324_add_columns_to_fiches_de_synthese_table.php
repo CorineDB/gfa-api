@@ -13,8 +13,8 @@ class AddColumnsToFichesDeSyntheseTable extends Migration
      */
     public function up()
     {
-        if(!Schema::hasTable('fiches_de_synthese')){
-            Schema::create('fiches_de_synthese', function (Blueprint $table) {
+        if(Schema::hasTable('fiches_de_synthese')){
+            Schema::table('fiches_de_synthese', function (Blueprint $table) {
                 if(Schema::hasColumn('fiches_de_synthese', 'reference')){
                     $table->dropColumn('reference');
                 }

@@ -203,6 +203,43 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     }
 
     /**
+     * Liste des soumissions d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function fiches_de_synthese($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $organisation=$evaluationDeGouvernance->soumissions()
+            ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
+            ->get()->groupBy('organisationId');
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation->map(function ($soumissions, $organisationId) {
+                    
+                $organisation = $soumissions->first()->organisation;
+                
+                        return [
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal,
+                            'soumissions' => SoumissionsResource::collection($soumissions)
+                        ];
+                    })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    /**
      * Liste des formulaires d'une evaluation de gouvernance
      * 
      * return JsonResponse

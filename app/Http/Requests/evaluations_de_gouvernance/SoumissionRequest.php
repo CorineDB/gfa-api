@@ -69,7 +69,6 @@ class SoumissionRequest extends FormRequest
             'factuel.response_data.*.questionId'                    => ['sometimes', Rule::requiredIf(!request()->input('perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {
-                    
                     if($this->formulaireCache){
                         $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($value)->exists();
                         if (!$question) {
