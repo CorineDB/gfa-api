@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -23,6 +24,25 @@ class EvaluationDeGouvernance extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::deleted(function ($evaluation_de_gouvernance) {
+
+            DB::beginTransaction();
+            try {
+
+                $evaluation_de_gouvernance->organisations()->delete();
+                $evaluation_de_gouvernance->soumissions()->delete();
+                $evaluation_de_gouvernance->recommandations()->delete();
+                $evaluation_de_gouvernance->actions_a_mener()->delete();
+                $evaluation_de_gouvernance->formulaires_de_gouvernance()->delete();
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
     }
 
     public function soumissions()

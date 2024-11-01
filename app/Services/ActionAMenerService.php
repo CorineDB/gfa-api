@@ -1,0 +1,138 @@
+<?php
+
+namespace App\Services;
+
+use App\Http\Resources\FichesDeSyntheseResource;
+use App\Http\Resources\gouvernance\ActionsAMenerResource;
+use App\Repositories\ActionAMenerRepository;
+use Core\Services\Contracts\BaseService;
+use Core\Services\Interfaces\ActionAMenerServiceInterface;
+use Exception;
+use App\Traits\Helpers\LogActivity;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+
+/**
+* Interface ActionAMenerServiceInterface
+* @package Core\Services\Interfaces
+*/
+class ActionAMenerService extends BaseService implements ActionAMenerServiceInterface
+{
+
+    /**
+     * @var service
+     */
+    protected $repository;
+
+    /**
+     * ActionAMenerRepository constructor.
+     *
+     * @param ActionAMenerRepository $actionAMenerRepository
+     */
+    public function __construct(ActionAMenerRepository $actionAMenerRepository)
+    {
+        parent::__construct($actionAMenerRepository);
+    }
+
+    public function all(array $columns = ['*'], array $relations = []): JsonResponse
+    {
+        try
+        {
+            if(Auth::user()->hasRole('administrateur')){
+                $actions_a_mener = $this->repository->all();
+            }
+            else{
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $actions_a_mener = Auth::user()->programme->actions_a_mener;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ActionsAMenerResource::collection($actions_a_mener), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function findById($action_a_mener, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($action_a_mener) && !($action_a_mener = $this->repository->findById($action_a_mener))) throw new Exception("ActionAMener inconnue.", 500);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new ActionsAMenerResource($action_a_mener), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function create(array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            
+            $action_a_mener = $this->repository->create($attributs);
+
+            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+
+            $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($action_a_mener));
+
+            LogActivity::addToLog("Enrégistrement", $message, get_class($action_a_mener), $action_a_mener->id);
+
+            DB::commit();
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ActionsAMenerResource($action_a_mener), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function update($action_a_mener, array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+
+            if(!is_object($action_a_mener) && !($action_a_mener = $this->repository->findById($action_a_mener))) throw new Exception("Ce fond n'existe pas", 500);
+
+            $this->repository->update($action_a_mener->id, $attributs);
+
+            $action_a_mener->refresh();
+
+            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+
+            $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($action_a_mener));
+
+            LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
+
+            DB::commit();
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ActionsAMenerResource($action_a_mener), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+}

@@ -3,8 +3,10 @@
 namespace App\Models;
 
 use App\Http\Resources\gouvernance\OptionsDeReponseResource;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class FormulaireDeGouvernance extends Model
@@ -26,6 +28,24 @@ class FormulaireDeGouvernance extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::deleted(function ($formulaire_de_gouvernance) {
+
+            DB::beginTransaction();
+            try {
+
+                $formulaire_de_gouvernance->options_de_reponse()->delete();
+                $formulaire_de_gouvernance->questions_de_gouvernance()->delete();
+                $formulaire_de_gouvernance->categories_de_gouvernance()->delete();
+                $formulaire_de_gouvernance->evaluations_de_gouvernance()->delete();
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
     }
 
     public function categories_de_gouvernance()

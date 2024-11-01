@@ -65,7 +65,7 @@ class SoumissionRequest extends FormRequest
             'factuel.comite_members.*.prenom'                               => ['sometimes', 'string'],
             'factuel.comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
 
-            'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', 'min:1'],
+            //'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', 'min:1'],
             'factuel.response_data.*.questionId'                    => ['sometimes', Rule::requiredIf(!request()->input('perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {

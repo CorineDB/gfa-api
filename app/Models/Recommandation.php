@@ -28,4 +28,9 @@ class Recommandation extends Model
     {
         return $this->morphTo();
     }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
+    }
 }

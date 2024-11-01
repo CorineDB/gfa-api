@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\FicheDeSynthese;
 use App\Repositories\ActionAMenerRepository;
 use Core\Repositories\BaseRepository;
 use Core\Repositories\EloquentRepositoryInterface;
@@ -58,6 +59,7 @@ use App\Repositories\AuditRepository;
 use App\Repositories\CritereDeGouvernanceRepository;
 use App\Repositories\EnqueteDeCollecteRepository;
 use App\Repositories\EvaluationDeGouvernanceRepository;
+use App\Repositories\FicheDeSyntheseRepository;
 use App\Repositories\FondRepository;
 use App\Repositories\FormulaireDeGouvernanceRepository;
 use App\Repositories\IndicateurDeGouvernanceRepository;
@@ -72,6 +74,7 @@ use App\Repositories\TypeDeGouvernanceRepository;
 use App\Repositories\ResultatCadreDeRendementRepository;
 use App\Repositories\SoumissionRepository;
 use App\Repositories\SourceDeVerificationRepository;
+use App\Services\ActionAMenerService;
 use App\Services\AuthService;
 use App\Services\CategorieService;
 use App\Services\IndicateurService;
@@ -136,6 +139,7 @@ use App\Services\AuditService;
 use App\Services\CritereDeGouvernanceService;
 use App\Services\EnqueteDeCollecteService;
 use App\Services\EvaluationDeGouvernanceService;
+use App\Services\FicheDeSyntheseService;
 use App\Services\FondService;
 use App\Services\FormulaireDeGouvernanceService;
 use App\Services\IndicateurDeGouvernanceService;
@@ -143,6 +147,7 @@ use App\Services\IndicateurValueKeyService;
 use App\Services\OptionDeReponseService;
 use App\Services\OrganisationService;
 use App\Services\PrincipeDeGouvernanceService;
+use App\Services\RecommandationService;
 use App\Services\ResultatCadreDeRendementService;
 use App\Services\SoumissionService;
 use App\Services\SourceDeVerificationService;
@@ -150,6 +155,7 @@ use App\Services\TypeDeGouvernanceService;
 use Core\Services\Contracts\BaseService;
 
 use Core\Services\Contracts\AbstractServiceInterface;
+use Core\Services\Interfaces\ActionAMenerServiceInterface;
 use Core\Services\Interfaces\AuthServiceInterface;
 use Core\Services\Interfaces\CategorieServiceInterface;
 use Core\Services\Interfaces\IndicateurServiceInterface;
@@ -214,6 +220,7 @@ use Core\Services\Interfaces\AuditServiceInterface;
 use Core\Services\Interfaces\CritereDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\EnqueteDeCollecteServiceInterface;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\FicheDeSyntheseServiceInterface;
 use Core\Services\Interfaces\FondServiceInterface;
 use Core\Services\Interfaces\FormulaireDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
@@ -221,6 +228,7 @@ use Core\Services\Interfaces\IndicateurValueKeyServiceInterface;
 use Core\Services\Interfaces\OptionDeReponseServiceInterface;
 use Core\Services\Interfaces\OrganisationServiceInterface;
 use Core\Services\Interfaces\PrincipeDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\RecommandationServiceInterface;
 use Core\Services\Interfaces\TypeDeGouvernanceServiceInterface;
 
 use Core\Services\Interfaces\ResultatCadreDeRendementServiceInterface;
@@ -308,6 +316,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, FormulaireDeGouvernanceRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, FondRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, SoumissionRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, FicheDeSyntheseRepository::class);
 
         $this->app->bind(AbstractServiceInterface::class, BaseService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
@@ -391,6 +400,11 @@ class RepositoryServiceProvider extends ServiceProvider
 
         $this->app->bind(FondServiceInterface::class, FondService::class);
         $this->app->bind(FormulaireDeGouvernanceServiceInterface::class, FormulaireDeGouvernanceService::class);
+
+
+        $this->app->bind(FicheDeSyntheseServiceInterface::class, FicheDeSyntheseService::class);
+        $this->app->bind(RecommandationServiceInterface::class, RecommandationService::class);
+        $this->app->bind(ActionAMenerServiceInterface::class, ActionAMenerService::class);
     }
 
     /**
