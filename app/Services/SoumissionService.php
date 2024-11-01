@@ -146,11 +146,11 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $soumission->save();
 
-            if($attributs['response_data']['factuel']){
-                $soumission->fill($attributs['response_data']['factuel']);
+            if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
+                $soumission->fill($attributs['factuel']);
                 $soumission->save();
 
-                foreach ($attributs['response_data']['factuel'] as $key => $item) {
+                foreach ($attributs['factuel']['response_data'] as $key => $item) {
 
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
                     {
@@ -179,10 +179,10 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     }
                 }
             }
-            else if($attributs['response_data']['perception']){
-                $soumission->fill($attributs['response_data']['perception']);
+            else if(isset($attributs['perception']) && !empty($attributs['perception'])){
+                $soumission->fill($attributs['perception']);
                 $soumission->save();
-                foreach ($attributs['response_data']['perception'] as $key => $item) {
+                foreach ($attributs['perception']['response_data'] as $key => $item) {
 
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
                     {
@@ -279,164 +279,5 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    private function depouillement_interpretation($soumissionId)
-    {
-        $programme = auth()->user()->programme;
-
-        if(is_string($soumissionId)){
-
-            if(!(($soumission = app(EvaluationDeGouvernanceRepository::class)->findById($soumissionId)) && $soumission->programmeId == $programme->id))
-            {
-                throw new Exception( "Soumission introuvable dans le programme.", Response::HTTP_NOT_FOUND);
-            }
-        }
-        else $soumission = $soumissionId;
-
-        $reponsesDeLaCollecte = $soumission->reponses_de_la_collecte;
-
-        $soumission->formulaireDeGouvernance->categories_de_gouvernance
-        ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
-            $nbrePrincipe = 0;
-            $totalScoreFactuel = 0;
-            $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
-                // Calculate score_factuel for each principle
-                $nbreIndicateurs = 0;//$principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
-                $totalNote = 0;//$principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
-    
-
-                $principle->criteres_de_gouvernance->each(function($critere) use(&$nbreIndicateurs, &$totalNote){ // Iterate over each principle
-                    // Calculate score_factuel for each principle
-                    $nbreIndicateurs+= $critere->indicateurs_de_gouvernance->count(); // Count the indicators
-                    $totalNote+= $critere->indicateurs_de_gouvernance->sum('note'); // Sum the notes
-                });
-
-                // Calculate score_factuel
-                if ($nbreIndicateurs > 0 && $totalNote > 0) {
-
-                    $principle->score_factuel = $totalNote / $nbreIndicateurs;
-                } else {
-                    $principle->score_factuel = 0; // Handle case with no indicators
-                }
-
-                $totalScoreFactuel+=$principle->score_factuel;
-
-                $nbrePrincipe++;
-            });
-
-            // Calculate indice_factuel
-            if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
-
-                $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
-            } else {
-                $type->indice_factuel = 0; // Handle case with no indicators
-            }
-
-            // Add the calculated factuel index to the total sum
-            $totalIndiceFactuel += $type->indice_factuel;
-            $nbreDeTypes++; // Count the number of governance principles
-        });
-
-        $types = app(TypeDeGouvernanceRepository::class)->getInstance()->where("programmeId", $programme->id)
-            ->get()
-            ->load([
-                'principes_de_gouvernance.criteres_de_gouvernance.indicateurs_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
-                    $query->selectRaw('
-                        indicateurs_de_gouvernance.*, 
-                        SUM(options_de_reponse.note) as note
-                    ')/*
-                    $query->selectRaw('
-                        indicateurs_de_gouvernance.*, 
-                        SUM(CASE 
-                            WHEN options_de_reponse.slug = "oui" THEN 1 
-                            ELSE 0 
-                        END) as note
-                    ')*/
-                    ->leftJoin('reponses_collecter', 'indicateurs_de_gouvernance.id', '=', 'reponses_collecter.indicateurDeGouvernanceId')
-                    ->leftJoin('options_de_reponse', 'reponses_collecter.optionDeReponseId', '=', 'options_de_reponse.id')
-                    ->where('reponses_collecter.enqueteDeCollecteId', $enqueteId)
-                    ->where('reponses_collecter.organisationId', $organisationId) 
-                    ->groupBy('indicateurs_de_gouvernance.id'); // Group by the principle (or category) of governance
-                }
-            ])/*
-            ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
-                $nbrePrincipe = 0;
-                $totalScoreFactuel = 0;
-                $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
-                    // Calculate score_factuel for each principle
-                    $nbreIndicateurs = $principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
-                    $totalNote = $principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
-        
-                    // Calculate score_factuel
-                    if ($nbreIndicateurs > 0 && $totalNote > 0) {
-
-                        $principle->score_factuel = $totalNote / $nbreIndicateurs;
-                    } else {
-                        $principle->score_factuel = 0; // Handle case with no indicators
-                    }
-
-                    $totalScoreFactuel+=$principle->score_factuel;
-
-                    $nbrePrincipe++;
-                });
-
-                // Calculate indice_factuel
-                if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
-
-                    $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
-                } else {
-                    $type->indice_factuel = 0; // Handle case with no indicators
-                }
-
-                // Add the calculated factuel index to the total sum
-                $totalIndiceFactuel += $type->indice_factuel;
-                $nbreDeTypes++; // Count the number of governance principles
-            })*/
-            ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
-                $nbrePrincipe = 0;
-                $totalScoreFactuel = 0;
-                $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
-                    // Calculate score_factuel for each principle
-                    $nbreIndicateurs = 0;//$principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
-                    $totalNote = 0;//$principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
-        
-
-                    $principle->criteres_de_gouvernance->each(function($critere) use(&$nbreIndicateurs, &$totalNote){ // Iterate over each principle
-                        // Calculate score_factuel for each principle
-                        $nbreIndicateurs+= $critere->indicateurs_de_gouvernance->count(); // Count the indicators
-                        $totalNote+= $critere->indicateurs_de_gouvernance->sum('note'); // Sum the notes
-                    });
-
-                    // Calculate score_factuel
-                    if ($nbreIndicateurs > 0 && $totalNote > 0) {
-
-                        $principle->score_factuel = $totalNote / $nbreIndicateurs;
-                    } else {
-                        $principle->score_factuel = 0; // Handle case with no indicators
-                    }
-
-                    $totalScoreFactuel+=$principle->score_factuel;
-
-                    $nbrePrincipe++;
-                });
-
-                // Calculate indice_factuel
-                if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
-
-                    $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
-                } else {
-                    $type->indice_factuel = 0; // Handle case with no indicators
-                }
-
-                // Add the calculated factuel index to the total sum
-                $totalIndiceFactuel += $type->indice_factuel;
-                $nbreDeTypes++; // Count the number of governance principles
-            });
-
-            return [
-                "indice_factuel" => $totalIndiceFactuel ? $totalIndiceFactuel/$nbreDeTypes : 0,
-                "fiche_de_synthese_factuel" => FicheSyntheseEvaluationFactuelleResource::collection($types)
-            ];
     }
 }

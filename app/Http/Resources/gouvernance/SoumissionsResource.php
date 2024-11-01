@@ -24,6 +24,8 @@ class SoumissionsResource extends JsonResource
             'commentaire'           => $this->when($this->type === 'perception',  $this->commentaire),
             'sexe'                  => $this->when($this->type === 'perception',  $this->sexe),
             'age'                   => $this->when($this->type === 'perception',  $this->age),
+            'categorieDeParticipant'=> $this->when($this->type === 'perception',  $this->categorieDeParticipant),
+            
             'submitted_at'          => Carbon::parse($this->submitted_at)->format("Y-m-d"),
             'submittedBy'           => $this->authoredBy ? [
                 'id'                    => $this->authoredBy->secure_id,
