@@ -172,7 +172,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function soumissions($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        //return $this->resultats($evaluationDeGouvernance, $columns, $relations, $appends);
         try
         {
             if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
@@ -182,21 +181,19 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             ->get()->groupBy('organisationId');
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation->map(function ($soumissions, $organisationId) {
                     
-                $organisation=new OrganisationResource($soumissions->first->organisation);
+                $organisation = $soumissions->first()->organisation;
                 
-                    dd($organisation);
-                    return array_merge(
-                        ['soumissions' => SoumissionsResource::collection($soumissions)->toArray(request())]
-                    );
                         return [
-                            ...(new OrganisationResource($organisation)),
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal,
                             'soumissions' => SoumissionsResource::collection($soumissions)
                         ];
-                    })->values()
-            /* OrganisationResource::collection($evaluationDeGouvernance->organisations()->distinct()->with(['soumissions' => function ($query) use ($evaluationDeGouvernance) {
-                $query->where('evaluationId', $evaluationDeGouvernance->id);
-            }])->get()) */
-            /* SoumissionsResource::collection($evaluationDeGouvernance->soumissions->groupBy("organisationId"))*/, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                    })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
