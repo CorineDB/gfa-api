@@ -105,7 +105,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             
                 $attributs = array_merge($attributs, ['evaluationId' => $evaluationDeGouvernance->id]);
             }
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $programme, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $evaluationDeGouvernance, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
 
             if(isset($attributs['formulaireDeGouvernanceId'])){
