@@ -516,6 +516,23 @@ class Programme extends Model
     {
         return $this->hasMany(CadreDeMesureRendement::class, 'rendementable_id')->where('rendementable_type', get_class($this));
     }
+
+    public function fiches_de_synthese()
+    {
+        return $this->hasMany(FicheDeSynthese::class, 'programmeId');
+    }
+
+    public function actions_a_mener()
+    {
+        return $this->hasMany(ActionAMener::class, 'programmeId');
+    }
+
+    public function recommandations()
+    {
+        return $this->hasMany(Recommandation::class, 'programmeId');
+    }
+
+    
     
     public function resultats_cadre_de_mesure_rendement()
     {

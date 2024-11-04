@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class ChangeStatutEvaluations extends Command
@@ -20,7 +21,7 @@ class ChangeStatutEvaluations extends Command
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Update the status of evaluations based on their start and end dates';
 
     /**
      * Create a new command instance.
@@ -52,6 +53,25 @@ class ChangeStatutEvaluations extends Command
                                         WHEN fin <= '$today' THEN 1 
                                      END")
             ]);
+
+        
+        // Change the status based on the date
+        DB::table('evaluations_de_gouvernance')
+            ->where('fin', '<=', $today)
+            ->update(['statut' => 1]); // Assuming '1' indicates a finished evaluation
+
+        // Get all evaluations that have now ended
+        $endedEvaluations = DB::table('evaluations_de_gouvernance')
+            ->where('fin', '<=', $today)
+            ->where('statut', 1) // Get evaluations just updated to finished
+            ->get();
+
+        foreach ($endedEvaluations as $evaluation) {
+            // Dispatch the GenerateEvaluationResultats command for each evaluation
+            Artisan::call('command:generate-evaluation-resultats', [
+                '--evaluation' => $evaluation->id
+            ]);
+        }
             
         return 0;
     }

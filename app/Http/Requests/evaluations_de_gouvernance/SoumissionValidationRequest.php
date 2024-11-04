@@ -59,19 +59,19 @@ class SoumissionValidationRequest extends FormRequest
                 }
             ],
 
-            'response_data'                                         => ['required', 'array', 'min:1'],
-            'response_data.factuel'                                 => [Rule::requiredIf(!request()->input('response_data.perception')), 'array', function($attribute, $value, $fail) {
+            'factuel'                                         => ['required', 'array'],
+            
+            'factuel.comite_members'                                        => ['required', 'array', 'min:1'],
+            'factuel.comite_members.*.nom'                                  => ['required', 'string'],
+            'factuel.comite_members.*.prenom'                               => ['required', 'string'],
+            'factuel.comite_members.*.contact'                              => ['required', 'distinct', 'numeric','digits_between:8,24'],
+            'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', function($attribute, $value, $fail) {
                     if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
                     }
                 }
-            ],
-            
-            'response_data.factuel.comite_members'                                        => ['required', 'array', 'min:1'],
-            'response_data.factuel.comite_members.*.nom'                                  => ['required', 'string'],
-            'response_data.factuel.comite_members.*.prenom'                               => ['required', 'string'],
-            'response_data.factuel.comite_members.*.contact'                              => ['required', 'distinct', 'numeric','digits_between:8,24'],
-            'response_data.factuel.*.questionId'      => [Rule::requiredIf(!request()->input('response_data.perception')), 'distinct', 
+            ],            
+            'factuel.response_data.*.questionId'      => [Rule::requiredIf(!request()->input('perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()),
                 function($attribute, $value, $fail) {
                     
@@ -92,7 +92,7 @@ class SoumissionValidationRequest extends FormRequest
                     }*/
                 }
             ],
-            'response_data.factuel.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('response_data.perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'factuel.response_data.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -104,22 +104,22 @@ class SoumissionValidationRequest extends FormRequest
                     }
                 }
             }],
-            'response_data.factuel.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
-            'response_data.factuel.*.sourceDeVerification'          => [ Rule::requiredIf(!request()->input('response_data.factuel.*.sourceDeVerificationId'))],
-            'response_data.factuel.*.preuves'                       => ['required', "array", "min:1"],
-            'response_data.factuel.*.preuves.*'                     => ['distinct', "file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20000', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20000"],
+            'factuel.response_data.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
+            'factuel.response_data.*.sourceDeVerification'          => [ Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+            'factuel.response_data.*.preuves'                       => ['required', "array", "min:1"],
+            'factuel.response_data.*.preuves.*'                     => ['distinct', "file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20000', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20000"],
 
-            'response_data.perception'                              => [Rule::requiredIf(!request()->input('response_data.factuel')), 'array', function($attribute, $value, $fail) {
+            'perception'                              => [Rule::requiredIf(!request()->input('factuel')), 'array', function($attribute, $value, $fail) {
                     if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
                     }
                 }
             ],
-            'response_data.perception.categorieDeParticipant'                   => [Rule::requiredIf(!request()->input('response_data.factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
-            'response_data.perception.sexe'                         => [Rule::requiredIf(!request()->input('response_data.factuel')), 'in:masculin,feminin'],
-            'response_data.perception.age'                          => [Rule::requiredIf(!request()->input('response_data.factuel')), 'in:<35,>35'],
+            'perception.categorieDeParticipant'       => [Rule::requiredIf(!request()->input('factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
+            'perception.sexe'                         => [Rule::requiredIf(!request()->input('factuel')), 'in:masculin,feminin'],
+            'perception.age'                          => [Rule::requiredIf(!request()->input('factuel')), 'in:<35,>35'],
 
-            'response_data.perception.*.questionId'      => [Rule::requiredIf(!request()->input('response_data.factuel')), 'distinct',
+            'perception.response_data.*.questionId'      => [Rule::requiredIf(!request()->input('factuel')), 'distinct',
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {
                     $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "question_operationnelle")->findByKey($value)->exists();
@@ -138,7 +138,7 @@ class SoumissionValidationRequest extends FormRequest
                 }
             ],
 
-            'response_data.perception.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('response_data.factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'perception.response_data.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -149,7 +149,7 @@ class SoumissionValidationRequest extends FormRequest
                 }
             }],
             
-            'response_data.perception.commentaire'                => [Rule::requiredIf(!request()->input('response_data.factuel')), 'string'],
+            'perception.commentaire'                => [Rule::requiredIf(!request()->input('factuel')), 'string'],
         ];
     }
 

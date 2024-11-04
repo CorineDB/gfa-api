@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class ActionAMener extends Model
@@ -28,6 +30,21 @@ class ActionAMener extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::deleted(function ($action_a_mener) {
+
+            DB::beginTransaction();
+            try {
+
+                $action_a_mener->preuves_de_verification()->delete();
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
     }
 
     public function actionable()
@@ -38,5 +55,10 @@ class ActionAMener extends Model
     public function preuves_de_verification()
     {
         return $this->morphMany(Fichier::class, "fichiertable");
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

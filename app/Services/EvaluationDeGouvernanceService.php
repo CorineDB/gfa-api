@@ -176,7 +176,24 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         {
             if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SoumissionsResource::collection($evaluationDeGouvernance->soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $organisation=$evaluationDeGouvernance->soumissions()
+            ->with('organisation') // Load the associated organisations
+            ->get()->groupBy('organisationId');
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation->map(function ($soumissions, $organisationId) {
+                    
+                $organisation = $soumissions->first()->organisation;
+                
+                        return [
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal,
+                            'soumissions' => SoumissionsResource::collection($soumissions)
+                        ];
+                    })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -185,6 +202,43 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
+    /**
+     * Liste des soumissions d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function fiches_de_synthese($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $organisation=$evaluationDeGouvernance->soumissions()
+            ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
+            ->get()->groupBy('organisationId');
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation->map(function ($soumissions, $organisationId) {
+                    
+                $organisation = $soumissions->first()->organisation;
+                
+                        return [
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal,
+                            'soumissions' => SoumissionsResource::collection($soumissions)
+                        ];
+                    })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
     /**
      * Liste des formulaires d'une evaluation de gouvernance
      * 
@@ -203,5 +257,46 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function resultats($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $resultats = $evaluationDeGouvernance->organisations()
+                ->distinct()
+                ->with(['soumissions' => function ($query) use ($evaluationDeGouvernance) {
+                    $query->where('evaluationId', $evaluationDeGouvernance->id)
+                        ->with(['formulaireDeGouvernance.categories_de_gouvernance' => function ($query) {
+                            // Call the recursive function to load nested relationships
+                            $this->loadCategories($query);
+                        }]);
+                }])
+                ->get();
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function loadCategories($query)
+    {
+        $query->with(['sousCategoriesDeGouvernance' => function ($query) {
+            // Recursively load sousCategoriesDeGouvernance
+            $this->loadCategories($query);
+        }, 'questions_de_gouvernance.reponses' => function ($query) {
+            $query->sum('point');
+        },]);
+    }
+
+    public function sumReponses($query)
+    {
+        $query->sum('point');
     }
 }

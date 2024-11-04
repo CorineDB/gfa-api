@@ -2,11 +2,9 @@
 
 namespace App\Services;
 
+use App\Http\Resources\gouvernance\FichesDeSyntheseResource;
+use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
-use App\Models\FormulaireDeGouvernance;
-use App\Models\Programme;
-use App\Models\QuestionDeGouvernance;
-use App\Models\Soumission;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\FormulaireDeGouvernanceRepository;
 use App\Repositories\OptionDeReponseRepository;
@@ -97,11 +95,15 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $programme = Auth::user()->programme;
             }
 
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+
             if(isset($attributs['evaluationId'])){
                 if(!(($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId'])) && $evaluationDeGouvernance->programmeId == $programme->id))
                 {
                     throw new Exception( "Evaluation de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
+            
+                $attributs = array_merge($attributs, ['evaluationId' => $evaluationDeGouvernance->id]);
             }
 
             if(isset($attributs['formulaireDeGouvernanceId'])){
@@ -109,6 +111,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 {
                     throw new Exception( "Formulaire de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
+            
+                $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
 
             if(isset($attributs['organisationId'])){
@@ -122,14 +126,14 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $organisation = Auth::user()->profilable;
             }
 
+            $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
+
             /*dd(Soumission::where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->get());
 
             dd($attributs);*/
 
             if(($soumission = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first()) == null)
             {
-                $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
-
                 $soumission = $this->repository->create($attributs);
             }
             else{
@@ -146,10 +150,11 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $soumission->save();
 
-            if($attributs['response_data']['factuel']){
-                $soumission->fill($attributs['response_data']['factuel']);
+            if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
+                $soumission->fill($attributs['factuel']);
                 $soumission->save();
-                foreach ($attributs['response_data']['factuel'] as $key => $item) {
+
+                foreach ($attributs['factuel']['response_data'] as $key => $item) {
 
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
                     {
@@ -162,26 +167,27 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     if(!$option && $option->programmeId == $programme->id) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if(!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())){
-                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'questionId' => $questionDeGouvernance->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                     }
                     else{
-                        $reponseDeLaCollecte->fill(array_merge($item, ['type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                        unset($item['questionId']);
+                        $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
 
-                    if(isset($attributs['preuves']))
+                    if(isset($item['preuves']) && !empty($item['preuves']))
                     {
-                        foreach($attributs['preuves'] as $preuve)
+                        foreach($item['preuves'] as $preuve)
                         {
                             $this->storeFile($preuve, 'soumissions/preuves/', $reponseDeLaCollecte, null, 'preuves');
                         }
                     }
                 }
             }
-            else if($attributs['response_data']['perception']){
-                $soumission->fill($attributs['response_data']['perception']);
+            else if(isset($attributs['perception']) && !empty($attributs['perception'])){
+                $soumission->fill($attributs['perception']);
                 $soumission->save();
-                foreach ($attributs['response_data']['perception'] as $key => $item) {
+                foreach ($attributs['perception']['response_data'] as $key => $item) {
 
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
                     {
@@ -194,17 +200,20 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     if(!$option && $option->programmeId == $programme->id) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if(!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())){
-                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'questionId' => $questionDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                     }
                     else{
-                        $reponseDeLaCollecte->fill(array_merge($item, ['type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
+                        unset($item['questionId']);
+                        $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
                 }
             }
 
             if(($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)){
-
+                
+                $soumission->refresh();
+                
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function($query) use ($soumission) {
                     $query->where(function($query){
                         $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
@@ -247,23 +256,23 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         }
     }
 
-    public function update($soumissions, array $attributs) : JsonResponse
+    public function update($soumission, array $attributs) : JsonResponse
     {
         DB::beginTransaction();
 
         try {
 
-            if(!is_object($soumissions) && !($soumissions = $this->repository->findById($soumissions))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $this->repository->update($soumissions->id, $attributs);
+            $this->repository->update($soumission->id, $attributs);
 
-            $soumissions->refresh();
+            $soumission->refresh();
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
-            $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($soumissions));
+            $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($soumission));
 
-            LogActivity::addToLog("Modification", $message, get_class($soumissions), $soumissions->id);
+            LogActivity::addToLog("Modification", $message, get_class($soumission), $soumission->id);
 
             DB::commit();
 
@@ -278,162 +287,44 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         }
     }
 
-    private function depouillement_interpretation($soumissionId)
+
+    /**
+     * Liste des soumissions d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function fiche_de_synthese($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        $programme = auth()->user()->programme;
+        try
+        {
+            if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-        if(is_string($soumissionId)){
-
-            if(!(($soumission = app(EvaluationDeGouvernanceRepository::class)->findById($soumissionId)) && $soumission->programmeId == $programme->id))
-            {
-                throw new Exception( "Soumission introuvable dans le programme.", Response::HTTP_NOT_FOUND);
-            }
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new FichesDeSyntheseResource($soumission->fiche_de_synthese), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
-        else $soumission = $soumissionId;
 
-        $reponsesDeLaCollecte = $soumission->reponses_de_la_collecte;
-
-        $soumission->formulaireDeGouvernance->categories_de_gouvernance
-        ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
-            $nbrePrincipe = 0;
-            $totalScoreFactuel = 0;
-            $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
-                // Calculate score_factuel for each principle
-                $nbreIndicateurs = 0;//$principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
-                $totalNote = 0;//$principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
     
+    /**
+     * Liste des soumissions d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function recommandations($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-                $principle->criteres_de_gouvernance->each(function($critere) use(&$nbreIndicateurs, &$totalNote){ // Iterate over each principle
-                    // Calculate score_factuel for each principle
-                    $nbreIndicateurs+= $critere->indicateurs_de_gouvernance->count(); // Count the indicators
-                    $totalNote+= $critere->indicateurs_de_gouvernance->sum('note'); // Sum the notes
-                });
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new RecommandationsResource($soumission->recommandations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
 
-                // Calculate score_factuel
-                if ($nbreIndicateurs > 0 && $totalNote > 0) {
-
-                    $principle->score_factuel = $totalNote / $nbreIndicateurs;
-                } else {
-                    $principle->score_factuel = 0; // Handle case with no indicators
-                }
-
-                $totalScoreFactuel+=$principle->score_factuel;
-
-                $nbrePrincipe++;
-            });
-
-            // Calculate indice_factuel
-            if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
-
-                $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
-            } else {
-                $type->indice_factuel = 0; // Handle case with no indicators
-            }
-
-            // Add the calculated factuel index to the total sum
-            $totalIndiceFactuel += $type->indice_factuel;
-            $nbreDeTypes++; // Count the number of governance principles
-        });
-
-        $types = app(TypeDeGouvernanceRepository::class)->getInstance()->where("programmeId", $programme->id)
-            ->get()
-            ->load([
-                'principes_de_gouvernance.criteres_de_gouvernance.indicateurs_de_gouvernance' => function ($query) use ($enqueteId, $organisationId) {
-                    $query->selectRaw('
-                        indicateurs_de_gouvernance.*, 
-                        SUM(options_de_reponse.note) as note
-                    ')/*
-                    $query->selectRaw('
-                        indicateurs_de_gouvernance.*, 
-                        SUM(CASE 
-                            WHEN options_de_reponse.slug = "oui" THEN 1 
-                            ELSE 0 
-                        END) as note
-                    ')*/
-                    ->leftJoin('reponses_collecter', 'indicateurs_de_gouvernance.id', '=', 'reponses_collecter.indicateurDeGouvernanceId')
-                    ->leftJoin('options_de_reponse', 'reponses_collecter.optionDeReponseId', '=', 'options_de_reponse.id')
-                    ->where('reponses_collecter.enqueteDeCollecteId', $enqueteId)
-                    ->where('reponses_collecter.organisationId', $organisationId) 
-                    ->groupBy('indicateurs_de_gouvernance.id'); // Group by the principle (or category) of governance
-                }
-            ])/*
-            ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
-                $nbrePrincipe = 0;
-                $totalScoreFactuel = 0;
-                $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
-                    // Calculate score_factuel for each principle
-                    $nbreIndicateurs = $principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
-                    $totalNote = $principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
-        
-                    // Calculate score_factuel
-                    if ($nbreIndicateurs > 0 && $totalNote > 0) {
-
-                        $principle->score_factuel = $totalNote / $nbreIndicateurs;
-                    } else {
-                        $principle->score_factuel = 0; // Handle case with no indicators
-                    }
-
-                    $totalScoreFactuel+=$principle->score_factuel;
-
-                    $nbrePrincipe++;
-                });
-
-                // Calculate indice_factuel
-                if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
-
-                    $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
-                } else {
-                    $type->indice_factuel = 0; // Handle case with no indicators
-                }
-
-                // Add the calculated factuel index to the total sum
-                $totalIndiceFactuel += $type->indice_factuel;
-                $nbreDeTypes++; // Count the number of governance principles
-            })*/
-            ->each(function($type) use (&$totalIndiceFactuel, &$nbreDeTypes)  { // Iterate over each governance type
-                $nbrePrincipe = 0;
-                $totalScoreFactuel = 0;
-                $type->principes_de_gouvernance->each(function($principle) use(&$nbrePrincipe, &$totalScoreFactuel){ // Iterate over each principle
-                    // Calculate score_factuel for each principle
-                    $nbreIndicateurs = 0;//$principle->indicateurs_criteres_de_gouvernance->count(); // Count the indicators
-                    $totalNote = 0;//$principle->indicateurs_criteres_de_gouvernance->sum('note'); // Sum the notes
-        
-
-                    $principle->criteres_de_gouvernance->each(function($critere) use(&$nbreIndicateurs, &$totalNote){ // Iterate over each principle
-                        // Calculate score_factuel for each principle
-                        $nbreIndicateurs+= $critere->indicateurs_de_gouvernance->count(); // Count the indicators
-                        $totalNote+= $critere->indicateurs_de_gouvernance->sum('note'); // Sum the notes
-                    });
-
-                    // Calculate score_factuel
-                    if ($nbreIndicateurs > 0 && $totalNote > 0) {
-
-                        $principle->score_factuel = $totalNote / $nbreIndicateurs;
-                    } else {
-                        $principle->score_factuel = 0; // Handle case with no indicators
-                    }
-
-                    $totalScoreFactuel+=$principle->score_factuel;
-
-                    $nbrePrincipe++;
-                });
-
-                // Calculate indice_factuel
-                if ($nbrePrincipe > 0 && $totalScoreFactuel > 0) {
-
-                    $type->indice_factuel = $totalScoreFactuel / $nbrePrincipe;
-                } else {
-                    $type->indice_factuel = 0; // Handle case with no indicators
-                }
-
-                // Add the calculated factuel index to the total sum
-                $totalIndiceFactuel += $type->indice_factuel;
-                $nbreDeTypes++; // Count the number of governance principles
-            });
-
-            return [
-                "indice_factuel" => $totalIndiceFactuel ? $totalIndiceFactuel/$nbreDeTypes : 0,
-                "fiche_de_synthese_factuel" => FicheSyntheseEvaluationFactuelleResource::collection($types)
-            ];
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 }

@@ -21,9 +21,9 @@ class AddColumnPositionToCategoriesDeGouvernanceAndQuestionsDeGouvenanceTable ex
             });
         }
 
-        if(Schema::hasTable('questions_de_gouvenance')){
-            Schema::table('questions_de_gouvenance', function (Blueprint $table) {
-                if(!Schema::hasColumn('questions_de_gouvenance', 'position')){
+        if(Schema::hasTable('questions_de_gouvernance')){
+            Schema::table('questions_de_gouvernance', function (Blueprint $table) {
+                if(!Schema::hasColumn('questions_de_gouvernance', 'position')){
                     $table->integer('position')->default(0);
                 }
             });
@@ -45,9 +45,9 @@ class AddColumnPositionToCategoriesDeGouvernanceAndQuestionsDeGouvenanceTable ex
             });
         }
 
-        if(Schema::hasTable('questions_de_gouvenance')){
-            Schema::table('questions_de_gouvenance', function (Blueprint $table) {
-                if(Schema::hasColumn('questions_de_gouvenance', 'position')){
+        if(Schema::hasTable('questions_de_gouvernance')){
+            Schema::table('questions_de_gouvernance', function (Blueprint $table) {
+                if(Schema::hasColumn('questions_de_gouvernance', 'position')){
                     $table->dropColumn('position');
                 }
             });

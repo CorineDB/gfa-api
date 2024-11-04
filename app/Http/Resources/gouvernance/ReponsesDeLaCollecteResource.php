@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\gouvernance;
 
+use App\Http\Resources\FichierResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -17,7 +18,7 @@ class ReponsesDeLaCollecteResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'type' => $this->type,
+            'type' => $this->type, 
             'point' => $this->point,
             "sourceDeVerification" => $this->sourceDeVerification,
             "sourceDeVerificationId" => $this->source_de_verification ? $this->source_de_verification->secure_id : null,
@@ -26,7 +27,8 @@ class ReponsesDeLaCollecteResource extends JsonResource
             "soumissionId" => $this->soumission->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d H:i:s"),
-            'updated_at' => Carbon::parse($this->updated_at)->format("Y-m-d H:i:s")
+            'updated_at' => Carbon::parse($this->updated_at)->format("Y-m-d H:i:s"),
+            'preuves' => FichierResource::collection($this->preuves_de_verification)
         ];
     }
 }
