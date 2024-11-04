@@ -9,4 +9,23 @@ deploy_production:
   only:
     - corine
   script:
-    - sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /chemin/vers/votre/projet && git pull origin main && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+    - sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /usr/local/lsws/gfa_se_backend_webapp && git pull origin main && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+
+
+# stages:
+#   - deploy
+
+# before_script:
+#   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+#   - eval $(ssh-agent -s)
+#   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+#   - mkdir -p ~/.ssh
+#   - chmod 700 ~/.ssh
+#   - ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+
+# deploy_production:
+#   stage: deploy
+#   only:
+#     - main
+#   script:
+#     - ssh $SSH_USER@$SSH_HOST "cd /chemin/vers/votre/projet && git pull origin main && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
