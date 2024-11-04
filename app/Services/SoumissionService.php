@@ -179,7 +179,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     {
                         foreach($item['preuves'] as $preuve)
                         {
-                            $this->storeFile($preuve, 'soumissions/preuves/', $reponseDeLaCollecte, null, 'preuves');
+                            $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
                         }
                     }
                 }
@@ -299,7 +299,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         {
             if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new FichesDeSyntheseResource($soumission->fiche_de_synthese), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $soumission->fiche_de_synthese ? new FichesDeSyntheseResource($soumission->fiche_de_synthese) : null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -319,7 +319,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         {
             if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new RecommandationsResource($soumission->recommandations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => RecommandationsResource::collection($soumission->recommandations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

@@ -89,8 +89,6 @@ class RappelCron extends Command
                 $rappel->statut = 1;
                 $rappel->save();
             }
-
-
         }
     }
 
