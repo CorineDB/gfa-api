@@ -94,8 +94,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             else{
                 $programme = Auth::user()->programme;
             }
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $programme, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
@@ -107,6 +105,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             
                 $attributs = array_merge($attributs, ['evaluationId' => $evaluationDeGouvernance->id]);
             }
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $programme, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
 
             if(isset($attributs['formulaireDeGouvernanceId'])){
                 if(!(($formulaireDeGouvernance = app(FormulaireDeGouvernanceRepository::class)->findById($attributs['formulaireDeGouvernanceId'])) && $formulaireDeGouvernance->programmeId == $programme->id))
