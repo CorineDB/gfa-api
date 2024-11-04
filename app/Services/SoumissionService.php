@@ -150,6 +150,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $soumission->save();
 
+            dd($soumission);
+
             if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
                 $soumission->fill($attributs['factuel']);
                 $soumission->save();
