@@ -74,4 +74,16 @@ class EvaluationDeGouvernance extends Model
     {
         return $this->morphMany(ActionAMener::class, "actionable");
     }
+
+    public function fiches_de_synthese()
+    {
+        return $this->hasManyThrough(
+            FicheDeSynthese::class,
+            Soumission::class,
+            'evaluationId',
+            'soumissionId',
+            'id',
+            'id'
+        );
+    }
 }

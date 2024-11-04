@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Resources\gouvernance\FicheSyntheseEvaluationDePerceptionResource;
-use App\Http\Resources\gouvernance\FicheSyntheseEvaluationFactuelleResource;
+use App\Http\Resources\gouvernance\FicheDeSyntheseEvaluationFactuelleResource;
 use App\Models\EvaluationDeGouvernance;
 use App\Models\Soumission;
 use App\Repositories\EvaluationDeGouvernanceRepository;
@@ -61,8 +61,8 @@ class GenerateEvaluationResultats extends Command
         $this->alert("Generated result for soumission ID SO");
         // Process each soumission to generate results
         foreach ($soumissions as $soumission) {
-            $result = $this->generateResultForSoumission($soumission);
-            $fiche = app(FicheDeSyntheseRepository::class)->create(['type' => $soumission->type, 'synthese' => $result, 'evaluatedAt' => now(), 'soumissionId' => $soumission->id, 'programmeId' => $soumission->programmeId]);
+            $results = $this->generateResultForSoumission($soumission);
+            $fiche = app(FicheDeSyntheseRepository::class)->create(['type' => $soumission->type, 'synthese' => $results, 'evaluatedAt' => now(), 'soumissionId' => $soumission->id, 'programmeId' => $soumission->programmeId]);
             $this->info("Generated result for soumission ID {$soumission->id}: {$fiche}");
         }
 
@@ -72,7 +72,7 @@ class GenerateEvaluationResultats extends Command
     /**
      * Generate a result for a given soumission.
      *
-     * @param EvaluationDeGouvernance $soumission
+     * @param Soumission $soumission
      * @return string
      */
     protected function generateResultForSoumission(Soumission $soumission)
@@ -98,7 +98,6 @@ class GenerateEvaluationResultats extends Command
 
     public function generateSyntheseForPerceptionSoumission(Soumission $soumission)
     {
-
         return $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) {
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) {
                 $question_de_gouvernance->moyenne_ponderee = $question_de_gouvernance->reponses->sum('point');
@@ -106,17 +105,12 @@ class GenerateEvaluationResultats extends Command
             $categorie_de_gouvernance->indice_de_perception = $categorie_de_gouvernance->questions_de_gouvernance->sum('moyenne_ponderee') / $categorie_de_gouvernance->questions_de_gouvernance->count();
         });
 
-        dd($results_categories_de_gouvernance);
-
-        // Placeholder for your logic to generate the result
-        // This could involve calculations, data manipulations, etc.
-        // Return a string or a result based on the processing
         return FicheSyntheseEvaluationDePerceptionResource::collection([]);
     }
 
     public function generateSyntheseForFactuelleSoumission(Soumission $soumission)
     {
-        return $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) {
+        $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) {
             // Call the recursive function to load nested relationships
             $this->loadCategories($query);
         }])->get()->each(function ($categorie_de_gouvernance) {
@@ -141,14 +135,8 @@ class GenerateEvaluationResultats extends Command
             }
 
         });
-
-        /*$results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance->each(function($categorie_de_gouvernance){
-
-        });*/
-        // Placeholder for your logic to generate the result
-        // This could involve calculations, data manipulations, etc.
-        // Return a string or a result based on the processing
-        return FicheSyntheseEvaluationFactuelleResource::collection([]);
+        
+        return FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance);
     }
 
     public function loadCategories($query)

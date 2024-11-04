@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
+use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
@@ -213,12 +214,18 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         {
             if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $organisation=$evaluationDeGouvernance->soumissions()
-            ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
-            ->get()->groupBy('organisationId');
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation->map(function ($soumissions, $organisationId) {
+            $organisation = $evaluationDeGouvernance->soumissions()
+                                                    ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
+                                                    ->get()->groupBy('organisationId');
+            $organisation_fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()
+                                                    ->with(['soumission']) // Load the associated organisations
+                                                    ->get()->groupBy(function ($item) {
+                                                        return $item->soumission->organisationId;
+                                                    });
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation_fiches_de_synthese->map(function ($fiches_de_synthese, $organisationId) {
                     
-                $organisation = $soumissions->first()->organisation;
+                $organisation = $fiches_de_synthese->first()->soumission->organisation;
+
                 
                         return [
                             "id"                    => $organisation->secure_id,
@@ -228,7 +235,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'nom_point_focal'       => $organisation->nom_point_focal,
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
-                            'soumissions' => SoumissionsResource::collection($soumissions)
+                            'fiches_de_synthese'    => FicheDeSyntheseResource::collection($fiches_de_synthese)
                         ];
                     })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }

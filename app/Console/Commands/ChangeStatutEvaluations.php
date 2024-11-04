@@ -2,6 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Events\NewNotification;
+use App\Jobs\RappelJob;
+use App\Models\EvaluationDeGouvernance;
+use App\Notifications\RappelNotification;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
@@ -41,23 +45,58 @@ class ChangeStatutEvaluations extends Command
     public function handle()
     {
         $today = Carbon::today()->toDateString();
-        
-        DB::table('evaluations_de_gouvernance')
-            ->where(function($query) use ($today) {
-                $query->where('debut', '<=', $today)
-                      ->orWhere('fin', '<=', $today);
-            })
-            ->update([
-                'statut' => DB::raw("CASE 
-                                        WHEN debut <= '$today' THEN 0 
-                                        WHEN fin <= '$today' THEN 1 
-                                     END")
-            ]);
 
+        // Fetch up to $maxUpdates evaluations that should start today and update their status to '0' (demarrage)
+        $startingEvaluations = EvaluationDeGouvernance:://DB::table('evaluations_de_gouvernance')->
+                                                    where('debut', '<=', $today)
+                                                    ->where('statut', '<', 0)
+                                                    ->get();
         
-        // Change the status based on the date
+        /*
+            DB::table('evaluations_de_gouvernance')
+                ->where(function($query) use ($today) {
+                    $query->where('debut', '<=', $today)
+                        ->orWhere('fin', '<=', $today);
+                })
+                ->update([
+                    'statut' => DB::raw("CASE 
+                                            WHEN debut <= '$today' THEN 0 
+                                            WHEN fin <= '$today' THEN 1 
+                                        END")
+                ]);
+
+        */
+
         DB::table('evaluations_de_gouvernance')
-            ->where('fin', '<=', $today)
+            ->whereIn('id', $startingEvaluations->pluck('id'))
+            ->update(['statut' => 0]);
+    
+        foreach ($startingEvaluations as $key => $starting_evaluation) {
+            
+            $data['texte'] = $starting_evaluation->description;
+            $data['id'] = $starting_evaluation->id;
+            $data['auteurId'] = 0;
+            $notification = new RappelNotification($data);
+
+            foreach ($starting_evaluation->organisations as $key => $organisation) {
+
+                $organisation->user->notify($notification);
+    
+                $notification = $organisation->user->notifications->last();
+    
+                event(new NewNotification($this->formatageNotification($notification, $organisation->user)));
+    
+                RappelJob::dispatch($organisation->user, $organisation->description);
+            }
+        }
+
+        $endedEvaluations = EvaluationDeGouvernance::where('fin', '<=', $today)
+                                                    ->where('statut', '==', 0)
+                                                    ->get();
+
+        // Change the status based on the date        
+        DB::table('evaluations_de_gouvernance')
+            ->whereIn('id', $endedEvaluations->pluck('id'))
             ->update(['statut' => 1]); // Assuming '1' indicates a finished evaluation
 
         // Get all evaluations that have now ended
@@ -66,10 +105,27 @@ class ChangeStatutEvaluations extends Command
             ->where('statut', 1) // Get evaluations just updated to finished
             ->get();
 
-        foreach ($endedEvaluations as $evaluation) {
-            // Dispatch the GenerateEvaluationResultats command for each evaluation
+        foreach ($endedEvaluations as $key => $ended_evaluation) {
+            
+            $data['texte'] = $ended_evaluation->description;
+            $data['id'] = $ended_evaluation->id;
+            $data['auteurId'] = 0;
+            $notification = new RappelNotification($data);
+
+            foreach ($ended_evaluation->organisations as $key => $organisation) {
+
+                $organisation->user->notify($notification);
+    
+                $notification = $organisation->user->notifications->last();
+    
+                event(new NewNotification($this->formatageNotification($notification, $organisation->user)));
+    
+                RappelJob::dispatch($organisation->user, $organisation->description);
+            }
+
+            // Call the GenerateEvaluationResultats command with the evaluation ID
             Artisan::call('command:generate-evaluation-resultats', [
-                '--evaluation' => $evaluation->id
+                'evaluationId' => $ended_evaluation->id
             ]);
         }
             

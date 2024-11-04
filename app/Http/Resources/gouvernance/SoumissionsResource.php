@@ -25,7 +25,6 @@ class SoumissionsResource extends JsonResource
             'sexe'                  => $this->when($this->type === 'perception',  $this->sexe),
             'age'                   => $this->when($this->type === 'perception',  $this->age),
             'categorieDeParticipant'=> $this->when($this->type === 'perception',  $this->categorieDeParticipant),
-            
             'submitted_at'          => Carbon::parse($this->submitted_at)->format("Y-m-d"),
             'submittedBy'           => $this->authoredBy ? [
                 'id'                    => $this->authoredBy->secure_id,
@@ -37,7 +36,7 @@ class SoumissionsResource extends JsonResource
             'programmeId'               => $this->programme->secure_id,
             'reponses_de_la_collecte'   => ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte),
             'created_at'                => Carbon::parse($this->created_at)->format("Y-m-d"),
-            'fiche_de_synthese'         => new FichesDeSyntheseResource($this->fiche_de_synthese),
+            'fiche_de_synthese'         => $this->fiche_de_synthese ? new FichesDeSyntheseResource($this->fiche_de_synthese) : null,
         ];
     }
 }
