@@ -87,6 +87,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         DB::beginTransaction();
 
         try {
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $attributs, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
             if(isset($attributs['programmeId']) && empty($attributs['programmeId'])){
                 $programme = $evaluationDeGouvernance = app(ProgrammeRepository::class)->findById($attributs['programmeId']);
@@ -94,8 +95,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             else{
                 $programme = Auth::user()->programme;
             }
-
-            dd($programme);
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
@@ -151,8 +150,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             $soumission->type = $soumission->formulaireDeGouvernance->type;
 
             $soumission->save();
-
-            dd($soumission);
 
             if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
                 $soumission->fill($attributs['factuel']);
