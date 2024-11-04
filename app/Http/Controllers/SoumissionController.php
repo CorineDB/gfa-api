@@ -63,6 +63,7 @@ class SoumissionController extends Controller
      */
     public function store(SoumissionRequest $request, $evaluationId)
     {
+        dd($evaluationId);
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
         return $this->soumissionService->create($atttributs);

@@ -95,8 +95,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $programme = Auth::user()->programme;
             }
 
-            dd($programme);
-
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             if(isset($attributs['evaluationId'])){
@@ -151,8 +149,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             $soumission->type = $soumission->formulaireDeGouvernance->type;
 
             $soumission->save();
-
-            dd($soumission);
 
             if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
                 $soumission->fill($attributs['factuel']);
