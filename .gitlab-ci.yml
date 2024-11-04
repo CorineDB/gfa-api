@@ -1,9 +1,12 @@
 stages:
   - deploy
 
+before_script:
+  - apt-get update && apt-get install -y sshpass
+
 deploy_production:
   stage: deploy
   only:
-    - corine  # Spécifie la branche (par exemple "main" ou "master") que vous souhaitez déployer
+    - corine
   script:
-    - sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /usr/local/lsws/gfa_se_backend_webapp && git pull origin main && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+    - sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /chemin/vers/votre/projet && git pull origin main && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
