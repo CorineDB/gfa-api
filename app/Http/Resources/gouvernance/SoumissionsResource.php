@@ -36,7 +36,7 @@ class SoumissionsResource extends JsonResource
             'programmeId'               => $this->programme->secure_id,
             'reponses_de_la_collecte'   => ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte),
             'created_at'                => Carbon::parse($this->created_at)->format("Y-m-d"),
-            'fiche_de_synthese'         => $this->fiche_de_synthese ? new FichesDeSyntheseResource($this->fiche_de_synthese) : null,
+            //'fiche_de_synthese'         => $this->fiche_de_synthese ? new FichesDeSyntheseResource($this->fiche_de_synthese) : null,
         ];
     }
 }
