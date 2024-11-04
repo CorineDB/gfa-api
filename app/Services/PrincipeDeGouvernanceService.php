@@ -76,6 +76,9 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
         DB::beginTransaction();
 
         try {
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             $principeDeGouvernance = $this->repository->create($attributs);
 

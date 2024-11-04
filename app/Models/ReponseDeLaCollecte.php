@@ -17,7 +17,9 @@ class ReponseDeLaCollecte extends Model
 
     protected $fillable = array("point", "type", 'sourceDeVerification', 'soumissionId', 'sourceDeVerificationId', 'questionId', 'optionDeReponseId', 'programmeId');
 
-    protected $casts = [];
+    protected $casts = [
+        "point" => 'float'
+    ];
 
     protected static function boot()
     {
@@ -61,7 +63,7 @@ class ReponseDeLaCollecte extends Model
 
     public function recommandations()
     {
-        return $this->morphMany(Recommandation::class, "recommandable");
+        return $this->morphMany(Recommandation::class, "recommandationable");
     }
 
     public function actions_a_mener()

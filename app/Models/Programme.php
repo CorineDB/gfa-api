@@ -445,12 +445,17 @@ class Programme extends Model
         return $this->hasMany(TypeDeGouvernance::class, 'programmeId');
     }
 
-    public function sources_de_verification()
+    public function options_de_reponse()
     {
         return $this->hasMany(OptionDeReponse::class, 'programmeId');
     }
 
-    public function formualaires_de_gouvernance()
+    public function sources_de_verification()
+    {
+        return $this->hasMany(SourceDeVerification::class, 'programmeId');
+    }
+
+    public function formulaires_de_gouvernance()
     {
         return $this->hasMany(FormulaireDeGouvernance::class, 'programmeId');
     }
@@ -458,6 +463,11 @@ class Programme extends Model
     public function evaluations_de_gouvernance()
     {
         return $this->hasMany(EvaluationDeGouvernance::class, 'programmeId');
+    }
+
+    public function soumissions()
+    {
+        return $this->hasMany(Soumission::class, 'programmeId');
     }
 
     public function optionsDeReponse()
@@ -506,6 +516,23 @@ class Programme extends Model
     {
         return $this->hasMany(CadreDeMesureRendement::class, 'rendementable_id')->where('rendementable_type', get_class($this));
     }
+
+    public function fiches_de_synthese()
+    {
+        return $this->hasMany(FicheDeSynthese::class, 'programmeId');
+    }
+
+    public function actions_a_mener()
+    {
+        return $this->hasMany(ActionAMener::class, 'programmeId');
+    }
+
+    public function recommandations()
+    {
+        return $this->hasMany(Recommandation::class, 'programmeId');
+    }
+
+    
     
     public function resultats_cadre_de_mesure_rendement()
     {

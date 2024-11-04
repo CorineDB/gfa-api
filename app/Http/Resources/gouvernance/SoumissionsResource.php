@@ -17,19 +17,26 @@ class SoumissionsResource extends JsonResource
     {
         //'submittedBy', 'evaluationId', 'formulaireDeGouvernanceId', 'organisationId'
         return [
-            'id' => $this->secure_id,
-            'libelle' => $this->libelle,
-            'description' => $this->description,
-            'type' => $this->type,
-            'statut' => $this->statut,
-            'comite_members' => $this->comite_members,
-            'commentaire' => $this->commentaire,
-            'submitted_at' => Carbon::parse($this->submitted_at)->format("Y-m-d"),
-            'submittedBy' => $this->authoredBy->secure_id,
+            'id'                    => $this->secure_id,
+            'type'                  => $this->type,
+            'statut'                => $this->statut,
+            'comite_members'        => $this->when($this->type === 'factuel',  $this->comite_members),
+            'commentaire'           => $this->when($this->type === 'perception',  $this->commentaire),
+            'sexe'                  => $this->when($this->type === 'perception',  $this->sexe),
+            'age'                   => $this->when($this->type === 'perception',  $this->age),
+            'categorieDeParticipant'=> $this->when($this->type === 'perception',  $this->categorieDeParticipant),
+            'submitted_at'          => Carbon::parse($this->submitted_at)->format("Y-m-d"),
+            'submittedBy'           => $this->authoredBy ? [
+                'id'                    => $this->authoredBy->secure_id,
+                'nom'                   => $this->authoredBy->nom
+            ] : null,
             'formulaireDeGouvernanceId' => $this->formulaireDeGouvernance->secure_id,
-            'evaluationId' => $this->evaluation->secure_id,
-            'programmeId' => $this->programme->secure_id,
-            'created_at' => $this->created_at
+            'evaluationId'              => $this->evaluation_de_gouvernance->secure_id,
+            'organisationId'            => $this->organisation->secure_id,
+            'programmeId'               => $this->programme->secure_id,
+            'reponses_de_la_collecte'   => ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte),
+            'created_at'                => Carbon::parse($this->created_at)->format("Y-m-d"),
+            //'fiche_de_synthese'         => $this->fiche_de_synthese ? new FichesDeSyntheseResource($this->fiche_de_synthese) : null,
         ];
     }
 }

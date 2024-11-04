@@ -12,6 +12,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\SendPasswordValidityExpirationSoonMail::class,
         Commands\ChangeStatut::class,
+        Commands\ChangeStatutEvaluations::class,
         Commands\Demarrage::class,
         Commands\RappelCron::class,
         Commands\Rapport::class,
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
 
         $schedule->command('command:change-statut')->everyMinute();
+        $schedule->command('command:change-statut-evaluations')->everyMinute();
 
         $schedule->command('command:demarrage')->everyMinute();
 

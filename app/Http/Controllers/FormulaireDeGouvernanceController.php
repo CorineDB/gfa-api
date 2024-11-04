@@ -29,6 +29,15 @@ class FormulaireDeGouvernanceController extends Controller
      */
     public function index()
     {
+        // Retrieve query parameters with defaults
+        $columns = explode(',', request()->query('columns', '*'));
+
+        $relations = request()->query('relations', null) ? explode(',', request()->query('relations')): []; // Default to no relations
+
+        if(request()->query('filters')){
+            $filters = request()->query('filters', []);
+            return $this->formulaireDeGouvernanceService->allFiltredBy($filters, $columns, $relations);
+        }
         return $this->formulaireDeGouvernanceService->all();
     }
 

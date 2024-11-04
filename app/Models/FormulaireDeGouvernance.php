@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use App\Http\Resources\gouvernance\OptionsDeReponseResource;
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class FormulaireDeGouvernance extends Model
 {
     protected $table = 'formulaires_de_gouvernance';
+    
     public $timestamps = true;
 
     use HasSecureIds, HasFactory ;
@@ -20,12 +23,37 @@ class FormulaireDeGouvernance extends Model
 
     protected $casts = [];
 
+    protected $with = [];
+
     protected static function boot()
     {
         parent::boot();
+
+        static::deleted(function ($formulaire_de_gouvernance) {
+
+            DB::beginTransaction();
+            try {
+
+                $formulaire_de_gouvernance->options_de_reponse()->delete();
+                $formulaire_de_gouvernance->questions_de_gouvernance()->delete();
+                $formulaire_de_gouvernance->categories_de_gouvernance()->delete();
+                $formulaire_de_gouvernance->evaluations_de_gouvernance()->delete();
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
     }
 
     public function categories_de_gouvernance()
+    {
+        return $this->hasMany(CategorieDeGouvernance::class, 'formulaireDeGouvernanceId')->whereNull('categorieDeGouvernanceId');
+    }
+
+    public function categorie_de_gouvernance()
     {
         return $this->belongsToMany(CategorieDeGouvernance::class, 'questions_de_gouvernance', 'formulaireDeGouvernanceId', 'categorieDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(['id', 'type', 'indicateurDeGouvernanceId', 'programmeId']);
     }
@@ -42,11 +70,16 @@ class FormulaireDeGouvernance extends Model
 
     public function programme()
     {
-        return $this->hasMany(Programme::class, 'programmeId');
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function createdBy()
     {
-        return $this->hasMany(User::class, 'created_by');
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function evaluations_de_gouvernance()
+    {
+        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'formulaireDeGouvernanceId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at');
     }
 }

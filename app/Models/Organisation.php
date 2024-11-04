@@ -138,7 +138,7 @@ class Organisation extends Model
         return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants"]);
     }
 
-    public function sousmissions()
+    public function soumissions()
     {
         return $this->hasMany(Soumission::class, 'organisationId');
     }

@@ -32,8 +32,6 @@ class CritereDeGouvernance extends Model
                     'nom' => time() . '::' . $critere_de_gouvernance->nom
                 ]);
 
-                $critere_de_gouvernance->indicateurs_de_gouvernance()->delete();
-
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -53,7 +51,7 @@ class CritereDeGouvernance extends Model
         $categories_de_gouvernance = $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
 
         if($annee_exercice){
-            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
                 $query->where('annee_exercice', $annee_exercice);
             });
         }
@@ -75,7 +73,7 @@ class CritereDeGouvernance extends Model
 
         // Optionally filter by 'annee_exercice'
         if ($annee_exercice) {
-            $query->whereHas('questions_de_gouvernance.formulaire_de_gouvernance', function ($query) use ($annee_exercice) {
+            $query->whereHas('formulaire_de_gouvernance', function ($query) use ($annee_exercice) {
                 $query->where('annee_exercice', $annee_exercice);
             });
         }
@@ -105,7 +103,7 @@ class CritereDeGouvernance extends Model
         )->where("type", "indicateur");
 
         if($annee_exercice){
-            $indicateurs_de_gouvernance = $indicateurs_de_gouvernance->whereHas("questions_de_gouvernance.formulaire_de_gouvernance", function($query) use ($annee_exercice){
+            $indicateurs_de_gouvernance = $indicateurs_de_gouvernance->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
                 $query->where('annee_exercice', $annee_exercice);
             });
         }

@@ -19,12 +19,37 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'id' => $this->secure_id,
             'intitule' => $this->intitule,
             'description' => $this->description,
+            'objectif_attendu' => $this->objectif_attendu,
             'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
             'fin' => Carbon::parse($this->fin)->format("Y-m-d"),
             'annee_exercice' => $this->annee_exercice,
             'statut' => $this->statut,
             'programmeId' => $this->programme->secure_id,
-            'created_at' => $this->created_at
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
+            'formulaire_perception_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'perception')->first()->secure_id,
+            'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance),
+            /*$this->formulaires_de_gouvernance->map(function($formulaire_de_gouvernance){
+                return [
+                    'id' => $formulaire_de_gouvernance->secure_id,
+                    'libelle' => $formulaire_de_gouvernance->libelle,
+                    'description' => $formulaire_de_gouvernance->description,
+                    'type' => $formulaire_de_gouvernance->type,
+                    'lien' => $formulaire_de_gouvernance->lien,
+                    'annee_exercice' => $this->annee_exercice
+                ];
+            }), */
+            'organisations' => $this->organisations->map(function($organisation){
+                return [
+                    "id"                    => $organisation->secure_id,
+                    'nom'                   => optional($organisation->user)->nom ?? null,
+                    'sigle'                 => $this->when($organisation->sigle, $organisation->sigle),
+                    'code'                  => $this->when($organisation->code, $organisation->code),
+                    'nom_point_focal'       => $organisation->nom_point_focal,
+                    'prenom_point_focal'    => $organisation->prenom_point_focal,
+                    'contact_point_focal'   => $organisation->contact_point_focal
+                ];
+            })// FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance)
         ];
     }
 }

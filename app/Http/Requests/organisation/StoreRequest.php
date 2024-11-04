@@ -40,6 +40,16 @@ class StoreRequest extends FormRequest
 
             'sigle'         => ['required','string','max:15', Rule::unique('organisations', 'sigle')->whereNull('deleted_at')],
             'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', "min:2", Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
+
+            'longitude'         => 'required|max:255',
+            'latitude'          => 'required|max:255',
+            'addresse'          => 'required|max:255',
+            'quartier'          => 'required|max:255',
+            'arrondissement'    => 'required|max:255',
+            'commune'           => 'required|max:255',
+            'departement'       => 'required|max:255',
+            'pays'              => 'required|max:255',
+            'secteurActivite'      => 'required|max:255',
         ];
 
         return $rules;
