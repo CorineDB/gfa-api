@@ -87,6 +87,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         DB::beginTransaction();
 
         try {
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $attributs, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
             if(isset($attributs['programmeId']) && empty($attributs['programmeId'])){
                 $programme = $evaluationDeGouvernance = app(ProgrammeRepository::class)->findById($attributs['programmeId']);
