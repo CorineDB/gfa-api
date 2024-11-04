@@ -95,6 +95,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $programme = Auth::user()->programme;
             }
 
+            dd($programme);
+
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             if(isset($attributs['evaluationId'])){
