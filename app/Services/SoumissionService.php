@@ -150,7 +150,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $soumission->save();
 
-            if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
+            /*if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
                 $soumission->fill($attributs['factuel']);
                 $soumission->save();
 
@@ -175,16 +175,13 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->save();
                     }
                     
-                    /*if(isset($item['preuves']) && !empty($item['preuves']))
+                    if(isset($item['preuves']) && !empty($item['preuves']))
                     {
                         foreach($item['preuves'] as $preuve)
                         {
                             $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
                         }
-                    }*/
-                    
-                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => 'responseCount', 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
+                    }
                 }
             }
             else if(isset($attributs['perception']) && !empty($attributs['perception'])){
@@ -211,7 +208,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->save();
                     }
                 }
-            }
+            }*/
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => 'responseCount', 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
