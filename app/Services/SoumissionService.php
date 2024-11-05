@@ -174,17 +174,16 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
-                    
-                    if(isset($item['preuves']) && !empty($item['preuves']))
+                    return response()->json(['statut' => 'success', 'message' => "Enregistrement", 'data' => $attributs, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+
+                    /*if(isset($item['preuves']) && !empty($item['preuves']))
                     {
                         foreach($item['preuves'] as $preuve)
                         {
                             $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
                         }
-                    }
+                    }*/
                 }
-
-                return response()->json(['statut' => 'success', 'message' => "Enregistrement", 'data' => $attributs, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             }/*
             else if(isset($attributs['perception']) && !empty($attributs['perception'])){
