@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\evaluations_de_gouvernance\PerceptionSoumissionRequest;
 use App\Http\Requests\evaluations_de_gouvernance\SoumissionRequest;
 use App\Http\Requests\evaluations_de_gouvernance\SoumissionValidationRequest;
-use App\Http\Requests\soumissions\UpdateRequest;
 use Core\Services\Interfaces\SoumissionServiceInterface;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class SoumissionController extends Controller
 {
@@ -63,6 +63,8 @@ class SoumissionController extends Controller
      */
     public function store(SoumissionRequest $request, $evaluationId)
     {
+        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $evaluationId, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
         return $this->soumissionService->create($atttributs);
