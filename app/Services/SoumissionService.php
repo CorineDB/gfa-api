@@ -175,8 +175,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->save();
                     }
                     
-                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $reponseDeLaCollecte, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
                     if(isset($item['preuves']) && !empty($item['preuves']))
                     {
                         foreach($item['preuves'] as $preuve)
