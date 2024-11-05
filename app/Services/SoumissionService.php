@@ -115,8 +115,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
             
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $formulaireDeGouvernance, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
             if(isset($attributs['organisationId'])){
 
                 if(!(($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])) && $organisation->user->programmeId == $programme->id))
@@ -129,6 +127,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             }
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $formulaireDeGouvernance, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             /*dd(Soumission::where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->get());
 
