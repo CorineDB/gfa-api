@@ -24,8 +24,7 @@ class SoumissionRequest extends FormRequest
      */
     public function authorize()
     {
-        if(is_string($this->evaluation_de_gouvernance))
-        {
+        if (is_string($this->evaluation_de_gouvernance)) {
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
 
@@ -41,35 +40,43 @@ class SoumissionRequest extends FormRequest
     {
         return [
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
-            'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
+            'formulaireDeGouvernanceId'   => [
+                "required",
+                new HashValidatorRule(new FormulaireDeGouvernance()),
+                function ($attribute, $value, $fail) {
+
+                    $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.' . request()->input('organisationId'));
+
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
-                                        ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
-                                        ->first();
+                        ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
+                        ->first();
 
-                    if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
-                    
+                    if ($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
+
                     $this->formulaireCache = $formulaire;
 
-                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisationId', request()->input('organisationId') ?? auth()->user()->profileable->id)->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+                    if (($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisationId', request()->input('organisationId') ?? auth()->user()->profileable->id)->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true) {
                         $fail('La soumission a déjà été validée.');
                     }
-
                 }
             ],
 
             'factuel'                                         => [Rule::requiredIf(!request()->input('perception')), 'array'],
-            
+
             'factuel.comite_members'                                        => ['sometimes', 'array', 'min:1'],
             'factuel.comite_members.*.nom'                                  => ['sometimes', 'string'],
             'factuel.comite_members.*.prenom'                               => ['sometimes', 'string'],
-            'factuel.comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric','digits_between:8,24'],
+            'factuel.comite_members.*.contact'                              => ['sometimes', 'distinct', 'numeric', 'digits_between:8,24'],
 
             //'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', 'min:1'],
-            'factuel.response_data.*.questionId'                    => ['sometimes', Rule::requiredIf(!request()->input('perception')), 'distinct', 
-                new HashValidatorRule(new QuestionDeGouvernance()), 
-                function($attribute, $value, $fail) {
-                    if($this->formulaireCache){
+            'factuel.response_data.*.questionId'                    => [
+                'sometimes',
+                Rule::requiredIf(!request()->input('perception')),
+                'distinct',
+                new HashValidatorRule(new QuestionDeGouvernance()),
+                function ($attribute, $value, $fail) {
+                    if ($this->formulaireCache) {
                         $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($value)->exists();
                         if (!$question) {
                             // Fail validation if no response options are available
@@ -86,20 +93,20 @@ class SoumissionRequest extends FormRequest
                     }*/
                 }
             ],
-            'factuel.response_data.*.optionDeReponseId'             => ['sometimes', Rule::requiredIf(!request()->input('perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'factuel.response_data.*.optionDeReponseId'             => ['sometimes', Rule::requiredIf(!request()->input('perception')), new HashValidatorRule(new OptionDeReponse()), function ($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
                  * If the provided optionDeReponseId is not valid, fail the validation
                  */
-                if($this->formulaireCache){
+                if ($this->formulaireCache) {
                     if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                         $fail('The selected option is invalid for the given formulaire.');
                     }
                 }
             }],
-            'factuel.response_data.*.sourceDeVerificationId'        => ['sometimes', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
-            'factuel.response_data.*.sourceDeVerification'          => ['sometimes', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+            'factuel.response_data.*.sourceDeVerificationId'        => ['nullable', new HashValidatorRule(new SourceDeVerification())],
+            'factuel.response_data.*.sourceDeVerification'          => ['nullable'],
             'factuel.response_data.*.preuves'                       => ['sometimes', "array", "min:0"],
             'factuel.response_data.*.preuves.*'                     => ["file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20480', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20480"],
 
@@ -108,9 +115,12 @@ class SoumissionRequest extends FormRequest
             'perception.response_data.sexe'                         => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'in:masculin,feminin'],
             'perception.response_data.age'                          => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'in:<35,>35'],
 
-            'perception.response_data.*.questionId'      => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'distinct',
+            'perception.response_data.*.questionId'      => [
+                'sometimes',
+                Rule::requiredIf(!request()->input('factuel')),
+                'distinct',
                 new HashValidatorRule(new QuestionDeGouvernance()),
-                function($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) {
                     $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "question_operationnelle")->findByKey($value)->exists();
                     if (!$question) {
                         // Fail validation if no response options are available
@@ -127,7 +137,7 @@ class SoumissionRequest extends FormRequest
                 }
             ],
 
-            'perception.response_data.*.optionDeReponseId'   => ['sometimes', Rule::requiredIf(!request()->input('factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'perception.response_data.*.optionDeReponseId'   => ['sometimes', Rule::requiredIf(!request()->input('factuel')), new HashValidatorRule(new OptionDeReponse()), function ($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -137,16 +147,16 @@ class SoumissionRequest extends FormRequest
                     $fail('The selected option is invalid for the given formulaire.');
                 }
             }],
-            
+
             'perception.response_data.commentaire'                => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'string', 'max:255'],
         ];
     }
 
     /**
-    * Get the error messages for the defined validation rules.
-    *
-    * @return array
-    */
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
@@ -159,7 +169,7 @@ class SoumissionRequest extends FormRequest
             'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
 
             // Custom messages for the 'principeDeGouvernanceId' field
-            'principeDeGouvernanceId.required' => 'Le champ principe de gouvernance est obligatoire.',        
+            'principeDeGouvernanceId.required' => 'Le champ principe de gouvernance est obligatoire.',
         ];
     }
 
@@ -169,8 +179,9 @@ class SoumissionRequest extends FormRequest
      * 
      * @return int
      */
-    private function getCountOfQuestionsOfAFormular(){
-        
+    private function getCountOfQuestionsOfAFormular()
+    {
+
         $this->formulaireCache->questions_de_gouvernance->count();
     }
 }
