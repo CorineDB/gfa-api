@@ -153,8 +153,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             $soumission->type = $soumission->formulaireDeGouvernance->type;
 
             $soumission->save();
-            
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $soumission, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
                 $soumission->fill($attributs['factuel']);
@@ -167,8 +165,12 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         throw new Exception( "Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                     }
 
+                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $questionDeGouvernance, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+
                     //$option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId']);
+                    
+                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $soumission, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
                     if(!$option && $option->programmeId == $programme->id) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
