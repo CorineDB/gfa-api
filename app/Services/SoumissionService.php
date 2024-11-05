@@ -12,6 +12,7 @@ use App\Repositories\OrganisationRepository;
 use App\Repositories\ProgrammeRepository;
 use App\Repositories\QuestionDeGouvernanceRepository;
 use App\Repositories\SoumissionRepository;
+use App\Repositories\SourceDeVerificationRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\SoumissionServiceInterface;
 use App\Traits\Helpers\HelperTrait;
@@ -114,7 +115,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
-            
+
             if(isset($attributs['organisationId'])){
 
                 if(!(($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])) && $organisation->user->programmeId == $programme->id))
@@ -127,10 +128,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             }
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
-
-            /*dd(Soumission::where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->get());
-
-            dd($attributs);*/
 
             if(($soumission = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first()) == null)
             {
@@ -163,8 +160,21 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                     //$option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId']);
-                    
+
                     if(!$option && $option->programmeId == $programme->id) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+
+                    if(isset($item['sourceDeVerificationId']) && !empty($item['sourceDeVerificationId'])){
+                    
+                        if(!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && $sourceDeVerification->programmeId == $programme->id))
+                        {
+                            throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
+                        }
+
+                        $item = array_merge($item, ['sourceDeVerificationId' => $sourceDeVerification->id, 'sourceDeVerification' => null]);
+                    }
+                    else if(isset($item['sourceDeVerification']) && !empty($item['sourceDeVerification'])){
+                        $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
+                    }
 
                     if(!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())){
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'questionId' => $questionDeGouvernance->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
@@ -172,22 +182,18 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     else{
                         unset($item['questionId']);
                         $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
-
-                        return response()->json(['statut' => 'success', 'message' => "Enregistrement", 'data' => $reponseDeLaCollecte, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
                         $reponseDeLaCollecte->save();
                     }
 
-                    /*if(isset($item['preuves']) && !empty($item['preuves']))
+                    if(isset($item['preuves']) && !empty($item['preuves']))
                     {
                         foreach($item['preuves'] as $preuve)
                         {
                             $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
                         }
-                    }*/
+                    }
                 }
-
-            }/*
+            }
             else if(isset($attributs['perception']) && !empty($attributs['perception'])){
                 $soumission->fill($attributs['perception']);
                 $soumission->save();
@@ -212,9 +218,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->save();
                     }
                 }
-            }*/
-
-            //return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => 'responseCount', 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
 
             if(($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)){
                 
