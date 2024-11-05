@@ -45,8 +45,6 @@ class SoumissionRequest extends FormRequest
                 new HashValidatorRule(new FormulaireDeGouvernance()),
                 function ($attribute, $value, $fail) {
 
-                    $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.' . request()->input('organisationId'));
-
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
