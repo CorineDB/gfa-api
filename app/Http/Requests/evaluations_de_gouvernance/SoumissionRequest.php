@@ -105,8 +105,8 @@ class SoumissionRequest extends FormRequest
                     }
                 }
             }],
-            'factuel.response_data.*.sourceDeVerificationId'        => ['sometimes', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())],
-            'factuel.response_data.*.sourceDeVerification'          => ['sometimes', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+            'factuel.response_data.*.sourceDeVerificationId'        => ['sometimes', new HashValidatorRule(new SourceDeVerification())],
+            'factuel.response_data.*.sourceDeVerification'          => ['sometimes'],
             'factuel.response_data.*.preuves'                       => ['sometimes', "array", "min:0"],
             'factuel.response_data.*.preuves.*'                     => ["file", 'mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv|max:20480', "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png|max:20480"],
 
