@@ -160,6 +160,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 foreach ($attributs['factuel']['response_data'] as $key => $item) {
 
+                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $item, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+
                     if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
                     {
                         throw new Exception( "Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
