@@ -63,8 +63,6 @@ class SoumissionController extends Controller
      */
     public function store(SoumissionRequest $request, $evaluationId)
     {
-        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $evaluationId, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
         return $this->soumissionService->create($atttributs);
