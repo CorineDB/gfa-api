@@ -128,8 +128,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $formulaireDeGouvernance, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
             /*dd(Soumission::where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->get());
 
             dd($attributs);*/
@@ -145,6 +143,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     return response()->json(['statut' => 'success', 'message' => "La soumission a déjà été validée.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 }
             }
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $soumission, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             $soumission->refresh();
 
