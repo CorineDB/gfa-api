@@ -134,13 +134,9 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             if(($soumission = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first()) == null)
             {
-                return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => null, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
                 $soumission = $this->repository->create($attributs);
             }
             else{
-                return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $soumission, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
                 $soumission->fill($attributs);
                 $soumission->save();
                 if($soumission->statut){
