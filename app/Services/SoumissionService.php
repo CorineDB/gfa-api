@@ -255,7 +255,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $soumission, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionsResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
         } catch (\Throwable $th) {
 
@@ -286,7 +286,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionsResource($soumissions), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionsResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
         } catch (\Throwable $th) {
 
