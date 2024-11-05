@@ -239,7 +239,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 }
             }
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => 'responseCount', 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => 'Response Count', 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
