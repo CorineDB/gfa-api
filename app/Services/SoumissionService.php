@@ -148,13 +148,13 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 }
             }
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $soumission, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
             $soumission->refresh();
 
             $soumission->type = $soumission->formulaireDeGouvernance->type;
 
             $soumission->save();
+            
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $soumission, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
                 $soumission->fill($attributs['factuel']);
