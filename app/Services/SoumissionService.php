@@ -227,6 +227,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     }
 
                 })->count();
+                return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $responseCount, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
                 if($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()){
                     $soumission->submitted_at = now();
