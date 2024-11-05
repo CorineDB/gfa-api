@@ -161,8 +161,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         throw new Exception( "Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                     }
 
-                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $questionDeGouvernance, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
-
                     //$option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId']);
                     
