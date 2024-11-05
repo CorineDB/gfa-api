@@ -172,8 +172,10 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     else{
                         unset($item['questionId']);
                         $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
-                        $reponseDeLaCollecte->save();
+
                         return response()->json(['statut' => 'success', 'message' => "Enregistrement", 'data' => $reponseDeLaCollecte, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+
+                        $reponseDeLaCollecte->save();
                     }
 
                     /*if(isset($item['preuves']) && !empty($item['preuves']))
