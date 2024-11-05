@@ -150,7 +150,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $soumission->save();
 
-            /*if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
+            if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
                 $soumission->fill($attributs['factuel']);
                 $soumission->save();
 
@@ -183,7 +183,10 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         }
                     }
                 }
-            }
+
+                return response()->json(['statut' => 'success', 'message' => "Enregistrement", 'data' => $attributs, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+
+            }/*
             else if(isset($attributs['perception']) && !empty($attributs['perception'])){
                 $soumission->fill($attributs['perception']);
                 $soumission->save();
