@@ -165,7 +165,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId']);
                     
                     if(!$option && $option->programmeId == $programme->id) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
-                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $option, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
                     if(!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())){
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'questionId' => $questionDeGouvernance->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
@@ -175,6 +174,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
+                    
+                    return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $reponseDeLaCollecte, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
                     if(isset($item['preuves']) && !empty($item['preuves']))
                     {
