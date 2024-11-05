@@ -213,6 +213,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             if(($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)){
                 
                 $soumission->refresh();
+
+                return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => 'responseCount', 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
                 
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function($query) use ($soumission) {
                     $query->where(function($query){
@@ -227,6 +229,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     }
 
                 })->count();
+
                 return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $responseCount, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
                 if($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()){
