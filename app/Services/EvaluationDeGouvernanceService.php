@@ -174,6 +174,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
                 $types_soumission = $type_soumissions->map(function ($type, $soumissions) {
+                    dd($type, $soumissions);
                     return [
                         "{$type}"                    => SoumissionsResource::collection($soumissions)
                     ];
