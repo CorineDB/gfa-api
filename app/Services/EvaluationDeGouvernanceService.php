@@ -180,6 +180,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         "$type"                    => SoumissionsResource::collection($soumissions)
                     ];
                 });
+
                 return array_merge([
                     "id"                    => $organisation->secure_id,
                     'nom'                   => optional($organisation->user)->nom ?? null,
@@ -217,7 +218,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation_fiches_de_synthese->map(function ($fiches_de_synthese, $organisationId) {
 
                 $organisation = $fiches_de_synthese->first()->soumission->organisation;
-
 
                 return [
                     "id"                    => $organisation->secure_id,
