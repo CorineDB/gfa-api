@@ -183,7 +183,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 return $group->groupBy('type'); // Then group by type within each organisation
             });
 
-            $soumissions = $organisation->map(function ($soumissions, $organisationId) {
+            /*$soumissions = $organisation->map(function ($soumissions, $organisationId) {
                     
                 $organisation = $soumissions->first()->organisation;
                         return [
@@ -196,7 +196,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'contact_point_focal'   => $organisation->contact_point_focal,
                             'soumissions' => SoumissionsResource::collection($soumissions)
                         ];
-                    })->values();
+                    })->values();*/
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
