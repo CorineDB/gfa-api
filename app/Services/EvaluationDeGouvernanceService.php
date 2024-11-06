@@ -183,21 +183,27 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 return $group->groupBy('type'); // Then group by type within each organisation
             });
 
-            $soumissions = $organisation_soumissions->map(function ($soumissions, $organisationId) {
+            $soumissions = $organisation_soumissions->map(function ($type_soumissions, $organisationId) {
 
-                dd($soumissions, $organisationId);
+                dd($type_soumissions, $organisationId);
                     
                 $organisation = $soumissions->first()->organisation;
-                        return [
+
+                $types_de_soumission = $type_soumissions->map(function ($type_soumission) {
+                    dd($type_soumission);
+                    return [
+                        "{$type_soumission}"                    => SoumissionsResource::collection($soumissions)
+                    ];
+                });
+                        return array_merge([
                             "id"                    => $organisation->secure_id,
                             'nom'                   => optional($organisation->user)->nom ?? null,
                             'sigle'                 => $organisation->sigle,
                             'code'                  => $organisation->code,
                             'nom_point_focal'       => $organisation->nom_point_focal,
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
-                            'contact_point_focal'   => $organisation->contact_point_focal,
-                            'soumissions' => SoumissionsResource::collection($soumissions)
-                        ];
+                            'contact_point_focal'   => $organisation->contact_point_focal
+                        ], $types_de_soumission);
                     })->values();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $soumissions, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
