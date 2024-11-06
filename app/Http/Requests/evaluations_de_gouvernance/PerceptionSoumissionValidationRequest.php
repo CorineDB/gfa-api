@@ -28,9 +28,8 @@ class PerceptionSoumissionValidationRequest extends FormRequest
         {
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
-        //return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
 
-        return !auth()->check() && $this->evaluation_de_gouvernance->statut;
+        return !auth()->check() && $this->evaluation_de_gouvernance->statut == 0;
     }
 
     /**
@@ -42,7 +41,7 @@ class PerceptionSoumissionValidationRequest extends FormRequest
     {
         return [
             'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
-            'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
+            'organisationId'   => ["required", new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()

@@ -30,7 +30,7 @@ class SoumissionValidationRequest extends FormRequest
         }
         //return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
 
-        return ( (!auth()->check()) || request()->user()->hasRole("unitee-de-gestion")) && $this->evaluation_de_gouvernance->statut;
+        return ( (!auth()->check()) || request()->user()->hasRole("unitee-de-gestion")) && $this->evaluation_de_gouvernance->statut == 0;
     }
 
     /**
