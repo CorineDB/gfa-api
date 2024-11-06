@@ -177,13 +177,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         {
             if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $organisation = $evaluationDeGouvernance->soumissions()
+            $organisation_soumissions = $evaluationDeGouvernance->soumissions()
             ->with('organisation') // Load the associated organisations
             ->get()->groupBy('organisationId')->map(function($group) {
                 return $group->groupBy('type'); // Then group by type within each organisation
             });
 
-            /*$soumissions = $organisation->map(function ($soumissions, $organisationId) {
+            $soumissions = $organisation_soumissions->map(function ($soumissions, $organisationId) {
+
+                dd($soumissions, $organisationId);
                     
                 $organisation = $soumissions->first()->organisation;
                         return [
@@ -196,8 +198,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'contact_point_focal'   => $organisation->contact_point_focal,
                             'soumissions' => SoumissionsResource::collection($soumissions)
                         ];
-                    })->values();*/
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                    })->values();
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $soumissions, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
