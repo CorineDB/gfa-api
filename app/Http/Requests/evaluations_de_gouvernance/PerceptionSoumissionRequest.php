@@ -29,6 +29,7 @@ class PerceptionSoumissionRequest extends FormRequest
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
 
+        return !auth()->check();
         return !auth()->check() && $this->evaluation_de_gouvernance->statut == 0;
     }
 
