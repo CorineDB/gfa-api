@@ -183,9 +183,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 return $group->groupBy('type'); // Then group by type within each organisation
             });
 
-            $soumissions = $organisation_soumissions->map(function ($soumissions, $organisationId) {
+            $soumissions = $organisation_soumissions->map(function ($soumissions, $organisationId, $type) {
 
-                dd($soumissions, $organisationId);
+                dd($soumissions, $organisationId, $type);
                     
                 $organisation = $soumissions->first()->organisation;
                         return [
