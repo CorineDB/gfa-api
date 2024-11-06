@@ -89,7 +89,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
         try {
 
-
             if(isset($attributs['programmeId']) && !empty($attributs['programmeId'])){
                 $programme = app(ProgrammeRepository::class)->findById($attributs['programmeId']);
             }
@@ -239,7 +238,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 })->count();
 
-                if($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()){
+                if(($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])){
                     $soumission->submitted_at = now();
                     $soumission->submittedBy  = auth()->id();
                     $soumission->statut       = true;

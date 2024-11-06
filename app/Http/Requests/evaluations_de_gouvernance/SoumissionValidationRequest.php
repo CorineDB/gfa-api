@@ -28,9 +28,9 @@ class SoumissionValidationRequest extends FormRequest
         {
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
-        return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
+        //return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
 
-        return (/* (!auth()->check()) || */ request()->user()->hasRole("unitee-de-gestion")) && $this->evaluation_de_gouvernance->statut;
+        return ( (!auth()->check()) || request()->user()->hasRole("unitee-de-gestion")) && $this->evaluation_de_gouvernance->statut;
     }
 
     /**

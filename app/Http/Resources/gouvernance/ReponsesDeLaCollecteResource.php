@@ -18,17 +18,17 @@ class ReponsesDeLaCollecteResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'type' => $this->type, 
+            'type' => $this->type,
             'point' => $this->point,
-            "sourceDeVerification" => $this->sourceDeVerification,
-            "sourceDeVerificationId" => $this->source_de_verification ? $this->source_de_verification->secure_id : null,
+            "sourceDeVerification" => $this->when($this->type === 'factuel', $this->sourceDeVerification),
+            "sourceDeVerificationId" => $this->when($this->type === 'factuel', ($this->source_de_verification ? $this->source_de_verification->secure_id : null)),
             "optionDeReponseId" => $this->option_de_reponse->secure_id,
             "questionId" => $this->question->secure_id,
             "soumissionId" => $this->soumission->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d H:i:s"),
             'updated_at' => Carbon::parse($this->updated_at)->format("Y-m-d H:i:s"),
-            'preuves' => FichierResource::collection($this->preuves_de_verification)
+            'preuves' => $this->when($this->type === 'factuel', FichierResource::collection($this->preuves_de_verification))
         ];
     }
 }
