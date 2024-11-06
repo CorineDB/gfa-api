@@ -40,7 +40,7 @@ class PerceptionSoumissionRequest extends FormRequest
     public function rules()
     {
         return [
-            //'programmeId'   => [new HashValidatorRule(new Programme())],
+            'programmeId'   => [new HashValidatorRule(new Programme())],
             'organisationId'   => ['required', new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
