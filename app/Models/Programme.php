@@ -137,7 +137,7 @@ class Programme extends Model
      */
     public function organisations()
     {
-        return $this->hasMany(User::class, 'programmeId')->where("type", "organisation");
+        return $this->hasMany(User::class, 'programmeId')->where("type", "organisation")->whereHas('profilable');
     }
 
     public function getEntreprises()

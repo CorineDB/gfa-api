@@ -57,7 +57,7 @@ class EvaluationDeGouvernance extends Model
 
     public function organisations()
     {
-        return $this->belongsToMany(Organisation::class,'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants']);
+        return $this->belongsToMany(Organisation::class,'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants'])->whereHas('user.profilable');
     }
 
     public function formulaires_de_gouvernance()
