@@ -146,7 +146,7 @@ class SoumissionRequest extends FormRequest
                 }
             }],
 
-            'perception.response_data.commentaire'                => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'string', 'max:255'],
+            'perception.commentaire'                => ['sometimes', Rule::requiredIf(!request()->input('factuel')), 'string', 'max:255'],
         ];
     }
 
