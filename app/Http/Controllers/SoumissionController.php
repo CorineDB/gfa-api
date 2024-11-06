@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\evaluations_de_gouvernance\PerceptionSoumissionRequest;
+use App\Http\Requests\evaluations_de_gouvernance\PerceptionSoumissionValidationRequest;
 use App\Http\Requests\evaluations_de_gouvernance\SoumissionRequest;
 use App\Http\Requests\evaluations_de_gouvernance\SoumissionValidationRequest;
 use Core\Services\Interfaces\SoumissionServiceInterface;
@@ -75,6 +76,19 @@ class SoumissionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function validated(SoumissionValidationRequest $request, $evaluationId)
+    {
+        $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
+
+        return $this->soumissionService->create($atttributs);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function perceptionSoumissionValidation(PerceptionSoumissionValidationRequest $request, $evaluationId)
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
 
