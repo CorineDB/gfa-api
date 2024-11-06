@@ -970,8 +970,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
 
     Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
-
         Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
+            Route::get('{evaluation_de_gouvernance}', 'EvaluationDeGouvernanceController@show'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             Route::post('{evaluation_de_gouvernance}/perception-soumission', 'SoumissionController@storePerception')->name('evaluation.perception-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             Route::post('{evaluation_de_gouvernance}/perception-soumission-validation', 'SoumissionController@perceptionSoumissionValidation')->name('evaluation.perception.soumission.validation'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
         });
