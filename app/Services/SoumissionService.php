@@ -90,10 +90,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         try {
 
 
-
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => (isset($attributs['programmeId']) && empty($attributs['programmeId'])), 'statutCode' => 500], 500);
-
-            if(isset($attributs['programmeId']) && empty($attributs['programmeId'])){
+            if(isset($attributs['programmeId']) && !empty($attributs['programmeId'])){
                 $programme = app(ProgrammeRepository::class)->findById($attributs['programmeId']);
             }
             else{
