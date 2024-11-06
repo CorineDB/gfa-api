@@ -7,7 +7,9 @@ use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
+use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
+use App\Repositories\OrganisationRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
 use Exception;
@@ -19,9 +21,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
-* Interface EvaluationDeGouvernanceServiceInterface
-* @package Core\Services\Interfaces
-*/
+ * Interface EvaluationDeGouvernanceServiceInterface
+ * @package Core\Services\Interfaces
+ */
 class EvaluationDeGouvernanceService extends BaseService implements EvaluationDeGouvernanceServiceInterface
 {
 
@@ -42,41 +44,32 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
-        try
-        {
-            if(Auth::user()->hasRole('administrateur')){
+        try {
+            if (Auth::user()->hasRole('administrateur')) {
                 $evaluationsDeGouvernance = $this->repository->all();
-            }
-            else{
+            } else {
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => EvaluationsDeGouvernanceResource::collection($evaluationsDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function findById($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function create(array $attributs) : JsonResponse
+    public function create(array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
@@ -85,12 +78,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $programme = Auth::user()->programme;
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
-            
+
             $evaluationDeGouvernance = $this->repository->create($attributs);
             $evaluationDeGouvernance->organisations()->attach($attributs['organisations']);
             $evaluationDeGouvernance->formulaires_de_gouvernance()->attach($attributs['formulaires_de_gouvernance']);
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($evaluationDeGouvernance));
 
@@ -99,7 +92,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -109,13 +101,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
-    public function update($evaluationDeGouvernance, array $attributs) : JsonResponse
+    public function update($evaluationDeGouvernance, array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
         try {
 
-            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $this->repository->update($evaluationDeGouvernance->id, $attributs);
 
@@ -123,7 +115,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
             $evaluationDeGouvernance->formulaires_de_gouvernance()->syncWithoutDetaching($attributs['formulaires_de_gouvernance']);
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($evaluationDeGouvernance));
 
@@ -132,7 +124,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -153,15 +144,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function organisations($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new OrganisationResource($evaluationDeGouvernance->organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -173,21 +160,18 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function soumissions($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation_soumissions = $evaluationDeGouvernance->soumissions()
-            ->with('organisation') // Load the associated organisations
-            ->get()->groupBy('organisationId')->map(function($group) {
-                return $group->groupBy('type'); // Then group by type within each organisation
-            });
+                ->with('organisation') // Load the associated organisations
+                ->get()->groupBy('organisationId')->map(function ($group) {
+                    return $group->groupBy('type'); // Then group by type within each organisation
+                });
 
             $soumissions = $organisation_soumissions->map(function ($type_soumissions, $organisationId) {
 
-                dd($type_soumissions, $organisationId);
-                    
-                $organisation = $soumissions->first()->organisation;
+                $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
                 $types_de_soumission = $type_soumissions->map(function ($type_soumission) {
                     dd($type_soumission);
@@ -195,21 +179,18 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         "{$type_soumission}"                    => SoumissionsResource::collection($soumissions)
                     ];
                 });
-                        return array_merge([
-                            "id"                    => $organisation->secure_id,
-                            'nom'                   => optional($organisation->user)->nom ?? null,
-                            'sigle'                 => $organisation->sigle,
-                            'code'                  => $organisation->code,
-                            'nom_point_focal'       => $organisation->nom_point_focal,
-                            'prenom_point_focal'    => $organisation->prenom_point_focal,
-                            'contact_point_focal'   => $organisation->contact_point_focal
-                        ], $types_de_soumission);
-                    })->values();
+                return array_merge([
+                    "id"                    => $organisation->secure_id,
+                    'nom'                   => optional($organisation->user)->nom ?? null,
+                    'sigle'                 => $organisation->sigle,
+                    'code'                  => $organisation->code,
+                    'nom_point_focal'       => $organisation->nom_point_focal,
+                    'prenom_point_focal'    => $organisation->prenom_point_focal,
+                    'contact_point_focal'   => $organisation->contact_point_focal
+                ], $types_de_soumission);
+            })->values();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $soumissions, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
@@ -221,42 +202,38 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function fiches_de_synthese($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation = $evaluationDeGouvernance->soumissions()
-                                                    ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
-                                                    ->get()->groupBy('organisationId');
+                ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
+                ->get()->groupBy('organisationId');
             $organisation_fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()
-                                                    ->with(['soumission']) // Load the associated organisations
-                                                    ->get()->groupBy(function ($item) {
-                                                        return $item->soumission->organisationId;
-                                                    });
+                ->with(['soumission']) // Load the associated organisations
+                ->get()->groupBy(function ($item) {
+                    return $item->soumission->organisationId;
+                });
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation_fiches_de_synthese->map(function ($fiches_de_synthese, $organisationId) {
-                    
+
                 $organisation = $fiches_de_synthese->first()->soumission->organisation;
 
-                
-                        return [
-                            "id"                    => $organisation->secure_id,
-                            'nom'                   => optional($organisation->user)->nom ?? null,
-                            'sigle'                 => $organisation->sigle,
-                            'code'                  => $organisation->code,
-                            'nom_point_focal'       => $organisation->nom_point_focal,
-                            'prenom_point_focal'    => $organisation->prenom_point_focal,
-                            'contact_point_focal'   => $organisation->contact_point_focal,
-                            'fiches_de_synthese'    => FicheDeSyntheseResource::collection($fiches_de_synthese)
-                        ];
-                    })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
 
-        catch (\Throwable $th)
-        {
+                return [
+                    "id"                    => $organisation->secure_id,
+                    'nom'                   => optional($organisation->user)->nom ?? null,
+                    'sigle'                 => $organisation->sigle,
+                    'code'                  => $organisation->code,
+                    'nom_point_focal'       => $organisation->nom_point_focal,
+                    'prenom_point_focal'    => $organisation->prenom_point_focal,
+                    'contact_point_focal'   => $organisation->contact_point_focal,
+                    'fiches_de_synthese'    => FicheDeSyntheseResource::collection($fiches_de_synthese)
+                ];
+            })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     /**
      * Liste des formulaires d'une evaluation de gouvernance
      * 
@@ -264,24 +241,19 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function formulaires_de_gouvernance($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($evaluationDeGouvernance->formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function resultats($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $resultats = $evaluationDeGouvernance->organisations()
                 ->distinct()
@@ -295,10 +267,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 ->get();
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
