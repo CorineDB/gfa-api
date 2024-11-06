@@ -59,67 +59,17 @@ class PerceptionSoumissionValidationRequest extends FormRequest
                 }
             ],
 
-            'factuel'                                         => ['required', 'array'],
-            
-            'factuel.comite_members'                                        => ['required', 'array', 'min:1'],
-            'factuel.comite_members.*.nom'                                  => ['required', 'string'],
-            'factuel.comite_members.*.prenom'                               => ['required', 'string'],
-            'factuel.comite_members.*.contact'                              => ['required', 'distinct', 'numeric','digits_between:8,24'],
-            'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', function($attribute, $value, $fail) {
-                    if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
-                        $fail("Veuillez remplir tout le formulaire.");
-                    }
-                }
-            ],            
-            'factuel.response_data.*.questionId'      => [Rule::requiredIf(!request()->input('perception')), 'distinct', 
-                new HashValidatorRule(new QuestionDeGouvernance()),
-                function($attribute, $value, $fail) {
-                    
-                    if($this->formulaireCache){
-                        $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($value)->exists();
-                        if (!$question) {
-                            // Fail validation if no response options are available
-                            $fail("Cet Indicateur n'existe pas.");
-                        }
-                    }
-
-                    /*$this->indicateurCache = $indicateur;
-                    
-                    // Check if there are response options
-                    if ($indicateur->observations()->where('enqueteDeCollecteId', $this->enquete_de_collecte->id)->where('organisationId', $this->organisationId)->where('indicateurDeGouvernanceId', $indicateur->id)->exists()) {
-                        // Fail validation if no response options are available
-                        $fail('Cet Indicateur a deja ete observer pour le compte de cette enquete et par rapport a cette structure.');
-                    }*/
-                }
-            ],
-            'factuel.response_data.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
-                /**
-                 * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
-                 * 
-                 * If the provided optionDeReponseId is not valid, fail the validation
-                 */
-                if($this->formulaireCache){
-                    if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
-                        $fail('The selected option is invalid for the given formulaire.');
-                    }
-                }
-            }],
-            'factuel.response_data.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
-            'factuel.response_data.*.sourceDeVerification'          => [ Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
-            'factuel.response_data.*.preuves'                       => ['required', "array", "min:1"],
-            'factuel.response_data.*.preuves.*'                     => ["file", "mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv", "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png,audio/mpeg,audio/wav,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska", "max:20480"],
-
-            'perception'                              => [Rule::requiredIf(!request()->input('factuel')), 'array', function($attribute, $value, $fail) {
+            'perception'                              => ['required', 'array', function($attribute, $value, $fail) {
                     if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
                     }
                 }
             ],
-            'perception.categorieDeParticipant'       => [Rule::requiredIf(!request()->input('factuel')), 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
-            'perception.sexe'                         => [Rule::requiredIf(!request()->input('factuel')), 'in:masculin,feminin'],
-            'perception.age'                          => [Rule::requiredIf(!request()->input('factuel')), 'in:<35,>35'],
+            'perception.categorieDeParticipant'       => ['required', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
+            'perception.sexe'                         => ['required', 'in:masculin,feminin'],
+            'perception.age'                          => ['required', 'in:<35,>35'],
 
-            'perception.response_data.*.questionId'      => [Rule::requiredIf(!request()->input('factuel')), 'distinct',
+            'perception.response_data.*.questionId'      => ['required', 'distinct',
                 new HashValidatorRule(new QuestionDeGouvernance()), 
                 function($attribute, $value, $fail) {
                     $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "question_operationnelle")->findByKey($value)->exists();
@@ -138,7 +88,7 @@ class PerceptionSoumissionValidationRequest extends FormRequest
                 }
             ],
 
-            'perception.response_data.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('factuel')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'perception.response_data.*.optionDeReponseId'   => ['required', new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -149,7 +99,7 @@ class PerceptionSoumissionValidationRequest extends FormRequest
                 }
             }],
             
-            'perception.commentaire'                => [Rule::requiredIf(!request()->input('factuel')), 'string'],
+            'perception.commentaire'                => ['required', 'string'],
         ];
     }
 
