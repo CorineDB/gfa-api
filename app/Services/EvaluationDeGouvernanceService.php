@@ -175,6 +175,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $types_soumission = $type_soumissions->map(function ($soumissions, $type) {
                     
+                    return  SoumissionsResource::collection($soumissions);
                     return [
                         "$type"                    => SoumissionsResource::collection($soumissions)
                     ];
