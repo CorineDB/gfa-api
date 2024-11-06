@@ -40,7 +40,7 @@ class PerceptionSoumissionRequest extends FormRequest
     public function rules()
     {
         return [
-            'programmeId'   => [new HashValidatorRule(new Programme())],
+            //'programmeId'   => [new HashValidatorRule(new Programme())],
             'organisationId'   => ['required', new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
@@ -59,31 +59,25 @@ class PerceptionSoumissionRequest extends FormRequest
                 }
             ],
 
-            'response_data.perception'                              => ['required', 'array', 'min:1'],
-            'response_data.perception.categorieDeParticipant'       => ['sometimes', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
-            'response_data.perception.sexe'                         => ['sometimes', 'in:masculin,feminin'],
-            'response_data.perception.age'                          => ['sometimes', 'in:<35,>35'],
+            'perception'                                            => ['required', 'array'],
+            'perception.categorieDeParticipant'       => ['nullable', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
+            'perception.sexe'                         => ['nullable', 'in:masculin,feminin'],
+            'perception.age'                          => ['nullable', 'in:<35,>35'],
 
-            'response_data.perception.*.questionId'      => ['sometimes', 'distinct',
-                new HashValidatorRule(new QuestionDeGouvernance()), 
-                function($attribute, $value, $fail) {
+            'perception.response_data.*.questionId'      => [
+                'sometimes',
+                'distinct',
+                new HashValidatorRule(new QuestionDeGouvernance()),
+                function ($attribute, $value, $fail) {
                     $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "question_operationnelle")->findByKey($value)->exists();
                     if (!$question) {
                         // Fail validation if no response options are available
                         $fail("Cette question operationnelle n'existe pas.");
                     }
-
-                    /*$this->indicateurCache = $indicateur;
-                    
-                    // Check if there are response options
-                    if ($indicateur->observations()->where('enqueteDeCollecteId', $this->enquete_de_collecte->id)->where('organisationId', $this->organisationId)->where('indicateurDeGouvernanceId', $indicateur->id)->exists()) {
-                        // Fail validation if no response options are available
-                        $fail('Cet Indicateur a deja ete observer pour le compte de cette enquete et par rapport a cette structure.');
-                    }*/
                 }
             ],
 
-            'response_data.perception.*.optionDeReponseId'   => ['sometimes', new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'perception.response_data.*.optionDeReponseId'   => ['sometimes', new HashValidatorRule(new OptionDeReponse()), function ($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -93,8 +87,8 @@ class PerceptionSoumissionRequest extends FormRequest
                     $fail('The selected option is invalid for the given formulaire.');
                 }
             }],
-            
-            'response_data.perception.commentaire'                => ['nullable', 'string'],
+
+            'perception.commentaire'                => ['nullable', 'string'],
         ];
     }
 
