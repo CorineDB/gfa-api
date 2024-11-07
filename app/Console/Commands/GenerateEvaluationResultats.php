@@ -89,6 +89,7 @@ class GenerateEvaluationResultats extends Command
                         $fiche_de_synthese->update(['type' => 'perception', 'synthese' => $results, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
                     else{
+                        dd($group_soumission);
                         app(FicheDeSyntheseRepository::class)->create(['type' => 'perception', 'synthese' => $results, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
                 }
