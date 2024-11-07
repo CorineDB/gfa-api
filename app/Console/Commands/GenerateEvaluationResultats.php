@@ -168,7 +168,7 @@ class GenerateEvaluationResultats extends Command
                 $options_reponses = $options_de_reponse->load([
                     'reponses' => function($query) use ($question_de_gouvernance) {
                         $query->where('questionId', $question_de_gouvernance->id);
-                    }])->loadCount('reponses')->withSum('reponses', 'point');
+                    }])->loadCount('reponses')->loadSum('reponses', 'point');
 
                 dd($options_de_reponse->first());
                 
