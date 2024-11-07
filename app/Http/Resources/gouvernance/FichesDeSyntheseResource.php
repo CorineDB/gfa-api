@@ -20,7 +20,9 @@ class FichesDeSyntheseResource extends JsonResource
             'type' => $this->type,
             'synthese' => $this->synthese,
             'evaluatedAt' => Carbon::parse($this->evaluatedAt)->format("Y-m-d"),
-            'soumissionId' => $this->soumission->secure_id,
+            'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
+            'organisationId' => $this->organisation->secure_id,
+            'evaluationDeGouvernanceId' => $this->evaluation_de_gouvernance->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
