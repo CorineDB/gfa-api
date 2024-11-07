@@ -169,7 +169,7 @@ class GenerateEvaluationResultats extends Command
                 } else {
                         $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
                 }
-            });
+            })->count();
 
             // Now, calculate the 'indice_de_perception' for the category
             //$total_moyenne_ponderee = $categorie_de_gouvernance->questions_de_gouvernance->sum('moyenne_ponderee');
