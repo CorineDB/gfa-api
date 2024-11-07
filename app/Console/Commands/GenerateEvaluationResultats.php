@@ -154,7 +154,7 @@ class GenerateEvaluationResultats extends Command
                         $query->where('questionId', $question_de_gouvernance->id);
                     }])->loadCount('reponses');
 
-                dd($options_de_reponse->pivot->pivot_point);
+                dd($options_de_reponse->first()->pivot_point);
                 
                 $question_de_gouvernance->moyenne_ponderee = $question_de_gouvernance->reponses->sum('point');
             });
