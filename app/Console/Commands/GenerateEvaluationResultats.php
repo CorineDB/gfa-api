@@ -154,12 +154,12 @@ class GenerateEvaluationResultats extends Command
                         $query->where('questionId', $question_de_gouvernance->id);
                     }])->each(function($option_de_reponse) use(&$weighted_sum) {
 
-                        dump([$option_de_reponse->pivot->point, $option_de_reponse->reponses_count]);
                         $note_i = $option_de_reponse->pivot->point ?? 0; // Default to 0 if there's no point
                         $nbre_i = $option_de_reponse->reponses_count ?? 0; // Default to 0 if there are no responses
 
                         // Accumulate the weighted sum
                         $weighted_sum += $note_i * $nbre_i;
+                        dump([$option_de_reponse->pivot->point, $option_de_reponse->reponses_count, $weighted_sum]);
                     });
 
                 // Calculate the weighted average
