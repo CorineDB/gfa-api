@@ -140,7 +140,7 @@ class GenerateEvaluationResultats extends Command
     {
         $options_de_reponse = $formulaireDeGouvernance->options_de_reponse;
         $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) use($organisationId, $options_de_reponse) {
-            $total_moyenne_ponderee = $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use($organisationId, $options_de_reponse) {
+            $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use($organisationId, $options_de_reponse) {
                 
                 // Get the total number of responses for NBRE_R
                 $nbre_r = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function($query) use($organisationId) {
@@ -169,17 +169,15 @@ class GenerateEvaluationResultats extends Command
                 } else {
                         $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
                 }
-            })->count();
+            });
 
             // Now, calculate the 'indice_de_perception' for the category
-            //$total_moyenne_ponderee = $categorie_de_gouvernance->questions_de_gouvernance->sum('moyenne_ponderee');
+            $total_moyenne_ponderee = $categorie_de_gouvernance->questions_de_gouvernance->sum('moyenne_ponderee');
             $nbre_questions_operationnelle = $categorie_de_gouvernance->questions_de_gouvernance->count();
 
             // Check to avoid division by zero
             $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
         });
-
-        dd($results_categories_de_gouvernance);
 
         return FicheSyntheseEvaluationDePerceptionResource::collection($results_categories_de_gouvernance);
     }
