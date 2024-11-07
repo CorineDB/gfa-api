@@ -162,6 +162,7 @@ class GenerateEvaluationResultats extends Command
                         dump([$option_de_reponse->pivot->point, $option_de_reponse->reponses_count, $weighted_sum]);
                     });
 
+                    dump($nbre_r);
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
                         $question_de_gouvernance->moyenne_ponderee = $weighted_sum / $nbre_r;
