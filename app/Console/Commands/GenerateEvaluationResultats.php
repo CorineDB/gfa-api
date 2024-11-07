@@ -152,7 +152,7 @@ class GenerateEvaluationResultats extends Command
                 $options_reponses = $options_de_reponse->load([
                     'reponses' => function($query) use ($question_de_gouvernance) {
                         $query->where('questionId', $question_de_gouvernance->id);
-                    }])->loadCount('reponses')->loadSum('reponses', 'pivot_point');
+                    }])->loadCount('reponses')->loadSum('reponses', 'point');
                 dd($options_reponses);
                 
                 $question_de_gouvernance->moyenne_ponderee = $question_de_gouvernance->reponses->sum('point');
