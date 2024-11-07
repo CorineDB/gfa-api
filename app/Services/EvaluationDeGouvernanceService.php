@@ -212,7 +212,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
 
-            if (Auth::user()->hasRole('administrateur')) {
+            /* if (Auth::user()->hasRole('administrateur')) {
                 $evaluationsDeGouvernance = [];
             } else if (Auth::user()->hasRole('organisation')) {
 
@@ -253,8 +253,29 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'contact_point_focal'   => $organisation->contact_point_focal
                     ], $fiches_de_synthese->toArray());
                 })->values();
-            }
+            } */
 
+
+            $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
+
+            $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($rapportEvaluationParOrganisation, $organisationId) {
+
+                $organisation = app(OrganisationRepository::class)->findById($organisationId);
+
+                $fiches_de_synthese = $rapportEvaluationParOrganisation->map(function ($fiches_de_synthese, $type) {
+                    return FicheDeSyntheseResource::collection($fiches_de_synthese);
+                });
+
+                return array_merge([
+                    "id"                    => $organisation->secure_id,
+                    'nom'                   => optional($organisation->user)->nom ?? null,
+                    'sigle'                 => $organisation->sigle,
+                    'code'                  => $organisation->code,
+                    'nom_point_focal'       => $organisation->nom_point_focal,
+                    'prenom_point_focal'    => $organisation->prenom_point_focal,
+                    'contact_point_focal'   => $organisation->contact_point_focal
+                ], $fiches_de_synthese->toArray());
+            })->values();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $fiches_de_synthese, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
