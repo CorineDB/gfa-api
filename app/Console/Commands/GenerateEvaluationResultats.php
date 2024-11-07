@@ -162,7 +162,7 @@ class GenerateEvaluationResultats extends Command
                     });
 
                 // Calculate the weighted average
-                if ($nbre_r > 0 && $weighted_sum>0) {
+                if ($nbre_r > 0) {
                         $question_de_gouvernance->moyenne_ponderee = $weighted_sum / $nbre_r;
                 } else {
                         $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
@@ -176,15 +176,15 @@ class GenerateEvaluationResultats extends Command
             $nbre_questions_operationnelle = $categorie_de_gouvernance->questions_de_gouvernance->count();
 
             // Check to avoid division by zero
-            $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0 && $total_moyenne_ponderee>0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
+            $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
 
 
             dump($categorie_de_gouvernance->indice_de_perception);
         });
 
-        dd($results);
+        dd($results_categories_de_gouvernance);
 
-        return FicheSyntheseEvaluationDePerceptionResource::collection([]);
+        return FicheSyntheseEvaluationDePerceptionResource::collection($results_categories_de_gouvernance);
     }
 
     public function generateSyntheseForFactuelleSoumission(Soumission $soumission, $organisationId)
