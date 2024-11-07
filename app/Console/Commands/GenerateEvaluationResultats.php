@@ -65,7 +65,7 @@ class GenerateEvaluationResultats extends Command
             $fiche = app(FicheDeSyntheseRepository::class)->create(['type' => $soumission->type, 'synthese' => $results, 'evaluatedAt' => now(), 'soumissionId' => $soumission->id, 'programmeId' => $soumission->programmeId]);
             $this->info("Generated result for soumission ID {$soumission->id}: {$fiche}");
         }*/
-
+        $this->info("Generated result for soumission ID {$this->evaluationDeGouvernance->id}:");
         return 0; // Indicates successful execution
     }
     protected function generateResultForEvaluation(EvaluationDeGouvernance $evaluationDeGouvernance)
@@ -75,9 +75,6 @@ class GenerateEvaluationResultats extends Command
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
-                $results = $this->generateSyntheseForPerceptionSoumission($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
-
-                dd($results);
                 if($group_soumission === "factuel"){
 
                     $results = $this->generateSyntheseForFactuelleSoumission($soumissions->first(), $organisationId);
