@@ -84,7 +84,6 @@ class UpdateColumnsOfMigrationsTable extends Migration
                 $table->foreign('evaluationDeGouvernanceId')->references('id')->on('evaluations_de_gouvernance')
                     ->onDelete('cascade')
                     ->onUpdate('cascade');
-                    
                 $table->bigInteger('organisationId')->unsigned();
                 $table->foreign('organisationId')->references('id')->on('organisations')
                     ->onDelete('cascade')

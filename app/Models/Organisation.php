@@ -135,7 +135,7 @@ class Organisation extends Model
 
     public function evaluations_de_gouvernance()
     {
-        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants"]);
+        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants", 'participants']);
     }
 
     public function soumissions()
@@ -151,5 +151,20 @@ class Organisation extends Model
     public function sousmissions_de_perception()
     {
         return $this->hasMany(Soumission::class, 'organisationId')->where("type", "perception");
+    }
+
+    public function fiches_de_synthese($evaluationDeGouvernanceId = null, $type = null)
+    {
+        $fiches_de_synthese = $this->hasMany(FicheDeSynthese::class, 'organisationId');
+
+        if($type){
+            $fiches_de_synthese = $fiches_de_synthese->where("type", $type);
+        }
+
+        if($evaluationDeGouvernanceId){
+            $fiches_de_synthese = $fiches_de_synthese->where("evaluationDeGouvernanceId", $evaluationDeGouvernanceId);
+        }
+
+        return $fiches_de_synthese;
     }
 }

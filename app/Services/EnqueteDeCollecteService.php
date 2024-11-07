@@ -440,7 +440,8 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
                 ->each(function($principe) use (&$totalIndiceDePerception, &$nbreDePrincipes) { // Iterate over each governance type
                     $nbreQO = $principe->indicateurs_de_gouvernance->count('reponses_count');
                     $moyPQO = 0;
-                    $principe->indicateurs_de_gouvernance->each(function($indicateur) use(&$moyPQO){ // Iterate over each principle
+                    $principe->indicateurs_de_gouvernance->each(function($indicateur) use(&$moyPQO){
+                        // Iterate over each principle
                         
                         $nbreR = $indicateur->options_de_reponse->sum('reponses_count'); // Sum the notes
                         $moyPQOi = $indicateur->moyPQO = $indicateur->options_de_reponse->each(function($option) use(&$nbreR){
