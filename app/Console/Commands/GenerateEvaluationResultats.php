@@ -59,12 +59,6 @@ class GenerateEvaluationResultats extends Command
 
         $this->generateResultForEvaluation($this->evaluationDeGouvernance);
 
-        // Process each soumission to generate results
-        /*foreach ($soumissions as $soumission) {
-            $results = $this->generateResultForSoumission($soumission);
-            $fiche = app(FicheDeSyntheseRepository::class)->create(['type' => $soumission->type, 'synthese' => $results, 'evaluatedAt' => now(), 'soumissionId' => $soumission->id, 'programmeId' => $soumission->programmeId]);
-            $this->info("Generated result for soumission ID {$soumission->id}: {$fiche}");
-        }*/
         $this->info("Generated result for soumission ID {$this->evaluationDeGouvernance->id}:");
         return 0; // Indicates successful execution
     }
@@ -102,34 +96,6 @@ class GenerateEvaluationResultats extends Command
         }
     }
     
-
-    /**
-     * Generate a result for a given soumission.
-     *
-     * @param EvaluationDeGouvernance $evaluationDeGouvernance
-     * @return string
-     */
-    protected function generateResultForSoumission(Soumission $soumission)
-    {
-        /*switch ($soumission->type) {
-            case 'factuel':
-                return $this->generateSyntheseForFactuelleSoumission($soumission);
-                break;
-            case 'perception':
-                return $this->generateSyntheseForPerceptionSoumission($soumission);
-                break;
-
-            default:
-                return [];
-                break;
-        }*/
-
-        // Placeholder for your logic to generate the result
-        // This could involve calculations, data manipulations, etc.
-        // Return a string or a result based on the processing
-        return "Result for soumission with ID {$soumission->id}";
-    }
-
     /**
      * 
      */
@@ -261,8 +227,6 @@ class GenerateEvaluationResultats extends Command
 
         });
 
-        return $results_categories_de_gouvernance;
-        
         return FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance);
     }
 

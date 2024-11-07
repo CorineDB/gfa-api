@@ -215,9 +215,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 ->with(['soumission']) // Load the associated organisations
                 ->get()->groupBy(function ($item) {
                     return $item->soumission->organisationId;
-                });
+                });*/
+
+            $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese ()
+                ->get()->groupBy(['organisationId', 'type']);
     
-            $fiches_de_synthese = $organisation_fiches_de_synthese->map(function ($fiches_de_synthese, $organisationId) {
+            $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($fiches_de_synthese, $organisationId) {
+
+                dd([$organisationId, $fiches_de_synthese]);
 
                 $organisation = $fiches_de_synthese->first()->soumission->organisation;
 
@@ -232,9 +237,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'fiches_de_synthese'    => FicheDeSyntheseResource::collection($fiches_de_synthese)
                 ];
             })->values();*/
-
-            $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese/* ()
-                ->get()->groupBy('organisationId') */;
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $fiches_de_synthese, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
