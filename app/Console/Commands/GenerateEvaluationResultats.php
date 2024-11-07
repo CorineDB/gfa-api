@@ -150,8 +150,8 @@ class GenerateEvaluationResultats extends Command
                 // Initialize the weighted sum
                 $weighted_sum = 0;
                 $options_de_reponse->loadCount([
-                    'reponses' => function($query) use ($question_de_gouvernance) {
-                        $query->where('questionId', $question_de_gouvernance->id);
+                    'reponses' => function($query) use ($question_de_gouvernance, $organisationId) {
+                        $query->where('questionId', $question_de_gouvernance->id)->where('organisationId', $organisationId);
                     }])->each(function($option_de_reponse) use(&$weighted_sum) {
 
                         $note_i = $option_de_reponse->pivot->point ?? 0; // Default to 0 if there's no point
