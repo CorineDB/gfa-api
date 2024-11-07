@@ -66,7 +66,6 @@ class GenerateEvaluationResultats extends Command
     {
         $organisation_group_soumissions = $evaluationDeGouvernance->soumissions->groupBy(['organisationId', 'type']);
 
-        dd($organisation_group_soumissions);
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
@@ -83,6 +82,7 @@ class GenerateEvaluationResultats extends Command
                 }
                 else if($group_soumission === "perception"){
 
+                    dd([$group_soumission, $groups_soumissions]);
                     $results = $this->generateSyntheseForPerceptionSoumission($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
 
                     if($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, $group_soumission)->first()){
