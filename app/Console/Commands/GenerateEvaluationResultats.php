@@ -89,6 +89,7 @@ class GenerateEvaluationResultats extends Command
                         $fiche_de_synthese->update(['type' => 'perception', 'synthese' => $results, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
                     else{
+                        dd($group_soumission);
                         app(FicheDeSyntheseRepository::class)->create(['type' => 'perception', 'synthese' => $results, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
                 }
@@ -142,6 +143,7 @@ class GenerateEvaluationResultats extends Command
             // Check to avoid division by zero
             $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
         });
+        return FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance);
 
         return FicheSyntheseEvaluationDePerceptionResource::collection($results_categories_de_gouvernance);
     }
