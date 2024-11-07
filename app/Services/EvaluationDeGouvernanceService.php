@@ -240,7 +240,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
                     $fiches_de_synthese = $rapportEvaluationParOrganisation->map(function ($fiches_de_synthese, $type) {
-                        return new FicheDeSyntheseResource($fiches_de_synthese->first());
+                        return FicheDeSyntheseResource::collection($fiches_de_synthese);
                     });
 
                     return array_merge([
@@ -275,42 +275,5 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-    }
-
-    public function resultats($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
-    {
-        try {
-            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
-
-            $resultats = $evaluationDeGouvernance->organisations()
-                ->distinct()
-                ->with(['soumissions' => function ($query) use ($evaluationDeGouvernance) {
-                    $query->where('evaluationId', $evaluationDeGouvernance->id)
-                        ->with(['formulaireDeGouvernance.categories_de_gouvernance' => function ($query) {
-                            // Call the recursive function to load nested relationships
-                            $this->loadCategories($query);
-                        }]);
-                }])
-                ->get();
-
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        } catch (\Throwable $th) {
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    public function loadCategories($query)
-    {
-        $query->with(['sousCategoriesDeGouvernance' => function ($query) {
-            // Recursively load sousCategoriesDeGouvernance
-            $this->loadCategories($query);
-        }, 'questions_de_gouvernance.reponses' => function ($query) {
-            $query->sum('point');
-        },]);
-    }
-
-    public function sumReponses($query)
-    {
-        $query->sum('point');
     }
 }
