@@ -64,9 +64,8 @@ class GenerateEvaluationResultats extends Command
     }
     protected function generateResultForEvaluation(EvaluationDeGouvernance $evaluationDeGouvernance)
     {
-        $organisation_group_soumissions = $evaluationDeGouvernance->soumissionFactuel->groupBy(['organisationId', 'type']);
+        $organisation_group_soumissions = $evaluationDeGouvernance->soumissions->groupBy(['organisationId', 'type']);
 
-        dd($organisation_group_soumissions);
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
