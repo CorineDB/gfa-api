@@ -169,18 +169,7 @@ class GenerateEvaluationResultats extends Command
                     'reponses' => function($query) use ($question_de_gouvernance) {
                         $query->where('questionId', $question_de_gouvernance->id);
                     }])->loadCount('reponses')->loadSum('reponses', 'point');
-                
-                $options_reponses = $options_de_reponse->load([
-                        'reponses' => function ($query) use ($question_de_gouvernance) {
-                            $query->where('questionId', $question_de_gouvernance->id);
-                        }
-                    ])->loadCount(['reponses' => function ($query) use ($question_de_gouvernance) {
-                        $query->where('questionId', $question_de_gouvernance->id);
-                    }])->loadSum(['reponses' => function ($query) use ($question_de_gouvernance) {
-                        $query->where('questionId', $question_de_gouvernance->id);
-                    }], 'point');
                     
-
                 dd($options_reponses->first());
                 
                 $question_de_gouvernance->moyenne_ponderee = $question_de_gouvernance->reponses->sum('point');
