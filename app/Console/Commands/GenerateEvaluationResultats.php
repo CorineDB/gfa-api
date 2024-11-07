@@ -141,25 +141,48 @@ class GenerateEvaluationResultats extends Command
         $options_de_reponse = $formulaireDeGouvernance->options_de_reponse;
         $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) use($organisationId, $options_de_reponse) {
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use($organisationId, $options_de_reponse) {
-                $reponses_de_collecte = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function($query) use($organisationId, $options_de_reponse) {
+                
+                // Get the total number of responses for NBRE_R
+                $nbre_r = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function($query) use($organisationId) {
                     $query->where('organisationId', $organisationId);
-                })->get();
+                })->count();
 
-                /*$options_reponses = $options_de_reponse->load("reponses", function($query) use ($question_de_gouvernance) {
-                    $query->where('questionId', $question_de_gouvernance->id);
-                });*/
-
-                $options_reponses = $options_de_reponse->load([
+                // Initialize the weighted sum
+                $weighted_sum = 0;
+                $options_de_reponse->loadCount([
                     'reponses' => function($query) use ($question_de_gouvernance) {
                         $query->where('questionId', $question_de_gouvernance->id);
-                    }])->loadCount('reponses');
+                    }])->each(function($option_de_reponse) use(&$weighted_sum) {
 
-                dd($options_de_reponse->first()->pivot->point);
-                
-                $question_de_gouvernance->moyenne_ponderee = $question_de_gouvernance->reponses->sum('point');
+                        $note_i = $option_de_reponse->pivot->point ?? 0; // Default to 0 if there's no point
+                        $nbre_i = $option_de_reponse->reponses_count ?? 0; // Default to 0 if there are no responses
+
+                        // Accumulate the weighted sum
+                        $weighted_sum += $note_i * $nbre_i;
+                    });
+
+                // Calculate the weighted average
+                if ($nbre_r > 0 && $weighted_sum>0) {
+                        $question_de_gouvernance->moyenne_ponderee = $weighted_sum / $nbre_r;
+                } else {
+                        $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
+                }
+
+                dump($question_de_gouvernance->moyenne_ponderee);
             });
-            $categorie_de_gouvernance->indice_de_perception = $categorie_de_gouvernance->questions_de_gouvernance->sum('moyenne_ponderee') / $categorie_de_gouvernance->questions_de_gouvernance->count();
+
+            // Now, calculate the 'indice_de_perception' for the category
+            $total_moyenne_ponderee = $categorie_de_gouvernance->questions_de_gouvernance->sum('moyenne_ponderee');
+            $nbre_questions_operationnelle = $categorie_de_gouvernance->questions_de_gouvernance->count();
+
+            // Check to avoid division by zero
+            $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0 && $total_moyenne_ponderee>0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
+
+
+            dump($categorie_de_gouvernance->indice_de_perception);
         });
+
+        dd($results);
 
         return FicheSyntheseEvaluationDePerceptionResource::collection([]);
     }
