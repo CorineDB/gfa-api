@@ -149,28 +149,11 @@ class GenerateEvaluationResultats extends Command
                     $query->where('questionId', $question_de_gouvernance->id);
                 });*/
 
-                /*$options_reponses = $options_de_reponse->load([
-                    'reponses' => function($query) use ($question_de_gouvernance) {
-                        $query->where('questionId', $question_de_gouvernance->id);
-                    },
-                    'reponsesCount' => function($query) use ($question_de_gouvernance) {
-                        $query->where('questionId', $question_de_gouvernance->id);
-                    },
-                    'reponsesSum' => function($query) use ($question_de_gouvernance) {
-                        $query->where('questionId', $question_de_gouvernance->id);
-                    }
-                ])->withCount(['reponses as reponses_count' => function($query) use ($question_de_gouvernance) {
-                    $query->where('questionId', $question_de_gouvernance->id);
-                }])->withSum(['reponses as reponses_point_sum' => 'point'], function($query) use ($question_de_gouvernance) {
-                    $query->where('questionId', $question_de_gouvernance->id);
-                });*/
-
                 $options_reponses = $options_de_reponse->load([
                     'reponses' => function($query) use ($question_de_gouvernance) {
                         $query->where('questionId', $question_de_gouvernance->id);
-                    }])->loadCount('reponses')->loadSum('reponses', 'point');
-                    
-                dd($options_reponses->first());
+                    }])->loadCount('reponses')->loadSum('reponses', 'pivot_point');
+                dd($options_reponses);
                 
                 $question_de_gouvernance->moyenne_ponderee = $question_de_gouvernance->reponses->sum('point');
             });
