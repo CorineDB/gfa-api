@@ -255,7 +255,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 })->values();
             } */
 
-
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese()->get()->groupBy(['organisationId', 'type']);
 
             $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($rapportEvaluationParOrganisation, $organisationId) {
