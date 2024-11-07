@@ -146,7 +146,6 @@ class GenerateEvaluationResultats extends Command
                 $nbre_r = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function($query) use($organisationId) {
                     $query->where('organisationId', $organisationId);
                 })->count();
-                dump($nbre_r);
 
                 // Initialize the weighted sum
                 $weighted_sum = 0;
@@ -162,10 +161,7 @@ class GenerateEvaluationResultats extends Command
 
                         // Accumulate the weighted sum
                         $weighted_sum += $note_i * $nbre_i;
-                        dump([$option_de_reponse->pivot->point, $option_de_reponse->reponses_count, $weighted_sum]);
                     });
-
-                dump($nbre_r);
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
@@ -173,8 +169,6 @@ class GenerateEvaluationResultats extends Command
                 } else {
                         $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
                 }
-
-                dump($question_de_gouvernance->moyenne_ponderee);
             });
 
             // Now, calculate the 'indice_de_perception' for the category
@@ -183,9 +177,6 @@ class GenerateEvaluationResultats extends Command
 
             // Check to avoid division by zero
             $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
-
-
-            dump($categorie_de_gouvernance->indice_de_perception);
         });
 
         dd($results_categories_de_gouvernance);
