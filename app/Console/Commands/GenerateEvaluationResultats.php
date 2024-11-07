@@ -146,6 +146,7 @@ class GenerateEvaluationResultats extends Command
                 $nbre_r = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function($query) use($organisationId) {
                     $query->where('organisationId', $organisationId);
                 })->count();
+                dump($nbre_r);
 
                 // Initialize the weighted sum
                 $weighted_sum = 0;
@@ -164,7 +165,8 @@ class GenerateEvaluationResultats extends Command
                         dump([$option_de_reponse->pivot->point, $option_de_reponse->reponses_count, $weighted_sum]);
                     });
 
-                    dump($nbre_r);
+                dump($nbre_r);
+
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
                         $question_de_gouvernance->moyenne_ponderee = $weighted_sum / $nbre_r;
