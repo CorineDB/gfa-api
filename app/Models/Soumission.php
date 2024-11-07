@@ -39,7 +39,6 @@ class Soumission extends Model
                 $soumission->reponses_de_la_collecte()->delete();
                 $soumission->recommandations()->delete();
                 $soumission->actions_a_mener()->delete();
-                $soumission->fiche_de_synthese()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {

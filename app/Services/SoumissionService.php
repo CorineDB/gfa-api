@@ -296,27 +296,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-
-    /**
-     * Liste des soumissions d'une evaluation de gouvernance
-     * 
-     * return JsonResponse
-     */
-    public function fiche_de_synthese($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
-    {
-        try
-        {
-            if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
-
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $soumission->fiche_de_synthese ? new FichesDeSyntheseResource($soumission->fiche_de_synthese) : null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
     
     /**
      * Liste des soumissions d'une evaluation de gouvernance

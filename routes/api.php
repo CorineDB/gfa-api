@@ -955,7 +955,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::controller('SoumissionController')->group(function () {
                             Route::get('recommandations', 'recommandations')->name('recommandations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
                             Route::get('actions-a-mener', 'actions_a_mener')->name('actions_a_mener'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-                            Route::get('fiche-de-synthese', 'fiche_de_synthese')->name('fiche_de_synthese'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                         });
                     });

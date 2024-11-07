@@ -47,6 +47,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (Auth::user()->hasRole('administrateur')) {
                 $evaluationsDeGouvernance = $this->repository->all();
+            } else if (Auth::user()->hasRole('organisation')) {
+                $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance()->whereHas('organisations', function ($query) {
+                    $query->where('organisationId', Auth::user()->profilable->id);
+                })->get();
             } else {
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance;
@@ -174,7 +178,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
                 $types_de_soumission = $type_soumissions->map(function ($soumissions, $type) {
-                    
+
                     return  SoumissionsResource::collection($soumissions);
                     return [
                         "$type"                    => SoumissionsResource::collection($soumissions)
@@ -207,34 +211,49 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            /*$organisation = $evaluationDeGouvernance->soumissions()
-                ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
-                ->get()->groupBy('organisationId');
 
-            $organisation_fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()
-                ->with(['soumission']) // Load the associated organisations
-                ->get()->groupBy(function ($item) {
-                    return $item->soumission->organisationId;
-                });
-    
-            $fiches_de_synthese = $organisation_fiches_de_synthese->map(function ($fiches_de_synthese, $organisationId) {
+            if (Auth::user()->hasRole('administrateur')) {
+                $evaluationsDeGouvernance = [];
+            } else if (Auth::user()->hasRole('organisation')) {
 
-                $organisation = $fiches_de_synthese->first()->soumission->organisation;
+                $organisation = Auth::user()->profilable;
 
-                return [
+                $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()->where('organisationId', $organisation->id)
+                    ->get()->groupBy(['type'])->map(function ($fiches_de_synthese, $type) {
+                        return new FicheDeSyntheseResource($fiches_de_synthese->first());
+                    });
+
+                $fiches_de_synthese = array_merge([
                     "id"                    => $organisation->secure_id,
                     'nom'                   => optional($organisation->user)->nom ?? null,
                     'sigle'                 => $organisation->sigle,
                     'code'                  => $organisation->code,
                     'nom_point_focal'       => $organisation->nom_point_focal,
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
-                    'contact_point_focal'   => $organisation->contact_point_focal,
-                    'fiches_de_synthese'    => FicheDeSyntheseResource::collection($fiches_de_synthese)
-                ];
-            })->values();*/
+                    'contact_point_focal'   => $organisation->contact_point_focal
+                ], $fiches_de_synthese->toArray());
+            } else {
+                $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
-            $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese/* ()
-                ->get()->groupBy('organisationId') */;
+                $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($rapportEvaluationParOrganisation, $organisationId) {
+
+                    $organisation = app(OrganisationRepository::class)->findById($organisationId);
+
+                    $fiches_de_synthese = $rapportEvaluationParOrganisation->map(function ($fiches_de_synthese, $type) {
+                        return new FicheDeSyntheseResource($fiches_de_synthese->first());
+                    });
+
+                    return array_merge([
+                        "id"                    => $organisation->secure_id,
+                        'nom'                   => optional($organisation->user)->nom ?? null,
+                        'sigle'                 => $organisation->sigle,
+                        'code'                  => $organisation->code,
+                        'nom_point_focal'       => $organisation->nom_point_focal,
+                        'prenom_point_focal'    => $organisation->prenom_point_focal,
+                        'contact_point_focal'   => $organisation->contact_point_focal
+                    ], $fiches_de_synthese->toArray());
+                })->values();
+            }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $fiches_de_synthese, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
