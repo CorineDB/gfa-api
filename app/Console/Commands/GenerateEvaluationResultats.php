@@ -143,7 +143,7 @@ class GenerateEvaluationResultats extends Command
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use($organisationId, $options_de_reponse) {
                 $reponses_de_collecte = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function($query) use($organisationId, $options_de_reponse) {
                     $query->where('organisationId', $organisationId);
-                })->get()->toArray();
+                })->get();
 
                 /*$options_reponses = $options_de_reponse->load("reponses", function($query) use ($question_de_gouvernance) {
                     $query->where('questionId', $question_de_gouvernance->id);
@@ -152,8 +152,9 @@ class GenerateEvaluationResultats extends Command
                 $options_reponses = $options_de_reponse->load([
                     'reponses' => function($query) use ($question_de_gouvernance) {
                         $query->where('questionId', $question_de_gouvernance->id);
-                    }])->loadCount('reponses')->loadSum('reponses', 'point');
-                dd($options_reponses);
+                    }])->loadCount('reponses');
+
+                dd($options_de_reponse->pivot->pivot_point);
                 
                 $question_de_gouvernance->moyenne_ponderee = $question_de_gouvernance->reponses->sum('point');
             });
