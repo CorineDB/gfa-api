@@ -50,6 +50,16 @@ class EvaluationDeGouvernance extends Model
         return $this->hasMany(Soumission::class, 'evaluationId');
     }
 
+    public function soumissionsDePerception()
+    {
+        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception');
+    }
+
+    public function soumissionFactuel()
+    {
+        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel');
+    }
+
     public function programme()
     {
         return $this->belongsTo(Programme::class, 'programmeId');
@@ -65,6 +75,16 @@ class EvaluationDeGouvernance extends Model
         return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at');
     }
 
+    public function formulaire_factuel_de_gouvernance()
+    {
+        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'factuel')->first();
+    }
+
+    public function formulaire_de_perception_de_gouvernance()
+    {
+        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
+    }
+
     public function recommandations()
     {
         return $this->morphMany(Recommandation::class, "recommandationable");
@@ -75,7 +95,7 @@ class EvaluationDeGouvernance extends Model
         return $this->morphMany(ActionAMener::class, "actionable");
     }
 
-    public function fiches_de_synthese()
+    /*public function fiches_de_synthese()
     {
         return $this->hasManyThrough(
             FicheDeSynthese::class,
@@ -85,5 +105,35 @@ class EvaluationDeGouvernance extends Model
             'id',
             'id'
         );
+    }*/
+
+    /**
+     * Retrieve fiches de synthese associated with the evaluation.
+     *
+     * This method returns a collection of FicheDeSynthese models related to the 
+     * EvaluationDeGouvernance, with optional filtering by organisation ID and type.
+     *
+     * @param int|null $organisationId Optional organisation ID to filter the fiches de synthese.
+     * @param string|null $type Optional type to filter the fiches de synthese.
+     * @return \Illuminate\Database\Eloquent\Builder
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function fiches_de_synthese(?int $organisationId = null, ?string $type = null): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        // Start with the base relationship
+        $fiches_de_synthese = $this->hasMany(FicheDeSynthese::class, 'evaluationDeGouvernanceId');
+
+        // Apply additional filtering conditions if needed
+        if ($type) {
+            $fiches_de_synthese = $fiches_de_synthese->where("type", $type);
+        }
+
+        if ($organisationId) {
+            $fiches_de_synthese = $fiches_de_synthese->where("organisationId", $organisationId);
+        }
+
+        // Get the results and apply grouping on the collection level
+
+        return $fiches_de_synthese;
     }
 }

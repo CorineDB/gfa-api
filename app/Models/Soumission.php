@@ -89,9 +89,4 @@ class Soumission extends Model
     {
         return $this->hasMany(ReponseDeLaCollecte::class, 'soumissionId');
     }
-
-    public function fiche_de_synthese()
-    {
-        return $this->hasOne(FicheDeSynthese::class, 'soumissionId');
-    }
 }

@@ -152,4 +152,19 @@ class Organisation extends Model
     {
         return $this->hasMany(Soumission::class, 'organisationId')->where("type", "perception");
     }
+
+    public function fiches_de_synthese($evaluationDeGouvernanceId = null, $type = null)
+    {
+        $fiches_de_synthese = $this->hasMany(FicheDeSynthese::class, 'organisationId');
+
+        if($type){
+            $fiches_de_synthese = $fiches_de_synthese->where("type", $type);
+        }
+
+        if($evaluationDeGouvernanceId){
+            $fiches_de_synthese = $fiches_de_synthese->where("evaluationDeGouvernanceId", $evaluationDeGouvernanceId);
+        }
+
+        return $fiches_de_synthese;
+    }
 }

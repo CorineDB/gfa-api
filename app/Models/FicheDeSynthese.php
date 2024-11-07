@@ -17,8 +17,7 @@ class FicheDeSynthese extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('type', 'synthese', 'evaluatedAt', 'soumissionId', 'programmeId');
-
+    protected $fillable = array('type', 'synthese', 'evaluatedAt', 'organisationId', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId', 'programmeId');
 
     protected $casts = ['synthese' => 'array', 'evaluatedAt' => 'datetime'];
 
@@ -27,9 +26,19 @@ class FicheDeSynthese extends Model
         parent::boot();
     }
 
-    public function soumission()
+    public function organisation()
     {
-        return $this->belongsTo(Soumission::class, 'soumissionId');
+        return $this->belongsTo(Organisation::class, 'organisationId');
+    }
+
+    public function evaluation_de_gouvernance()
+    {
+        return $this->belongsTo(EvaluationDeGouvernance::class, 'evaluationDeGouvernanceId');
+    }
+
+    public function formulaire_de_gouvernance()
+    {
+        return $this->belongsTo(FormulaireDeGouvernance::class, 'formulaireDeGouvernanceId');
     }
 
     public function programme()

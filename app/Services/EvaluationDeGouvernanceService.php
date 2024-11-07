@@ -207,15 +207,17 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $organisation = $evaluationDeGouvernance->soumissions()
+            /*$organisation = $evaluationDeGouvernance->soumissions()
                 ->with(['organisation', 'fiche_de_synthese']) // Load the associated organisations
                 ->get()->groupBy('organisationId');
+
             $organisation_fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()
                 ->with(['soumission']) // Load the associated organisations
                 ->get()->groupBy(function ($item) {
                     return $item->soumission->organisationId;
                 });
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation_fiches_de_synthese->map(function ($fiches_de_synthese, $organisationId) {
+    
+            $fiches_de_synthese = $organisation_fiches_de_synthese->map(function ($fiches_de_synthese, $organisationId) {
 
                 $organisation = $fiches_de_synthese->first()->soumission->organisation;
 
@@ -229,7 +231,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'contact_point_focal'   => $organisation->contact_point_focal,
                     'fiches_de_synthese'    => FicheDeSyntheseResource::collection($fiches_de_synthese)
                 ];
-            })->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            })->values();*/
+
+            $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese/* ()
+                ->get()->groupBy('organisationId') */;
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $fiches_de_synthese, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
