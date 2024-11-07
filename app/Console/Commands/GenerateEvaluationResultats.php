@@ -66,6 +66,7 @@ class GenerateEvaluationResultats extends Command
     {
         $organisation_group_soumissions = $evaluationDeGouvernance->soumissionFactuel->groupBy(['organisationId', 'type']);
 
+        dd($organisation_group_soumissions);
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
