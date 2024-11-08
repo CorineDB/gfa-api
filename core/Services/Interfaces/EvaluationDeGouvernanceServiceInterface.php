@@ -16,4 +16,5 @@ interface EvaluationDeGouvernanceServiceInterface
     public function organisations($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse;
     public function formulaires_de_gouvernance($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse;
     
+    public function envoi_mail_au_participants($evaluationDeGouvernance, array $attributs): JsonResponse;
 }

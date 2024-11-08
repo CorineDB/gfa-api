@@ -113,25 +113,27 @@ class GenerateEvaluationResultats extends Command
                 // Initialize the weighted sum
                 $weighted_sum = 0;
                 $options_de_reponse->loadCount([
-                    'reponses' => function($query) use ($question_de_gouvernance, $organisationId) {
+                    'reponses' => function($query) use ($question_de_gouvernance, $organisationId, $nbre_r) {
                         $query->where('questionId', $question_de_gouvernance->id)->where('type', 'question_operationnelle')->whereHas("soumission", function($query) use($organisationId) {
                             $query->where('organisationId', $organisationId);
                         });
-                    }])->each(function($option_de_reponse) use(&$weighted_sum) {
+                    }])->each(function($option_de_reponse) use(&$weighted_sum, $question_de_gouvernance, $nbre_r) {
 
                         $note_i = $option_de_reponse->pivot->point ?? 0; // Default to 0 if there's no point
                         $nbre_i = $option_de_reponse->reponses_count ?? 0; // Default to 0 if there are no responses
 
                         // Accumulate the weighted sum
                         $weighted_sum += $note_i * $nbre_i;
-                    });
 
-                // Calculate the weighted average
-                if ($nbre_r > 0) {
-                        $question_de_gouvernance->moyenne_ponderee = $weighted_sum / $nbre_r;
-                } else {
-                        $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
-                }
+                        // Calculate the weighted average
+                        if ($nbre_r > 0) {
+                            $question_de_gouvernance->moyenne_ponderee = $weighted_sum / $nbre_r;
+                        } else {
+                                $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
+                        }
+
+                        $question_de_gouvernance->options_de_reponse[$option_de_reponse->libelle] = $weighted_sum;
+                    });
             });
 
             // Now, calculate the 'indice_de_perception' for the category
@@ -176,9 +178,9 @@ class GenerateEvaluationResultats extends Command
             });
         */
 
-        $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) {
+        $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) use($organisationId) {
             // Call the recursive function to load nested relationships
-            $this->loadCategories($query);
+            $this->loadCategories($query, $organisationId);
         }])->get()->each(function ($categorie_de_gouvernance) use($organisationId) {
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use($organisationId) {
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
@@ -231,14 +233,16 @@ class GenerateEvaluationResultats extends Command
         return FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance);
     }
 
-    public function loadCategories($query)
+    public function loadCategories($query, $organisationId)
     {
-        $query->with(['sousCategoriesDeGouvernance' => function ($query) {
+        $query->with(['sousCategoriesDeGouvernance' => function ($query) use($organisationId) {
             // Recursively load sousCategoriesDeGouvernance
-            $this->loadCategories($query);
-        }, 'questions_de_gouvernance.reponses' => function ($query) {
-            $query->sum('point');
-        },]);
+            $this->loadCategories($query, $organisationId);
+        }, 'questions_de_gouvernance.reponses' => function ($query) use($organisationId) {
+            $query->where('type', 'indicateur')->whereHas("soumission", function($query) use($organisationId) {
+                $query->where('organisationId', $organisationId);
+            })->sum('point');
+        }]);
     }
 
     public function interpretData($categorie_de_gouvernance, $organisationId)

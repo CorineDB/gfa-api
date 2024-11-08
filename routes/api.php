@@ -946,6 +946,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     
                     Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
+                    Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                    
+                    Route::get('{evaluation_de_gouvernance}?token={$token}', 'formulaire_factuel_de_gouvernance')->name('formulaire_factuel_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
                     Route::group(['prefix' =>  '{evaluation_de_gouvernance}/soumissions/{soumission}', 'as' => 'evaluations-de-gouvernance.soumissions.'], function () {
                         Route::apiResource('actions-a-mener', 'ActionAMenerController')->names('actions-a-mener')->parameters([
                             'actions-a-mener' => 'action_a_mener',
@@ -973,6 +977,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::get('{evaluation_de_gouvernance}', 'EvaluationDeGouvernanceController@show'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             Route::post('{evaluation_de_gouvernance}/perception-soumission', 'SoumissionController@storePerception')->name('evaluation.perception-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             Route::post('{evaluation_de_gouvernance}/perception-soumission-validation', 'SoumissionController@perceptionSoumissionValidation')->name('evaluation.perception.soumission.validation'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+            Route::get('{evaluation_de_gouvernance}/{participantId}/?token={$token}', 'formulaire_de_perception_de_gouvernance')->name('formulaire_de_perception_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
         });
     });
 });

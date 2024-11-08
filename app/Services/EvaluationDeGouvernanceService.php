@@ -7,6 +7,8 @@ use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
+use App\Jobs\RappelJob;
+use App\Jobs\SendInvitationJob;
 use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\OrganisationRepository;
@@ -272,6 +274,66 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($evaluationDeGouvernance->formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des formulaires d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function formulaire_factuel_de_gouvernance($evaluationDeGouvernance, $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->load("questions_de_gouvernance.reponses", function($query) use($evaluationDeGouvernance, $token) {
+                $query->where('organisationId', $evaluationDeGouvernance->organisations()->wherePivot('token', $token)->first()->id);
+            });
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($formulaire_factuel_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des formulaires d'une evaluation de gouvernance
+     * 
+     * return JsonResponse
+     */
+    public function formulaire_de_perception_de_gouvernance($evaluationDeGouvernance, $token, $paricipant_id, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $formulaire_de_perception_de_gouvernance = $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->load("questions_de_gouvernance.reponses", function($query) use($evaluationDeGouvernance, $token, $paricipant_id) {
+                $query->where('organisationId', $evaluationDeGouvernance->organisations()->wherePivot('token', $token)->first()->id)->whereHas('soumission', function($query) use($paricipant_id) {
+                    $query->where('identifier_of_participant', $paricipant_id);
+                });
+            });
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($formulaire_de_perception_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Envoi
+     * 
+     * return JsonResponse
+     */
+    public function envoi_mail_au_participants($evaluationDeGouvernance, array $attributs): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            SendInvitationJob::dispatch($attributs, 'enquete-de-collecte');
+            
+            return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

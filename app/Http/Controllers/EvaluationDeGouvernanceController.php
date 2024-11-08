@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\evaluations_de_gouvernance\EvaluationParticipantRequest;
 use App\Http\Requests\evaluations_de_gouvernance\StoreRequest;
 use App\Http\Requests\evaluations_de_gouvernance\UpdateRequest;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
@@ -96,4 +97,21 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->formulaires_de_gouvernance($id);
     }
+
+    public function envoi_mail_au_participants(EvaluationParticipantRequest $request, $id)
+    {
+        return $this->evaluationDeGouvernanceService->envoi_mail_au_participants($id, $request->all());
+    }
+
+    public function formulaire_factuel_de_gouvernance($id, $token)
+    {
+        return $this->evaluationDeGouvernanceService->formulaire_factuel_de_gouvernance($id, $token);
+    }
+    
+
+    public function formulaire_de_perception_de_gouvernance($id, $token, $participant_id)
+    {
+        return $this->evaluationDeGouvernanceService->formulaire_factuel_de_gouvernance($id, $token);
+    }
+    
 }

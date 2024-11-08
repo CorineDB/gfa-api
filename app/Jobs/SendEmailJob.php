@@ -106,7 +106,6 @@ class SendEmailJob implements ShouldQueue
                     "introduction" => "Une nouvelle demande d'ano vient d'être soumis",
                 ];
                 $mailer = new AnoEmail($details);
-
             }
 
             $when = now()->addSeconds(5);
