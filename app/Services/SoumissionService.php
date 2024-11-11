@@ -25,9 +25,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
-* Interface SoumissionServiceInterface
-* @package Core\Services\Interfaces
-*/
+ * Interface SoumissionServiceInterface
+ * @package Core\Services\Interfaces
+ */
 class SoumissionService extends BaseService implements SoumissionServiceInterface
 {
     use HelperTrait;
@@ -49,94 +49,85 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
-        try
-        {
-            if(Auth::user()->hasRole('administrateur')){
+        try {
+            if (Auth::user()->hasRole('administrateur')) {
                 $soumissions = $this->repository->all();
-            }
-            else{
+            } else {
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $soumissions = Auth::user()->programme->soumissions;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SoumissionsResource::collection($soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function findById($soumissions, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($soumissions) && !($soumissions = $this->repository->findById($soumissions))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($soumissions) && !($soumissions = $this->repository->findById($soumissions))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionsResource($soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function create(array $attributs) : JsonResponse
+    public function create(array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
         try {
 
-            if(isset($attributs['programmeId']) && !empty($attributs['programmeId'])){
+            if (isset($attributs['programmeId']) && !empty($attributs['programmeId'])) {
                 $programme = app(ProgrammeRepository::class)->findById($attributs['programmeId']);
-            }
-            else{
+            } else {
                 $programme = Auth::user()->programme;
             }
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
-            if(isset($attributs['evaluationId'])){
-                if(!(($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId'])) && $evaluationDeGouvernance->programmeId == $programme->id))
-                {
-                    throw new Exception( "Evaluation de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+            if (isset($attributs['evaluationId'])) {
+                if (!(($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId'])) && $evaluationDeGouvernance->programmeId == $programme->id)) {
+                    throw new Exception("Evaluation de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
-            
+
                 $attributs = array_merge($attributs, ['evaluationId' => $evaluationDeGouvernance->id]);
             }
 
-            if(isset($attributs['formulaireDeGouvernanceId'])){
-                if(!(($formulaireDeGouvernance = app(FormulaireDeGouvernanceRepository::class)->findById($attributs['formulaireDeGouvernanceId'])) && $formulaireDeGouvernance->programmeId == $programme->id))
-                {
-                    throw new Exception( "Formulaire de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+            if (isset($attributs['formulaireDeGouvernanceId'])) {
+                if (!(($formulaireDeGouvernance = app(FormulaireDeGouvernanceRepository::class)->findById($attributs['formulaireDeGouvernanceId'])) && $formulaireDeGouvernance->programmeId == $programme->id)) {
+                    throw new Exception("Formulaire de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
-            
+
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
 
-            if(isset($attributs['organisationId'])){
+            if (isset($attributs['organisationId'])) {
 
-                if(!(($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])) && $organisation->user->programmeId == $programme->id))
-                {
-                    throw new Exception( "Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                if (!(($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])) && $organisation->user->programmeId == $programme->id)) {
+                    throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
-            }
-            else if(Auth::user()->hasRole('organisation')){
+            } else if (Auth::user()->hasRole('organisation')) {
                 $organisation = Auth::user()->profilable;
             }
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
-            if(($soumission = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first()) == null)
-            {
-                $soumission = $this->repository->create($attributs);
+            if ($formulaireDeGouvernance->type == 'factuel') {
+
+                $soumission  = $this->repository->getInstance()->where('type', 'factuel')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first();
+            } else {
+                $soumission  = $this->repository->getInstance()->where('type', 'perception')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->where('identifier_of_participant', $attributs['identifier_of_participant'])->first();
             }
-            else{
+
+            if ($soumission == null) {
+                $soumission = $this->repository->create($attributs);
+            } else {
                 $soumission->fill($attributs);
                 $soumission->save();
-                if($soumission->statut){
+                if ($soumission->statut) {
                     return response()->json(['statut' => 'success', 'message' => "La soumission a déjà été validée.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 }
             }
@@ -147,72 +138,63 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $soumission->save();
 
-            if(isset($attributs['factuel']) && !empty($attributs['factuel'])){
+            if (isset($attributs['factuel']) && !empty($attributs['factuel'])) {
                 $soumission->fill($attributs['factuel']);
                 $soumission->save();
 
                 foreach ($attributs['factuel']['response_data'] as $key => $item) {
 
-                    if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
-                    {
-                        throw new Exception( "Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                    if (!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id)) {
+                        throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                     }
 
                     //$option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId']);
 
-                    if(!$option && $option->programmeId == $programme->id) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                    if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    if(isset($item['sourceDeVerificationId']) && !empty($item['sourceDeVerificationId'])){
-                    
-                        if(!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && $sourceDeVerification->programmeId == $programme->id))
-                        {
+                    if (isset($item['sourceDeVerificationId']) && !empty($item['sourceDeVerificationId'])) {
+
+                        if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && $sourceDeVerification->programmeId == $programme->id)) {
                             throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
                         }
 
                         $item = array_merge($item, ['sourceDeVerificationId' => $sourceDeVerification->id, 'sourceDeVerification' => null]);
-                    }
-                    else if(isset($item['sourceDeVerification']) && !empty($item['sourceDeVerification'])){
+                    } else if (isset($item['sourceDeVerification']) && !empty($item['sourceDeVerification'])) {
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
                     }
 
-                    if(!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())){
+                    if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'questionId' => $questionDeGouvernance->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
-                    }
-                    else{
+                    } else {
                         unset($item['questionId']);
                         $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
 
-                    if(isset($item['preuves']) && !empty($item['preuves']))
-                    {
-                        foreach($item['preuves'] as $preuve)
-                        {
+                    if (isset($item['preuves']) && !empty($item['preuves'])) {
+                        foreach ($item['preuves'] as $preuve) {
                             $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
                         }
                     }
                 }
-            }
-            else if(isset($attributs['perception']) && !empty($attributs['perception'])){
+            } else if (isset($attributs['perception']) && !empty($attributs['perception'])) {
                 $soumission->fill($attributs['perception']);
                 $soumission->save();
                 foreach ($attributs['perception']['response_data'] as $key => $item) {
 
-                    if(!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id))
-                    {
-                        throw new Exception( "Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                    if (!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id)) {
+                        throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                     }
 
                     //$option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseRepository::class)->findById($item['optionDeReponseId']);
 
-                    if(!$option && $option->programmeId == $programme->id) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                    if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    if(!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())){
+                    if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'questionId' => $questionDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
-                    }
-                    else{
+                    } else {
                         unset($item['questionId']);
                         $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
                         $reponseDeLaCollecte->save();
@@ -220,12 +202,12 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 }
             }
 
-            if(($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)){
-                
+            if (($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)) {
+
                 $soumission->refresh();
-                
-                $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function($query) use ($soumission) {
-                    $query->where(function($query){
+
+                $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function ($query) use ($soumission) {
+                    $query->where(function ($query) {
                         $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
                     });
 
@@ -235,19 +217,18 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     if ($soumission->formulaireDeGouvernance->type == 'factuel') {
                         $query->whereHas('preuves_de_verification');
                     }
-
                 })->count();
 
-                if(($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])){
+                if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
                     $soumission->submitted_at = now();
                     $soumission->submittedBy  = auth()->id();
                     $soumission->statut       = true;
-    
+
                     $soumission->save();
                 }
             }
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($soumission));
 
@@ -256,7 +237,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionsResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -266,19 +246,19 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
         }
     }
 
-    public function update($soumission, array $attributs) : JsonResponse
+    public function update($soumission, array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
         try {
 
-            if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            if (!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $this->repository->update($soumission->id, $attributs);
 
             $soumission->refresh();
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($soumission));
 
@@ -287,7 +267,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionsResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -296,7 +275,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     /**
      * Liste des soumissions d'une evaluation de gouvernance
      * 
@@ -304,15 +283,11 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
      */
     public function recommandations($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => RecommandationsResource::collection($soumission->recommandations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
