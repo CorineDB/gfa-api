@@ -41,7 +41,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
                 });
             }),
             'reponse' => $this->when( (isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur'), function() use ($question_de_gouvernance){
-                return $question_de_gouvernance->reponses->first();
+                return $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first());
             }),
             'question' => $question_de_gouvernance
         ];
@@ -53,7 +53,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'id' => $reponse->secure_id,
             'nom' => $reponse->option_de_reponse->libelle,
             'type' => $reponse->type,
-            'point' => $this->when($this->type === 'indicateur', $reponse->point/* optional($question_de_gouvernance->reponses->first())->point ?? 0 */)
+            'point' => $reponse->point
         ];
     }
     
