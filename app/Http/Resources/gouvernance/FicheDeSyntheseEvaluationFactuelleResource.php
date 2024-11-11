@@ -33,7 +33,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'id' => $question_de_gouvernance->secure_id,
             'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom,
             'type' => $question_de_gouvernance->type,
-            "moyenne_ponderee"             => $this->when($question_de_gouvernance->type === 'perception', $question_de_gouvernance->moyenne_ponderee),
+            "moyenne_ponderee"             => $this->when(isset($question_de_gouvernance->moyenne_ponderee), $question_de_gouvernance->moyenne_ponderee),
             'reponse' => $this->when($question_de_gouvernance->type === 'indicateur', function() use ($question_de_gouvernance){
                 return $question_de_gouvernance->reponses->first();
             }),
