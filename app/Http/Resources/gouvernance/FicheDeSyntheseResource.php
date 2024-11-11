@@ -18,13 +18,22 @@ class FicheDeSyntheseResource extends JsonResource
         return [
             'id'            => $this->secure_id,
             'type'          => $this->type,
+            'options_de_reponse' => $this->formulaire_de_gouvernance->options_de_reponse->map(function($option){
+                return [
+                    "id"                    => $option->secure_id,
+                    'libelle'               => $option->libelle,
+                    'slug'                  => $option->slug,
+                    'point'                 => $option->pivot->point
+                ];
+            }),
             'synthese'      => $this->synthese,
             'evaluatedAt'   => Carbon::parse($this->evaluatedAt)->format("Y-m-d"),
             'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
             'organisationId' => $this->organisation->secure_id,
             'evaluationDeGouvernanceId' => $this->evaluation_de_gouvernance->secure_id,
             'programmeId'   => $this->programme->secure_id,
-            'created_at'    => Carbon::parse($this->created_at)->format("Y-m-d"),/* 
+            'created_at'    => Carbon::parse($this->created_at)->format("Y-m-d"),
+            /* 
             'soumission'    => [
                 'id'                    => $this->soumission->secure_id,
                 'type'                  => $this->soumission->type,

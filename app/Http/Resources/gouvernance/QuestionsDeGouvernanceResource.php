@@ -26,6 +26,7 @@ class QuestionsDeGouvernanceResource extends JsonResource
             'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'reponse_de_la_collecte'   => $this->whenLoaded(new ReponsesDeLaCollecteResource($this->reponses_de_la_collecte->first())),
         ];
     }
 }
