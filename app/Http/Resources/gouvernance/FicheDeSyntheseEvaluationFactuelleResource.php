@@ -34,7 +34,11 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom,
             'type' => $question_de_gouvernance->type,
             "moyenne_ponderee"             => $this->when(isset($question_de_gouvernance->moyenne_ponderee), $question_de_gouvernance->moyenne_ponderee),
-            'reponse' => $this->when($question_de_gouvernance->type === 'indicateur', function() use ($question_de_gouvernance){
+
+            "options_de_reponse"             => $this->when(isset($question_de_gouvernance->options_de_reponse), $question_de_gouvernance->options_de_reponse->map(function($option_de_reponse){
+                return $this->option_de_reponse($option_de_reponse);
+            })),
+            'reponse' => $this->when( (isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur'), function() use ($question_de_gouvernance){
                 return $question_de_gouvernance->reponses->first();
             }),
             'question' => $question_de_gouvernance
@@ -48,6 +52,14 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'nom' => $reponse->option_de_reponse->libelle,
             'type' => $reponse->type,
             'point' => $this->when($this->type === 'indicateur', $reponse->point/* optional($question_de_gouvernance->reponses->first())->point ?? 0 */)
+        ];
+    }
+    
+    public function option_de_reponse($option_de_reponse){
+        return [
+            'id' => $option_de_reponse->secure_id,
+            'nom' => $option_de_reponse->libelle,
+            'point' => $option_de_reponse->pivot->point
         ];
     }
 
