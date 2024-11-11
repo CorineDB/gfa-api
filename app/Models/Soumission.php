@@ -36,9 +36,9 @@ class Soumission extends Model
             DB::beginTransaction();
             try {
 
-                $soumission->reponses_de_la_collecte()->delete();
-                $soumission->recommandations()->delete();
                 $soumission->actions_a_mener()->delete();
+                $soumission->recommandations()->delete();
+                $soumission->reponses_de_la_collecte()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {

@@ -137,7 +137,7 @@ class SoumissionController extends Controller
      * @param  \App\Models\Activite  $paye
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($evaluationId, $id)
     {
         return $this->soumissionService->deleteById($id);
     }
