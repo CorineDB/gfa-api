@@ -42,8 +42,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             }),
             'reponse' => $this->when( (isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur'), function() use ($question_de_gouvernance){
                 return $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first());
-            }),
-            'question' => $question_de_gouvernance
+            })
         ];
     }
 
