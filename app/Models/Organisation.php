@@ -41,6 +41,8 @@ class Organisation extends Model
      */
     protected $casts = [
         "code" => "integer",
+        "longitude" => "float",
+        "latitude" => "float",
         "created_at" => "datetime:Y-m-d",
         "updated_at" => "datetime:Y-m-d",
         "deleted_at" => "datetime:Y-m-d"
