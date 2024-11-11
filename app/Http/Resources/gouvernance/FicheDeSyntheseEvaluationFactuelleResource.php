@@ -20,6 +20,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'nom'                        => $this->categorieable->nom,
             "indice_factuel"             => $this->when(isset($this->indice_factuel), $this->indice_factuel),
             "score_factuel"              => $this->when(isset($this->score_factuel), $this->score_factuel),
+            "indice_de_perception"             => $this->when(isset($this->indice_de_perception), $this->indice_de_perception),
             'categories_de_gouvernance'  => $this->when(($this->sousCategoriesDeGouvernance->count() && !$this->questions_de_gouvernance->count()), FicheDeSyntheseEvaluationFactuelleResource::collection($this->sousCategoriesDeGouvernance)),
             'questions_de_gouvernance'   => $this->when((!$this->sousCategoriesDeGouvernance->count() && $this->questions_de_gouvernance->count()), $this->questions_de_gouvernance->map(function($question_de_gouvernance){
                 return $this->question_de_gouvernance($question_de_gouvernance);
@@ -32,7 +33,9 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'id' => $question_de_gouvernance->secure_id,
             'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom,
             'type' => $question_de_gouvernance->type,
+            "moyenne_ponderee"             => $this->when(isset($question_de_gouvernance->moyenne_ponderee), $question_de_gouvernance->moyenne_ponderee),
             'reponse' => $question_de_gouvernance->reponses,//$this->when($this->type === 'indicateur', $question_de_gouvernance->indicateur_de_gouvernance/* optional($question_de_gouvernance->reponses->first())->point ?? 0 */)
+            'question' => $question_de_gouvernance
         ];
     }
 
