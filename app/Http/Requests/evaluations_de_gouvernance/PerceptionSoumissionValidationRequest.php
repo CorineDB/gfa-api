@@ -59,7 +59,6 @@ class PerceptionSoumissionValidationRequest extends FormRequest
                     }
                 }
             ],
-
             'perception'                              => ['required', 'array', function($attribute, $value, $fail) {
                     if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
