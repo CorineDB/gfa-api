@@ -52,7 +52,8 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'id' => $reponse->secure_id,
             'nom' => $reponse->option_de_reponse->libelle,
             'type' => $reponse->type,
-            'point' => $reponse->point
+            'point' => $reponse->point,
+            'sourceDeVerification' => $reponse->source_de_verification ? $reponse->source_de_verification->intitule : $reponse->sourceDeVerification,
         ];
     }
     

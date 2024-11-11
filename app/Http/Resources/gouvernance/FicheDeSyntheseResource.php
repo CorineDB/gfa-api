@@ -18,6 +18,7 @@ class FicheDeSyntheseResource extends JsonResource
         return [
             'id'            => $this->secure_id,
             'type'          => $this->type,
+            'indice_de_gouvernance'=> $this->indice_de_gouvernance,
             'options_de_reponse' => $this->formulaire_de_gouvernance->options_de_reponse->map(function($option){
                 return [
                     "id"                    => $option->secure_id,

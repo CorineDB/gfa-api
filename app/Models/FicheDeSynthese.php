@@ -17,9 +17,9 @@ class FicheDeSynthese extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('type', 'synthese', 'evaluatedAt', 'organisationId', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId', 'programmeId');
+    protected $fillable = array('type', 'indice_de_gouvernance', 'synthese', 'evaluatedAt', 'organisationId', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId', 'programmeId');
 
-    protected $casts = ['synthese' => 'array', 'evaluatedAt' => 'datetime'];
+    protected $casts = ['synthese' => 'array', 'indice_de_gouvernance' => 'float', 'evaluatedAt' => 'datetime'];
 
     protected static function boot()
     {
