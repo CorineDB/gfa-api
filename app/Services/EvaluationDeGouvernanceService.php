@@ -228,8 +228,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'contact_point_focal'   => $organisation->contact_point_focal
                     ], $types_de_soumission->toArray());
                 })->values();
-                
-                $group_soumissions = $evaluationDeGouvernance->soumissions;
             }
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $group_soumissions, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
