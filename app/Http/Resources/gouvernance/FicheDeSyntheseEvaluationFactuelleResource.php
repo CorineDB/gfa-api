@@ -61,7 +61,10 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
         return [
             'id' => $option_de_reponse->secure_id,
             'nom' => $option_de_reponse->libelle,
-            'point' => $option_de_reponse->pivot->point
+            'point' => $option_de_reponse->pivot->point,
+            'moyenne_ponderee_i' => $option_de_reponse->moyenne_ponderee_i,
+            'reponses_count' => $option_de_reponse->reponses_count
+            
         ];
     }
 
