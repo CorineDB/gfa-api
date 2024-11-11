@@ -112,9 +112,9 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             } else if (Auth::user()->hasRole('organisation')) {
                 $organisation = Auth::user()->profilable;
             }
-            return response()->json(['statut' => 'error', 'message' => $organisation, 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
+            return response()->json(['statut' => 'error', 'message' => $attributs, 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if ($formulaireDeGouvernance->type == 'factuel') {
 
