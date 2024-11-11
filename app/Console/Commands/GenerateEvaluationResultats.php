@@ -117,7 +117,7 @@ class GenerateEvaluationResultats extends Command
                             $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
                         });
                     }
-                ])->each(function ($option_de_reponse) use (&$weighted_sum, $question_de_gouvernance, $index) {
+                ])->each(function ($option_de_reponse) use (&$weighted_sum, $question_de_gouvernance, &$index) {
 
                     $note_i = $option_de_reponse->pivot->point ?? 0; // Default to 0 if there's no point
                     $nbre_i = $option_de_reponse->reponses_count ?? 0; // Default to 0 if there are no responses
