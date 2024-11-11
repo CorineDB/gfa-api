@@ -15,6 +15,7 @@ class QuestionsDeGouvernanceResource extends JsonResource
      */
     public function toArray($request)
     {
+        $reponse = $this->reponses->first();
         return [
             'id' => $this->secure_id,
             'nom' => $this->indicateur_de_gouvernance->nom,
@@ -26,7 +27,7 @@ class QuestionsDeGouvernanceResource extends JsonResource
             'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
-            'reponse_de_la_collecte'   => $this->whenLoaded(new ReponsesDeLaCollecteResource($this->reponses->first())),
+            'reponse_de_la_collecte'   => $reponse ? $this->whenLoaded(new ReponsesDeLaCollecteResource($reponse)) : null,
         ];
     }
 }
