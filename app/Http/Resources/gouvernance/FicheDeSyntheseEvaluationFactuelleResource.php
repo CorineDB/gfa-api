@@ -20,7 +20,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'nom'                        => $this->categorieable->nom,
             "indice_factuel"             => $this->when(isset($this->indice_factuel), $this->indice_factuel),
             "score_factuel"              => $this->when(isset($this->score_factuel), $this->score_factuel),
-            "indice_de_perception"             => $this->when(isset($this->indice_de_perception), $this->indice_de_perception),
+            "indice_de_perception"       => $this->when(isset($this->indice_de_perception), $this->indice_de_perception),
             'categories_de_gouvernance'  => $this->when(($this->sousCategoriesDeGouvernance->count() && !$this->questions_de_gouvernance->count()), FicheDeSyntheseEvaluationFactuelleResource::collection($this->sousCategoriesDeGouvernance)),
             'questions_de_gouvernance'   => $this->when((!$this->sousCategoriesDeGouvernance->count() && $this->questions_de_gouvernance->count()), $this->questions_de_gouvernance->map(function($question_de_gouvernance){
                 return $this->question_de_gouvernance($question_de_gouvernance);
