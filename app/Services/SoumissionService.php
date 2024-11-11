@@ -155,7 +155,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                     if (isset($item['sourceDeVerificationId']) && !empty($item['sourceDeVerificationId'])) {
 
-                        if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && optional($sourceDeVerification->programmeId) == $programme->id)) {
+                        if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
                             throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
                         }
 
