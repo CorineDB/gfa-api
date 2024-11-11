@@ -43,6 +43,7 @@ class PerceptionSoumissionValidationRequest extends FormRequest
         return [
             'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
             'organisationId'   => ["required", new HashValidatorRule(new Organisation())],
+            'identifier_of_participant' => ['required'],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
