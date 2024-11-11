@@ -25,6 +25,23 @@ class EvaluationDeGouvernance extends Model
     {
         parent::boot();
 
+        static::deleting(function ($evaluation_de_gouvernance) {
+
+            DB::beginTransaction();
+            try {
+
+                if($evaluation_de_gouvernance->soumissions->count() == 0 && $evaluation_de_gouvernance->statut != 1){
+                    $evaluation_de_gouvernance->delete();
+                    DB::commit();
+                }
+
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
+
         static::deleted(function ($evaluation_de_gouvernance) {
 
             DB::beginTransaction();

@@ -31,14 +31,30 @@ class Soumission extends Model
     {
         parent::boot();
 
+        static::deleting(function ($soumission) {
+
+            DB::beginTransaction();
+            try {
+
+                if(!$soumission->statut){
+                    $soumission->delete();
+                    DB::commit();
+                }
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
+
         static::deleted(function ($soumission) {
 
             DB::beginTransaction();
             try {
 
-                $soumission->reponses_de_la_collecte()->delete();
-                $soumission->recommandations()->delete();
                 $soumission->actions_a_mener()->delete();
+                $soumission->recommandations()->delete();
+                $soumission->reponses_de_la_collecte()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {

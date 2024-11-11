@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class ReponseDeLaCollecte extends Model
@@ -24,6 +26,22 @@ class ReponseDeLaCollecte extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::deleted(function ($reponse_de_la_collecte) {
+
+            DB::beginTransaction();
+            try {
+                $reponse_de_la_collecte->actions_a_mener()->delete();
+                $reponse_de_la_collecte->recommandations()->delete();
+                $reponse_de_la_collecte->preuves_de_verification()->delete();
+
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
     }
     
     /**

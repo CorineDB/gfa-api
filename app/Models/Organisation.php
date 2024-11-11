@@ -51,6 +51,23 @@ class Organisation extends Model
     protected static function boot() {
         parent::boot();
 
+
+        static::deleting(function ($organisation) {
+
+            DB::beginTransaction();
+            try {
+
+                if(!$organisation->projet){
+                    $organisation->delete();
+                    DB::commit();
+                }
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
+
         static::deleted(function($organisation) {
 
             DB::beginTransaction();
