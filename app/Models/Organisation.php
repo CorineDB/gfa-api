@@ -135,7 +135,7 @@ class Organisation extends Model
 
     public function evaluations_de_gouvernance()
     {
-        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants", 'participants']);
+        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants", 'participants', 'token']);
     }
 
     public function soumissions()

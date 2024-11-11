@@ -34,8 +34,8 @@ class SoumissionsResource extends JsonResource
             'evaluationId'              => $this->evaluation_de_gouvernance->secure_id,
             'organisationId'            => $this->organisation->secure_id,
             'programmeId'               => $this->programme->secure_id,
-            'reponses_de_la_collecte'   => ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte),
             'created_at'                => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'reponses_de_la_collecte'   => ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte),
         ];
     }
 }

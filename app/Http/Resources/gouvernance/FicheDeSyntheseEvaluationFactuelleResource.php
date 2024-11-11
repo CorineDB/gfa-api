@@ -6,6 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
 {
+
     /**
      * Transform the resource into an array.
      *
@@ -30,8 +31,19 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
         return [
             'id' => $question_de_gouvernance->secure_id,
             'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom,
-            'type' => $question_de_gouvernance->type
-            //"point"                      => intval($question_de_gouvernance->->note)
+            'type' => $question_de_gouvernance->type,
+            'reponse' => $question_de_gouvernance->reponses,//$this->when($this->type === 'indicateur', $question_de_gouvernance->indicateur_de_gouvernance/* optional($question_de_gouvernance->reponses->first())->point ?? 0 */)
         ];
     }
+
+    
+    public function reponse_de_la_collecte($reponse){
+        return [
+            'id' => $reponse->secure_id,
+            'nom' => $reponse->option_de_reponse->libelle,
+            'type' => $reponse->type,
+            'point' => $this->when($this->type === 'indicateur', $reponse->point/* optional($question_de_gouvernance->reponses->first())->point ?? 0 */)
+        ];
+    }
+
 }
