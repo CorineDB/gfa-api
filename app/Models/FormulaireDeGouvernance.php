@@ -29,6 +29,23 @@ class FormulaireDeGouvernance extends Model
     {
         parent::boot();
 
+        static::deleting(function ($formulaire_de_gouvernance) {
+
+            DB::beginTransaction();
+            try {
+
+                if($formulaire_de_gouvernance->evaluations_de_gouvernance->count() == 0){
+                    $formulaire_de_gouvernance->delete();
+                    DB::commit();
+                }
+
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
+
         static::deleted(function ($formulaire_de_gouvernance) {
 
             DB::beginTransaction();
