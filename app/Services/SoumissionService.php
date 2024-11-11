@@ -114,7 +114,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             }
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
-            return response()->json(['statut' => 'error', 'message' => $attributs, 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if ($formulaireDeGouvernance->type == 'factuel') {
 
@@ -122,6 +121,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             } else {
                 $soumission  = $this->repository->getInstance()->where('type', 'perception')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->where('identifier_of_participant', $attributs['identifier_of_participant'])->first();
             }
+            return response()->json(['statut' => 'error', 'message' => $soumission, 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if ($soumission == null) {
                 $soumission = $this->repository->create($attributs);
