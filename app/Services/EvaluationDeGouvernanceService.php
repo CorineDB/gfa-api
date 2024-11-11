@@ -171,7 +171,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
 
             if (Auth::user()->hasRole('administrateur')) {
-                $soumissions = [];
+                $group_soumissions = [];
             } else if (Auth::user()->hasRole('organisation')) {
 
                 $organisation = Auth::user()->profilable;
@@ -209,6 +209,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $types_de_soumission = $type_soumissions->map(function ($soumissions, $type) {
 
+                        return SoumissionsResource::collection($soumissions);
                         if($type === 'perception'){
                             return SoumissionsResource::collection($soumissions);
                         }
