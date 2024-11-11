@@ -87,7 +87,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             }
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
-            return response()->json(['statut' => 'error', 'message' => $attributs, 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if (isset($attributs['evaluationId'])) {
                 if (!(($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId'])) && $evaluationDeGouvernance->programmeId == $programme->id)) {
@@ -104,6 +103,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
+            return response()->json(['statut' => 'error', 'message' => $attributs, 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if (isset($attributs['organisationId'])) {
 
