@@ -145,7 +145,6 @@ class GenerateEvaluationResultats extends Command
         });
         return FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance);
 
-        return FicheSyntheseEvaluationDePerceptionResource::collection($results_categories_de_gouvernance);
     }
 
     public function generateSyntheseForFactuelleSoumission(Soumission $soumission, $organisationId)
