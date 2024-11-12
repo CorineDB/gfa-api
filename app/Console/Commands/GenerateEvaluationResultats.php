@@ -320,7 +320,8 @@ class GenerateEvaluationResultats extends Command
                     if($principes_de_gouvernance->firstWhere('id', $sous_categorie_de_gouvernance->categorieable->id)){
                         // Update the collection item by transforming it
                         $principes_de_gouvernance = $principes_de_gouvernance->transform(function ($item) use ($sous_categorie_de_gouvernance) {
-                            if ($item->id === $sous_categorie_de_gouvernance->categorieable['id']) {
+                            dd($sous_categorie_de_gouvernance);
+                            if ($item->id === $sous_categorie_de_gouvernance->categorieable->id) {
                                 // Update the score_factuel
                                 $item->indice_factuel += $sous_categorie_de_gouvernance->score_factuel;
                             }
