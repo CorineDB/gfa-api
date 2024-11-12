@@ -262,7 +262,7 @@ class GenerateEvaluationResultats extends Command
             // Check to avoid division by zero
             $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
 
-            $principes_de_gouvernance->push(['id' => $categorie_de_gouvernance->id, 'nom' => $categorie_de_gouvernance->categorieable->nom, 'indice_de_perception' => $categorie_de_gouvernance->indice_de_perception]);
+            $principes_de_gouvernance->push(['id' => $categorie_de_gouvernance->categorieable->id, 'nom' => $categorie_de_gouvernance->categorieable->nom, 'indice_de_perception' => $categorie_de_gouvernance->indice_de_perception]);
 
         });
         $indice_de_perception = $results_categories_de_gouvernance->sum('indice_de_perception') / $results_categories_de_gouvernance->count();
@@ -340,7 +340,7 @@ class GenerateEvaluationResultats extends Command
 
                         // Now, push the updated item into the collection
                         //$principes_de_gouvernance->push($item);
-                        $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
+                        $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable->id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
 
                     }
                     
@@ -357,7 +357,7 @@ class GenerateEvaluationResultats extends Command
                     //unset($item->score_factuel);
 
                     // Now, push the updated item into the collection
-                    $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
+                    $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable->id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
                 }
             });
 
