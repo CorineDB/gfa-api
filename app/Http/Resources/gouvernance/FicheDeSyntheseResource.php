@@ -16,10 +16,10 @@ class FicheDeSyntheseResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'            => $this->secure_id,
-            'type'          => $this->type,
-            'indice_de_gouvernance'=> $this->indice_de_gouvernance,
-            'options_de_reponse' => $this->formulaire_de_gouvernance->options_de_reponse->map(function($option){
+            'id'                    => $this->secure_id,
+            'type'                  => $this->type,
+            'indice_de_gouvernance' => $this->indice_de_gouvernance,
+            'options_de_reponse'    => $this->formulaire_de_gouvernance->options_de_reponse->map(function($option){
                 return [
                     "id"                    => $option->secure_id,
                     'libelle'               => $option->libelle,
@@ -45,7 +45,8 @@ class FicheDeSyntheseResource extends JsonResource
                 'age'                   => $this->when($this->soumission->type === 'perception',  $this->soumission->age),
                 'categorieDeParticipant'=> $this->when($this->soumission->type === 'perception',  $this->soumission->categorieDeParticipant),
                 'submitted_at'          => Carbon::parse($this->soumission->submitted_at)->format("Y-m-d")
-            ] */
+            ]
+            */
         ];
     }
 }
