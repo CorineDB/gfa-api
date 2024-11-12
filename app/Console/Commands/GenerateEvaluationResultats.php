@@ -329,35 +329,13 @@ class GenerateEvaluationResultats extends Command
                         });
                     }
                     else{
-                        // If the item doesn't exist
-                        // Create a new item (copying the original object)
-                        //$item = $sous_categorie_de_gouvernance;
-
-                        // Update indice_factuel with score_factuel
-                        //$item->indice_factuel = $sous_categorie_de_gouvernance->score_factuel;
-
-                        // Remove the score_factuel property
-                        //unset($item->score_factuel);
-
-                        // Now, push the updated item into the collection
-                        //$principes_de_gouvernance->push($item);
+                        // If the item doesn't exist push the new item                        
                         $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable_id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
 
                     }
-                    
                 }
                 else {
                     // If the collection is empty, push the new item
-                    // Create a new item (copying the original object)
-                    //$item = $sous_categorie_de_gouvernance;
-
-                    // Update indice_factuel with score_factuel
-                    //$item->indice_factuel = $sous_categorie_de_gouvernance->score_factuel;
-
-                    // Remove the score_factuel property
-                    //unset($item->score_factuel);
-
-                    // Now, push the updated item into the collection
                     $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable_id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
                 }
             });
