@@ -26,6 +26,7 @@ class SoumissionsResource extends JsonResource
             'age'                   => $this->when($this->type === 'perception', $this->age),
             'categorieDeParticipant'=> $this->when($this->type === 'perception', $this->categorieDeParticipant),
             'submitted_at'          => Carbon::parse($this->submitted_at)->format("Y-m-d"),
+            'pourcentage_evolution' => $this->pourcentage_evolution,
             'submittedBy'           => $this->authoredBy ? [
                 'id'                    => $this->authoredBy->secure_id,
                 'nom'                   => $this->authoredBy->nom

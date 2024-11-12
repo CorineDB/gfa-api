@@ -88,6 +88,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $evaluationDeGouvernance = $this->repository->create($attributs);
             $evaluationDeGouvernance->organisations()->attach($attributs['organisations']);
             $evaluationDeGouvernance->formulaires_de_gouvernance()->attach($attributs['formulaires_de_gouvernance']);
+            //$this->hashID(8);
+            //$utilisateur->token = str_replace(['/', '\\'], '', Hash::make( $utilisateur->secure_id . Hash::make($utilisateur->email) . Hash::make(Hash::make(strtotime($utilisateur->account_verification_request_sent_at)))));
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
