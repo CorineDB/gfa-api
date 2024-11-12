@@ -18,7 +18,9 @@ class ProfileDeGouvernance extends Model
     protected $fillable = array('resultat_synthetique', 'organisationId', 'evaluationDeGouvernanceId', 'evaluationOrganisationId', 'programmeId');
 
     protected $casts = ['resultat_synthetique' => 'array'];
-    
+
+    protected $default = ['resultat_synthetique' => []];
+
     protected static function boot()
     {
         parent::boot();

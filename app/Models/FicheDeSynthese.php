@@ -21,6 +21,8 @@ class FicheDeSynthese extends Model
 
     protected $casts = ['resultats' => 'array', 'synthese' => 'array', 'indice_de_gouvernance' => 'float', 'evaluatedAt' => 'datetime'];
 
+    protected $default = ['resultats' => [], 'synthese' => []];
+
     protected static function boot()
     {
         parent::boot();
