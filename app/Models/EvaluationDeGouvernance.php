@@ -159,7 +159,7 @@ class EvaluationDeGouvernance extends Model
 
     public function getPourcentageEvolutionAttribute()
     {
-        return 0;        
+        return ($this->pourcentage_evolution_des_soumissions_factuel + $this->pourcentage_evolution_des_soumissions_de_perception) / 2;
     }
 
     public function getPourcentageEvolutionDesSoumissionsFactuelAttribute()
