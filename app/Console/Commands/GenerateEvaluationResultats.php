@@ -69,6 +69,8 @@ class GenerateEvaluationResultats extends Command
 
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
+            $profile = null;
+
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
                 if(!$evaluationOrganisationId = $evaluationDeGouvernance->organisations()->wherePivot('organisationId', $organisationId)->first()->pivot){
                     return;
@@ -113,7 +115,7 @@ class GenerateEvaluationResultats extends Command
                         // Convert back to a regular array if needed
                         $results = $resultat_synthetique->values()->toArray();
 
-                        ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                        $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
 
                 } else if ($group_soumission === "perception") {
