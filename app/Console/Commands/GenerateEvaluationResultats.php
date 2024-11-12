@@ -107,7 +107,7 @@ class GenerateEvaluationResultats extends Command
 
                         // Iterate over each item in $results to update or add to $resultat_synthetique
                         foreach ($results as $result) {
-                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), array_merge(['indice_de_perception' => 0], $result));
+                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
                         }
 
                         // Convert back to a regular array if needed
@@ -148,7 +148,7 @@ class GenerateEvaluationResultats extends Command
 
                         // Iterate over each item in $results to update or add to $resultat_synthetique
                         foreach ($results as $result) {
-                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), array_merge(['indice_factuel' => 0, $result]));
+                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
                         }
 
                         // Convert back to a regular array if needed
