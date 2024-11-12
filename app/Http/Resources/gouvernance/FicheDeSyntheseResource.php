@@ -27,6 +27,7 @@ class FicheDeSyntheseResource extends JsonResource
                     'point'                 => $option->pivot->point
                 ];
             }),
+            'resultats'      => $this->resultats,
             'synthese'      => $this->synthese,
             'evaluatedAt'   => Carbon::parse($this->evaluatedAt)->format("Y-m-d"),
             'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
