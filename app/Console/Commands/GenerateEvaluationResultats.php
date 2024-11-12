@@ -88,7 +88,7 @@ class GenerateEvaluationResultats extends Command
                         app(FicheDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
 
-                    if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
+                    if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
                         
                         // Convert $profile->resultat_synthetique to an associative array for easy updating
                         $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
@@ -118,7 +118,8 @@ class GenerateEvaluationResultats extends Command
                         $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
 
-                } else if ($group_soumission === "perception") {
+                }
+                else if ($group_soumission === "perception") {
 
                     [$indice_de_perception, $results, $synthese] = $this->generateSyntheseForPerceptionSoumission($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
 
@@ -128,7 +129,7 @@ class GenerateEvaluationResultats extends Command
                         app(FicheDeSyntheseRepository::class)->create(['type' => 'perception', 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
 
-                    if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
+                    if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
                         
                         // Convert $profile->resultat_synthetique to an associative array for easy updating
                         $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
@@ -156,7 +157,7 @@ class GenerateEvaluationResultats extends Command
                         // Convert back to a regular array if needed
                         $results = $resultat_synthetique->values()->toArray();
 
-                        ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                        $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
                 }
             }
