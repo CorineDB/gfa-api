@@ -247,5 +247,4 @@ class PrincipeDeGouvernance extends Model
     
         return $query;
     }
-    
 }

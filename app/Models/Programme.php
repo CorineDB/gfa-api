@@ -522,6 +522,27 @@ class Programme extends Model
         return $this->hasMany(FicheDeSynthese::class, 'programmeId');
     }
 
+    public function profiles(?int $evaluationDeGouvernanceId = null, ?int $organisationId = null, ?int $evaluationOrganisationId = null): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        // Start with the base relationship
+        $profiles = $this->hasMany(ProfileDeGouvernance::class, 'programmeId');
+
+        if ($organisationId) {
+            $profiles = $profiles->where("organisationId", $organisationId);
+        }
+
+        if ($evaluationDeGouvernanceId) {
+            $profiles = $profiles->where("evaluationDeGouvernanceId", $evaluationDeGouvernanceId);
+        }
+
+        if ($evaluationOrganisationId) {
+            $profiles = $profiles->where("evaluationOrganisationId", $evaluationOrganisationId);
+        }
+
+        // Get the results and apply grouping on the collection level
+        return $profiles;
+    }
+
     public function actions_a_mener()
     {
         return $this->hasMany(ActionAMener::class, 'programmeId');
@@ -531,8 +552,6 @@ class Programme extends Model
     {
         return $this->hasMany(Recommandation::class, 'programmeId');
     }
-
-    
     
     public function resultats_cadre_de_mesure_rendement()
     {
