@@ -2,25 +2,23 @@
 
 namespace App\Models;
 
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
-class FicheDeSynthese extends Model
+class ProfileDeGouvernance extends Model
 {
-    protected $table = 'fiches_de_synthese';
+    protected $table = 'profiles_de_gouvernance';
     public $timestamps = true;
 
     use HasSecureIds, HasFactory ;
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('type', 'indice_de_gouvernance', 'resultats', 'synthese', 'evaluatedAt', 'organisationId', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId', 'programmeId');
+    protected $fillable = array('resultat_synthetique', 'organisationId', 'evaluationDeGouvernanceId', 'evaluationOrganisationId', 'programmeId');
 
-    protected $casts = ['resultats' => 'array', 'synthese' => 'array', 'indice_de_gouvernance' => 'float', 'evaluatedAt' => 'datetime'];
-
+    protected $casts = ['resultat_synthetique' => 'array'];
+    
     protected static function boot()
     {
         parent::boot();
@@ -34,11 +32,6 @@ class FicheDeSynthese extends Model
     public function evaluation_de_gouvernance()
     {
         return $this->belongsTo(EvaluationDeGouvernance::class, 'evaluationDeGouvernanceId');
-    }
-
-    public function formulaire_de_gouvernance()
-    {
-        return $this->belongsTo(FormulaireDeGouvernance::class, 'formulaireDeGouvernanceId');
     }
 
     public function programme()

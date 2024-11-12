@@ -157,6 +157,24 @@ class EvaluationDeGouvernance extends Model
         return $fiches_de_synthese;
     }
 
+    public function profiles(?int $organisationId = null, ?int $evaluationOrganisationId = null): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        // Start with the base relationship
+        $profiles = $this->hasMany(ProfileDeGouvernance::class, 'evaluationDeGouvernanceId');
+
+        if ($organisationId) {
+            $profiles = $profiles->where("organisationId", $organisationId);
+        }
+
+        if ($evaluationOrganisationId) {
+            $profiles = $profiles->where("evaluationOrganisationId", $evaluationOrganisationId);
+        }
+
+        // Get the results and apply grouping on the collection level
+
+        return $profiles;
+    }
+
     public function getPourcentageEvolutionAttribute()
     {
         // Avoid division by zero by checking that total participants are non-zero
@@ -212,7 +230,6 @@ class EvaluationDeGouvernance extends Model
     }
 
     public function getTotalParticipantsEvaluationDePerceptionAttribut(){
-
         // Sum the 'nbreParticipants' attribute from the pivot table
         return $this->organisations->sum(function ($organisation) {
             return $organisation->pivot->nbreParticipants;

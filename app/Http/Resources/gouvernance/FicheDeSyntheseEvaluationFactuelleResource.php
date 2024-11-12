@@ -6,7 +6,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
 {
-
     /**
      * Transform the resource into an array.
      *
@@ -29,7 +28,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
     }
     
     public function question_de_gouvernance($question_de_gouvernance){
-        return [
+        return  $question_de_gouvernance ? [
             'id' => $question_de_gouvernance->secure_id,
             'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom,
             'type' => $question_de_gouvernance->type,
@@ -43,29 +42,29 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'reponse' => $this->when( (isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur'), function() use ($question_de_gouvernance){
                 return $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first());
             })
-        ];
+        ] : null;
     }
 
     
     public function reponse_de_la_collecte($reponse){
-        return [
-            'id' => $reponse->secure_id,
+        return $reponse ? [
+            'id' => $reponse->id,
             'nom' => $reponse->option_de_reponse->libelle,
             'type' => $reponse->type,
             'point' => $reponse->point,
             'sourceDeVerification' => $reponse->source_de_verification ? $reponse->source_de_verification->intitule : $reponse->sourceDeVerification,
-        ];
+        ] : null;
     }
     
     public function option_de_reponse($option_de_reponse){
-        return [
+        return $option_de_reponse ? [
             'id' => $option_de_reponse->secure_id,
             'nom' => $option_de_reponse->libelle,
             'point' => $option_de_reponse->pivot->point,
             'moyenne_ponderee_i' => $option_de_reponse->moyenne_ponderee_i,
             'reponses_count' => $option_de_reponse->reponses_count
             
-        ];
+        ] : null;
     }
 
 }

@@ -18,6 +18,9 @@ class AddColumnIndiceDeGouvernanceToFichesDeSyntheseTable extends Migration
                 if (!Schema::hasColumn('fiches_de_synthese', 'indice_de_gouvernance')) {
                     $table->float('indice_de_gouvernance')->default(0);
                 }
+                if (!Schema::hasColumn('fiches_de_synthese', 'resultats')) {
+                    $table->jsonb("resultats")->nullable();
+                }
             });
         }
     }
@@ -33,8 +36,10 @@ class AddColumnIndiceDeGouvernanceToFichesDeSyntheseTable extends Migration
             Schema::table('fiches_de_synthese', function (Blueprint $table) {
 
                 if (Schema::hasColumn('fiches_de_synthese', 'indice_de_gouvernance')) {
-
                     $table->dropColumn('indice_de_gouvernance');
+                }
+                if (Schema::hasColumn('fiches_de_synthese', 'resultats')) {
+                    $table->dropColumn('resultats');
                 }
             });
         }

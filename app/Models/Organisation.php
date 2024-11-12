@@ -186,4 +186,21 @@ class Organisation extends Model
 
         return $fiches_de_synthese;
     }
+
+    public function profiles(?int $evaluationDeGouvernanceId = null, ?int $evaluationOrganisationId = null): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        // Start with the base relationship
+        $profiles = $this->hasMany(ProfileDeGouvernance::class, 'organisationId');
+
+        if ($evaluationDeGouvernanceId) {
+            $profiles = $profiles->where("evaluationDeGouvernanceId", $evaluationDeGouvernanceId);
+        }
+
+        if ($evaluationOrganisationId) {
+            $profiles = $profiles->where("evaluationOrganisationId", $evaluationOrganisationId);
+        }
+
+        // Get the results and apply grouping on the collection level
+        return $profiles;
+    }
 }

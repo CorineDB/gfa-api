@@ -25,27 +25,31 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'annee_exercice' => $this->annee_exercice,
             'statut' => $this->statut,
             'pourcentage_evolution' => $this->pourcentage_evolution,
+            'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
+            'pourcentage_evolution_des_soumissions_de_perception' => $this->pourcentage_evolution_des_soumissions_de_perception,
+            'total_participants_evaluation_factuel' => $this->getTotalParticipantsEvaluationFactuelAttribut(),
+            'total_participants_evaluation_de_perception' => $this->getTotalParticipantsEvaluationDePerceptionAttribut(),
             'total_soumissions_factuel' => $this->total_soumissions_factuel,
             'total_soumissions_de_perception' => $this->total_soumissions_de_perception,
             'total_soumissions_factuel_terminer' => $this->total_soumissions_factuel_terminer,
             'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
-            'total_participants_evaluation_factuel' => $this->total_participants_evaluation_factuel,
-            'total_participants_evaluation_de_perception' => $this->total_participants_evaluation_de_perception,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
             'formulaire_perception_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'perception')->first()->secure_id,
             'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance),
-            /*$this->formulaires_de_gouvernance->map(function($formulaire_de_gouvernance){
-                return [
-                    'id' => $formulaire_de_gouvernance->secure_id,
-                    'libelle' => $formulaire_de_gouvernance->libelle,
-                    'description' => $formulaire_de_gouvernance->description,
-                    'type' => $formulaire_de_gouvernance->type,
-                    'lien' => $formulaire_de_gouvernance->lien,
-                    'annee_exercice' => $this->annee_exercice
-                ];
-            }), */
+            /*
+                $this->formulaires_de_gouvernance->map(function($formulaire_de_gouvernance){
+                    return [
+                        'id' => $formulaire_de_gouvernance->secure_id,
+                        'libelle' => $formulaire_de_gouvernance->libelle,
+                        'description' => $formulaire_de_gouvernance->description,
+                        'type' => $formulaire_de_gouvernance->type,
+                        'lien' => $formulaire_de_gouvernance->lien,
+                        'annee_exercice' => $this->annee_exercice
+                    ];
+                }),
+            */
             'organisations' => $this->organisations->map(function($organisation){
                 return [
                     "id"                    => $organisation->secure_id,
@@ -56,7 +60,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal
                 ];
-            })// FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance)
+            })
         ];
     }
 }
