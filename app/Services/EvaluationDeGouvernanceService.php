@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Interface EvaluationDeGouvernanceServiceInterface
@@ -86,10 +87,27 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             $evaluationDeGouvernance = $this->repository->create($attributs);
-            $evaluationDeGouvernance->organisations()->attach($attributs['organisations']);
             $evaluationDeGouvernance->formulaires_de_gouvernance()->attach($attributs['formulaires_de_gouvernance']);
-            //$this->hashID(8);
-            //$utilisateur->token = str_replace(['/', '\\'], '', Hash::make( $utilisateur->secure_id . Hash::make($utilisateur->email) . Hash::make(Hash::make(strtotime($utilisateur->account_verification_request_sent_at)))));
+
+            $organisationsId = [];
+            foreach($attributs['organisations'] as $organisation){
+                if(!($organisation = app(OrganisationRepository::class)->findById($organisation))){
+                    throw new Exception("Organisation inconnue du programme.", Response::HTTP_NOT_FOUND);
+                }
+
+                // Generate the token
+                $token = Hash::make(
+                    Hash::make($evaluationDeGouvernance->secure_id . $organisation->secure_id) .
+                    Hash::make(strtotime(now()))
+                );
+
+                // Add to the array in the correct format
+                $organisationsId[$organisation->id] = ['token' => $token];
+
+            }
+
+            // Attach organisations with the additional pivot data
+            $evaluationDeGouvernance->organisations()->attach($organisationsId);
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
