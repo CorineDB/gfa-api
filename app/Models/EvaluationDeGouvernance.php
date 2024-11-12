@@ -21,6 +21,8 @@ class EvaluationDeGouvernance extends Model
 
     protected $casts = ['statut'  => 'integer', 'debut'  => 'datetime', 'fin'  => 'datetime', 'annee_exercice' => 'integer', 'objectif_attendu' => 'integer'];
 
+    protected $appends = ['pourcentage_evolution', 'pourcentage_evolution_des_soumissions_factuel', 'pourcentage_evolution_des_soumissions_de_perception', 'total_soumissions_factuel', 'total_soumissions_de_perception', 'total_soumissions_factuel_terminer', 'total_soumissions_de_perception_terminer', 'total_participants_evaluation_factuel', 'total_participants_evaluation_de_perception'];
+
     protected static function boot()
     {
         parent::boot();
@@ -153,5 +155,52 @@ class EvaluationDeGouvernance extends Model
         // Get the results and apply grouping on the collection level
 
         return $fiches_de_synthese;
+    }
+
+    public function getPourcentageEvolutionAttribute()
+    {
+        return 0;        
+    }
+
+    public function getPourcentageEvolutionDesSoumissionsFactuelAttribute()
+    {
+        return ($this->total_soumissions_factuel * 100) / $this->total_participants_evaluation_factuel; 
+    }
+
+    public function getPourcentageEvolutionDesSoumissionsDePerceptionAttribute()
+    {
+        return ($this->total_soumissions_de_perception  * 100) / $this->total_participants_evaluation_de_perception; 
+    }
+
+    public function getTotalSoumissionsFactuelAttribute()
+    {
+        return $this->soumissionFactuel()->count();
+    }
+
+    public function getTotalSoumissionsDePerceptionAttribute()
+    {
+        return $this->soumissionsDePerception()->count();
+    }
+
+    public function getTotalSoumissionsFactuelTerminerAttribute()
+    {
+        return $this->soumissionFactuel()->where('statut', true)->count();
+    }
+
+    public function getTotalSoumissionsDePerceptionTerminerAttribute()
+    {
+        return $this->soumissionsDePerception()->where('statut', true)->count();
+    }
+
+    public function getTotalParticipantsEvaluationFactuelAttribut(){
+        return $this->organisations()->count();
+    }
+
+    public function getTotalParticipantsEvaluationDePerceptionAttribut(){
+
+        // Sum the 'nbreParticipants' attribute from the pivot table
+        return $this->organisations->sum(function ($organisation) {
+            return $organisation->pivot->nbreParticipants;
+        });
     }
 }
