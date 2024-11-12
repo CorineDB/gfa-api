@@ -111,7 +111,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 }
             } else if (Auth::user()->hasRole('organisation')) {
                 $organisation = Auth::user()->profilable;
-            }
+            }EvaluationDeGouvernanceService
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 

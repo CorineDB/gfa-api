@@ -45,9 +45,30 @@ class SendInvitationJob implements ShouldQueue
         try {
 
             $details = [];
-            $data = [];
 
-            if ($this->type == "enquete-de-collecte") {
+            foreach ($this->data as $key => $participant) {
+                if($participant['type_de_contact'] == 'email'){
+                    if ($this->type == "invitation-enquete-de-collecte") {
+                        $details['view'] = "emails.auth.confirmation_compte";
+                        $details['subject'] = "Invitation a l'enquete de collecte";
+                        $details['content'] = [
+                            "greeting" => "Bienvenu Mr/Mme ",
+                            "introduction" => "Invitation de participation a l'enquete de collecte",
+                            "lien" => config("app.url") . "/invitation-enquete-de-collecte/fgfg",
+                        ];
+                        $mailer = new InvitationEnqueteDeCollecteEmail($details);
+                    }
+        
+                    $when = now()->addSeconds(5);
+        
+                    ///Mail::to($this->user)->later($when, $mailer);
+                }
+                else if($participant['type_de_contact'] == 'contact'){
+
+                }
+            }
+
+            if ($this->type == "invitation-enquete-de-collecte") {
                 $details['view'] = "emails.auth.confirmation_compte";
                 $details['subject'] = "Invitation a l'enquete de collecte";
                 $details['content'] = [
