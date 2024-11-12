@@ -317,13 +317,13 @@ class GenerateEvaluationResultats extends Command
                 
                 if($principes_de_gouvernance->count()){
                     // Check if the item exists in the collection
-                    if($principes_de_gouvernance->firstWhere('id', $sous_categorie_de_gouvernance->categorieable->id)){
+                    if($principes_de_gouvernance->firstWhere('id', $sous_categorie_de_gouvernance->categorieable_id)){
                         // Update the collection item by transforming it
                         $principes_de_gouvernance = $principes_de_gouvernance->transform(function ($item) use ($sous_categorie_de_gouvernance) {
                             
-                            if ($item['id'] === $sous_categorie_de_gouvernance->categorieable->id) {
+                            if ($item['id'] === $sous_categorie_de_gouvernance->categorieable_id) {
                                 // Update the score_factuel
-                                $item->indice_factuel += $sous_categorie_de_gouvernance->score_factuel;
+                                $item['indice_factuel'] += $sous_categorie_de_gouvernance->score_factuel;
                             }
                             return $item;
                         });
@@ -341,7 +341,7 @@ class GenerateEvaluationResultats extends Command
 
                         // Now, push the updated item into the collection
                         //$principes_de_gouvernance->push($item);
-                        $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable->id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
+                        $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable_id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
 
                     }
                     
@@ -358,7 +358,7 @@ class GenerateEvaluationResultats extends Command
                     //unset($item->score_factuel);
 
                     // Now, push the updated item into the collection
-                    $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable->id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
+                    $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable_id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
                 }
             });
 
