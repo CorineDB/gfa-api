@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Notification;
 class ChangeStatutEvaluations extends Command
 {
     use HelperTrait;
-    
+
     /**
      * The name and signature of the console command.
      *
@@ -77,19 +77,20 @@ class ChangeStatutEvaluations extends Command
             ->whereIn('id', $startingEvaluations->pluck('id'))
             ->update(['statut' => 0]);
 
+
+        $url = config("app.url");
+
+        // If the URL is localhost, append the appropriate IP address and port
+        if (strpos($url, 'localhost') !== false) {
+            $url = '192.168.1.16:3000';
+        }
+
         foreach ($startingEvaluations as $key => $starting_evaluation) {
 
             // Get all users associated with the organizations of the starting evaluation
             $users = $starting_evaluation->organisations_user();
 
-            // Check if there are users to notify
-            if ($users->isNotEmpty()) {
-                $url = config("app.url");
-
-                // If the URL is localhost, append the appropriate IP address and port
-                if (strpos($url, 'localhost') !== false) {
-                    $url = '192.168.1.16:3000';
-                }
+            foreach ($starting_evaluation->organisations as $key => $organisation) {
 
                 $data['module'] = "Demarrage d'une evaluation";
                 $data['texte'] = "Demarrage de l'evaluation d'auto-gouvernance {$starting_evaluation->nom}";
@@ -100,9 +101,9 @@ class ChangeStatutEvaluations extends Command
                     'view' => "emails.auto-evaluation.evaluation",
                     'subject' => "L'ENQUETE D'AUTO-EVALUATION DE GOUVERNANCE POUR L'ANNEE D'EXERCICE {$starting_evaluation->annee_exercice} A DEMARRER",
                     'content' => [
-                        "greeting" => "Salut, Monsieur/Madame!",
+                        "greeting" => "Salut, Monsieur/Madame! {$organisation->nom_point_focal} {$organisation->prenom_point_focal}",
                         "introduction" => "Nous vous informons du démarrage de l'enquête de collecte d'auto-évaluation de gouvernance pour l'évaluation de l'auto-gouvernance de {$starting_evaluation->nom}, dans le cadre de l'année d'exercice {$starting_evaluation->annee_exercice}. Votre participation est essentielle pour cette activité de gouvernance. Nous vous invitons à prendre part à cette évaluation.",
-                        "lien" => $url . "dashboard/tools-factuel/{$starting_evaluation->id}",
+                        "lien" => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
                         "link_text" => "Cliquez ici pour participer à l'enquête",
                     ]
                 ];
@@ -112,9 +113,7 @@ class ChangeStatutEvaluations extends Command
 
                 // Send the notification to all users at once
                 Notification::send($users, $notification);
-
             }
-
         }
 
         $endedEvaluations = EvaluationDeGouvernance::where('fin', '<=', $today)
