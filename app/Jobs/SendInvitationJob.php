@@ -47,6 +47,8 @@ class SendInvitationJob implements ShouldQueue
             if ($this->type == "invitation-enquete-de-collecte") {
                 $participants = [];
 
+                dd(($evaluationOrganisation = $this->evaluationDeGouvernance->organisations($this->data["organisationId"])->first()));
+
                 if (($evaluationOrganisation = $this->evaluationDeGouvernance->organisations($this->data["organisationId"])->first())) {
 
                     // Decode and merge participants from the organisation's pivot data
