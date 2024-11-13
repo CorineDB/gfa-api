@@ -39,7 +39,7 @@ class EvaluationParticipantRequest extends FormRequest
 
             'participants'              => ['required', 'array', 'min:1'],
             'participants.*.type_de_contact'       => ['required', 'string', 'in:email,contact'],
-            'participants.*.email'      => ['sometimes','email','max:255', Rule::unique('users')->whereNull('deleted_at')],
+            'participants.*.email'      => ['sometimes','email','max:255'],
             'participants.*.contact'    => ['sometimes', 'distinct', 'numeric', 'digits_between:8,24'],
         ];
     }
