@@ -28,21 +28,47 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
     }
     
     public function question_de_gouvernance($question_de_gouvernance){
-        return  $question_de_gouvernance ? [
+        $question = $question_de_gouvernance ? [
             'id' => $question_de_gouvernance->secure_id,
             'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom,
-            'type' => $question_de_gouvernance->type,
-            "moyenne_ponderee"             => $this->when(isset($question_de_gouvernance->moyenne_ponderee), $question_de_gouvernance->moyenne_ponderee),
+            'type' => $question_de_gouvernance->type
+            /*,
+                "moyenne_ponderee"             => $this->when(isset($question_de_gouvernance->moyenne_ponderee), $question_de_gouvernance->moyenne_ponderee),
 
-            "options_de_reponse"             => $this->when(isset($question_de_gouvernance->options_de_reponse), function() use($question_de_gouvernance) {
-                return $question_de_gouvernance->options_de_reponse->map(function($option_de_reponse){
-                    return $this->option_de_reponse($option_de_reponse);
-                });
-            }),
-            'reponse' => $this->when( (isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur'), function() use ($question_de_gouvernance){
-                return $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first());
-            })
+                "options_de_reponse"             => $this->when(isset($question_de_gouvernance->options_de_reponse), function() use($question_de_gouvernance) {
+                    return $question_de_gouvernance->options_de_reponse->map(function($option_de_reponse){
+                        return $this->option_de_reponse($option_de_reponse);
+                    });
+                }),
+                'reponse' => $this->when( (isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur'), function() use ($question_de_gouvernance){
+                    return $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first());
+                })
+            */
         ] : null;
+
+        if($question != null){
+            if(isset($question_de_gouvernance->moyenne_ponderee)){
+                $question = array_merge($question, [
+                    "moyenne_ponderee" => $question_de_gouvernance->moyenne_ponderee
+                ]);
+            }
+
+            if(isset($question_de_gouvernance->options_de_reponse)){
+                $question = array_merge($question, [
+                    "options_de_reponse" => $question_de_gouvernance->options_de_reponse->map(function($option_de_reponse){
+                        return $this->option_de_reponse($option_de_reponse);
+                    })
+                ]);
+            }
+
+            if((isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur')){
+                $question = array_merge($question, [
+                    "reponse" => $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first())
+                ]);
+            }
+        }
+
+        return $question;
     }
 
     
@@ -53,6 +79,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'type' => $reponse->type,
             'point' => $reponse->point,
             'sourceDeVerification' => $reponse->source_de_verification ? $reponse->source_de_verification->intitule : $reponse->sourceDeVerification,
+            'preuves' => $reponse->preuves_de_verification,
         ] : null;
     }
     

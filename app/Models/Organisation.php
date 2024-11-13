@@ -152,9 +152,20 @@ class Organisation extends Model
         return $this->belongsToMany(Fond::class,'fond_organisations', 'organisationId', 'fondId')->wherePivotNull('deleted_at')->withPivot(["id", "budgetAllouer"]);
     }
 
-    public function evaluations_de_gouvernance()
+    public function evaluations_de_gouvernance(?int $organisationId = null, ?string $token = null)
     {
-        return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants", 'participants', 'token']);
+        // Start with the base relationship
+        $evaluations_de_gouvernance = $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_organisations', 'organisationId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "nbreParticipants", 'participants', 'token']);
+
+        if ($organisationId) {
+            $evaluations_de_gouvernance = $evaluations_de_gouvernance->wherePivot("organisationId", $organisationId);
+        }
+
+        if ($token) {
+            $evaluations_de_gouvernance = $evaluations_de_gouvernance->wherePivot("token", $token);
+        }
+        
+        return $evaluations_de_gouvernance;
     }
 
     public function soumissions()

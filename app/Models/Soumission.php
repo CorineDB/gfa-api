@@ -24,7 +24,8 @@ class Soumission extends Model
         "statut" => "boolean",
         "submitted_at" => "datetime"
     ];
-
+    
+    protected $appends = ['pourcentage_evolution'];
     protected $with = [];
 
     protected static function boot()
@@ -103,5 +104,23 @@ class Soumission extends Model
     public function reponses_de_la_collecte()
     {
         return $this->hasMany(ReponseDeLaCollecte::class, 'soumissionId');
+    }
+
+    public function getPourcentageEvolutionAttribute()
+    {
+        $nombre_de_questions = $this->formulaireDeGouvernance->questions_de_gouvernance->count();
+
+        $total_pourcentage_de_reponse = $this->reponses_de_la_collecte->sum(function ($reponse_de_la_collecte) {
+            return $reponse_de_la_collecte->pourcentage_evolution;
+        });
+
+        $pourcentage_global = 0;
+
+        // Eviter la division par zéro
+        if ($nombre_de_questions != 0) {
+            $pourcentage_global = $total_pourcentage_de_reponse / $nombre_de_questions;
+        }
+
+        return $pourcentage_global;
     }
 }

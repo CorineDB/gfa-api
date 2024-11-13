@@ -85,9 +85,30 @@ class EvaluationDeGouvernance extends Model
         return $this->belongsTo(Programme::class, 'programmeId');
     }
 
-    public function organisations()
+    public function organisations(?int $organisationId = null, ?string $token = null)
     {
-        return $this->belongsToMany(Organisation::class,'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants', 'participants', 'token'])->whereHas('user.profilable');
+        // Start with the base relationship
+        $organisations = $this->belongsToMany(Organisation::class,'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants', 'participants', 'token'])->whereHas('user.profilable');
+
+        if ($organisationId) {
+            $organisations = $organisations->wherePivot("organisationId", $organisationId);
+        }
+
+        if ($token) {
+            $organisations = $organisations->wherePivot("token", $token);
+        }
+        
+        return $organisations;
+    }
+
+
+    /**
+     * Get the users associated with the organisations of the evaluation.
+     */
+    public function organisations_user(){
+        return User::whereHas('profilable', function ($query) {
+            $query->whereIn('profilable_id', $this->organisations->pluck('id'))->where('profilable_type', Organisation::class);
+        })->get();
     }
 
     public function formulaires_de_gouvernance()
@@ -225,14 +246,15 @@ class EvaluationDeGouvernance extends Model
         return $this->soumissionsDePerception()->where('statut', true)->count();
     }
 
-    public function getTotalParticipantsEvaluationFactuelAttribut(){
+    public function getTotalParticipantsEvaluationFactuelAttribute(){
         return $this->organisations()->count();
     }
 
-    public function getTotalParticipantsEvaluationDePerceptionAttribut(){
+    public function getTotalParticipantsEvaluationDePerceptionAttribute(){
         // Sum the 'nbreParticipants' attribute from the pivot table
         return $this->organisations->sum(function ($organisation) {
             return $organisation->pivot->nbreParticipants;
         });
     }
+
 }

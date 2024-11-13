@@ -22,6 +22,8 @@ class ReponseDeLaCollecte extends Model
     protected $casts = [
         "point" => 'float'
     ];
+    
+    protected $appends = ['pourcentage_evolution'];
 
     protected static function boot()
     {
@@ -88,4 +90,47 @@ class ReponseDeLaCollecte extends Model
     {
         return $this->morphMany(ActionAMener::class, "actionable");
     }
+
+    public function getPourcentageEvolutionAttribute()
+    {
+        $donnees_collectees = 0;
+        $donnees_attendues = $pourcentage_collecte = 0;
+
+        $donnees_collectees = 4;
+
+        if(!empty($this->point)){
+            $donnees_collectees++;
+        }
+
+        if(!empty($this->type)){
+            $donnees_collectees++;
+        }
+
+        if($this->type == 'indicateur'){
+
+            $donnees_attendues = 8;
+
+            //array("point", "type", 'sourceDeVerification', 'soumissionId', 'sourceDeVerificationId', 'questionId', 'optionDeReponseId', 'programmeId');
+            if($this->sourceDeVerification || $this->sourceDeVerificationId){
+                $donnees_collectees++;
+            }
+
+            if($this->preuves && $this->preuves->count()){
+                $donnees_collectees++;
+            }
+            
+        }
+        else if($this->type == 'question_operationnelle'){
+            $donnees_attendues = 6;
+        }
+
+        
+        // Eviter la division par zéro
+        if ($donnees_attendues != 0) {
+            $pourcentage_collecte = ($donnees_collectees / $donnees_attendues) * 100;
+        }
+
+        return $pourcentage_collecte;
+    }
+
 }

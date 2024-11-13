@@ -19,7 +19,7 @@ class EvaluationParticipantRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("organisation");
+        return true; //return request()->user()->hasRole("organisation");
     }
 
     /**
@@ -35,8 +35,10 @@ class EvaluationParticipantRequest extends FormRequest
         }
 
         return [
+            'organisationId'   => ['sometimes', Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
+
             'participants'              => ['required', 'array', 'min:1'],
-            'participants.*.type'       => ['required', 'string', 'in:email,contact'],
+            'participants.*.type_de_contact'       => ['required', 'string', 'in:email,contact'],
             'participants.*.email'      => ['sometimes','email','max:255', Rule::unique('users')->whereNull('deleted_at')],
             'participants.*.contact'    => ['sometimes', 'distinct', 'numeric', 'digits_between:8,24'],
         ];
