@@ -19,7 +19,6 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasPermissionTrait, HasSecureIds ;
 
-
     protected $table = 'users';
 
     public $timestamps = true;
@@ -87,6 +86,15 @@ class User extends Authenticatable
             ]);
 
         });
+    }
+
+ 
+    /**
+     * The channels the user receives notification broadcasts on.
+     */
+    public function receivesBroadcastNotificationsOn(): string
+    {
+        return 'notification.'.$this->id;
     }
 
     public function programme()

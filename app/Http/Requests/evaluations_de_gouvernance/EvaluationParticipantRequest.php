@@ -35,6 +35,8 @@ class EvaluationParticipantRequest extends FormRequest
         }
 
         return [
+            'organisationId'   => ['sometimes', Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
+
             'participants'              => ['required', 'array', 'min:1'],
             'participants.*.type_de_contact'       => ['required', 'string', 'in:email,contact'],
             'participants.*.email'      => ['sometimes','email','max:255', Rule::unique('users')->whereNull('deleted_at')],

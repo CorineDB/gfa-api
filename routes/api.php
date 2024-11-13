@@ -172,7 +172,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
         Route::apiResource('utilisateurs', 'UserController')->names('utilisateurs');
 
-        Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function (){
+        Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function () {
             Route::controller('UserController')->group(function () {
                 Route::get('/{id}/permissions', 'permissions')->name('permissions');
             });
@@ -620,11 +620,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
 
                 Route::controller('ProgrammeController')->group(function () {
-    
+
                     Route::get('{id}/projets', 'projets')->name('projets')->middleware('permission:voir-un-projet');
-    
+
                     Route::get('{id}/sites', 'sites')->name('sites')->middleware('permission:voir-un-site');
-    
                 });
             });
 
@@ -671,7 +670,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('{id}/tef', 'tef')->name('tef');
 
                     Route::get('{id}/statistiques', 'statistiques')->name('statistiques')->middleware('permission:voir-un-projet');
-
                 });
             });
 
@@ -754,18 +752,18 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::apiResource('indicateurs', 'IndicateurController')->names('indicateurs');
 
             Route::group(['prefix' =>  'indicateurs', 'as' => 'indicateurs.'], function () {
-        
+
                 Route::controller('IndicateurController')->group(function () {
-        
-                        Route::get('{id}/checkSuivi/{year}', 'checkSuivi')->name('checkSuivi')->middleware('permission:voir-un-suivi-indicateur');
-        
-                        Route::get('{id}/suivis', 'suivis')->name('suivis')->middleware('permission:modifier-un-suivi-indicateur');
-        
-                        Route::post('filtres', 'filtre')->name('filtre')->middleware('permission:modifier-un-suivi-indicateur');
-        
-                        Route::post('{indicateur}/addValueKeys', 'addValueKeys')->name('addValueKeys')->middleware('permission:add-indicateur-value-keys');
-        
-                        Route::post('{indicateur}/removeValueKeys', 'removeValueKeys')->name('removeValueKeys')->middleware('permission:remove-indicateur-value-keys');
+
+                    Route::get('{id}/checkSuivi/{year}', 'checkSuivi')->name('checkSuivi')->middleware('permission:voir-un-suivi-indicateur');
+
+                    Route::get('{id}/suivis', 'suivis')->name('suivis')->middleware('permission:modifier-un-suivi-indicateur');
+
+                    Route::post('filtres', 'filtre')->name('filtre')->middleware('permission:modifier-un-suivi-indicateur');
+
+                    Route::post('{indicateur}/addValueKeys', 'addValueKeys')->name('addValueKeys')->middleware('permission:add-indicateur-value-keys');
+
+                    Route::post('{indicateur}/removeValueKeys', 'removeValueKeys')->name('removeValueKeys')->middleware('permission:remove-indicateur-value-keys');
                 });
             });
 
@@ -781,7 +779,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::apiResource('categories', 'CategorieController', ['except' => ['index']])->names('categories')->middleware(['role:unitee-de-gestion']);
 
             Route::apiResource('categories', 'CategorieController', ['only' => ['index']])->names('categories');
-        
+
             Route::apiResource('commentaires', 'CommentaireController')->names('commentaires');
 
             Route::apiResource('types-de-gouvernance', 'TypeDeGouvernanceController')->names('types-de-gouvernance')
@@ -859,7 +857,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ->parameters([
                     'fonds' => 'fond',
                 ]);
-                
+
             Route::apiResource('enquetes-de-collecte', 'EnqueteDeCollecteController')->names('enquetes-de-reponse')
                 ->parameters([
                     'enquetes-de-collecte' => 'enquete_de_collecte',
@@ -875,9 +873,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('{enquete_de_collecte}/appreciation', 'appreciation')->name('appreciation'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::get('{enquete_de_collecte}/resultat-appreciations/{organisationId}', 'resultat_appreciations')->name('resultat_appreciations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-                    
+
                     Route::get('{enquete_de_collecte}/eligible-participants', 'surveyEligibleParticipants'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-                    
+
                     Route::get('{enquete_de_collecte}/survey-submitted-organizations', 'surveySubmittedParticipants')->name('survey_participants');
 
                     Route::get('{enquete_de_collecte}/reponses-collecter', 'reponses_collecter')->name('reponses_collecter'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
@@ -896,11 +894,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'resultats-cadre-de-rendement' => 'resultat_cadre_de-rendement',
                 ]);
 
-            
+
             Route::group(['prefix' =>  'cadre-de-mesure-rendement', 'as' => 'cadre-de-mesure-rendement.'], function () {
 
                 Route::controller('ResultatCadreDeRendementController')->group(function () {
-    
+
                     Route::post('', 'constituerCadreDeMesureRendement')->name('constituerCadreDeMesureRendement'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::get('', 'cadreDeMesureRendement')->name('cadreDeMesureRendement'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
@@ -920,6 +918,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ->parameters([
                     'evaluations-de-gouvernance' => 'evaluation_de_gouvernance',
                 ]);
+            Route::get('formulaire-factuel/{$token}', 'EvaluationDeGouvernanceController@formulaire_factuel_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
             Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
 
@@ -933,12 +932,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('evaluation.validate-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions')->name('soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-                    
+
                     Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-                    
-                    Route::get('{evaluation_de_gouvernance}?token={$token}', 'formulaire_factuel_de_gouvernance')->name('formulaire_factuel_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::group(['prefix' =>  '{evaluation_de_gouvernance}/soumissions/{soumission}', 'as' => 'evaluations-de-gouvernance.soumissions.'], function () {
                         Route::apiResource('actions-a-mener', 'ActionAMenerController')->names('actions-a-mener')->parameters([
@@ -957,12 +954,13 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('evaluation.validate-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
             });
-                
         });
     });
 
 
     Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
+        Route::get('formulaire-de-perception/{participantId}/{token}', 'EvaluationDeGouvernanceController@formulaire_de_perception_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
         Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
             Route::get('{evaluation_de_gouvernance}', 'EvaluationDeGouvernanceController@show'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             Route::post('{evaluation_de_gouvernance}/perception-soumission', 'SoumissionController@storePerception')->name('evaluation.perception-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
