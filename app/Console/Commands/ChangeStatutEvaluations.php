@@ -92,7 +92,7 @@ class ChangeStatutEvaluations extends Command
 
             foreach ($starting_evaluation->organisations as $key => $organisation) {
 
-                if (!empty($organisation->user->email)) {
+                if ((!empty($organisation->user->email)) && (filter_var($organisation->user->email, FILTER_VALIDATE_EMAIL))) {
 
                     $data['module'] = "Demarrage d'une evaluation";
                     $data['texte'] = "Demarrage de l'evaluation d'auto-gouvernance {$starting_evaluation->nom}";
@@ -116,7 +116,7 @@ class ChangeStatutEvaluations extends Command
                     // Send the notification to all users at once
                     //Notification::send($organisation->user, $notification);
                 } else {
-                    // Log or handle the case of a missing email
+                    Log::error("Invalid or missing email address for user ID: $userId");
                 }
             }
         }
