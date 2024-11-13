@@ -407,6 +407,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
+            dd("cool");
             if (Auth::user()->hasRole('organisation')) {
                 $attributs['organisationId'] = Auth::user()->profilable->id;
             }
