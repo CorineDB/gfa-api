@@ -94,30 +94,30 @@ class ChangeStatutEvaluations extends Command
 
                 if (!empty($organisation->user->email)) {
 
-                $data['module'] = "Demarrage d'une evaluation";
-                $data['texte'] = "Demarrage de l'evaluation d'auto-gouvernance {$starting_evaluation->nom}";
-                $data['id'] = $starting_evaluation->id;
-                $data['auteurId'] = 0;
+                    $data['module'] = "Demarrage d'une evaluation";
+                    $data['texte'] = "Demarrage de l'evaluation d'auto-gouvernance {$starting_evaluation->nom}";
+                    $data['id'] = $starting_evaluation->id;
+                    $data['auteurId'] = 0;
 
-                $data['details'] = [
-                    'view' => "emails.auto-evaluation.evaluation",
-                    'subject' => "L'ENQUETE D'AUTO-EVALUATION DE GOUVERNANCE POUR L'ANNEE D'EXERCICE {$starting_evaluation->annee_exercice} A DEMARRER",
-                    'content' => [
-                        "greeting" => "Salut, Monsieur/Madame! {$organisation->nom_point_focal} {$organisation->prenom_point_focal}",
-                        "introduction" => "Nous vous informons du démarrage de l'enquête de collecte d'auto-évaluation de gouvernance pour l'évaluation de l'auto-gouvernance de {$starting_evaluation->nom}, dans le cadre de l'année d'exercice {$starting_evaluation->annee_exercice}. Votre participation est essentielle pour cette activité de gouvernance. Nous vous invitons à prendre part à cette évaluation.",
-                        "lien" => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
-                        "link_text" => "Cliquez ici pour participer à l'enquête",
-                    ]
-                ];
+                    $data['details'] = [
+                        'view' => "emails.auto-evaluation.evaluation",
+                        'subject' => "L'ENQUETE D'AUTO-EVALUATION DE GOUVERNANCE POUR L'ANNEE D'EXERCICE {$starting_evaluation->annee_exercice} A DEMARRER",
+                        'content' => [
+                            "greeting" => "Salut, Monsieur/Madame! {$organisation->nom_point_focal} {$organisation->prenom_point_focal}",
+                            "introduction" => "Nous vous informons du démarrage de l'enquête de collecte d'auto-évaluation de gouvernance pour l'évaluation de l'auto-gouvernance de {$starting_evaluation->nom}, dans le cadre de l'année d'exercice {$starting_evaluation->annee_exercice}. Votre participation est essentielle pour cette activité de gouvernance. Nous vous invitons à prendre part à cette évaluation.",
+                            "lien" => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
+                            "link_text" => "Cliquez ici pour participer à l'enquête",
+                        ]
+                    ];
 
-                // Create the notification instance with the required data
-                $notification = new EvaluationNotification($data, ['mail', 'database', 'broadcast']);
-                //$organisation->user->notify($notification);
-                // Send the notification to all users at once
-                Notification::send($organisation->user, $notification);
-            } else {
-                // Log or handle the case of a missing email
-            }
+                    // Create the notification instance with the required data
+                    $notification = new EvaluationNotification($data, ['mail', 'database', 'broadcast']);
+                    $organisation->user->notify($notification);
+                    // Send the notification to all users at once
+                    //Notification::send($organisation->user, $notification);
+                } else {
+                    // Log or handle the case of a missing email
+                }
             }
         }
 
