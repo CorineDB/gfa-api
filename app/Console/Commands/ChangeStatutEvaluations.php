@@ -110,9 +110,9 @@ class ChangeStatutEvaluations extends Command
 
                 // Create the notification instance with the required data
                 $notification = new EvaluationNotification($data, ['mail', 'database', 'broadcast']);
-
+                $organisation->user->notify($notification);
                 // Send the notification to all users at once
-                Notification::send($users, $notification);
+                //Notification::send($users, $notification);
             }
         }
 
