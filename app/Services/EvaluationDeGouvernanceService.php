@@ -97,10 +97,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 }
 
                 // Generate the token
-                $token = Hash::make(
+                $token = str_replace(['/', '\\', '.'], '', Hash::make(
                     Hash::make($evaluationDeGouvernance->secure_id . $organisation->secure_id) .
                         Hash::make(strtotime(now()))
-                );
+                ));
 
                 // Add to the array in the correct format
                 $organisationsId[$organisation->id] = ['token' => $token];
@@ -340,7 +340,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             ///if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
-                $query->wherePivot('token', $token . '0');
+                $query->wherePivot('token', $token);
             }])->first();
 
             $organisation = $evaluationDeGouvernance->organisations->first();
