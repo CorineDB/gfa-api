@@ -102,7 +102,7 @@ class ChangeStatutEvaluations extends Command
                     'content' => [
                         "greeting" => "Salut, Monsieur/Madame!",
                         "introduction" => "Nous vous informons du démarrage de l'enquête de collecte d'auto-évaluation de gouvernance pour l'évaluation de l'auto-gouvernance de {$starting_evaluation->nom}, dans le cadre de l'année d'exercice {$starting_evaluation->annee_exercice}. Votre participation est essentielle pour cette activité de gouvernance. Nous vous invitons à prendre part à cette évaluation.",
-                        "lien" => $url . "/tools-factuel/{$starting_evaluation->id}",
+                        "lien" => $url . "dashboard/tools-factuel/{$starting_evaluation->id}",
                         "link_text" => "Cliquez ici pour participer à l'enquête",
                     ]
                 ];

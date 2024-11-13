@@ -75,7 +75,7 @@ class SendInvitationJob implements ShouldQueue
                         $details['content'] = [
                             "greeting" => "Salut, Monsieur/Madame!",
                             "introduction" => "Vous êtes invité(e) à participer à l'enquête de collecte auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} de l'annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.",
-                            "lien" => $url . "/tools-perception/{$evaluationOrganisation->pivot->token}",
+                            "lien" => $url . "dashboard/tools-perception/{$evaluationOrganisation->pivot->token}",
                         ];
 
                         // Create the email instance
