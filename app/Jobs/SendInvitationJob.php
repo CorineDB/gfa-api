@@ -44,8 +44,10 @@ class SendInvitationJob implements ShouldQueue
 
             $details = [];
 
+            dump($details);
             if ($this->type == "invitation-enquete-de-collecte") {
                 $participants = [];
+                dump($details);
 
                 dd(($evaluationOrganisation = $this->evaluationDeGouvernance->organisations($this->data["organisationId"])->first()));
 

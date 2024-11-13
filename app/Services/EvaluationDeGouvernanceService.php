@@ -411,7 +411,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (Auth::user()->hasRole('organisation')) {
                 $attributs['organisationId'] = Auth::user()->profilable->id;
             }
-            dd($attributs);
+            dump($attributs);
 
             SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
