@@ -92,6 +92,8 @@ class ChangeStatutEvaluations extends Command
 
             foreach ($starting_evaluation->organisations as $key => $organisation) {
 
+                if (!empty($organisation->user->email)) {
+
                 $data['module'] = "Demarrage d'une evaluation";
                 $data['texte'] = "Demarrage de l'evaluation d'auto-gouvernance {$starting_evaluation->nom}";
                 $data['id'] = $starting_evaluation->id;
@@ -113,6 +115,9 @@ class ChangeStatutEvaluations extends Command
                 //$organisation->user->notify($notification);
                 // Send the notification to all users at once
                 Notification::send($organisation->user, $notification);
+            } else {
+                // Log or handle the case of a missing email
+            }
             }
         }
 
