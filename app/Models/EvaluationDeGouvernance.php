@@ -196,6 +196,17 @@ class EvaluationDeGouvernance extends Model
         return $profiles;
     }
 
+    public function failedProfilesDeGouvernance(?int $organisationId = null, ?int $evaluationOrganisationId = null, ?float $threshold  = 0.5){
+       
+        // Start the query by calling the profiles method
+        $profile = $this->profiles();
+
+        $threshold = $this->objectif_attendu ? $this->objectif_attendu : $threshold;
+
+        // Apply filtering for 'indice_synthetique' under the dynamic threshold using MySQL JSON functions
+        return $profile->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS UNSIGNED) < ?', [$threshold]);
+    }
+
     public function getPourcentageEvolutionAttribute()
     {
         // Avoid division by zero by checking that total participants are non-zero

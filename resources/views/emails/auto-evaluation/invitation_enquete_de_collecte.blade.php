@@ -95,12 +95,14 @@
             </div>
 
             <p>
-                Cliquez dès maintenant sur le lien ci-dessous pour accéder à l’enquête et partager votre précieuse opinion :
+                Cliquez dès maintenant sur le lien ci-dessous pour accéder à l’enquête et partager votre précieuse opinion
             </p>
 
-            <a href="{{$details['content']['lien']}}">Participez dès maintenant à notre enquête de gouvernance</a>
-
-            <p>{{ $details['content']['lien'] }}</p>
+            <!-- Button Styled Link -->
+            <a href="{{ $details['content']['lien'] }}"
+                style="display: inline-block; background-color: #f19100; color: white; padding: 12px 20px; font-size: 16px; text-align: center; text-decoration: none; border-radius: 5px; border: none; text-transform: uppercase;">
+                Participez dès maintenant à l'enquête
+            </a>
         </div>
     </div>
 

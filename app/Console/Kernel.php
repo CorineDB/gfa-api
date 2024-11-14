@@ -13,6 +13,9 @@ class Kernel extends ConsoleKernel
         Commands\SendPasswordValidityExpirationSoonMail::class,
         Commands\ChangeStatut::class,
         Commands\ChangeStatutEvaluations::class,
+        Commands\GenerateEvaluationResultats::class,
+        Commands\RappelEmissionMesureAPrendre::class,
+        Commands\ChangeStatutActionAMener::class,
         Commands\Demarrage::class,
         Commands\RappelCron::class,
         Commands\Rapport::class,
@@ -30,7 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
 
         $schedule->command('command:change-statut')->everyMinute();
-        $schedule->command('command:change-statut-evaluations')->everyMinute();
+        $schedule->command('change-statut:evaluations')->everyMinute();
 
         $schedule->command('command:demarrage')->everyMinute();
 
@@ -39,6 +42,10 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:rappel')->everyMinute();
 
         $schedule->command('command:suivi')->everyMinute();
+
+        $schedule->command('rappel-emission:mesure-a-prendre')->daily();
+
+        $schedule->command('change-statut:action-a-mener')->dailyAt('00:00');
 
         $backupConfig = AlerteConfig::where('module', 'backup')->first();
 

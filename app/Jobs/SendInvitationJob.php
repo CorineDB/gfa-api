@@ -24,7 +24,7 @@ class SendInvitationJob implements ShouldQueue
     /**
      * Create a new job instance.
      *
-     * @return void
+     * @return voidSendInvi
      */
     public function __construct(EvaluationDeGouvernance $evaluationDeGouvernance, $data, $type)
     {
@@ -67,14 +67,14 @@ class SendInvitationJob implements ShouldQueue
 
                         // If the URL is localhost, append the appropriate IP address and port
                         if (strpos($url, 'localhost') !== false) {
-                            $url = '192.168.1.16:3000';
+                            $url = 'http://192.168.1.16:3000';
                         }
 
                         $details['view'] = "emails.auto-evaluation.invitation_enquete_de_collecte";
                         $details['subject'] = "Invitation à participer à notre enquête d'auto-évaluation de gouvernance";
                         $details['content'] = [
                             "greeting" => "Salut, Monsieur/Madame!",
-                            "introduction" => "Vous êtes invité(e) à participer à l'enquête de collecte auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} de l'annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.",
+                            "introduction" => "Vous êtes invité(e) à participer à l'enquête d' auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.",
                             "lien" => $url . "/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}",
                         ];
 

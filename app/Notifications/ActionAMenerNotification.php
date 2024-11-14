@@ -3,24 +3,30 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ActionAMenerNotification extends Notification
+class ActionAMenerNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
 
     private $data;
-
+    private $channels;
+    private $notifiable;
+    
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($data)
+    public function __construct($data, $channels = ['database', 'broadcast'])
     {
         $this->data = $data;
+        $this->channels = $channels;
     }
 
     /**
@@ -31,7 +37,7 @@ class ActionAMenerNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['database'];
+        return $this->channels;//['database', 'broadcast', 'mail'];
     }
 
     /**
@@ -42,10 +48,10 @@ class ActionAMenerNotification extends Notification
      */
     public function toMail($notifiable)
     {
+        // Use the view() method to send the custom email template
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+                    ->subject($this->data['details']['subject'])
+                    ->view($this->data['details']['view'], ['details' => $this->data['details']]);
     }
 
     /**
@@ -58,9 +64,56 @@ class ActionAMenerNotification extends Notification
     {
         return [
             'texte' => $this->data['texte'],
-            'module' => "action a mener",
+            'module' => $this->data["module"],
             'id' => $this->data['id'],
             'auteurId' => $this->data['auteurId']
         ];
+    }
+
+    /**
+     * Get the broadcastable representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return BroadcastMessage
+     */
+    public function toBroadcast($notifiable) {
+        $this->notifiable = $notifiable;
+        return (new BroadcastMessage([
+            'notification' => [
+                'id' => $this->id,
+                'texte' => $this->data['texte'],
+                'module' => $this->data['module'],
+                'module_id' => $this->data['id']
+            ],
+            "notifiable_id" => $notifiable->id,
+            "unread" => $notifiable->unreadNotifications->count()
+        ]))/* ->onConnection('sqs')
+            ->onQueue('broadcasts') */;
+    }
+    
+    public function broadcastOn()
+    {
+        // Broadcasting to a private channel for a specific user
+        return new PrivateChannel('notification.' . $this->notifiable->secure_id); // Customize the channel name to target a user
+    }
+
+    /**
+     * The event's broadcast name.
+     *
+     * @return string
+     */
+    public function broadcastAs()
+    {
+        return 'notification.posted';
+    }
+
+    /**
+     * Optional: Get the delay before the notification is sent.
+     *
+     * @return \DateTime|int|null
+     */
+    public function delay()
+    {
+        return now()->addSeconds(30); // Example: delay notification by 30 seconds
     }
 }
