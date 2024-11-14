@@ -21,7 +21,6 @@ class AuthResource extends JsonResource
     {
 
         return [
-
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "email" => $this->email,
@@ -32,6 +31,7 @@ class AuthResource extends JsonResource
             "programme" => $this->type !== 'administrateur' ? $this->programme : null,
             "role" => RoleResource::collection($this->roles->load('permissions')),
             "photo" => new FichiersResource($this->photo),
+            "projet" => $this->when($this->type == 'organisation', $this->profilable->projet),
         ];
     }
 }
