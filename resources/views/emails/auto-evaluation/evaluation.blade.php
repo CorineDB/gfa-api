@@ -95,11 +95,11 @@
             {!! $details['content']["introduction"] !!}
         </p>
 
-        <?php $link = $details['content']['lien']; ?>
-
-        <a href="{{ $link }}">{!! $details['content']["link_text"] !!}</a>
-
-        <p>{{ $link }}</p>
+        <!-- Button Styled Link -->
+        <a href="{{ $details['content']['lien'] }}" 
+           style="display: inline-block; background-color: #f19100; color: white; padding: 12px 20px; font-size: 16px; text-align: center; text-decoration: none; border-radius: 5px; border: none; text-transform: uppercase;">
+           {{ $details['content']["link_text"] }}
+        </a>
     </div>
 </div>
 

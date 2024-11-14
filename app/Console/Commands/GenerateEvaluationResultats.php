@@ -20,7 +20,7 @@ class GenerateEvaluationResultats extends Command
      *
      * @var string
      */
-    protected $signature = 'command:generate-evaluation-resultats {evaluationId}';
+    protected $signature = 'generate:report-evaluation-resultats {evaluationId}';
 
     /**
      * The console command description.
