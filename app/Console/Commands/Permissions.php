@@ -740,6 +740,22 @@ class Permissions extends Command
                 }
             }
 
+            else if($role->slug == 'organisation')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($missionDeControles as $mission)
+                {
+                    //if(!$role->permissions->where('slug', $mission)->first())
+                    {
+                        $permission = Permission::where('slug', $mission)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
             else if($role->slug == 'mod')
             {
                 $ids = $role->permissions->pluck('id');
