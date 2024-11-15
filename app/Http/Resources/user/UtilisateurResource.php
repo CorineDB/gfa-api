@@ -22,7 +22,7 @@ class UtilisateurResource extends JsonResource
             'sigle' => $this->when($this->sigle, $this->sigle),
             'code' => $this->when($this->code, $this->code),
             "user" => new UserResource($this->user),
-            "mod" => $this->when($this->user->hasRole("entreprise-executant"), function(){
+            "mod" => $this->when(isset($this->user) ? $this->user->hasRole("entreprise-executant"):false, function(){
                 return $this->modByProgramme(Auth::user()->programmeId);
             }),
             "roles" => RoleResource::collection($this->roles->load('permissions')),
