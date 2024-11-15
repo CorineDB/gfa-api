@@ -117,7 +117,7 @@ class UserService extends BaseService implements UserServiceInterface
 
                 if( !($role = $this->roleRepository->findById($role)) ) throw new Exception("Role introuvable", 400);
 
-                if(!(auth()->user()->hasRole("administrateur", "super-admin", "ong", "agence", "institution", "bailleur", "mission-de-controle", "unitee-de-gestion", "mod", "entreprise-executant" )))  throw new Exception("Le utilisateur avec un rôle inconnu", 400);
+                if(!(auth()->user()->hasRole("administrateur", "super-admin", "organisation", "ong", "agence", "institution", "bailleur", "mission-de-controle", "unitee-de-gestion", "mod", "entreprise-executant" )))  throw new Exception("Le utilisateur avec un rôle inconnu", 400);
 
                 array_push($roles, $role->id);
             }
