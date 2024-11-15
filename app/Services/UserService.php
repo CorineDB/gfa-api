@@ -111,6 +111,10 @@ class UserService extends BaseService implements UserServiceInterface
     {
         try {
 
+            $programmeId = Auth::user()->programme->id;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programmeId]);
+            
             $roles= [];
 
             foreach ($attributs['roles'] as $role) {
