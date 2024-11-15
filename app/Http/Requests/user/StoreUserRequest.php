@@ -29,12 +29,12 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'nom' => 'required|string|max:255',
-            //'prenom' => 'required|string|max:255',
-            'contact' => 'required|string|max:12|unique:users',
+            'prenom' => 'required|string|max:255',
+            'contact' => 'nullable|string|max:12|unique:users',
             'email' => 'required|email|max:255|unique:users',
             'roles'  => 'required|array|min:1',
             'roles.*'     => ['distinct', new HashValidatorRule(new Role())],
-            'programmeId'               => ['required', new HashValidatorRule(new Programme()), function(){
+            'programmeId'               => ['sometimes', new HashValidatorRule(new Programme()), function(){
 
                 $programme = Programme::findByKey($this->programmeId);
 
