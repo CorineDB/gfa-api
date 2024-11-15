@@ -97,7 +97,7 @@ class UserService extends BaseService implements UserServiceInterface
                            get();
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => UserResource::collection($users), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => UtilisateurResource::collection($users), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
 
