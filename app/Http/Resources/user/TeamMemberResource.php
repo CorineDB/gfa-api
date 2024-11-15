@@ -26,7 +26,7 @@ class TeamMemberResource extends JsonResource
             "programmeId" => $this->programme->secure_id,
             "poste" => $this->poste,
             "roles" => RoleResource::collection($this->roles->load('permissions')),
-            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s"),
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d"),
         ];
     }
 }
