@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Http\Resources\FichierResource;
 use App\Http\Resources\NotificationResource;
 use App\Http\Resources\user\UserResource;
-use App\Http\Resources\user\UtilisateurResource;
+use App\Http\Resources\user\TeamMemberResource;
 use App\Jobs\SendEmailJob;
 use App\Models\Ano;
 use App\Models\Projet;
@@ -97,7 +97,7 @@ class UserService extends BaseService implements UserServiceInterface
                            get();
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => UtilisateurResource::collection($users), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => TeamMemberResource::collection($users), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
 
@@ -147,7 +147,7 @@ class UserService extends BaseService implements UserServiceInterface
             //Envoyer les identifiants de connexion à l'utilisateur via son email
             dispatch(new SendEmailJob($utilisateur, "confirmation-de-compte", $password))->delay(now()->addSeconds(15));
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new UtilisateurResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new TeamMemberResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
             //throw $th;
@@ -189,7 +189,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->roles()->attach($roles);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new UtilisateurResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new TeamMemberResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
             //throw $th;

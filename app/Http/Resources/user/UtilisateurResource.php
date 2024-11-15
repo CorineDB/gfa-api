@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\user;
 
-use App\Http\Resources\role\RoleResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -22,10 +21,9 @@ class UtilisateurResource extends JsonResource
             'sigle' => $this->when($this->sigle, $this->sigle),
             'code' => $this->when($this->code, $this->code),
             "user" => new UserResource($this->user),
-            "mod" => $this->when(isset($this->user) ? $this->user->hasRole("entreprise-executant"):false, function(){
+            "mod" => $this->when($this->user->hasRole("entreprise-executant"), function(){
                 return $this->modByProgramme(Auth::user()->programmeId);
             }),
-            "roles" => RoleResource::collection($this->roles->load('permissions')),
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
