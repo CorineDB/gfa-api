@@ -2,10 +2,11 @@
 
 namespace App\Http\Resources\user;
 
+use App\Http\Resources\role\RoleResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class UserResource extends JsonResource
+class TeamMemberResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -24,7 +25,8 @@ class UserResource extends JsonResource
             "type" => $this->type,
             "programmeId" => $this->programme->secure_id,
             "poste" => $this->poste,
-            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            "roles" => RoleResource::collection($this->roles->load('permissions')),
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s"),
         ];
     }
 }
