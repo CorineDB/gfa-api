@@ -51,8 +51,9 @@ class PerceptionSoumissionValidationRequest extends FormRequest
 
                     if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
                     
+                    $fail($formulaire);
                     $this->formulaireCache = $formulaire;
-
+                    $fail($formulaire);
                     if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
                         $fail('La soumission a déjà été validée.');
                     }
@@ -131,8 +132,6 @@ class PerceptionSoumissionValidationRequest extends FormRequest
      * @return int
      */
     private function getCountOfQuestionsOfAFormular(){
-        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $this->formulaireCache, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         return $this->formulaireCache->questions_de_gouvernance->count();
     }
 }
