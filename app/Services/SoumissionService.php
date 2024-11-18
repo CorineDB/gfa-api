@@ -112,7 +112,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             } else if (Auth::user()->hasRole('organisation')) {
                 return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => Auth::user(), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
-                $organisation = Auth::user()->profilable;
+                //$organisation = Auth::user()->profilable;
             }
             else{
                 //identifier_of_participant
