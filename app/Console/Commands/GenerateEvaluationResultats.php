@@ -117,7 +117,6 @@ class GenerateEvaluationResultats extends Command
 
                         $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
-
                 }
                 else if ($group_soumission === "perception") {
 

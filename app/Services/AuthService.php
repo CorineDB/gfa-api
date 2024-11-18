@@ -283,6 +283,9 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             DB::commit();
 
+            //Send verificiation email
+            dispatch(new SendEmailJob($utilisateur, "confirmation-compte"))->delay(now()->addSeconds(15));
+
             $acteur = $utilisateur ? $utilisateur->nom . " ". $utilisateur->prenom : "Inconnu";
 
             $message = Str::ucfirst($acteur) . " vient d'activer son compte.";
