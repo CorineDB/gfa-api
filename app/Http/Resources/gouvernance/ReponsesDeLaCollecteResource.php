@@ -18,9 +18,10 @@ class ReponsesDeLaCollecteResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
+            'libelle' => $this->option_de_reponse->libelle,
             'type' => $this->type,
             'point' => $this->point,
-            "sourceDeVerification" => $this->when($this->type === 'indicateur', $this->sourceDeVerification),
+            "sourceDeVerification" => $this->when($this->type === 'indicateur', $this->sourceDeVerificationId ? $this->source_de_verification->intitule : $this->sourceDeVerification),
             "sourceDeVerificationId" => $this->when($this->type === 'indicateur', ($this->source_de_verification ? $this->source_de_verification->secure_id : null)),
             "optionDeReponseId" => $this->option_de_reponse->secure_id,
             "questionId" => $this->question->secure_id,
