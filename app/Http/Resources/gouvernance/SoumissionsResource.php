@@ -37,6 +37,8 @@ class SoumissionsResource extends JsonResource
             'programmeId'               => $this->programme->secure_id,
             'created_at'                => Carbon::parse($this->created_at)->format("Y-m-d"),
             'reponses_de_la_collecte'   => ReponsesDeLaCollecteResource::collection($this->reponses_de_la_collecte),
+            'formulaire_de_gouvernance' => new FormulairesDeGouvernanceResource($this->formulaireDeGouvernance, true, $this->id),
+
         ];
     }
 }

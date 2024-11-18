@@ -75,9 +75,46 @@ class EvaluationDeGouvernance extends Model
         return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception');
     }
 
-    public function soumissionFactuel()
+    public function soumissionsFactuel()
     {
         return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel');
+    }
+
+    public function soumissionFactuel(?int $organisationId = null, ?string $token = null)
+    {
+        $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')/* ->where('organisationId', $organisationId)->orWhere(function($query) use($token){
+            $query->whereHas('organisation', function($query) use($token){
+                $query->whereHas('evaluations_de_gouvernance', function($query) use($token){
+                    $query->wherePivot('token', $token);
+                });
+            });
+        }) */;
+
+        if ($organisationId) {
+            $soumissionFactuel = $soumissionFactuel->where('organisationId', $organisationId);
+        }
+
+        if ($token) {
+            $soumissionFactuel = $soumissionFactuel->where('organisationId', $this->organisations($organisationId, $token)->first()->id);
+        }
+
+        return $soumissionFactuel;
+    }
+
+
+    public function soumissionDePerception(string $identifier_of_participant, ?int $organisationId = null, ?string $token = null)
+    {
+        $soumissionDePerception = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'perception')->where("identifier_of_participant", $identifier_of_participant);
+        
+        if ($organisationId) {
+            $soumissionDePerception = $soumissionDePerception->where('organisationId', $organisationId);
+        }
+
+        if ($token) {
+            $soumissionDePerception = $soumissionDePerception->where('organisationId', $this->organisations($organisationId, $token)->first()->id);
+        }
+
+        return $soumissionDePerception;
     }
 
     public function programme()
@@ -85,7 +122,7 @@ class EvaluationDeGouvernance extends Model
         return $this->belongsTo(Programme::class, 'programmeId');
     }
 
-    public function organisations(?int $organisationId = null, ?string $token = null)
+    public function organisations(int $organisationId = null, string $token = null)
     {
         // Start with the base relationship
         $organisations = $this->belongsToMany(Organisation::class,'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants', 'participants', 'token'])->whereHas('user.profilable');
@@ -239,7 +276,7 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalSoumissionsFactuelAttribute()
     {
-        return $this->soumissionFactuel()->count();
+        return $this->soumissionsFactuel()->count();
     }
 
     public function getTotalSoumissionsDePerceptionAttribute()
@@ -249,7 +286,7 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalSoumissionsFactuelTerminerAttribute()
     {
-        return $this->soumissionFactuel()->where('statut', true)->count();
+        return $this->soumissionsFactuel()->where('statut', true)->count();
     }
 
     public function getTotalSoumissionsDePerceptionTerminerAttribute()

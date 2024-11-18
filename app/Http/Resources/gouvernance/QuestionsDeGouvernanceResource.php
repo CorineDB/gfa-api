@@ -7,6 +7,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class QuestionsDeGouvernanceResource extends JsonResource
 {
+    protected bool $can_load_response = false;
+    protected ?string $soumissionId = null;
+
+    public function __construct($resource, $can_load_response = false, $soumissionId = null)
+    {
+        // Call the parent constructor to initialize the resource
+        parent::__construct($resource);
+        $this->can_load_response = $can_load_response;
+        $this->soumissionId = $soumissionId;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -15,7 +26,6 @@ class QuestionsDeGouvernanceResource extends JsonResource
      */
     public function toArray($request)
     {
-        $reponse = $this->reponses->first();
         return [
             'id' => $this->secure_id,
             'nom' => $this->indicateur_de_gouvernance->nom,
@@ -27,7 +37,7 @@ class QuestionsDeGouvernanceResource extends JsonResource
             'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
-            //'reponse_de_la_collecte'   => $reponse ? $this->whenLoaded(new ReponsesDeLaCollecteResource($reponse)) : null,
+            'reponse_de_la_collecte'   => $this->when($this->can_load_response, new ReponsesDeLaCollecteResource($this->reponses()->where('soumissionId', $this->soumissionId)->first())),
         ];
     }
 }

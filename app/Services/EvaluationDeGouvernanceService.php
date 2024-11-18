@@ -283,6 +283,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'contact_point_focal'   => $organisation->contact_point_focal,
                     'profile_de_gouvernance'   => $organisation->profiles($evaluationDeGouvernance->id)
                 ], $fiches_de_synthese->toArray());
+                
             } else {
                 $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
@@ -339,22 +340,31 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             ///if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
+            if(!($evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
                 $query->wherePivot('token', $token);
-            }])->first();
+            }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation = $evaluationDeGouvernance->organisations->first();
 
-            $formulaire_factuel_de_gouvernance = [];
-
             if ($organisation != null) {
-                $formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->load("questions_de_gouvernance.reponses", function ($query) use ($evaluationDeGouvernance, $token) {
+                if($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()){
+                    $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
+                }
+                /*$formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->load("questions_de_gouvernance.reponses", function ($query) use ($evaluationDeGouvernance, $token) {
                     $query->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($evaluationDeGouvernance, $token) {
                         $query->where('evaluationId', $evaluationDeGouvernance->id)->where('organisationId', $evaluationDeGouvernance->organisations()->wherePivot('token', $token)->first()->id);
                     });
-                });
+                });*/
+
+                else{
+                    $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
+                }
             }
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($formulaire_factuel_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            else{
+                $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $formulaire_factuel_de_gouvernance, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -365,14 +375,36 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      * 
      * return JsonResponse
      */
-    public function formulaire_de_perception_de_gouvernance($paricipant_id, $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
+            if(!($evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
+                $query->wherePivot('token', $token);
+            }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $organisation = $evaluationDeGouvernance->organisations->first();
+
+            if ($organisation != null) {
+
+                if($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first()){
+                    $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
+                }
+
+                else{
+                    $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
+                }
+            }
+            else{
+                $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $formulaire_de_perception_de_gouvernance, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
             // if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
+            if(!($evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
                 $query->wherePivot('token', $token);
-            }])->first();
+            }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation = $evaluationDeGouvernance->organisations->first();
 
