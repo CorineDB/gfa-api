@@ -110,7 +110,13 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
             } else if (Auth::user()->hasRole('organisation')) {
+                return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => Auth::user(), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
                 $organisation = Auth::user()->profilable;
+            }
+            else{
+                //identifier_of_participant
+                //
             }
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
