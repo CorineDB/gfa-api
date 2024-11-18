@@ -2,8 +2,6 @@
 
 namespace App\Http\Resources;
 
-use App\Http\Resources\FichierResource;
-use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\user\UserResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -37,7 +35,6 @@ class OrganisationResource extends JsonResource
             'secteurActivite'       => $this->secteurActivite,
             'user'                  => $this->whenLoaded('user', new UserResource($this->user)),
             'projet'                => $this->whenLoaded("projet", new ProjetsResource($this->projet)),
-            //'soumissions'           => $this->whenLoaded('soumissions', new SoumissionsResource($this->soumissions)),
             "created_at"            => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }

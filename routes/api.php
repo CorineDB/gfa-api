@@ -918,7 +918,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ->parameters([
                     'evaluations-de-gouvernance' => 'evaluation_de_gouvernance',
                 ]);
-            Route::get('formulaire-factuel/{$token}', 'EvaluationDeGouvernanceController@formulaire_factuel_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+            Route::get('formulaire-factuel/{token}', 'EvaluationDeGouvernanceController@formulaire_factuel_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
             Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
 

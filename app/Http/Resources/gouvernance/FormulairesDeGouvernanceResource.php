@@ -7,6 +7,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class FormulairesDeGouvernanceResource extends JsonResource
 {
+    protected $can_load_response = false;
+    protected $soumissionId = null;
+
+    public function __construct($resource, $can_load_response = false, $soumissionId = null)
+    {
+        // Call the parent constructor to initialize the resource
+        parent::__construct($resource);
+        $this->can_load_response = $can_load_response;
+        $this->soumissionId = $soumissionId;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -15,6 +26,7 @@ class FormulairesDeGouvernanceResource extends JsonResource
      */
     public function toArray($request)
     {
+        $categories = $this->categories_de_gouvernance()->whereNull('categorieDeGouvernanceId')->with('questions_de_gouvernance')->get();
         return [
             'id' => $this->secure_id,
             'libelle' => $this->libelle,
@@ -33,7 +45,11 @@ class FormulairesDeGouvernanceResource extends JsonResource
                     'point'                 => $option->pivot->point
                 ];
             }),
-            'categories_de_gouvernance' => CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance()->whereNull('categorieDeGouvernanceId')->with('questions_de_gouvernance')->get()),
+            'categories_de_gouvernance' => $categories->map(function($categorieDeGouvernance){
+                return new CategoriesDeGouvernanceResource($categorieDeGouvernance, $this->can_load_response, $this->soumissionId);
+            }),
+            //'categories_de_gouvernance' => CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance()->whereNull('categorieDeGouvernanceId')->with('questions_de_gouvernance')->get()),
+            
             /*
             'categories_de_gouvernance' => CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance->load([
                 'questions_de_gouvernance' => function($query) use ($formulaireDeGouvernanceId) {

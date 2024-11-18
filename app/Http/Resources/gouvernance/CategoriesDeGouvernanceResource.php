@@ -7,6 +7,17 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoriesDeGouvernanceResource extends JsonResource
 {
+    protected $can_load_response = false;
+    protected $soumissionId = null;
+
+    public function __construct($resource, $can_load_response = false, $soumissionId = null)
+    {
+        // Call the parent constructor to initialize the resource
+        parent::__construct($resource);
+        $this->can_load_response = $can_load_response;
+        $this->soumissionId = $soumissionId;
+    }
+    
     /**
      * Transform the resource into an array.
      *
@@ -15,6 +26,7 @@ class CategoriesDeGouvernanceResource extends JsonResource
      */
     public function toArray($request)
     {
+
         return [
             'id' => $this->secure_id,
             'nom' => $this->categorieable->nom,
@@ -30,9 +42,15 @@ class CategoriesDeGouvernanceResource extends JsonResource
             'categorieDeGouvernanceId' => optional($this->categorieDeGouvernanceParent)->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
-            'categories_de_gouvernance' => $this->when($this->sousCategoriesDeGouvernance->count(), CategoriesDeGouvernanceResource::collection($this->sousCategoriesDeGouvernance)),
+            'categories_de_gouvernance' => $this->when($this->sousCategoriesDeGouvernance->count(), $this->sousCategoriesDeGouvernance->map(function($sousCategorieDeGouvernance){
+                return new CategoriesDeGouvernanceResource($sousCategorieDeGouvernance, $this->can_load_response, $this->soumissionId);
+            })),
+            //'categories_de_gouvernance' => $this->when($this->sousCategoriesDeGouvernance->count(), CategoriesDeGouvernanceResource::collection($this->sousCategoriesDeGouvernance)),
 
-            'questions_de_gouvernance' => $this->when(!$this->sousCategoriesDeGouvernance->count(), QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance))
+            'questions_de_gouvernance' => $this->when(!$this->sousCategoriesDeGouvernance->count(), $this->questions_de_gouvernance->map(function($questionDeGouvernance){
+                return new QuestionsDeGouvernanceResource($questionDeGouvernance, $this->can_load_response, $this->soumissionId);
+            })),
+            //'questions_de_gouvernance' => $this->when(!$this->sousCategoriesDeGouvernance->count(), QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance))
 
             //'questions_de_gouvernance' => QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance)
         ];

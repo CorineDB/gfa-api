@@ -351,32 +351,6 @@ class GenerateEvaluationResultats extends Command
 
         return [$indice_factuel, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
 
-        $results_categories_de_gouvernance = $evaluationDeGouvernance->soumissionFactuel->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) {
-            // Call the recursive function to load nested relationships
-            $this->loadCategories($query);
-        }])->get()->each(function ($categorie_de_gouvernance) use ($organisationId) {
-            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId) {
-                $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
-
-                // Calculate indice_factuel
-                if (count($reponses) > 0 && $reponses->sum('point') > 0) {
-
-                    $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($reponses);
-                } else {
-                    $sous_categorie_de_gouvernance->score_factuel = 0;
-                }
-            });
-
-            // Calculate indice_factuel
-            if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
-
-                $categorie_de_gouvernance->indice_factuel = $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count();
-            } else {
-                $categorie_de_gouvernance->indice_factuel = 0;
-            }
-        });
-
-        return FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance);
     }
 
     public function loadCategories($query, $organisationId)
