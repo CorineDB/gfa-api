@@ -17,6 +17,7 @@ use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -364,7 +365,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ['evaluationId' => $evaluationDeGouvernance->secure_id, 'formulaire' => $formulaire_factuel_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => [
+                'id' => $evaluationDeGouvernance->secure_id,
+                'intitule' => $evaluationDeGouvernance->intitule,
+                'description' => $evaluationDeGouvernance->description,
+                'objectif_attendu' => $evaluationDeGouvernance->objectif_attendu,
+                'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
+                'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
+                'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
+                'statut' => $evaluationDeGouvernance->statut, 'formulaire' => $formulaire_factuel_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -398,7 +407,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ['evaluationId' => $evaluationDeGouvernance->secure_id, 'formulaire' => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => [
+                'id' => $evaluationDeGouvernance->secure_id,
+                'intitule' => $evaluationDeGouvernance->intitule,
+                'description' => $evaluationDeGouvernance->description,
+                'objectif_attendu' => $evaluationDeGouvernance->objectif_attendu,
+                'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
+                'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
+                'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
+                'statut' => $evaluationDeGouvernance->statut, 'formulaire' => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             // if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
