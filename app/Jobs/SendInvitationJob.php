@@ -60,6 +60,8 @@ class SendInvitationJob implements ShouldQueue
                     // Extract email addresses for Mail::to()
                     $emailAddresses = array_column($emailParticipants, 'email');
 
+                    dd($emailAddresses);
+
                     // Send the email if there are any email addresses
                     if (!empty($emailAddresses)) {
 
