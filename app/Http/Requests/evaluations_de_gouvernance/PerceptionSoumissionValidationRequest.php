@@ -59,7 +59,7 @@ class PerceptionSoumissionValidationRequest extends FormRequest
                 }
             ],
             'perception'                              => ['required', 'array', function($attribute, $value, $fail) {
-                    if (count($value) < $this->getCountOfQuestionsOfAFormular($fail)) {
+                    if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
                     }
                 }
@@ -130,8 +130,9 @@ class PerceptionSoumissionValidationRequest extends FormRequest
      * 
      * @return int
      */
-    private function getCountOfQuestionsOfAFormular($fail){
-        $fail($this->formulaireCache);
+    private function getCountOfQuestionsOfAFormular(){
+        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $this->formulaireCache, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
         return $this->formulaireCache->questions_de_gouvernance->count();
     }
 }
