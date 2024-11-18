@@ -281,7 +281,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'nom_point_focal'       => $organisation->nom_point_focal,
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal,
-                    'profile_de_gouvernance'   => $organisation->profiles($evaluationDeGouvernance)
+                    'profile_de_gouvernance'   => $organisation->profiles($evaluationDeGouvernance->id)
                 ], $fiches_de_synthese->toArray());
             } else {
                 $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
