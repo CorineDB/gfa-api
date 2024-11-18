@@ -33,7 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
 
         $schedule->command('command:change-statut')->everyMinute();
-        $schedule->command('change-statut:evaluations')->everyMinute();
+        $schedule->command('change-statut:evaluations')->daily();
 
         $schedule->command('command:demarrage')->everyMinute();
 
@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:rappel')->everyMinute();
 
-        $schedule->command('command:suivi')->everyMinute();
+        //$schedule->command('command:suivi')->everyMinute();
 
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
 
