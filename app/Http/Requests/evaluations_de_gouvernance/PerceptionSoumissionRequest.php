@@ -42,7 +42,6 @@ class PerceptionSoumissionRequest extends FormRequest
     {
         return [
             'programmeId'   => [new HashValidatorRule(new Programme())],
-            'organisationId' => ['required', new HashValidatorRule(new Organisation())],
             'identifier_of_participant' => ['required'],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
@@ -54,7 +53,7 @@ class PerceptionSoumissionRequest extends FormRequest
                     
                     $this->formulaireCache = $formulaire;
 
-                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisationId', request()->input('organisationId') ?? auth()->user()->profileable->id)->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
                         $fail('La soumission a déjà été validée.');
                     }
 

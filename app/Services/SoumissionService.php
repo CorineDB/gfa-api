@@ -76,6 +76,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
     public function create(array $attributs): JsonResponse
     {
+        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $attributs, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
         DB::beginTransaction();
 
         try {
@@ -110,9 +112,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
             } else if (Auth::user()->hasRole('organisation')) {
-                return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => Auth::user(), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
-                //$organisation = Auth::user()->profilable;
+                $organisation = Auth::user()->profilable;
             }
             else{
                 //identifier_of_participant
