@@ -28,7 +28,7 @@ class SoumissionRequest extends FormRequest
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
 
-        return request()->user()->hasRole("unitee-de-gestion") /* && $this->evaluation_de_gouvernance->statut == 0 */;
+        return (request()->user()->hasRole("unitee-de-gestion") && request()->user()->hasRole("organisation")) && $this->evaluation_de_gouvernance->statut == 0;
     }
 
     /**
