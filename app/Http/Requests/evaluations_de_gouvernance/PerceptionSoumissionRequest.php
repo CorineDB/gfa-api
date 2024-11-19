@@ -50,7 +50,6 @@ class PerceptionSoumissionRequest extends FormRequest
             }],
             'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
 
-                    $fail(request()->input('formulaireDeGouvernanceId'));
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
@@ -67,7 +66,7 @@ class PerceptionSoumissionRequest extends FormRequest
                 }
             ],
 
-            'perception'                                            => ['required', 'array'],
+            'perception'                              => ['required', 'array'],
             'perception.categorieDeParticipant'       => ['nullable', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
             'perception.sexe'                         => ['nullable', 'in:masculin,feminin'],
             'perception.age'                          => ['nullable', 'in:<35,>35'],
@@ -85,7 +84,7 @@ class PerceptionSoumissionRequest extends FormRequest
                 }
             ],
 
-            'perception.response_data.*.optionDeReponseId'   => ['sometimes', new HashValidatorRule(new OptionDeReponse()), function ($attribute, $value, $fail) {
+            'perception.response_data.*.optionDeReponseId'   => ['bail','sometimes', new HashValidatorRule(new OptionDeReponse()), function ($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
