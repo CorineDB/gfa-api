@@ -400,9 +400,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($organisation != null) {
 
-                $soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->get();
-                return response()->json(['statut' => 'success', 'message' => null, 'data' => ["In If",$soumission]/* FormulairesDeGouvernanceResource::collection($formulaire_de_perception_de_gouvernance) */, 'statutCode' => 500], 500);
-
                 if(($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())){
                     $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
                 }
