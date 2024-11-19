@@ -16,6 +16,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class PerceptionSoumissionRequest extends FormRequest
 {
     protected $formulaireCache = null;
+    protected $organisation = null;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -24,11 +25,6 @@ class PerceptionSoumissionRequest extends FormRequest
      */
     public function authorize()
     {
-        if(is_string($this->evaluation_de_gouvernance))
-        {
-            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
-        }
-
         return !auth()->check() && $this->evaluation_de_gouvernance->statut == 0;
     }
 
@@ -39,9 +35,20 @@ class PerceptionSoumissionRequest extends FormRequest
      */
     public function rules()
     {
+        
+        if(is_string($this->evaluation_de_gouvernance))
+        {
+            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
+        }
+
         return [
-            'programmeId'   => [new HashValidatorRule(new Programme())],
+            'programmeId'               => [new HashValidatorRule(new Programme())],
             'identifier_of_participant' => ['required'],
+            'token'                     => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
+                $organisation = $this->evaluation_de_gouvernance->organisations(request()->input('token'))->count();
+
+                $fail($organisation);
+            }],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
@@ -49,8 +56,6 @@ class PerceptionSoumissionRequest extends FormRequest
                                         ->first();
 
                     if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
-                    
-                    $fail($formulaire);
                     
                     $this->formulaireCache = $formulaire;
 
@@ -66,7 +71,7 @@ class PerceptionSoumissionRequest extends FormRequest
             'perception.sexe'                         => ['nullable', 'in:masculin,feminin'],
             'perception.age'                          => ['nullable', 'in:<35,>35'],
 
-            /* 'perception.response_data.*.questionId'      => [
+            'perception.response_data.*.questionId'      => [
                 'sometimes',
                 'distinct',
                 new HashValidatorRule(new QuestionDeGouvernance()),
@@ -84,13 +89,13 @@ class PerceptionSoumissionRequest extends FormRequest
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
                  * If the provided optionDeReponseId is not valid, fail the validation
-                 /
+                 */
                 if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                     $fail('The selected option is invalid for the given formulaire.');
                 }
             }],
 
-            'perception.commentaire'                => ['nullable', 'string'], */
+            'perception.commentaire'                => ['nullable', 'string'],
         ];
     }
 
