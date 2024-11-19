@@ -376,7 +376,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
                 'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
                 'statut' => $evaluationDeGouvernance->statut,
-                'programmeId' => $evaluationDeGouvernance->programmeId, 'formulaire_de_gouvernance' => $formulaire_factuel_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                'programmeId' => $evaluationDeGouvernance->programme->secure_id, 'formulaire_de_gouvernance' => $formulaire_factuel_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -389,6 +389,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
+        return response()->json(['statut' => 'success', 'message' => null, 'data' => $paricipant_id/* FormulairesDeGouvernanceResource::collection($formulaire_de_perception_de_gouvernance) */, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
         try {
             if(!($evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
@@ -420,7 +422,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
                 'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
                 'statut' => $evaluationDeGouvernance->statut,
-                'programmeId' => $evaluationDeGouvernance->programmeId, 'formulaire_de_gouvernance' => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                'programmeId' => $evaluationDeGouvernance->programme->secure_id, 'formulaire_de_gouvernance' => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             // if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
