@@ -47,6 +47,7 @@ class PerceptionSoumissionRequest extends FormRequest
             'token'                     => ['bail', 'required', 'string', 'max:255', function ($attribute, $value, $fail) {
                 $this->organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
                 if($this->organisation == null) $fail('Token inconnu.');
+                $fail(json_encode($this->organisation));
             }],
             'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
 
@@ -64,7 +65,7 @@ class PerceptionSoumissionRequest extends FormRequest
                         $fail('La soumission a déjà été validée.');
                     }
 
-                    $fail($formulaire);
+                    $fail(json_encode($formulaire));
 
                 }
             ],
