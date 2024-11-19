@@ -50,7 +50,7 @@ class PerceptionSoumissionRequest extends FormRequest
             }],
             'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
 
-                $fail(request()->input('formulaireDeGouvernanceId'));
+                    $fail(request()->input('formulaireDeGouvernanceId'));
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
