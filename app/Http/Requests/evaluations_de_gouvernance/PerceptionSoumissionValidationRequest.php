@@ -16,6 +16,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class PerceptionSoumissionValidationRequest extends FormRequest
 {
     protected $formulaireCache = null;
+    protected $organisation = null;
 
     /**
      * Determine if the user is authorized to make this request.
@@ -24,12 +25,6 @@ class PerceptionSoumissionValidationRequest extends FormRequest
      */
     public function authorize()
     {
-        if(is_string($this->evaluation_de_gouvernance))
-        {
-            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
-        }
-
-        return !auth()->check();
         return !auth()->check() && $this->evaluation_de_gouvernance->statut == 0;
     }
 
@@ -40,10 +35,23 @@ class PerceptionSoumissionValidationRequest extends FormRequest
      */
     public function rules()
     {
+        if(is_string($this->evaluation_de_gouvernance))
+        {
+            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
+        }
+
         return [
-            'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
+            'programmeId'               => ['required', new HashValidatorRule(new Programme())],
             'identifier_of_participant' => ['required'],
-            'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
+            'token'                     => ['bail', 'required', 'string', 'max:255', function ($attribute, $value, $fail) {
+                $this->organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
+                if($this->organisation == null) $fail('Token inconnu.');
+
+                $this->merge([
+                    'organisationId' => $this->organisation->id, // Add or update the key-value pair
+                ]);
+            }],
+            'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
@@ -52,7 +60,8 @@ class PerceptionSoumissionValidationRequest extends FormRequest
                     if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
                     
                     $this->formulaireCache = $formulaire;
-                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+
+                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisation', $this->organisation->id)->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
                         $fail('La soumission a déjà été validée.');
                     }
                 }
