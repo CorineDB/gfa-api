@@ -389,7 +389,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        return response()->json(['statut' => 'success', 'message' => null, 'data' => $paricipant_id/* FormulairesDeGouvernanceResource::collection($formulaire_de_perception_de_gouvernance) */, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        return response()->json(['statut' => 'success', 'message' => null, 'data' => $paricipant_id/* FormulairesDeGouvernanceResource::collection($formulaire_de_perception_de_gouvernance) */, 'statutCode' => 500], 500);
 
         try {
             if(!($evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
