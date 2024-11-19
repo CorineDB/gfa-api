@@ -45,7 +45,7 @@ class PerceptionSoumissionRequest extends FormRequest
             'programmeId'               => [new HashValidatorRule(new Programme())],
             'identifier_of_participant' => ['required'],
             'token'                     => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
-                $organisation = $this->evaluation_de_gouvernance->organisations(request()->input('token'))->count();
+                $organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->count();
 
                 $fail($organisation);
             }],
