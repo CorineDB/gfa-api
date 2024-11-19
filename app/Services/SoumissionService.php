@@ -76,8 +76,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
     public function create(array $attributs): JsonResponse
     {
-        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $attributs, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         DB::beginTransaction();
 
         try {
@@ -113,10 +111,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 }
             } else if (Auth::user()->hasRole('organisation')) {
                 $organisation = Auth::user()->profilable;
-            }
-            else{
-                //identifier_of_participant
-                //
             }
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
@@ -227,14 +221,14 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
                     $soumission->submitted_at = now();
-                    $soumission->submittedBy  = auth()->id();
+                    $soumission->submittedBy  = Auth::check() ? auth()->id() : $attributs['identifier_of_participant'];
                     $soumission->statut       = true;
 
                     $soumission->save();
                 }
             }
 
-            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : $attributs['identifier_of_participant'];
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($soumission));
 

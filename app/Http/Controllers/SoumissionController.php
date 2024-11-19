@@ -103,10 +103,7 @@ class SoumissionController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function storePerception(PerceptionSoumissionRequest $request, $evaluationId)
-    {        
-        
-        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $request->all(), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
+    {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
         return $this->soumissionService->create($atttributs);
