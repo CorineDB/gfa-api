@@ -44,12 +44,12 @@ class PerceptionSoumissionRequest extends FormRequest
         return [
             'programmeId'               => [new HashValidatorRule(new Programme())],
             'identifier_of_participant' => ['required'],
-            'token'                     => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
+            'token'                     => ['bail', 'required', 'string', 'max:255', function ($attribute, $value, $fail) {
                 $organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->count();
 
                 $fail($organisation);
             }],
-            /* 'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
+            /* 'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
