@@ -343,7 +343,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if(!($evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
                 $query->wherePivot('token', $token);
-            }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            }])->get())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation = $evaluationDeGouvernance->organisations->first();
 
@@ -390,6 +390,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if(!($evaluationDeGouvernance = EvaluationDeGouvernance::with(["organisations" => function ($query) use ($token) {
                 $query->wherePivot('token', $token);
             }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $evaluationDeGouvernance, 'statutCode' => 500], 500);
 
             $organisation = $evaluationDeGouvernance->organisations->first();
 
@@ -453,8 +454,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function envoi_mail_au_participants($evaluationDeGouvernance, array $attributs): JsonResponse
     {
-        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $evaluationDeGouvernance, 'statutCode' => 500], 500);
-
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
