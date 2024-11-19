@@ -31,22 +31,12 @@ class OptionDeReponse extends Model
             }
         });
 
-        /* static::deleting(function ($option_de_reponse) {
-
-            DB::beginTransaction();
-            try {
-
-                if($option_de_reponse->reponses->count() == 0){
-                    $option_de_reponse->delete();
-                    DB::commit();
-                }
-
-            } catch (\Throwable $th) {
-                DB::rollBack();
-
-                throw new Exception($th->getMessage(), 1);
+        static::deleting(function ($option_de_reponse) {
+            if ($option_de_reponse->reponses->count() > 0) {
+                // Prevent deletion by throwing an exception
+                throw new Exception("Cannot delete because there are associated responses.");
             }
-        }); */
+        }); 
 
         static::deleted(function ($option_de_reponse) {
 
