@@ -31,7 +31,7 @@ class OptionDeReponse extends Model
             }
         });
 
-        static::deleting(function ($option_de_reponse) {
+        /* static::deleting(function ($option_de_reponse) {
 
             DB::beginTransaction();
             try {
@@ -46,7 +46,7 @@ class OptionDeReponse extends Model
 
                 throw new Exception($th->getMessage(), 1);
             }
-        });
+        }); */
 
         static::deleted(function ($option_de_reponse) {
 
@@ -56,7 +56,7 @@ class OptionDeReponse extends Model
                 $option_de_reponse->update([
                     'nom' => time() . '::' . $option_de_reponse->nom
                 ]);
-                $option_de_reponse->indicateurs_de_gouvernance()->delete();
+                //$option_de_reponse->indicateurs_de_gouvernance()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {

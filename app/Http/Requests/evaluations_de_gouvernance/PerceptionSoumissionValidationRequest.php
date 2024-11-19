@@ -48,8 +48,7 @@ class PerceptionSoumissionValidationRequest extends FormRequest
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
                                         ->first();
-                                        
-                    $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
+
                     if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
                     
                     $this->formulaireCache = $formulaire;
