@@ -48,7 +48,7 @@ class PerceptionSoumissionRequest extends FormRequest
                 $organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
                 if($organisation == null) $fail('Token inconnu.');
             }],
-            /* 'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
+            'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
@@ -58,14 +58,16 @@ class PerceptionSoumissionRequest extends FormRequest
                     
                     $this->formulaireCache = $formulaire;
 
-                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisation', $this->organisation->id)->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
                         $fail('La soumission a déjà été validée.');
                     }
+
+                    $fail($formulaire);
 
                 }
             ],
 
-            'perception'                                            => ['required', 'array'],
+            /* 'perception'                                            => ['required', 'array'],
             'perception.categorieDeParticipant'       => ['nullable', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
             'perception.sexe'                         => ['nullable', 'in:masculin,feminin'],
             'perception.age'                          => ['nullable', 'in:<35,>35'],
