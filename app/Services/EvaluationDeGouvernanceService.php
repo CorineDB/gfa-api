@@ -389,8 +389,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      */
     public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        return response()->json(['statut' => 'success', 'message' => null, 'data' => $paricipant_id/* FormulairesDeGouvernanceResource::collection($formulaire_de_perception_de_gouvernance) */, 'statutCode' => 500], 500);
-
         try {
             if(!($evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
@@ -399,6 +397,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation = $evaluationDeGouvernance->organisations->first();
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation/* FormulairesDeGouvernanceResource::collection($formulaire_de_perception_de_gouvernance) */, 'statutCode' => 500], 500);
 
             if ($organisation != null) {
 
