@@ -76,6 +76,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
     public function create(array $attributs): JsonResponse
     {
+        return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $attributs, 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
         DB::beginTransaction();
 
         try {
