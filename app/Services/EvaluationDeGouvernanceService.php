@@ -394,14 +394,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation = $evaluationDeGouvernance->organisations->first();
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $organisation, 'statutCode' => 500], 500);
 
             if ($organisation != null) {
 
                 if($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first()){
                     $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
                 }
-
                 else{
                     $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
                 }
