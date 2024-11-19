@@ -45,8 +45,8 @@ class PerceptionSoumissionRequest extends FormRequest
             'programmeId'               => [new HashValidatorRule(new Programme())],
             'identifier_of_participant' => ['required'],
             'token'                     => ['bail', 'required', 'string', 'max:255', function ($attribute, $value, $fail) {
-                $organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
-                if($organisation == null) $fail('Token inconnu.');
+                $this->organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
+                if($this->organisation == null) $fail('Token inconnu.');
             }],
             'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
 
