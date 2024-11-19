@@ -29,7 +29,6 @@ class PerceptionSoumissionRequest extends FormRequest
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
 
-        return !auth()->check();
         return !auth()->check() && $this->evaluation_de_gouvernance->statut == 0;
     }
 
@@ -51,6 +50,8 @@ class PerceptionSoumissionRequest extends FormRequest
 
                     if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
                     
+                    $fail($formulaire);
+                    
                     $this->formulaireCache = $formulaire;
 
                     if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
@@ -65,7 +66,7 @@ class PerceptionSoumissionRequest extends FormRequest
             'perception.sexe'                         => ['nullable', 'in:masculin,feminin'],
             'perception.age'                          => ['nullable', 'in:<35,>35'],
 
-            'perception.response_data.*.questionId'      => [
+            /* 'perception.response_data.*.questionId'      => [
                 'sometimes',
                 'distinct',
                 new HashValidatorRule(new QuestionDeGouvernance()),
@@ -83,13 +84,13 @@ class PerceptionSoumissionRequest extends FormRequest
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
                  * If the provided optionDeReponseId is not valid, fail the validation
-                 */
+                 /
                 if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                     $fail('The selected option is invalid for the given formulaire.');
                 }
             }],
 
-            'perception.commentaire'                => ['nullable', 'string'],
+            'perception.commentaire'                => ['nullable', 'string'], */
         ];
     }
 
