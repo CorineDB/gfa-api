@@ -205,7 +205,7 @@ class AuthService extends BaseService implements AuthServiceInterface
             $acteur = $user ? $user->nom . " ". $user->prenom : "Inconnu";
 
             // Si la suppression du token ne se passe pas correctement, une exception sera déclenchée
-            if( !$request->user()->tokens()->delete() ) throw new Exception("Erreur pendant la déconnexion", 500);
+            if( !$request->user()->token()->delete() ) throw new Exception("Erreur pendant la déconnexion", 500);
 
             $message = Str::ucfirst($acteur) . " vient de se déconnecter.";
 
