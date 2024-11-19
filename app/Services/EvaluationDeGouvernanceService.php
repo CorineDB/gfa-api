@@ -393,7 +393,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $query->wherePivot('token', $token);
             }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $organisation = $evaluationDeGouvernance->organisations;
+            $organisation = $evaluationDeGouvernance->organisations->first();
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $organisation, 'statutCode' => 500], 500);
 
             if ($organisation != null) {
