@@ -106,13 +106,13 @@ class EvaluationDeGouvernance extends Model
     {
         $soumissionDePerception = $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->where("identifier_of_participant", $identifier_of_participant);
         
-        if ($organisationId) {
+        /* if ($organisationId) {
             $soumissionDePerception = $soumissionDePerception->where('organisationId', $organisationId);
         }
 
         if ($token) {
             $soumissionDePerception = $soumissionDePerception->where('organisationId', $this->organisations($organisationId, $token)->first()->id);
-        }
+        } */
 
         return $soumissionDePerception;
     }
