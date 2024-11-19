@@ -30,10 +30,14 @@ class QuestionsDeGouvernanceResource extends JsonResource
             'id' => $this->secure_id,
             'nom' => $this->indicateur_de_gouvernance->nom,
             'type' => $this->type,
-            'indicateur_de_gouvernance' => $this->indicateur_de_gouvernance ? [
+            'indicateur_de_gouvernance' => $this->when($this->type==='indicateur', $this->indicateur_de_gouvernance ? [
                 'id' => $this->indicateur_de_gouvernance->secure_id,
                 'nom' => $this->indicateur_de_gouvernance->nom
-            ] : null,
+            ] : null),
+            'question_operationnelle' => $this->when($this->type==='question_operationnelle', $this->indicateur_de_gouvernance ? [
+                'id' => $this->indicateur_de_gouvernance->secure_id,
+                'nom' => $this->indicateur_de_gouvernance->nom
+            ] : null),
             'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
