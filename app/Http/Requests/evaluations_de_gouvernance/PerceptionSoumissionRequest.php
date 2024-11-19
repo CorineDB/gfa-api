@@ -49,7 +49,7 @@ class PerceptionSoumissionRequest extends FormRequest
 
                 $fail($organisation);
             }],
-            'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
+            /* 'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
@@ -89,13 +89,13 @@ class PerceptionSoumissionRequest extends FormRequest
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
                  * If the provided optionDeReponseId is not valid, fail the validation
-                 */
+                 /
                 if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                     $fail('The selected option is invalid for the given formulaire.');
                 }
             }],
 
-            'perception.commentaire'                => ['nullable', 'string'],
+            'perception.commentaire'                => ['nullable', 'string'], */
         ];
     }
 
