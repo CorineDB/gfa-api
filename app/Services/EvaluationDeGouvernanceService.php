@@ -388,7 +388,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         try {
             if(!($evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
-                $query->where('evaluation_organisations.token', $token);
+                $query->where('evaluation_organisations.token', $token)->with(["organisations" => function ($query) use ($token) {
+                $query->wherePivot('token', $token);
+            }]);
             })->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => $evaluationDeGouvernance, 'statutCode' => 500], 500);
 
