@@ -47,7 +47,6 @@ class PerceptionSoumissionRequest extends FormRequest
             'token'                     => ['bail', 'required', 'string', 'max:255', function ($attribute, $value, $fail) {
                 $this->organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
                 if($this->organisation == null) $fail('Token inconnu.');
-                $fail(json_encode($this->organisation));
             }],
             'formulaireDeGouvernanceId'   => ['bail', "required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
 
@@ -65,12 +64,10 @@ class PerceptionSoumissionRequest extends FormRequest
                         $fail('La soumission a déjà été validée.');
                     }
 
-                    $fail(json_encode($formulaire));
-
                 }
             ],
 
-            /* 'perception'                                            => ['required', 'array'],
+            'perception'                                            => ['required', 'array'],
             'perception.categorieDeParticipant'       => ['nullable', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
             'perception.sexe'                         => ['nullable', 'in:masculin,feminin'],
             'perception.age'                          => ['nullable', 'in:<35,>35'],
@@ -93,13 +90,13 @@ class PerceptionSoumissionRequest extends FormRequest
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
                  * If the provided optionDeReponseId is not valid, fail the validation
-                 /
+                 */
                 if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                     $fail('The selected option is invalid for the given formulaire.');
                 }
             }],
 
-            'perception.commentaire'                => ['nullable', 'string'], */
+            'perception.commentaire'                => ['nullable', 'string'],
         ];
     }
 
