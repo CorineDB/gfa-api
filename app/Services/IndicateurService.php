@@ -8,8 +8,10 @@ use App\Http\Resources\suivi\SuiviIndicateurResource;
 use App\Http\Resources\suivis\SuivisResource;
 use App\Models\Indicateur;
 use App\Models\IndicateurValueKey;
+use App\Models\Organisation;
 use App\Models\Site;
 use App\Models\Unitee;
+use App\Models\UniteeDeGestion;
 use App\Repositories\BailleurRepository;
 use App\Repositories\CategorieRepository;
 use App\Repositories\IndicateurRepository;
@@ -368,11 +370,15 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $this->changeState(1);
 
             if(isset($attributs['responsables']['ug'])){
-
+                $indicateur->ug_responsable()->attach([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"]]]);
             }
 
             if(isset($attributs['responsables']['organisations'])){
-
+                $responsables = [];
+                foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
+                    $responsables = array_merge($responsables, [$organisation_responsable => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"]]]);
+                }
+                $indicateur->ug_responsable()->attach($responsables);
             }
 
             if(isset($attributs['sites'])){
@@ -384,8 +390,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     
                     array_push($sites, $site->id);
                 }
-
-                dd($attributs);
 
                 $indicateur->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
 

@@ -39,16 +39,16 @@ class StoreActiviteRequest extends FormRequest
             //'structureResponsableId' => ['required', new HashValidatorRule(new User())],
             //'structureAssocieId' => ['required', new HashValidatorRule(new User())],
 
-            'fondPropre' => ['required', 'integer', 'min:0', function(){
+            'pret' => ['required', 'integer', 'min:0', function(){
                 if($this->composanteId){
                     $composante = Composante::find($this->composanteId);
                     if($composante){
-                        $fondPropre = $composante->fondPropre;
-                        $totalFondPropre = $composante->activites->sum('fondPropre');
+                        $pret = $composante->pret;
+                        $totalpret = $composante->activites->sum('pret');
 
-                        if(($totalFondPropre + $this->fondPropre) > $fondPropre)
+                        if(($totalpret + $this->pret) > $pret)
                         {
-                            throw ValidationException::withMessages(["fondPropre" => "Le total des fonds propres des activites ne peut pas dépasser le montant du fond propre de la composante."], 1);
+                            throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux activites de cet output ne peuvent pas dépasser le montant du budget alloue a l'output"], 1);
                         }
                     }
                 }
@@ -63,7 +63,7 @@ class StoreActiviteRequest extends FormRequest
 
                         if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                         {
-                            throw ValidationException::withMessages(["budgetNational" => "Le total des budgets nationaux des activites ne peut pas dépasser le montant du budget national de la composante."], 1);
+                            throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres des activites ne peuvent pas dépasser le montant du fond propre de l'output."], 1);
                         }
                     }
                 }

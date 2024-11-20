@@ -8,6 +8,7 @@ use App\Models\IndicateurValueKey;
 use App\Models\Organisation;
 use App\Models\Site;
 use App\Models\Unitee;
+use App\Models\UniteeDeGestion;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
 use Carbon\Carbon;
@@ -43,7 +44,7 @@ class StoreRequest extends FormRequest
             'frequence_de_la_collecte'      => 'required',
             'methode_de_la_collecte'        => 'required',
             'responsables'                  => ['required', 'array'],
-            'responsables.ug'               => [Rule::requiredIf(count(request()->input('responsables.organisations')) === 0), 'string', new HashValidatorRule(new Organisation())],
+            'responsables.ug'               => [Rule::requiredIf(!request()->input('responsables.organisations')), 'string', new HashValidatorRule(new UniteeDeGestion())],
             'responsables.organisations'    => [Rule::requiredIf(empty(request()->input('responsables.ug')) === true), 'array', 'min:0'],
 
             'responsables.organisations.*'  => ['distinct', 'string', new HashValidatorRule(new Organisation())],

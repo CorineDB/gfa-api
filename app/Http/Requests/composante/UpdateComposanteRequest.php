@@ -56,16 +56,17 @@ class UpdateComposanteRequest extends FormRequest
             'poids' => ['sometimes', 'numeric', 'min:0'],
             'projetId' => ['sometimes',  Rule::requiredIf(!$this->composanteId), new HashValidatorRule(new Projet())],
             'composanteId' => ['sometimes',  Rule::requiredIf(!$this->projetId), new HashValidatorRule(new Composante())],
-            'fondPropre' => ['sometimes', 'integer', 'min:0', function(){
+            
+            'pret' => ['sometimes', 'integer', 'min:0', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
                     if($projet){
-                        $fondPropre = $projet->fondPropre;
-                        $totalFondPropre = $projet->composantes->sum('fondPropre');
+                        $pret = $projet->pret;
+                        $totalpret = $projet->composantes->sum('pret');
 
-                        if(($totalFondPropre + $this->fondPropre) > $fondPropre)
+                        if(($totalpret + $this->pret) > $pret)
                         {
-                            throw ValidationException::withMessages(["fondPropre" => "Le total des fonds propres des composantes de ce projet ne peut pas dépasser le montant du fond propre du projet"], 1);
+                            throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux outcomes de ce projet ne peuvent pas dépasser le montant du budget alloue au projet"], 1);
                         }
                     }
                 }
@@ -73,37 +74,41 @@ class UpdateComposanteRequest extends FormRequest
                 elseif($this->composanteId){
                     $composante = Composante::find($this->composanteId);
                     if($composante){
-                        $fondPropre = $composante->fondPropre;
-                        $totalFondPropre = $composante->sousComposantes->sum('fondPropre');
+                        $pret = $composante->pret;
+                        $totalpret = $composante->sousComposantes->sum('pret');
 
-                        if(($totalFondPropre + $this->fondPropre) > $fondPropre)
+                        if(($totalpret + $this->pret) > $pret)
                         {
-                            throw ValidationException::withMessages(["fondPropre" => "Le total des fonds propres des sous composantes de cette composante ne peut pas dépasser le montant du fond propre de la composante"], 1);
+                            throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux outputs de cet outcome ne peuvent pas dépasser le montant du budget alloue a l'outcome"], 1);
                         }
                     }
                 }
             }],
 
-            'budgetNational' => ['sometimes', 'required', 'integer', 'min:0', function(){
+            'budgetNational' => ['sometimes', 'integer', 'min:0', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
-                    $budgetNational = $projet->budgetNational;
-                    $totalBudgetNational = $projet->composantes->where("id", "!=", $this->composante)->sum('budgetNational');
+                    if($projet){
+                        $budgetNational = $projet->budgetNational;
+                        $totalBudgetNational = $projet->composantes->sum('budgetNational');
 
-                    if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
-                    {
-                        throw ValidationException::withMessages(["budgetNational" => "Le total des budgets nationaux des composantes de ce projet ne peut pas dépasser le montant du budget national du projet"], 1);
+                        if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
+                        {
+                            throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres aux outcomes de ce projet ne peut pas dépasser le montant du fond propre du projet"], 1);
+                        }
                     }
                 }
 
                 elseif($this->composanteId){
                     $composante = Composante::find($this->composanteId);
-                    $budgetNational = $composante->budgetNational;
-                    $totalBudgetNational = $composante->sousComposantes->where("id", "!=", $this->composante)->sum('budgetNational');
+                    if($composante){
+                        $budgetNational = $composante->budgetNational;
+                        $totalBudgetNational = $composante->sousComposantes->sum('budgetNational');
 
-                    if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
-                    {
-                        throw ValidationException::withMessages(["budgetNational" => "Le total des budgets nationaux des sous composantes de cette composante ne peut pas dépasser le montant du budget national de la composante"], 1);
+                        if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
+                        {
+                            throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres des outputs de cet outcome ne peuvent pas dépasser le montant du fond propre de l'outcome"], 1);
+                        }
                     }
                 }
             }]
