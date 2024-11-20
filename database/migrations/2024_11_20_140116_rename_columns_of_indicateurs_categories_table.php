@@ -29,6 +29,10 @@ class RenameColumnsOfIndicateursCategoriesTable extends Migration
         if(Schema::hasTable('categories')){
             Schema::table('categories', function (Blueprint $table) {
 
+                if(Schema::hasColumn('categories', 'nom')){
+                    $table->longText('nom')->change();
+                }
+
                 if(!Schema::hasColumn('categories', 'indice')){
                     $table->integer('indice');
                 }
