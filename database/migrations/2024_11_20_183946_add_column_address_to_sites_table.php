@@ -35,13 +35,6 @@ class AddColumnAddressToSitesTable extends Migration
                 if(!Schema::hasColumn('sites', 'pays')){
                     $table->string('pays')->default('Bénin');
                 }
-
-                if(!Schema::hasColumn('sites', 'programmeId')){
-                    $table->bigInteger('programmeId')->unsigned();
-                    $table->foreign('programmeId', 'id')->references('id')->on('programmes')
-                        ->onDelete('cascade')
-                        ->onUpdate('cascade');
-                }
             });
         }
     }
@@ -74,11 +67,6 @@ class AddColumnAddressToSitesTable extends Migration
 
                 if(Schema::hasColumn('sites', 'pays')){
                     $table->dropColumn('pays');
-                }
-
-                if(Schema::hasColumn('sites', 'programmeId')){
-                    $table->dropForeign(['programmeId']);
-                    $table->dropColumn('programmeId');
                 }
 
             });
