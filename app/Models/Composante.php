@@ -22,7 +22,7 @@ class Composante extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'position', 'poids', 'pret', 'budgetNational', 'description', 'projetId', 'composanteId', 'statut');
+    protected $fillable = array('nom', 'position', 'poids', 'pret', 'fondPropre', 'budgetNational', 'description', 'projetId', 'composanteId', 'statut');
 
     protected static function boot()
     {

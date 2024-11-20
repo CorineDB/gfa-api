@@ -13,7 +13,6 @@ class UpdateColumnsOfIndicateursAndSuiviIndicateursTable extends Migration
      */
     public function up()
     {
-
         if(Schema::hasTable('indicateurs')){
             Schema::table('indicateurs', function (Blueprint $table) {
 
@@ -46,32 +45,30 @@ class UpdateColumnsOfIndicateursAndSuiviIndicateursTable extends Migration
                 }
 
             });
+        }
 
-            if(Schema::hasTable('suivi_indicateurs')){
-                Schema::table('suivi_indicateurs', function (Blueprint $table) {
-                    if(!Schema::hasColumn('suivi_indicateurs', 'estValider')){
-                        $table->boolean('estValider')->default(true);
-                    }
-                });
-            }
+        if(Schema::hasTable('suivi_indicateurs')){
+            Schema::table('suivi_indicateurs', function (Blueprint $table) {
+                if(!Schema::hasColumn('suivi_indicateurs', 'estValider')){
+                    $table->boolean('estValider')->default(true);
+                }
+            });
+        }
 
-            if(Schema::hasTable('categories')){
-                Schema::table('categories', function (Blueprint $table) {
+        if(Schema::hasTable('categories')){
+            Schema::table('categories', function (Blueprint $table) {
 
-                    if(!Schema::hasColumn('categories', 'indice')){
-                        $table->integer('indice');
-                    }
+                if(!Schema::hasColumn('categories', 'indice')){
+                    $table->integer('indice');
+                }
 
-                    if(!Schema::hasColumn('categories', 'categorieId')){
-                        $table->bigInteger('categorieId')->nullable()->unsigned();
-                        $table->foreign('categorieId')->references('id')->on('categories')
-                            ->onDelete('cascade')
-                            ->onUpdate('cascade');
-                    }
-                });
-            }
-
-
+                if(!Schema::hasColumn('categories', 'categorieId')){
+                    $table->bigInteger('categorieId')->nullable()->unsigned();
+                    $table->foreign('categorieId')->references('id')->on('categories')
+                        ->onDelete('cascade')
+                        ->onUpdate('cascade');
+                }
+            });
         }
     }
 

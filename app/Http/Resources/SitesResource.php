@@ -29,6 +29,10 @@ class SitesResource extends JsonResource
         return [
             "id" => $this->secure_id,
             "nom" => $this->nom,
+            "quartier" => $this->quartier,
+            "arrondissement" => $this->arrondissement,
+            "commune" => $this->commune,
+            "departement" => $this->departement,
             "longitude" => $this->longitude,
             "latitude" => $this->latitude,
             "projets" => $this->whenLoaded('projets', ProjetsResource::collection($this->projets))

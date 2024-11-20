@@ -22,7 +22,7 @@ class Activite extends Model
 
     public $timestamps = true;
 
-    protected $fillable = ['nom', 'position', 'poids', 'type', 'pret', 'budgetNational', 'userId', 'composanteId', 'statut'];
+    protected $fillable = ['nom', 'position', 'poids', 'type', 'pret', 'fondPropre', 'budgetNational', 'userId', 'composanteId', 'statut'];
 
     protected $appends = ['consommer'];
 

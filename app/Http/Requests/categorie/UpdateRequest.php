@@ -16,7 +16,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -32,8 +32,10 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('categories','nom')->ignore($this->categorie)->whereNull('deleted_at')],
-            'categorieId' => ['sometimes','nullable', new HashValidatorRule(new Categorie())],
+            'nom'  => ['sometimes','string', Rule::unique('categories','nom')->ignore($this->categorie)->whereNull('deleted_at')],
+            "type"          => ["sometimes", "in:impact,effet,produit"],
+            "indice"        => ["sometimes", "integer", "min:0"],
+            'categorieId'   => ['sometimes', 'nullable', new HashValidatorRule(new Categorie())]
         ];
     }
 

@@ -20,7 +20,7 @@ class Categorie extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['nom', 'categorieId'];
+    protected $fillable = ['nom', "type", "indice", 'categorieId'];
 
     /**
      * The attributes that should be hidden for serialization.

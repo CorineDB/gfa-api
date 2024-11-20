@@ -42,6 +42,28 @@ class SiteService extends BaseService implements SiteServiceInterface
 
 
 
+    public function all(array $attributs = ['*'], array $relations = []): JsonResponse
+    {
+        try
+        {
+            if(!Auth::user()->hasRole('administrateur')){
+                $sites = $this->repository->all();
+            }
+            else if(!Auth::user()->hasRole('organisation')){
+                $sites = Auth::user()->profilable->projet->sites;
+            }
+            else{
+                $sites = Auth::user()->programme->sites;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SitesResource::collection($sites), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Création de site
      *

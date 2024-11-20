@@ -29,12 +29,12 @@ class ProjetResource extends JsonResource
             "budgetNational" => $this->budgetNational ?? 0,
             "depenses" => $this->consommer,
             "objectifGlobaux" => $this->objectifGlobaux,
-            "pays" => $this->pays,
+            "pays" => $this->pays,/* 
+            "quartier" => $this->quartier,
             "commune" => $this->commune,
             "departement" => $this->departement,
-            "arrondissement" => $this->arrondissement,
+            "arrondissement" => $this->arrondissement, */
             "tauxEngagement" => $this->tauxEngagement,
-            "quartier" => $this->quartier,
             "secteurActivite" => $this->secteurActivite,
             "dateAprobation" => $this->dateAprobation,
             "description" => $this->description,

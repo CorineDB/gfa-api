@@ -22,11 +22,11 @@ class ProjetsResource extends JsonResource
             "codePta" => $this->codePta,
             "couleur" => $this->couleur,
             "description" => $this->description,
-            "pays" => $this->pays,
+            "pays" => $this->pays,/* 
             "commune" => $this->commune,
             "departement" => $this->departement,
             "arrondissement" => $this->arrondissement,
-            "quartier" => $this->quartier,
+            "quartier" => $this->quartier, */
             //"bailleur" => $this->bailleur,
             "statut" => $this->statut,
             "image" => new FichierResource($this->image()),

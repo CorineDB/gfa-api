@@ -18,7 +18,7 @@ class Site extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'longitude', 'latitude');
+    protected $fillable = array('nom', 'quartier', 'arrondissement', 'commune', 'departement', 'longitude', 'latitude');
 
     public function passation()
     {

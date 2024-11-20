@@ -57,6 +57,21 @@ class UpdateActiviteRequest extends FormRequest
             //'structureResponsableId' => ['sometimes', 'required', new HashValidatorRule(new User())],
             //'structureAssocieId' => ['sometimes', 'required', new HashValidatorRule(new User())],
 
+            'fondPropre' => ['sometimes', 'integer', 'min:0', function(){
+                if($this->composanteId){
+                    $composante = Composante::find($this->composanteId);
+                    if($composante){
+                        $fondPropre = $composante->fondPropre;
+                        $totalFondPropre = $composante->activites->sum('fondPropre');
+
+                        if(($totalFondPropre + $this->fondPropre) > $fondPropre)
+                        {
+                            throw ValidationException::withMessages(["fondPropre" => "Le total des fonds propres des activites ne peut pas dépasser le montant du fond propre de la composante."], 1);
+                        }
+                    }
+                }
+            }],
+
             'budgetNational' => ['sometimes','required', 'integer', 'min:0', function(){
                 if($this->composanteId){
                     $composante = Composante::find($this->composanteId);

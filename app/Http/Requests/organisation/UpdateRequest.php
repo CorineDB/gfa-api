@@ -47,9 +47,11 @@ class UpdateRequest extends FormRequest
 
             'sigle'         => ['nullable','string','max:255', Rule::unique('organisations', 'sigle')->ignore($this->organisation)->whereNull('deleted_at')],
             'code'          => ['numeric', "min:2", Rule::unique('organisations', 'code')->ignore($this->organisation)->whereNull('deleted_at')],
+            'type'             => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
 
-            'longitude'         => 'sometimes|max:255',
-            'latitude'          => 'sometimes|max:255',
+            'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+
             'addresse'          => 'sometimes|max:255',
             'quartier'          => 'sometimes|max:255',
             'arrondissement'    => 'sometimes|max:255',

@@ -25,6 +25,8 @@ class Organisation extends Model
 
     protected $with = ['user'];
 
+    protected $default = ['type' => 'osc'];
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -213,5 +215,10 @@ class Organisation extends Model
 
         // Get the results and apply grouping on the collection level
         return $profiles;
+    }
+
+    public function indicateurs()
+    {
+        return $this->belongsToMany(Indicateur::class, 'indicateur_responsables', 'responsableable_id', 'indicateurId')->wherePivotNull('deleted_at');
     }
 }

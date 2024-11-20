@@ -367,6 +367,14 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $this->changeState(1);
 
+            if(isset($attributs['responsables']['ug'])){
+
+            }
+
+            if(isset($attributs['responsables']['organisations'])){
+
+            }
+
             if(isset($attributs['sites'])){
 
                 $sites = [];
@@ -376,6 +384,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     
                     array_push($sites, $site->id);
                 }
+
+                dd($attributs);
 
                 $indicateur->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
 
