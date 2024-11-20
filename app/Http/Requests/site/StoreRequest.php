@@ -37,13 +37,17 @@ class StoreRequest extends FormRequest
 
         return [
 
-            'nom'           => ['required','max:255', Rule::unique('sites', 'nom')->whereNull('deleted_at')],
-
-            'longitude'     => 'required|max:255',
-
-            'latitude'      => 'required|max:255',
+            'nom'               => ['required', Rule::unique('sites', 'nom')->whereNull('deleted_at')],
+            'quartier'          => 'required|string',
+            'arrondissement'    => 'required|string',
+            'commune'           => 'required|string',
+            'departement'       => 'required|string',
+            'pays'              => 'required|string',
+            'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
             'projetId' => ['sometimes', new HashValidatorRule(new Projet())],
-            'indicateurId' => ['sometimes', new HashValidatorRule(new Indicateur())],/*
+            'indicateurId' => ['sometimes', new HashValidatorRule(new Indicateur())],
+            /*
 
             'bailleurId' => ['required', new HashValidatorRule(new Bailleur())],
 

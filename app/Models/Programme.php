@@ -242,8 +242,20 @@ class Programme extends Model
         return $this->morphMany(Resultat::class, 'resultable');
     }
 
+    /**
+     * Get all intervention sites through projets.
+     */
     public function sites()
     {
+        return $this->hasManyThrough(
+            Site::class, // The target model
+            Projet::class, // The intermediate model
+            'programmeId', // Foreign key on projets table
+            'id',           // Foreign key on sites table (via morph relation)
+            'id',           // Local key on programmes table
+            'id'            // Local key on projets table
+        );
+        
         // Get the related sites through the projets of the programme
         return Site::whereHas('projets', function($query) {
             $query->whereIn('projets.id', $this->projets->pluck('id'));

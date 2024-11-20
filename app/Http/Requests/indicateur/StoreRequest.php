@@ -5,6 +5,7 @@ namespace App\Http\Requests\indicateur;
 use App\Models\Bailleur;
 use App\Models\Categorie;
 use App\Models\IndicateurValueKey;
+use App\Models\Organisation;
 use App\Models\Site;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
@@ -12,6 +13,7 @@ use App\Rules\HashValidatorRule;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\RequiredIf;
 use Illuminate\Validation\ValidationException;
 
 class StoreRequest extends FormRequest
@@ -23,9 +25,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        $user = Auth::user();
-
-        return true;
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -38,11 +38,15 @@ class StoreRequest extends FormRequest
         $programme = auth()->user()->programme;
 
         return [
-            'nom'                       => 'required|max:255|unique:indicateurs,nom',
+            'nom'                           => 'required|string|unique:indicateurs,nom',
             'sources_de_donnee'             => 'required',
             'frequence_de_la_collecte'      => 'required',
             'methode_de_la_collecte'        => 'required',
-            'responsable'                   => 'required',
+            'responsables'                  => ['required', 'array'],
+            'responsables.ug'               => [Rule::requiredIf(count(request()->input('responsables.organisations')) === 0), 'string', new HashValidatorRule(new Organisation())],
+            'responsables.organisations'    => [Rule::requiredIf(empty(request()->input('responsables.ug')) === true), 'array', 'min:0'],
+
+            'responsables.organisations.*'  => ['distinct', 'string', new HashValidatorRule(new Organisation())],
 
             'anneeDeBase'                   => ['required', 'date_format:Y', 'after_or_equal:'.Carbon::parse($programme->debut)->year, 'before_or_equal:'.Carbon::parse($programme->fin)->year, 'before_or_equal:'.now()->format("Y")],
 
@@ -52,7 +56,8 @@ class StoreRequest extends FormRequest
 
             'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
 
-            'categorieId'                   => ['nullable', new HashValidatorRule(new Categorie())],
+            "indice"                        => ["required", "integer", "min:0"],
+            'categorieId'                   => ['required', new HashValidatorRule(new Categorie())],
             
             'value_keys'                    => [Rule::requiredIf(request()->input('agreger')), request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
                 if(!request()->input('agreger') && (is_array(request()->input('value_keys')))){

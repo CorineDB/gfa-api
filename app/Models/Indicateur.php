@@ -20,7 +20,7 @@ class Indicateur extends Model
 
     protected $dates = ["deleted_at"];
 
-    protected $fillable = ["nom", "description", "type_de_variable", "agreger", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", 'responsable', 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', "kobo", "koboVersion", "valeurCibleTotal"];
+    protected $fillable = ["nom", "description", "indice", "type_de_variable", "agreger", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', "kobo", "koboVersion", "valeurCibleTotal"];
     
     protected static function boot() {
         parent::boot();
@@ -65,7 +65,8 @@ class Indicateur extends Model
         "deleted_at" => "datetime:Y-m-d",
         'valeurDeBase' =>  'array',
         'valeurCibleTotal' =>  'array',
-        //"anneeDeBase" => "datetime:Y-m-d"
+        "indice" => 'integer',
+        "anneeDeBase" => "integer"
     ];
 
     /**
@@ -228,6 +229,16 @@ class Indicateur extends Model
     public function sites(): MorphToMany
     {
         return $this->morphToMany(Site::class, 'siteable');
+    }
+
+    public function organisations_responsable()
+    {
+        return $this->belongsToMany(Organisation::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at');
+    }
+
+    public function ug_responsable()
+    {
+        return $this->belongsToMany(UniteeDeGestion::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at');
     }
 
     public function cadres_de_mesure_rendement()

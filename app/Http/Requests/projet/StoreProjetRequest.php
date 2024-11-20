@@ -5,6 +5,7 @@ namespace App\Http\Requests\projet;
 use App\Models\Bailleur;
 use App\Models\Organisation;
 use App\Models\Programme;
+use App\Models\Site;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -34,7 +35,7 @@ class StoreProjetRequest extends FormRequest
             'couleur' => 'required',
             'debut' => 'required|date|date_format:Y-m-d',
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
-            'ville' => 'required|max:255',
+            'pays' => 'required|max:255',
             'bailleurId' => ['sometimes', 'nullable', new HashValidatorRule(new Bailleur())],
             'organisationId'   => ['sometimes', Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation()), function($attribute, $value, $fail) {
                 if(request()->input($attribute)){
@@ -48,18 +49,21 @@ class StoreProjetRequest extends FormRequest
             'image' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
             //'fichier' => 'nullable|array',
             //'fichier.*' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
-            'budgetNational' => ['required', 'integer', 'min:0', function(){
+            'budgetNational' => 'required|integer|min:0',
+            'pret' => ['required', 'integer', 'min:0', function(){
                 if($this->programmeId){
                     $programme = Programme::findByKey($this->programmeId);
                     $budgetNational = $programme->budgetNational;
-                    $totalBudgetNational = $programme->projets->sum('budgetNational');
+                    $totalBudgetNational = $programme->projets->sum('pret');
 
                     if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                     {
-                        throw ValidationException::withMessages(["budgetNational" => "Le total des budgets nationaux des projets de ce programme ne peut pas dépasser le montant du budget national du programme"], 1);
+                        throw ValidationException::withMessages(["budgetNational" => "Le total des fonds alloues aux projets de ce programme ne peut pas dépasser le montant du fond alloue au programme"], 1);
                     }
                 }
-            }]
+            }],
+            'sites'                         => ['required', 'array', 'min:1'],
+            'sites.*'                       => ['distinct', new HashValidatorRule(new Site())]
         ];
     }
 

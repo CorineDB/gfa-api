@@ -6,6 +6,7 @@ use App\Models\Bailleur;
 use App\Models\Categorie;
 use App\Models\Indicateur;
 use App\Models\IndicateurValueKey;
+use App\Models\Organisation;
 use App\Models\Site;
 use App\Models\Unitee;
 use Illuminate\Foundation\Http\FormRequest;
@@ -24,7 +25,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -44,11 +45,16 @@ class UpdateRequest extends FormRequest
         $nbreKeys = $this->indicateur->valueKeys->count() ?? 1;
 
         return [
-            'nom'                       => ['sometimes', 'max:255', Rule::unique('indicateurs', 'nom')->ignore($this->indicateur)->whereNull('deleted_at')],
+            'nom'                           => ['sometimes', 'string', Rule::unique('indicateurs', 'nom')->ignore($this->indicateur)->whereNull('deleted_at')],
             'sources_de_donnee'             => 'sometimes',
             'frequence_de_la_collecte'      => 'sometimes',
             'methode_de_la_collecte'        => 'sometimes',
-            'responsable'                   => 'sometimes',
+            'responsables'                  => ['sometimes', 'array'],
+            'responsables.ug'               => [Rule::requiredIf(count(request()->input('responsables.organisations')) === 0), 'boolean:false'],
+            'responsables.organisations'    => [Rule::requiredIf(request()->input('responsables.ug') === false), 'array', 'min:0'],
+
+            'responsables.organisations.*'  => ['distinct', 'string', new HashValidatorRule(new Organisation())],
+
             'anneeDeBase'                   => ['sometimes', 'date_format:Y', 'after_or_equal:'.Carbon::parse($programme->debut)->year, 'before_or_equal:'.Carbon::parse($programme->fin)->year, 'before_or_equal:'.now()->format("Y")],
 
             "type_de_variable"              => ["sometimes", "in:quantitatif,qualitatif,dichotomique"],
@@ -62,7 +68,8 @@ class UpdateRequest extends FormRequest
 
             'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
 
-            'categorieId'                   => ['nullable', new HashValidatorRule(new Categorie())],
+            "indice"                        => ["sometimes", "integer", "min:0"],
+            'categorieId'                   => ['sometimes', new HashValidatorRule(new Categorie())],
             'sites'                         => ['sometimes', 'array', 'min:1'],
             'sites.*'                         => ['distinct', new HashValidatorRule(new Site())],
 

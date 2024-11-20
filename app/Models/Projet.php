@@ -30,6 +30,7 @@ class Projet extends Model
         'description',
         'ville',
         'pret',
+        'fondPropre',
         'budgetNational',
         'debut',
         'fin',
@@ -37,10 +38,10 @@ class Projet extends Model
         'objectifGlobaux',
         'nombreEmpoie',
         'programmeId',
-        'pays',
+        'pays',/* 
         'commune',
         'arrondissement',
-        'quartier',
+        'quartier', */
         'secteurActivite',
         'dateAprobation',
         'tauxEngagement',

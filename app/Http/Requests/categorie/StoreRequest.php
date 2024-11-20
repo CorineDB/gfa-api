@@ -15,7 +15,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -26,8 +26,10 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom' => 'required|max:255|unique:categories,nom',
-            'categorieId' => ['nullable', new HashValidatorRule(new Categorie())],
+            'nom'           => 'required|string|unique:categories,nom',
+            "type"          => ["required", "in:impact,effet,produit"],
+            "indice"        => ["required", "integer", "min:0"],
+            'categorieId'   => ['sometimes', 'nullable', new HashValidatorRule(new Categorie())],
         ];
     }
 

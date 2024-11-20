@@ -40,9 +40,13 @@ class StoreRequest extends FormRequest
 
             'sigle'         => ['required','string','max:15', Rule::unique('organisations', 'sigle')->whereNull('deleted_at')],
             'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', "min:2", Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
+            'type'             => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
 
-            'longitude'         => 'required|max:255',
-            'latitude'          => 'required|max:255',
+
+            'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+
+
             'addresse'          => 'required|max:255',
             'quartier'          => 'required|max:255',
             'arrondissement'    => 'required|max:255',

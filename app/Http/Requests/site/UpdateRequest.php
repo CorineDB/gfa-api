@@ -42,15 +42,20 @@ class UpdateRequest extends FormRequest
 
         return [
 
-            'nom'           => ['sometimes','required','max:255', Rule::unique('sites', 'nom')->ignore($this->site->id)->whereNull('deleted_at')],
-
-            'longitude'     => 'sometimes|required|max:255',
-
-            'latitude'      => 'sometimes|required|max:255',
+            'nom'               => ['sometimes', 'max:255', Rule::unique('sites', 'nom')->ignore($this->site->id)->whereNull('deleted_at')],
+            'quartier'          => 'required|string',
+            'arrondissement'    => 'required|string',
+            'commune'           => 'required|string',
+            'departement'       => 'required|string',
+            'pays'              => 'required|string',
+            'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
             'projetId' => ['sometimes', new HashValidatorRule(new Projet())],
             'indicateurId' => ['sometimes', new HashValidatorRule(new Indicateur())],
+            /*'projetId' => ['sometimes', new HashValidatorRule(new Projet())],
+            'indicateurId' => ['sometimes', new HashValidatorRule(new Indicateur())],
 
-            /*'bailleurId' => ['sometimes|required', new HashValidatorRule(new Bailleur())],
+            'bailleurId' => ['sometimes|required', new HashValidatorRule(new Bailleur())],
 
             'entrepriseExecutanteId.*' => 'required'*/
         ];

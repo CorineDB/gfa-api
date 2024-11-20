@@ -29,11 +29,12 @@ class ProjetStatistiqueResource extends JsonResource
             "budgetNational" => $this->budgetNational ?? 0,
             "objectifGlobaux" => $this->objectifGlobaux,
             "pays" => $this->pays,
+            "sites" => SiteResource::collection($this->sites),/* 
             "commune" => $this->commune,
             "departement" => $this->departement,
             "arrondissement" => $this->arrondissement,
+            "quartier" => $this->quartier, */
             "tauxEngagement" => $this->tauxEngagement,
-            "quartier" => $this->quartier,
             "secteurActivite" => $this->secteurActivite,
             "dateAprobation" => $this->dateAprobation,
             "description" => $this->description,

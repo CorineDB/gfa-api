@@ -56,6 +56,33 @@ class UpdateComposanteRequest extends FormRequest
             'poids' => ['sometimes', 'numeric', 'min:0'],
             'projetId' => ['sometimes',  Rule::requiredIf(!$this->composanteId), new HashValidatorRule(new Projet())],
             'composanteId' => ['sometimes',  Rule::requiredIf(!$this->projetId), new HashValidatorRule(new Composante())],
+            'fondPropre' => ['sometimes', 'integer', 'min:0', function(){
+                if($this->projetId){
+                    $projet = Projet::find($this->projetId);
+                    if($projet){
+                        $fondPropre = $projet->fondPropre;
+                        $totalFondPropre = $projet->composantes->sum('fondPropre');
+
+                        if(($totalFondPropre + $this->fondPropre) > $fondPropre)
+                        {
+                            throw ValidationException::withMessages(["fondPropre" => "Le total des fonds propres des composantes de ce projet ne peut pas dépasser le montant du fond propre du projet"], 1);
+                        }
+                    }
+                }
+
+                elseif($this->composanteId){
+                    $composante = Composante::find($this->composanteId);
+                    if($composante){
+                        $fondPropre = $composante->fondPropre;
+                        $totalFondPropre = $composante->sousComposantes->sum('fondPropre');
+
+                        if(($totalFondPropre + $this->fondPropre) > $fondPropre)
+                        {
+                            throw ValidationException::withMessages(["fondPropre" => "Le total des fonds propres des sous composantes de cette composante ne peut pas dépasser le montant du fond propre de la composante"], 1);
+                        }
+                    }
+                }
+            }],
 
             'budgetNational' => ['sometimes', 'required', 'integer', 'min:0', function(){
                 if($this->projetId){
