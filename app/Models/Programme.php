@@ -260,8 +260,12 @@ class Programme extends Model
                 $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
                     $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites']);
                 }]);
-            }]);
-        }]);
+            }, 'indicateurs' => function($query){
+                    $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites']);
+                }]);
+        }, 'indicateurs' => function($query){
+                    $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites']);
+                }]);
         return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
             $query->orderBy('indice','asc')->loadCategories();
         }]);

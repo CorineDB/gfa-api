@@ -9,6 +9,7 @@ use App\Http\Resources\activites\ActivitesResource;
 use App\Http\Resources\PapResource;
 use App\Http\Resources\SitesResource;
 use App\Http\Resources\bailleurs\BailleursResource;
+use App\Http\Resources\cadre_de_mesure_rendement\CadreDeMesureRendementResource;
 use App\Http\Resources\CategorieResource;
 use App\Http\Resources\EActiviteResource;
 use App\Http\Resources\MaitriseOeuvreResource;
@@ -524,7 +525,9 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $cadre_de_mesure_rendement = $programme->cadre_de_mesure_rendement;
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => CadreDeMesureRendementResource::collection($cadre_de_mesure_rendement), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
         }
         catch (\Throwable $th)
         {

@@ -17,6 +17,8 @@ class Categorie extends Model
 
     public $timestamps = true;
 
+    protected $appends = ['code'];
+
     protected $dates = ['deleted_at'];
 
     protected $fillable = ['nom', "type", "indice", 'categorieId', 'programmeId'];
@@ -62,6 +64,15 @@ class Categorie extends Model
             }
 
         });
+    }
+
+    public function getCodeAttribute()
+    {
+        if ($this->categorieId !== null) {
+            return $this->categorie->code . '.' . $this->indice;
+        }
+        
+        return $this->indice;
     }
 
     public function programme()
