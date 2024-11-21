@@ -452,6 +452,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $organisation = $evaluationDeGouvernance->organisations->first();
+            $terminer = false;
 
             if ($organisation != null) {
 
