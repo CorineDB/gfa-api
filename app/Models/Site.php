@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Site extends Model
@@ -19,6 +21,35 @@ class Site extends Model
     protected $dates = ['deleted_at'];
 
     protected $fillable = array('nom', 'quartier', 'arrondissement', 'commune', 'departement', 'longitude', 'latitude', 'programmeId');
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($site) {
+            if (($site->indicateurs->count() > 0) || $site->projets->count() > 0 || $site->activites->count() > 0) {
+                // Prevent deletion by throwing an exception
+                throw new Exception("Cannot delete");
+            }
+        }); 
+
+        static::deleted(function ($site) {
+
+            DB::beginTransaction();
+            try {
+
+                $site->update([
+                    'nom' => time() . '::' . $site->nom
+                ]);
+                
+                DB::commit();
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
+            }
+        });
+    }
 
     public function passation()
     {

@@ -10,7 +10,6 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Categorie extends Model
 {
-
     use HasSecureIds, HasFactory;
 
     protected $table = 'categories';
@@ -46,7 +45,14 @@ class Categorie extends Model
     protected static function boot() {
         parent::boot();
 
-        static::deleting(function($categorie) {
+        static::deleting(function ($categorie) {
+            if (($categorie->indicateurs->count() > 0) || $categorie->categories->count() > 0 || $categorie->indicateurMods->count() > 0) {
+                // Prevent deletion by throwing an exception
+                throw new Exception("Cannot delete");
+            }
+        }); 
+
+        static::deleted(function($categorie) {
 
             DB::beginTransaction();
             try {
@@ -55,8 +61,6 @@ class Categorie extends Model
                     'nom' => time() . '::' . $categorie->nom
                 ]);
 
-                $categorie->indicateurs()->delete();
-                $categorie->indicateurMods()->delete();
                 DB::commit();
             } catch (\Throwable $th) {
                DB::rollBack();
@@ -109,5 +113,4 @@ class Categorie extends Model
     {
         return $this->hasMany(IndicateurMod::class, 'categorieId');
     }
-
 }

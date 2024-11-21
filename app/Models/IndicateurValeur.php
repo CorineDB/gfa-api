@@ -22,19 +22,6 @@ class IndicateurValeur extends Model
     protected static function boot()
     {
         parent::boot();
-
-        static::deleted(function ($indicateur_value_key) {
-
-            DB::beginTransaction();
-            try {
-
-                DB::commit();
-            } catch (\Throwable $th) {
-                DB::rollBack();
-
-                throw new \Exception($th->getMessage(), 1);
-            }
-        });
     }
 
     public function indicateur_valueable()

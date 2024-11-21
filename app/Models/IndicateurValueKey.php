@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -25,6 +26,14 @@ class IndicateurValueKey extends Model
         static::saving(function ($indicateur_value_key) {
             $indicateur_value_key->type = $indicateur_value_key->uniteeMesure->nom;
         });
+
+        static::deleting(function ($indicateur_value_key) {
+
+            if ($indicateur_value_key->indicateurs->count() > 0) {
+                // Prevent deletion by throwing an exception
+                throw new Exception("Cannot delete");
+            }
+        }); 
 
         static::deleted(function ($indicateur_value_key) {
 
