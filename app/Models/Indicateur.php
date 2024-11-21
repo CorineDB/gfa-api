@@ -25,21 +25,26 @@ class Indicateur extends Model
     protected static function boot() {
         parent::boot();
 
-        static::deleting(function($indicateur) {
+        static::deleting(function ($indicateur) {
+            if (($indicateur->ug_responsable->count() > 0) || ($indicateur->organisations_responsable->count() > 0) || ($indicateur->valeursCible->count() > 0) || ($indicateur->valeursDeBase->count() > 0) || ($indicateur->sites->count() > 0)) {
+                // Prevent deletion by throwing an exception
+                throw new Exception("Cannot delete");
+            }
+        });
+
+        static::deleted(function($categorie) {
 
             DB::beginTransaction();
             try {
 
-                $indicateur->valeursCible()->delete();
-                $indicateur->valueKeys()->delete();
-                $indicateur->valeursDeBase()->delete();
-                $indicateur->sites()->delete();
-                
+                $categorie->update([
+                    'nom' => time() . '::' . $categorie->nom
+                ]);
+
                 DB::commit();
             } catch (\Throwable $th) {
-                DB::rollBack();
-
-                throw new Exception($th->getMessage(), 1);
+               DB::rollBack();
+               throw new Exception($th->getMessage(), 1);
             }
 
         });
@@ -249,19 +254,5 @@ class Indicateur extends Model
     public function ug_responsable()
     {
         return $this->belongsToMany(UniteeDeGestion::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at');
-    }
-
-    public function cadres_de_mesure_rendement()
-    {
-        return $this->belongsToMany(CadreDeMesureRendement::class, 'cadre_de_mesure_rendement_mesures', 'indicateurId', 'cadreDeMesureRendementId')->wherePivotNull('deleted_at')->withPivot(['position']);
-    }
-
-    public function cadreDeMesures()
-    {
-        return $this->hasMany(CadreDeMesureRendementMesure::class, 'indicateurId');
-    }
-
-    public function getIndice(){
-        
     }
 }
