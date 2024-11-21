@@ -397,12 +397,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($organisation != null) {
                 if($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()){
-                    if($soumission->statut === 0){
-                        $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
-                    }
-                    else {
+                    
+                    $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
+
+                    if($soumission->statut === 1){
                         $terminer = true;
-                        $formulaire_factuel_de_gouvernance = null;
                     }
                 }
                 /*$formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->load("questions_de_gouvernance.reponses", function ($query) use ($evaluationDeGouvernance, $token) {
@@ -454,7 +453,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if ($organisation != null) {
 
                 if(($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())){
-                    $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
                     $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
 
                     if($soumission->statut === 1){
