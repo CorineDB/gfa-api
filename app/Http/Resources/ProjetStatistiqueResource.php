@@ -27,6 +27,7 @@ class ProjetStatistiqueResource extends JsonResource
             "nombreEmploie" => $this->nombreEmploie ?? 0,
             "statistiqueActivite" => $this->statistiqueActivite(),
             "budgetNational" => $this->budgetNational ?? 0,
+            "pret" => $this->pret ?? 0,
             "objectifGlobaux" => $this->objectifGlobaux,
             "pays" => $this->pays,
             "sites" => SiteResource::collection($this->sites),/* 

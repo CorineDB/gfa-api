@@ -275,9 +275,9 @@ class PtabScopeService extends BaseService implements PtabScopeServiceInterface
                                 }
 
                                 array_push($sctab, ["id" => $sousComposante->secure_id,
-                                                  "nom" => $sousComposante->nom,
-                                                  "budgetNational" => $sousComposante->budgetNational,
-                                                "pret" => $sousComposante->pret,
+                                                        "nom" => $sousComposante->nom,
+                                                        "budgetNational" => $sousComposante->budgetNational,
+                                                        "pret" => $sousComposante->pret,
                                                       "trimestre1" => $sousComposante->planDeDecaissement(1, $attributs['annee']),
                                                       "trimestre2" => $sousComposante->planDeDecaissement(2, $attributs['annee']),
                                                       "trimestre3" => $sousComposante->planDeDecaissement(3, $attributs['annee']),

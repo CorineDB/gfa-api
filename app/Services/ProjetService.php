@@ -133,6 +133,12 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $owner = auth()->user()->profilable;
             }
 
+            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id, 'statut' => -2]);
+
+            $projet = $organisation->projet()->create($attributs);
+
+            $projet = $projet->fresh();
+
             if(isset($attributs['sites'])){
 
                 $sites = [];
@@ -295,6 +301,20 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                         $old_image->delete();
                     }
                 }
+            }
+
+            if(isset($attributs['sites'])){
+
+                $sites = [];
+                foreach($attributs['sites'] as $id)
+                {
+                    if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
+                    
+                    array_push($sites, $site->id);
+                }
+
+                $projet->sites()->sync($sites);
+
             }
 
             $projet = $projet->fresh();
