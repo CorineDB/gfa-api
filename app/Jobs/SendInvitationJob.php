@@ -86,13 +86,13 @@ class SendInvitationJob implements ShouldQueue
                         Mail::to($emailAddresses)->later($when, $mailer);
 
                         // Remove duplicates based on the "email" field (use email as the unique key)
-                        //$participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
+                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
                     }
 
                     // Update the pivot table with the merged participants
-                    /* $evaluationOrganisation->pivot->participants = $participants;
+                    $evaluationOrganisation->pivot->participants = $participants;
                     $evaluationOrganisation->pivot->nbreParticipants = count($participants);
-                    $evaluationOrganisation->pivot->save(); */
+                    $evaluationOrganisation->pivot->save();
                 }
             }
         } catch (\Throwable $th) {
