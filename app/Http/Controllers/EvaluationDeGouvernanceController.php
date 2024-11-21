@@ -103,6 +103,12 @@ class EvaluationDeGouvernanceController extends Controller
         return $this->evaluationDeGouvernanceService->envoi_mail_au_participants($id, $request->all());
     }
 
+    
+    public function formulaire_factuel($id)
+    {
+        return $this->evaluationDeGouvernanceService->formulaire_factuel($id);
+    }
+
     public function formulaire_factuel_de_gouvernance(string $token)
     {
         return $this->evaluationDeGouvernanceService->formulaire_factuel_de_gouvernance($token);
