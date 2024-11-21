@@ -547,6 +547,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (!(Auth::user()->hasRole('organisation'))) {
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
+
             $organisationId = Auth::user()->profilable->id;
             
             if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
@@ -562,6 +563,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Extract email addresses for Mail::to()
                 $emailAddresses = array_column($emailParticipants, 'email');
+            
+                return response()->json(['statut' => 'success', 'message' => "Rappel envoye", 'data' => $emailAddresses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
                 // Send the email if there are any email addresses
                 if (!empty($emailAddresses)) {
