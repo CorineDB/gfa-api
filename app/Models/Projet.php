@@ -493,7 +493,7 @@ class Projet extends Model
     public function getCodePtaAttribute()
     {
         $code = optional($this->projetable)->code ?? 1;
-        return $this->programme->code.'.'. $code;
+        return $this->programme->code . '.' . $code;
         $programme = $this->programme;
         $code = $this->bailleur->codes($programme->id)->first();
         return $programme->code.'.'.optional($code)->codePta;

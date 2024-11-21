@@ -29,7 +29,7 @@ class IndicateurResource extends JsonResource
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "description" => $this->description,
-            "indice" => "{$this->indice}.{$this->pivot->position}",
+            "indice" => $this->code,
             "agreger" => $this->agreger,
             "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
             "unitee_mesure" => $this->when($this->unitee_mesure, [

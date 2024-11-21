@@ -246,7 +246,7 @@ class Composante extends Model
 
     public function getCodePtaAttribute()
     {
-        if ($this->composanteId !== 0) {
+        if ($this->composanteId !== 0 || $this->composanteId !== NULL) {
             return '' . optional($this->composante)->codePta . '.' . $this->position;
         }
         return '' . optional($this->projet)->codePta . '.' . $this->position;

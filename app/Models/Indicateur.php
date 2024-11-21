@@ -75,8 +75,18 @@ class Indicateur extends Model
     * @var array
     */
     protected $appends = [
-        'taux_realisation'
+        'taux_realisation', 'code'
     ];
+
+
+    public function getCodeAttribute()
+    {
+        if ($this->categorieId !== null) {
+            return $this->categorie->code . '.' . $this->indice;
+        }
+        
+        return $this->indice;
+    }
 
     /**
      * Unitée de mésure d'un indicateur

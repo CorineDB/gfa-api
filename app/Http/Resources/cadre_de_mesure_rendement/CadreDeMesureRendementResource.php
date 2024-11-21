@@ -16,7 +16,21 @@ class CadreDeMesureRendementResource extends JsonResource
      */
     public function toArray($request)
     {
-        $indice = $this->pivot->position;
+        return [
+
+            "id" => $this->secure_id,
+            "nom" => $this->nom,
+            "type" => $this->type,
+            "indice" => $this->indice,
+            "code" => $this->code,
+            "categorieId" => $this->categorie ? $this->categorie->secure_id : null,
+            "programmeId" => $this->programme ? $this->programme->secure_id : null,
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'categories' => CadreDeMesureRendementResource::collection($this->categories),
+            'indicateurs' => IndicateurResource::collection($this->indicateurs)
+        ];
+
+        /* $indice = $this->pivot->position;
         return [
             'id' => $this->secure_id,
             'libelle' => $this->libelle,
@@ -29,6 +43,6 @@ class CadreDeMesureRendementResource extends JsonResource
             }),
             //'indicateurs' => IndicateurResource::collection($this->resultats_de_mesure_rendement),
             'created_at' => Carbon::parse($this->created_at, 'Y-m-d H:m:s')
-        ];
+        ]; */
     }
 }
