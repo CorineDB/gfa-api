@@ -455,12 +455,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 if(($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())){
                     $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
-                    if($soumission->statut === 0){
-                        $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
-                    }
-                    else {
+                    $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
+
+                    if($soumission->statut === 1){
                         $terminer = true;
-                        $formulaire_de_perception_de_gouvernance = null;
                     }
                 }
                 else{
