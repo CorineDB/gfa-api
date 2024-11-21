@@ -596,7 +596,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $mailer = new InvitationEnqueteDeCollecteEmail($details);
 
                     // Send the email later after a delay
-                    $when = now()->addSecondes(5);
+                    $when = now()->addSeconds(5);
                     Mail::to($emailAddresses)->later($when, $mailer);
                 }
             }
