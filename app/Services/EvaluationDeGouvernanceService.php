@@ -552,10 +552,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $organisationId = Auth::user()->profilable->id;
 
-            $evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first();
-
-            return response()->json(['statut' => 'success', 'message' => "Rappel fdg", 'data' => $evaluationOrganisation, 'statutCode' => 500], 500);
-
             if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
 
                 $participants = [];
