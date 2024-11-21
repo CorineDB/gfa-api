@@ -191,6 +191,17 @@ class ProgrammeController extends Controller
         return $this->programmeService->sites($id);
     }
 
+    public function categories($id)
+    {
+        return $this->programmeService->categories($id);
+    }
+
+    public function cadre_de_mesure_rendement($id)
+    {
+        return $this->programmeService->cadre_de_mesure_rendement($id);
+    }
+    
+
     public function suiviFinanciers($id)
     {
         return $this->programmeService->suiviFinanciers($id);

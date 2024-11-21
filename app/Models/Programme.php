@@ -243,10 +243,48 @@ class Programme extends Model
     }
 
     /**
+     * Get all intervention categories through projets.
+     */
+    public function categories()
+    {
+        return $this->hasMany(Categorie::class, 'programmeId');
+    }
+
+    /**
+     * Get all intervention categories through projets.
+     */
+    public function cadre_de_mesure_rendement()
+    {
+        return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
+            $query->orderBy('indice','asc')->with(['categories' => function($query){
+                $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
+                    $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites']);
+                }]);
+            }]);
+        }]);
+        return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
+            $query->orderBy('indice','asc')->loadCategories();
+        }]);
+    }
+
+    public function scopeLoadCategories($query){
+        return $query->with(['categories' => function($query){
+            $query->orderBy('indice','asc')->loadCategories();
+        }]);
+        return $query->with(['categories' => function($query){
+            $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
+                $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites']);
+            }]);
+        }]);
+    }
+
+    /**
      * Get all intervention sites through projets.
      */
     public function sites()
     {
+
+        return $this->hasMany(Site::class, 'programmeId');
         return $this->hasManyThrough(
             Site::class, // The target model
             Projet::class, // The intermediate model
@@ -524,10 +562,10 @@ class Programme extends Model
         return $this->hasMany(IndicateurDeGouvernance::class, 'programmeId');
     }
 
-    public function cadre_de_mesure_rendement()
+    /* public function cadre_de_mesure_rendement()
     {
         return $this->hasMany(CadreDeMesureRendement::class, 'rendementable_id')->where('rendementable_type', get_class($this));
-    }
+    } */
 
     public function fiches_de_synthese()
     {
@@ -565,10 +603,10 @@ class Programme extends Model
         return $this->hasMany(Recommandation::class, 'programmeId');
     }
     
-    public function resultats_cadre_de_mesure_rendement()
+    /* public function resultats_cadre_de_mesure_rendement()
     {
         return $this->belongsToMany(ResultatCadreDeRendement::class, 'cadres_de_mesure_rendement', 'rendementable_id', 'resultatCadreDeRendementId')->wherePivotNull('deleted_at')->wherePivot('rendementable_type', get_class($this))->withPivot(['id', 'position', 'type']);
-    }
+    } */
 
     /**
      * Get the cadre de mesure rendement associated with this resultat cadre de rendement.

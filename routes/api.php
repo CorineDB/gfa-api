@@ -624,6 +624,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{id}/projets', 'projets')->name('projets')->middleware('permission:voir-un-projet');
 
                     Route::get('{id}/sites', 'sites')->name('sites')->middleware('permission:voir-un-site');
+
+                    Route::get('{id}/categories', 'categories')->name('categories')->middleware('permission:voir-une-categorie');
+
+                    Route::get('{id}/cadre-de-mesure-rendement', 'cadre_de_mesure_rendement')->name('cadre-de-mesure-rendement')->middleware('permission:voir-cadre-de-rendement');
+
                 });
             });
 

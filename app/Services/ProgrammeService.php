@@ -9,6 +9,7 @@ use App\Http\Resources\activites\ActivitesResource;
 use App\Http\Resources\PapResource;
 use App\Http\Resources\SitesResource;
 use App\Http\Resources\bailleurs\BailleursResource;
+use App\Http\Resources\CategorieResource;
 use App\Http\Resources\EActiviteResource;
 use App\Http\Resources\MaitriseOeuvreResource;
 use App\Http\Resources\mods\ModsResource;
@@ -85,7 +86,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function bailleurs($id) : JsonResponse
     {
-
         try
         {
             $bailleurs = [];
@@ -164,10 +164,8 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function mods($id) : JsonResponse
     {
-
         try
         {
-
             $mods = [];
 
             if( $id !== null ) $programme = $this->repository->findById(Auth::user()->programmeId); //Retourner les données du premier projet
@@ -186,10 +184,8 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function entreprisesExecutante($id) : JsonResponse
     {
-
         try
         {
-
             $entreprisesExecutante = [];
 
             if( $id !== null ) $programme = $this->repository->findById(Auth::user()->programmeId); //Retourner les données du premier projet
@@ -224,10 +220,8 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function projets($id) : JsonResponse
     {
-
         try
         {
-
             $projets = [];
 
             if( $id !== null ) $programme = $this->repository->findById(Auth::user()->programmeId); //Retourner les données du premier projet
@@ -262,10 +256,8 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function composantes($id) : JsonResponse
     {
-
         try
         {
-
             if(!($programme = $this->repository->findById(Auth::user()->programmeId))) throw new Exception( "Ce programme n'existe pas", 500);
 
             $composantes = $programme->composantes();
@@ -494,29 +486,53 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function sites($id) : JsonResponse
     {
-
         try
         {
-            $sites  = [];
+            if(!($programme = $this->repository->findById($id))) throw new Exception( "Ce programme n'existe pas", 500);
 
-            if(!($programme = $this->repository->findById(Auth::user()->programmeId))) throw new Exception( "Ce programme n'existe pas", 500);
+            $sites = $programme->sites()->with(['projets'])->get();
 
-            $siteProgramme = $programme->sites()->load('projets');
-            
-
-            /*foreach($siteProgramme as $site)
-            {
-
-                array_push($sites, Site::find($site->siteId));
-            }*/
-
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SitesResource::collection($siteProgramme), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SitesResource::collection($sites), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function categories($id) : JsonResponse
+    {
+        try
+        {
+            if(!($programme = $this->repository->findById($id))) throw new Exception( "Ce programme n'existe pas", 500);
+
+            $categoriesProgramme = $programme->categories;
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => CategorieResource::collection($categoriesProgramme), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function cadre_de_mesure_rendement($id) : JsonResponse
+    {
+        try
+        {
+            if(!($programme = $this->repository->findById($id))) throw new Exception( "Ce programme n'existe pas", 500);
+
+            $cadre_de_mesure_rendement = $programme->cadre_de_mesure_rendement;
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    
 
     public function suiviFinanciers($id) : JsonResponse
     {

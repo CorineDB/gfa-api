@@ -8,8 +8,6 @@ use App\Http\Requests\indicateur\RemoveValueKeysRequest;
 use App\Http\Requests\indicateur\StoreRequest;
 use App\Http\Requests\indicateur\UpdateRequest;
 use Core\Services\Interfaces\IndicateurServiceInterface;
-use Illuminate\Support\Facades\Auth;
-use Mockery\Undefined;
 
 class IndicateurController extends Controller
 {
