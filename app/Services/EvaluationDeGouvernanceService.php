@@ -566,8 +566,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Extract email addresses for Mail::to()
                 $emailAddresses = array_column($emailParticipants, 'email');
             
-                return response()->json(['statut' => 'success', 'message' => "Rappel envoye", 'data' => $emailAddresses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
                 // Send the email if there are any email addresses
                 if (!empty($emailAddresses)) {
 
@@ -598,7 +596,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $mailer = new InvitationEnqueteDeCollecteEmail($details);
 
                     // Send the email later after a delay
-                    $when = now()->addMinutes(1);
+                    $when = now()->addSecondes(5);
                     Mail::to($emailAddresses)->later($when, $mailer);
                 }
             }
