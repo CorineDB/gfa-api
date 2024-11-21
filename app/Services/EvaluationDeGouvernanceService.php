@@ -362,7 +362,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($organisation != null) {
                 if($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()){
-                    if($soumission->statut == 1){
+                    if($soumission->statut === true){
                         $terminer = true;
                     }
                 }
@@ -400,7 +400,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     
                     $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
 
-                    if($soumission->statut === 1){
+                    if($soumission->statut === true){
                         $terminer = true;
                     }
                 }
@@ -455,7 +455,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 if(($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())){
                     $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
 
-                    if($soumission->statut === 1){
+                    if($soumission->statut === true){
                         $terminer = true;
                     }
                 }
