@@ -9,6 +9,7 @@ use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
 use App\Jobs\RappelJob;
 use App\Jobs\SendInvitationJob;
+use App\Mail\InvitationEnqueteDeCollecteEmail;
 use App\Models\EvaluationDeGouvernance;
 use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
@@ -24,6 +25,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 /**
  * Interface EvaluationDeGouvernanceServiceInterface
@@ -360,35 +362,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($organisation != null) {
                 if($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()){
-                    if($soumission->statut === 0){
-                        $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
-                    }
-                    else {
+                    if($soumission->statut == 1){
                         $terminer = true;
-                        $formulaire_factuel_de_gouvernance = null;
                     }
                 }
-
-                else{
-                    $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
-                }
-            }
-            else{
-                $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => [
-                'id' => $evaluationDeGouvernance->secure_id,
-                'intitule' => $evaluationDeGouvernance->intitule,
-                'description' => $evaluationDeGouvernance->description,
-                'objectif_attendu' => $evaluationDeGouvernance->objectif_attendu,
-                'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
-                'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
-                'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
-                'statut' => $evaluationDeGouvernance->statut,
                 'token' => $organisation->pivot->token,
-                'terminer' => $terminer,
-                'programmeId' => $evaluationDeGouvernance->programme->secure_id, 'formulaire_de_gouvernance' => $formulaire_factuel_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                'terminer' => $terminer], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -557,17 +539,66 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      * 
      * return JsonResponse
      */
-    public function rappel_soummission($evaluationDeGouvernance, array $attributs): JsonResponse
+    public function rappel_soumission($evaluationDeGouvernance): JsonResponse
     {
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            if (Auth::user()->hasRole('organisation')) {
-                $attributs['organisationId'] = Auth::user()->profilable->id;
+            if (!(Auth::user()->hasRole('organisation'))) {
+                return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+            }
+            $organisationId = Auth::user()->profilable->id;
+            
+            if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
+
+                $participants = [];
+                // Decode and merge participants from the organisation's pivot data
+                $participants = array_merge($participants, $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : []);
+
+                // Filter participants for those with "email" contact type
+                $emailParticipants = array_filter($participants, function ($participant) {
+                    return $participant["type_de_contact"] === "email";
+                });
+
+                // Extract email addresses for Mail::to()
+                $emailAddresses = array_column($emailParticipants, 'email');
+
+                // Send the email if there are any email addresses
+                if (!empty($emailAddresses)) {
+
+                    $url = config("app.url");
+
+                    // If the URL is localhost, append the appropriate IP address and port
+                    if (strpos($url, 'localhost') !== false) {
+                        $url = 'http://192.168.1.16:3000';
+                    }
+
+                    $details['view'] = "emails.auto-evaluation.rappel_soumission_participant";
+
+                    $details['subject'] = "Rappel : Soumission à l'auto-évaluation de gouvernance";
+                    $details['content'] = [
+                        "greeting" => "Bonjour, Monsieur/Madame!",
+                        "introduction" => "Nous vous rappelons que la soumission de votre évaluation de gouvernance pour le programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**) est en attente.",
+                        "introduction" => "L'organisation **{$evaluationOrganisation->user->nom}** vous a invité(e) à participer à son enquête d'auto-évaluation dans le cadre du programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**).",
+                        "introduction" => "Nous, **{$evaluationOrganisation->user->nom}**, vous rappelons votre participation à notre enquête d'auto-évaluation de gouvernance. Votre contribution est essentielle pour renforcer notre gouvernance dans le cadre du programme **{$evaluationDeGouvernance->programme->nom}**, année d'exercice **{$evaluationDeGouvernance->annee_exercice}**.",
+
+                        "body" => "Votre contribution est essentielle pour finaliser cette étape cruciale. Merci de compléter votre soumission dans les plus brefs délais.",
+                        "body" => "Nous comptons sur votre retour pour atteindre nos objectifs de transparence et d'amélioration continue.",
+
+                        "lien" => $url . "/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}",
+                        "signature" => "Cordialement, {$evaluationOrganisation->user->nom}",
+                    ];
+
+                    // Create the email instance
+                    $mailer = new InvitationEnqueteDeCollecteEmail($details);
+
+                    // Send the email later after a delay
+                    $when = now()->addMinutes(1);
+                    Mail::to($emailAddresses)->later($when, $mailer);
+                }
             }
 
-
-            return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => "Rappel envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

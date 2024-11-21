@@ -51,7 +51,7 @@ class IndicateurResource extends JsonResource
             "methode_de_la_collecte"    => $this->methode_de_la_collecte,
             "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
             "ug_responsable"               => $this->ug_responsable,
-            "organisations_responsable"               => $this->organisations_responsable,
+            "organisations_responsable" => $this->organisations_responsable,
             "hypothese"                 => $this->hypothese
         ];
     }
