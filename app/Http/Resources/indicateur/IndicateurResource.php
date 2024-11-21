@@ -51,6 +51,11 @@ class IndicateurResource extends JsonResource
                 "id" => $this->bailleur->secure_id,
                 "nom" => $this->bailleur->user->nom
             ],*/
+            "sources_de_donnee"         => $this->sources_de_donnee,
+            "methode_de_la_collecte"    => $this->methode_de_la_collecte,
+            "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
+            "ug_responsable"               => $this->ug_responsable,
+            "organisations_responsable"               => $this->organisations_responsable,
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }

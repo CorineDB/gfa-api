@@ -20,6 +20,7 @@ class CategorieResource extends JsonResource
             "nom" => $this->nom,
             "type" => $this->type,
             "indice" => $this->indice,
+            "code" => $this->code,
             "categorieId" => $this->categorie ? $this->categorie->secure_id : null,
             "programmeId" => $this->programme ? $this->programme->secure_id : null,
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d"),

@@ -29,7 +29,8 @@ class IndicateurResource extends JsonResource
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "description" => $this->description,
-            "indice" => $this->code,
+            "indice" => $this->indice,
+            "code" => $this->code,
             "agreger" => $this->agreger,
             "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
             "unitee_mesure" => $this->when($this->unitee_mesure, [
@@ -49,7 +50,8 @@ class IndicateurResource extends JsonResource
             "sources_de_donnee"         => $this->sources_de_donnee,
             "methode_de_la_collecte"    => $this->methode_de_la_collecte,
             "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
-            "responsable"               => $this->responsable,
+            "ug_responsable"               => $this->ug_responsable,
+            "organisations_responsable"               => $this->organisations_responsable,
             "hypothese"                 => $this->hypothese
         ];
     }
