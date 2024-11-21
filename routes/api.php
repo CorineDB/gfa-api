@@ -925,7 +925,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ]);
 
             Route::get('formulaire-factuel/{token}', 'EvaluationDeGouvernanceController@formulaire_factuel_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
-
+            
             Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
 
                 Route::controller('EvaluationDeGouvernanceController')->group(function () {
@@ -933,6 +933,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{evaluation_de_gouvernance}/organisations', 'organisations')->name('organisations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::get('{evaluation_de_gouvernance}/formulaires-de-gouvernance', 'formulaires_de_gouvernance')->name('formulaires_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                    Route::get('{evaluation_de_gouvernance}/formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionController')->names('soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
                     Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('evaluation.validate-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
