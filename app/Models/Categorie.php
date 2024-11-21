@@ -5,7 +5,6 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
@@ -20,7 +19,7 @@ class Categorie extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['nom', "type", "indice", 'categorieId'];
+    protected $fillable = ['nom', "type", "indice", 'categorieId', 'programmeId'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -63,6 +62,11 @@ class Categorie extends Model
             }
 
         });
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function categorie()

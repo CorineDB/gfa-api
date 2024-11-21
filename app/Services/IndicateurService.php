@@ -850,8 +850,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     }
                     
                     else if (!$indicateur->agreger && !is_array($anneeCible["valeurCible"])) {
-                        dd($anneeCible["valeurCible"]);
-                        $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"]["value"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
+                        //dd($anneeCible["valeurCible"]);
+                        $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
                         
                         $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
                         //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];

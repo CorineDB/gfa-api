@@ -40,8 +40,6 @@ class SiteService extends BaseService implements SiteServiceInterface
         $this->repository = $siteRepository;
     }
 
-
-
     public function all(array $attributs = ['*'], array $relations = []): JsonResponse
     {
         try
