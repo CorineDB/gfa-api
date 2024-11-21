@@ -95,15 +95,15 @@
             </div>
 
             <p>
-                {!! $content['body'] !!}
+                {!! $details['content']['body'] !!}
             </p>
 
             <!-- Button Styled Link -->
             <a href="{{ $details['content']['lien'] }}"
                 style="display: inline-block; background-color: #f19100; color: white; padding: 12px 20px; font-size: 16px; text-align: center; text-decoration: none; border-radius: 5px; border: none; text-transform: uppercase;">
-                {{ $content['cta_text'] }}
+                {!! $details['content']['cta_text'] !!}
             </a>
-            <p>{{ $content['signature'] }}</p>
+            <p>{!! $details['content']['signature'] !!}</p>
         </div>
     </div>
 

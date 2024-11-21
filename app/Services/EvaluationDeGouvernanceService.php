@@ -581,12 +581,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $details['subject'] = "Rappel : Soumission à l'auto-évaluation de gouvernance";
                     $details['content'] = [
                         "greeting" => "Bonjour, Monsieur/Madame!",
-                        "introduction" => "Nous vous rappelons que la soumission de votre évaluation de gouvernance pour le programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**) est en attente.",
-                        "introduction" => "L'organisation **{$evaluationOrganisation->user->nom}** vous a invité(e) à participer à son enquête d'auto-évaluation dans le cadre du programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**).",
+                        //"introduction" => "Nous vous rappelons que la soumission de votre évaluation de gouvernance pour le programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**) est en attente.",
+                        //"introduction" => "L'organisation **{$evaluationOrganisation->user->nom}** vous a invité(e) à participer à son enquête d'auto-évaluation dans le cadre du programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**).",
                         "introduction" => "Nous, **{$evaluationOrganisation->user->nom}**, vous rappelons votre participation à notre enquête d'auto-évaluation de gouvernance. Votre contribution est essentielle pour renforcer notre gouvernance dans le cadre du programme **{$evaluationDeGouvernance->programme->nom}**, année d'exercice **{$evaluationDeGouvernance->annee_exercice}**.",
 
                         "body" => "Votre contribution est essentielle pour finaliser cette étape cruciale. Merci de compléter votre soumission dans les plus brefs délais.",
-                        "body" => "Nous comptons sur votre retour pour atteindre nos objectifs de transparence et d'amélioration continue.",
+                        //"body" => "Nous comptons sur votre retour pour atteindre nos objectifs de transparence et d'amélioration continue.",
 
                         "lien" => $url . "/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}",
                         "signature" => "Cordialement, {$evaluationOrganisation->user->nom}",
