@@ -589,6 +589,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         //"body" => "Nous comptons sur votre retour pour atteindre nos objectifs de transparence et d'amélioration continue.",
 
                         "lien" => $url . "/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}",
+                        "cta_text" => "Accéder au formulaire",
                         "signature" => "Cordialement, {$evaluationOrganisation->user->nom}",
                     ];
 
