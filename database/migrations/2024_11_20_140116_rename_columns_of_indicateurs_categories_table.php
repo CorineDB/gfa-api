@@ -46,6 +46,48 @@ class RenameColumnsOfIndicateursCategoriesTable extends Migration
                     $table->foreign('categorieId')->references('id')->on('categories')
                         ->onDelete('cascade')
                         ->onUpdate('cascade');
+                
+                }
+
+                if(Schema::hasColumn('categories', 'programmeId')){
+
+                    // Check if the column has a foreign key constraint
+                    $foreignKey = \DB::select(\DB::raw("
+                        SELECT CONSTRAINT_NAME 
+                        FROM information_schema.KEY_COLUMN_USAGE 
+                        WHERE TABLE_NAME = 'categories' 
+                        AND COLUMN_NAME = 'programmeId' 
+                        AND CONSTRAINT_SCHEMA = DATABASE()
+                    "));
+
+                    // If a foreign key exists, drop and recreate it
+                    if (!empty($foreignKey)) {
+
+                        // Use try-catch to avoid errors if foreign key doesn't exist
+                        try {
+                            $table->dropForeign(['programmeId']);
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            // Foreign key didn't exist, no action needed
+                        }
+                    }
+                    else {
+            
+                        // Alter the column and set a new foreign key to organisations
+                        $table->bigInteger('programmeId')->unsigned()->nullable()->change();
+    
+                        // Recreate the foreign key
+                        $table->foreign('programmeId')->references('id')->on('programmes')
+                                ->onDelete('cascade')
+                                ->onUpdate('cascade');
+
+                    }
+                }
+                else{
+                    // Alter the column and set a new foreign key to programmes
+                    $table->bigInteger('programmeId')->nullable()->unsigned();
+                    $table->foreign('programmeId')->references('id')->on('programmes')
+                            ->onDelete('cascade')
+                            ->onUpdate('cascade');
                 }
             });
         }
@@ -81,6 +123,30 @@ class RenameColumnsOfIndicateursCategoriesTable extends Migration
 
                 if(Schema::hasColumn('indicateurs', 'type')){
                     $table->dropColumn('type');
+                }
+
+                if(Schema::hasColumn('categories', 'programmeId')){
+
+                    // Check if the column has a foreign key constraint
+                    $foreignKey = \DB::select(\DB::raw("
+                        SELECT CONSTRAINT_NAME 
+                        FROM information_schema.KEY_COLUMN_USAGE 
+                        WHERE TABLE_NAME = 'categories' 
+                        AND COLUMN_NAME = 'programmeId' 
+                        AND CONSTRAINT_SCHEMA = DATABASE()
+                    "));
+
+                    // If a foreign key exists, drop and recreate it
+                    if (!empty($foreignKey)) {
+
+                        // Use try-catch to avoid errors if foreign key doesn't exist
+                        try {
+                            $table->dropForeign(['programmeId']);
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            // Foreign key didn't exist, no action needed
+                        }
+                    }
+                    $table->dropColumn('programmeId');
                 }
             });
         }

@@ -22,6 +22,7 @@ class ProgrammesResource extends JsonResource
             "description" => $this->description,
             "objectifGlobaux" => $this->objectifGlobaux,
             "budgetNational" => $this->budgetNational,
+            "pret" => $this->pret,
             "organismeDeTutelle" => $this->organismeDeTutelle,
             "debut" => Carbon::parse($this->debut)->format("Y-m-d"),
             "fin" => Carbon::parse($this->fin)->format("Y-m-d"),

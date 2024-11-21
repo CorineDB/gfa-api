@@ -47,8 +47,8 @@ class PlansDecaissementResource extends JsonResource
             "debut" => $debut,
             "fin" => $fin,
             "activiteId" => optional($this->activite)->secure_id,
-            "pret" => $this->pret,
             "budgetNational" => $this->budgetNational,
+            "pret" => $this->pret,
             "activite" => !$this->activite ? null : [
                 "id" => $this->activite->secure_id,
                 "nom" => $this->activite->nom,

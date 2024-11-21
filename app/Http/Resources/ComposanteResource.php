@@ -22,9 +22,10 @@ class ComposanteResource extends JsonResource
                 "nom" => $this->nom,
                 "codePta" => $this->codePta,
                 "poids" => $this->poids,
-                "budgetNational" => $this->budgetNational,
                 "description" => $this->description,
                 "statut" => $this->statut,
+                "budgetNational" => $this->budgetNational,
+                "pret" => $this->pret,
                 "depenses" => $this->consommer,
                 "tep" => $this->tep,
 

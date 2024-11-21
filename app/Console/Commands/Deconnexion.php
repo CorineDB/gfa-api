@@ -227,9 +227,9 @@ class Deconnexion extends Command
                                 }
 
                                 array_push($sctab, ["id" => $sousComposante->secure_id,
-                                                  "nom" => $sousComposante->nom,
-                                                  "budgetNational" => $sousComposante->budgetNational,
-                                                "pret" => $sousComposante->pret,
+                                                    "nom" => $sousComposante->nom,
+                                                    "budgetNational" => $sousComposante->budgetNational,
+                                                    "pret" => $sousComposante->pret,
                                                       "trimestre1" => $sousComposante->planDeDecaissement(1, date('Y')),
                                                       "trimestre2" => $sousComposante->planDeDecaissement(2, date('Y')),
                                                       "trimestre3" => $sousComposante->planDeDecaissement(3, date('Y')),
