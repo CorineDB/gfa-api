@@ -248,11 +248,11 @@ class Indicateur extends Model
 
     public function organisations_responsable()
     {
-        return $this->belongsToMany(Organisation::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at')->wherePivot("responsableable_id", Organisation::class);
+        return $this->belongsToMany(Organisation::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at')->wherePivot("responsableable_type", Organisation::class);
     }
 
     public function ug_responsable()
     {
-        return $this->belongsToMany(UniteeDeGestion::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at')->wherePivot("responsableable_id", UniteeDeGestion::class);
+        return $this->belongsToMany(UniteeDeGestion::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at')->wherePivot("responsableable_type", UniteeDeGestion::class);
     }
 }
