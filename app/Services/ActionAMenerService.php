@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Resources\FichesDeSyntheseResource;
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Repositories\ActionAMenerRepository;
+use App\Repositories\EvaluationDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\ActionAMenerServiceInterface;
 use Exception;
@@ -81,9 +82,15 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
-            
-            $action_a_mener = $this->repository->create($attributs);
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'statut' => -1]);
+
+            $action_a_mener = null;
+
+            if(isset($attributs['evaluationId'])){
+                if(($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
+                    $action_a_mener = $evaluation->actions_a_mener()->create($attributs);
+                }
+            }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
