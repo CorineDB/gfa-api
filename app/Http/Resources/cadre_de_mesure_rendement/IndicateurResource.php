@@ -3,6 +3,8 @@
 namespace App\Http\Resources\cadre_de_mesure_rendement;
 
 use App\Http\Resources\indicateur\IndicateurValueKeyResource;
+use App\Http\Resources\OrganisationResource;
+use App\Http\Resources\user\UniteeGestionResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -50,8 +52,8 @@ class IndicateurResource extends JsonResource
             "sources_de_donnee"         => $this->sources_de_donnee,
             "methode_de_la_collecte"    => $this->methode_de_la_collecte,
             "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
-            "ug_responsable"               => $this->ug_responsable,
-            "organisations_responsable" => $this->organisations_responsable,
+            "ug_responsable"            => new UniteeGestionResource($this->ug_responsable->first()),
+            "organisations_responsable" => OrganisationResource::collection($this->organisations_responsable),
             "hypothese"                 => $this->hypothese
         ];
     }

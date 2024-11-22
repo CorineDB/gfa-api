@@ -2,7 +2,9 @@
 
 namespace App\Http\Resources\indicateur;
 
+use App\Http\Resources\OrganisationResource;
 use App\Http\Resources\UniteeMesureResource;
+use App\Http\Resources\user\UniteeGestionResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -54,8 +56,8 @@ class IndicateurResource extends JsonResource
             "sources_de_donnee"         => $this->sources_de_donnee,
             "methode_de_la_collecte"    => $this->methode_de_la_collecte,
             "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
-            "ug_responsable"            => $this->ug_responsable,
-            "organisations_responsable" => $this->organisations_responsable,
+            "ug_responsable"            => new UniteeGestionResource($this->ug_responsable->first()),
+            "organisations_responsable" => OrganisationResource::collection($this->organisations_responsable),
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }

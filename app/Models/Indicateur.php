@@ -56,7 +56,7 @@ class Indicateur extends Model
      * @var array<int, string>
      */
     protected $hidden = [
-        'updated_at','deleted_at', "bailleurId"
+        'updated_at','deleted_at', "bailleurId", "pivot"
     ];
 
     /**
