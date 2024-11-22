@@ -23,11 +23,10 @@ class IndicateurResource extends JsonResource
             "description" => $this->description,
             "kobo" => $this->kobo,
             "koboVersion" => $this->koboVersion,
-            "categorieId" => $this->categorieId,
+            "categorieId" => $this->categorie ? $this->categorie->secure_id : null,
             "categorie" => $this->categorie ? [
                 "id" => $this->categorie->secure_id,
-                "nom" => $this->categorie->nom,
-                "categorieId" => $this->categorie->secure_id,
+                "nom" => $this->categorie->nom
             ] : null,
             "agreger" => $this->agreger,
             "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
