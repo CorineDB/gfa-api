@@ -20,7 +20,7 @@ class FichierResource extends JsonResource
         return [
             "id" => $this->secure_id,
             "nom" => $this->nom,
-            "url" => Storage::url($this->chemin),
+            "url" => config("app.url")."".Storage::url($this->chemin),
             "auteur" => new UserResource($this->auteur),
             "extension" => pathinfo(Storage::url($this->chemin), PATHINFO_EXTENSION)
         ];

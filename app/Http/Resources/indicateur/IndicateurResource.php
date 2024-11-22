@@ -23,6 +23,7 @@ class IndicateurResource extends JsonResource
             "description" => $this->description,
             "kobo" => $this->kobo,
             "koboVersion" => $this->koboVersion,
+            "categorieId" => $this->categorieId,
             "categorie" => $this->categorie ? [
                 "id" => $this->categorie->secure_id,
                 "nom" => $this->categorie->nom,
@@ -54,8 +55,8 @@ class IndicateurResource extends JsonResource
             "sources_de_donnee"         => $this->sources_de_donnee,
             "methode_de_la_collecte"    => $this->methode_de_la_collecte,
             "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
-            "ug_responsable"               => $this->ug_responsable,
-            "organisations_responsable"               => $this->organisations_responsable,
+            "ug_responsable"            => $this->ug_responsable,
+            "organisations_responsable" => $this->organisations_responsable,
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
