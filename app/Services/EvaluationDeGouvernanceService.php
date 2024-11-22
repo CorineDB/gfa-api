@@ -2,14 +2,17 @@
 
 namespace App\Services;
 
+use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
+use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
 use App\Jobs\RappelJob;
 use App\Jobs\SendInvitationJob;
 use App\Mail\InvitationEnqueteDeCollecteEmail;
+use App\Models\ActionAMener;
 use App\Models\EvaluationDeGouvernance;
 use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
@@ -312,6 +315,41 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $fiches_de_synthese, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function actions_a_mener($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+
+            $actions_a_mener = [];
+            if (!Auth::user()->hasRole('administrateur')) {
+                
+                $actions_a_mener = $evaluationDeGouvernance->actions_a_mener;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ActionsAMenerResource::collection($actions_a_mener), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+
+    public function recommandations($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $recommandations = [];
+            if (!Auth::user()->hasRole('administrateur')) {
+                $recommandations = $evaluationDeGouvernance->recommandations;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => RecommandationsResource::collection($recommandations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

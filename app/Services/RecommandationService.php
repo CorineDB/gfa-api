@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\RecommandationsResource;
+use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\RecommandationRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\RecommandationServiceInterface;
@@ -81,8 +82,12 @@ class RecommandationService extends BaseService implements RecommandationService
             $programme = Auth::user()->programme;
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
-            
-            $recommandation = $this->repository->create($attributs);
+
+            if(isset($attributs['evaluationId'])){
+                if(($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
+                    $recommandation = $evaluation->recommandations()->create($attributs);
+                }
+            }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
