@@ -378,7 +378,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
                     $responsables = array_merge($responsables, [$organisation_responsable => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"]]]);
                 }
-                $indicateur->ug_responsable()->attach($responsables);
+                $indicateur->organisations_responsable()->attach($responsables);
             }
 
             if(isset($attributs['sites'])){

@@ -23,6 +23,7 @@ class IndicateursResource extends JsonResource
             "kobo" => $this->kobo,
             "koboVersion" => $this->koboVersion,
             //"anneeDeBase" => Carbon::parse($this->anneeDeBase)->format("Y"),
+            "categorieId" => $this->categorie ? $this->categorie->secure_id : null,
             "categorie" => $this->categorie ? [
                 "id" => $this->categorie->secure_id,
                 "nom" => $this->categorie->nom
@@ -46,6 +47,11 @@ class IndicateursResource extends JsonResource
             "valeurCibleTotal" => $this->valeurCibleTotal(),
             "valeurRealiserTotal" => $this->valeurRealiserTotal(),
             "taux_realisation" => $this->taux_realisation,
+            "sources_de_donnee"         => $this->sources_de_donnee,
+            "methode_de_la_collecte"    => $this->methode_de_la_collecte,
+            "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
+            "ug_responsable"            => $this->ug_responsable,
+            "organisations_responsable" => $this->organisations_responsable,
             "sites" => SiteResource::collection($this->sites),
             /*"bailleur" => [
                 "id" => $this->bailleur->secure_id,
