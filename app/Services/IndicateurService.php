@@ -370,13 +370,13 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $this->changeState(1);
 
             if(isset($attributs['responsables']['ug'])){
-                $indicateur->ug_responsable()->attach([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"]]]);
+                $indicateur->ug_responsable()->attach([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
             }
 
             if(isset($attributs['responsables']['organisations'])){
                 $responsables = [];
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
-                    $responsables = array_merge($responsables, [$organisation_responsable => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"]]]);
+                    $responsables = array_merge($responsables, [$organisation_responsable => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
                 }
                 $indicateur->organisations_responsable()->attach($responsables);
             }
