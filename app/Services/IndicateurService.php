@@ -15,6 +15,7 @@ use App\Models\UniteeDeGestion;
 use App\Repositories\BailleurRepository;
 use App\Repositories\CategorieRepository;
 use App\Repositories\IndicateurRepository;
+use App\Repositories\OrganisationRepository;
 use App\Repositories\SiteRepository;
 use App\Repositories\UniteeMesureRepository;
 use App\Repositories\UserRepository;
@@ -376,6 +377,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             if(isset($attributs['responsables']['organisations'])){
                 $responsables = [];
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
+                    if(!($indicateurId = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+
                     $responsables = array_merge($responsables, [$organisation_responsable => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
                 }
                 $indicateur->organisations_responsable()->attach($responsables);

@@ -33,7 +33,8 @@ class SuiviIndicateur extends Model
         'trimestre',
         'estValider',
         'valeurRealise',
-        'valeurCibleId', 'commentaire', 'dateSuivie'
+        'valeurCibleId', 'commentaire', 'dateSuivie',
+        'sources_de_donnee'
     ];
 
     public function valeurCible()
