@@ -71,6 +71,7 @@ class Indicateur extends Model
         'valeurDeBase' =>  'array',
         'valeurCibleTotal' =>  'array',
         "indice" => 'integer',
+        "agreger" => 'boolean',
         "anneeDeBase" => "integer"
     ];
 
