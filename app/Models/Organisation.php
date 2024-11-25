@@ -126,7 +126,7 @@ class Organisation extends Model
     public function scopeByProgramme($query, $programmeId = null)
     {
         return $query->whereHas('user', function ($q) use ($programmeId) {
-            if($programmeId = null){
+            if($programmeId == null){
                 $programmeId = auth()->user()->programmeId;
             }
 
