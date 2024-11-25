@@ -59,6 +59,13 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
         try {
 
+
+            /*if (Auth::user()->hasRole('administrateur')) {
+                $organisations = $this->repository->all();
+            } else {
+                $organisations = Auth::user()->programme->organisations;
+            }*/
+
             $organisations = $this->repository->newInstance()::byProgramme()->get();
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationResource::collection($organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
