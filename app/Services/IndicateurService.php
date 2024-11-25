@@ -380,11 +380,13 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $responsables = [];
             
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
-                    return response()->json(['statut' => 'success', 'message' => null, 'data' => $organisation_responsable, 'statutCode' => 500], 500);
 
                     if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
 
                     $responsables = array_merge($responsables, [$organisation->id => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
+
+                    return response()->json(['statut' => 'success', 'message' => null, 'data' => $responsables, 'statutCode' => 500], 500);
+
                 }
 
                 $indicateur->organisations_responsable()->attach($responsables);
