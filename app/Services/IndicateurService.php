@@ -382,6 +382,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
                     if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+                    return response()->json(['statut' => 'success', 'message' => null, 'data' =>  [$organisation->id => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()], 'statutCode' => 500], 500);
 
                     $responsables = array_merge($responsables, [$organisation->id => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
 
