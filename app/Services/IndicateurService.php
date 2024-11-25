@@ -383,6 +383,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                     $responsables = array_merge($responsables, [$organisation->id => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
                 }
+                
                 $indicateur->organisations_responsable()->attach($responsables);
             }
 
@@ -399,6 +400,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $indicateur->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
 
             }
+
+            $indicateur->refresh();
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
