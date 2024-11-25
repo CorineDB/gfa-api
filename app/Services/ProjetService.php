@@ -88,7 +88,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $projets = Auth::user()->profilable->projets;
 
             }else if(Auth::user()->hasRole('organisation')){
-                $projets = optional(Auth::user()->profilable)->projet ?? [];
+                $projets = optional(Auth::user()->profilable)->projet ?? null;
             }
             else if(!Auth::user()->hasRole('administrateur')){
                 $projets = Auth::user()->programme->projets;
@@ -97,7 +97,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $projets = $this->repository->all();
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ProjetResource::collection($projets), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => is_array($projets) ? ProjetResource::collection($projets) : ($projets ? new ProjetResource($projets) : null), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {
