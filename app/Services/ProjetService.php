@@ -87,7 +87,10 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             if(Auth::user()->hasRole('bailleur')){
                 $projets = Auth::user()->profilable->projets;
 
-            }else if(!Auth::user()->hasRole('administrateur')){
+            }else if(Auth::user()->hasRole('organisation')){
+                $projets = optional(Auth::user()->profilable)->projet ?? [];
+            }
+            else if(!Auth::user()->hasRole('administrateur')){
                 $projets = Auth::user()->programme->projets;
             }
             else{
