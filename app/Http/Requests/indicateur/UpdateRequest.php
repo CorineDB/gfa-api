@@ -9,6 +9,7 @@ use App\Models\IndicateurValueKey;
 use App\Models\Organisation;
 use App\Models\Site;
 use App\Models\Unitee;
+use App\Models\UniteeDeGestion;
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\HashValidatorRule;
 use Carbon\Carbon;
@@ -50,8 +51,8 @@ class UpdateRequest extends FormRequest
             'frequence_de_la_collecte'      => 'sometimes',
             'methode_de_la_collecte'        => 'sometimes',
             'responsables'                  => ['sometimes', 'array'],
-            'responsables.ug'               => [Rule::requiredIf(count(request()->input('responsables.organisations')) === 0), 'boolean:false'],
-            'responsables.organisations'    => [Rule::requiredIf(request()->input('responsables.ug') === false), 'array', 'min:0'],
+            'responsables.ug'               => [Rule::requiredIf(!request()->input('responsables.organisations')), !empty(request()->input('responsables.organisations')) ? 'nullable' :'', 'string', new HashValidatorRule(new UniteeDeGestion())],
+            'responsables.organisations'    => [Rule::requiredIf(empty(request()->input('responsables.ug')) === true), 'array', 'min:0'],
 
             'responsables.organisations.*'  => ['distinct', 'string', new HashValidatorRule(new Organisation())],
 
@@ -72,6 +73,14 @@ class UpdateRequest extends FormRequest
             'categorieId'                   => ['sometimes', new HashValidatorRule(new Categorie())],
             'sites'                         => ['sometimes', 'array', 'min:1'],
             'sites.*'                         => ['distinct', new HashValidatorRule(new Site())],
+            
+            'value_keys'                    => ['sometimes', Rule::requiredIf(request()->input('agreger')), request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
+                if(!request()->input('agreger') && (is_array(request()->input('value_keys')))){
+                    $fail("Champ non requis.");
+                }
+            }, request()->input('agreger') ? "min:1" : ""],
+            'value_keys.*.id'               => [Rule::requiredIf(request()->input('agreger')), "string", 'distinct', new HashValidatorRule(new IndicateurValueKey())],
+            'value_keys.*.uniteeMesureId'   => ["nullable", "string", new HashValidatorRule(new Unitee())],
 
             'valeurDeBase'                  => ['sometimes', (request()->input('agreger') != null && request()->input('agreger')) ? "array" : "", function($attribute, $value, $fail){
                     if(!request()->input('agreger') && is_array(request()->input('valeurDeBase'))){
@@ -92,6 +101,35 @@ class UpdateRequest extends FormRequest
                 }
             }],
             'valeurDeBase.*.value'          => ['required'],
+
+
+
+            'anneesCible'                    => ['sometimes', "array", "min:1"],
+
+            'anneesCible.*.valeurCible'      => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
+                if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){
+                    $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
+                }
+                
+            }, request()->input('agreger') ? "min:".count(request()->input('value_keys')) : "", request()->input('agreger') ? "max:".count(request()->input('value_keys')) : ""],
+            'anneesCible.*.valeurCible.*.keyId'            => [new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
+
+                // Get the index from the attribute name
+                preg_match('/anneesCible\.(\d+)\.valeurCible\.(\d+)\.keyId/', $attribute, $matches);
+                $index = $matches[1] ?? null; // Get the index if it exists
+                
+                // Ensure each keyId in valeurDeBase is one of the value_keys.id
+                if (!in_array(request()->input('anneesCible.*.valeurCible.*.keyId')[$index], collect(request()->input('value_keys.*.id'))->toArray())) {
+                    $fail("Le keyId n'est pas dans value_keys.");
+                }
+    
+            }],
+            'anneesCible.*.valeurCible.*.value'              => ['required'],
+
+            'anneesCible.*.annee'            => ['required', 'distinct', 'date_format:Y', 'after_or_equal:anneeDeBase'],
+            'sites'                         => ['sometimes', 'array', 'min:1'],
+            'sites.*'                       => ['distinct', new HashValidatorRule(new Site())],
+
         ];
     }
 

@@ -214,7 +214,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         try {
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($this->repository->findById($modelId, $columns, $relations, $appends)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateursResource($this->repository->findById($modelId, $columns, $relations, $appends)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             $message = $th->getMessage();
@@ -383,7 +383,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                     if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
 
-
                     // Add directly to the array with the expected format
                     $responsables[$organisation->id] = [
                         "responsableable_type" => Organisation::class,
@@ -391,7 +390,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                         "created_at" => now(),
                         "updated_at" => now()
                     ];
-                    //array_push($responsables, [$organisation->id => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
                 }
 
                 $indicateur->organisations_responsable()->attach($responsables);
@@ -474,7 +472,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 }
             }
 
-
             unset($attributs["bailleurId"]);
 
             if($indicateur->suivis) unset($attributs['agreger']);
@@ -491,7 +488,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             else {
                 unset($attributs['valeur_keys']);
             }
-
+            
             if(isset($attributs["valeurDeBase"])){
                 
                 $valeursDeBase = $attributs["valeurDeBase"];
@@ -607,11 +604,57 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $indicateur = $indicateur->fill($attributs);
 
+            if(isset($attributs["anneesCible"])){
+                    $oldValeursCible = $indicateur->valeursCible;
+
+                    $this->setIndicateurValeursCible($indicateur, $attributs["anneesCible"]);
+
+                    $oldValeursCible->each->delete();
+                
+            }
+
             $this->changeState(0);
 
             $indicateur->save();
 
             $this->changeState(1);
+
+            if(isset($attributs['responsables']['ug'])){
+                $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
+            }
+
+            if(isset($attributs['responsables']['organisations'])){
+                $responsables = [];
+            
+                foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
+
+                    if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+
+                    // Add directly to the array with the expected format
+                    $responsables[$organisation->id] = [
+                        "responsableable_type" => Organisation::class,
+                        "programmeId" => $attributs["programmeId"],
+                        "created_at" => now(),
+                        "updated_at" => now()
+                    ];
+                }
+
+                $indicateur->organisations_responsable()->sync($responsables);
+            }
+
+            if(isset($attributs['sites'])){
+
+                $sites = [];
+                foreach($attributs['sites'] as $id)
+                {
+                    if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
+                    
+                    array_push($sites, $site->id);
+                }
+
+                $indicateur->sites()->sync($sites, ["programmeId" => $attributs['programmeId']]);
+
+            }
 
             $indicateur->refresh();
 
