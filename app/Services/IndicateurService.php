@@ -82,7 +82,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     ->where('bailleurId', Auth::user()->profilable->id)
                     ->get();
                 //});
-            } else {
+            } elseif (Auth::user()->hasRole('organisation')) {
+                $indicateurs = Auth::user()->profilable->indicateurs;
+            } else  {
                 $indicateurs = Auth::user()->programme->indicateurs;
             }
 
@@ -377,9 +379,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             if(isset($attributs['responsables']['organisations'])){
                 $responsables = [];
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
-                    if(!($indicateurId = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+                    if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
 
-                    $responsables = array_merge($responsables, [$organisation_responsable => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
+                    $responsables = array_merge($responsables, [$organisation->id => ["responsableable_type" => Organisation::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
                 }
                 $indicateur->organisations_responsable()->attach($responsables);
             }
