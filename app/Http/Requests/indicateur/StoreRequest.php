@@ -44,7 +44,7 @@ class StoreRequest extends FormRequest
             'frequence_de_la_collecte'      => 'required',
             'methode_de_la_collecte'        => 'required',
             'responsables'                  => ['required', 'array'],
-            'responsables.ug'               => [Rule::requiredIf(!request()->input('responsables.organisations')), 'string', new HashValidatorRule(new UniteeDeGestion())],
+            'responsables.ug'               => [Rule::requiredIf(!request()->input('responsables.organisations')), !!(request()->input('responsables.organisations')) ? 'nullable' :'', 'string', new HashValidatorRule(new UniteeDeGestion())],
             'responsables.organisations'    => [Rule::requiredIf(empty(request()->input('responsables.ug')) === true), 'array', 'min:0'],
 
             'responsables.organisations.*'  => ['distinct', 'string', new HashValidatorRule(new Organisation())],
