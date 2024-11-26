@@ -5,6 +5,8 @@ namespace App\Models;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\MorphToMany;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
@@ -246,5 +248,21 @@ class PrincipeDeGouvernance extends Model
         }
     
         return $query;
+    }
+
+    /**
+     * Get all of the actions a mener for the principe.
+     */
+    public function actions_a_mener(): MorphToMany
+    {
+        return $this->morphToMany(ActionAMener::class, 'actionable');
+    }
+
+    /**
+     * Get all of the recommandations for the principe.
+     */
+    public function recommandations(): MorphMany
+    {
+        return $this->morphMany(Recommandation::class, 'recommandationable');
     }
 }

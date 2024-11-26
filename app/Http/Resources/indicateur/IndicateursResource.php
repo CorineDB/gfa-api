@@ -22,6 +22,8 @@ class IndicateursResource extends JsonResource
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "description" => $this->description,
+            "indice" => $this->indice,
+            "code" => $this->code,
             "kobo" => $this->kobo,
             "koboVersion" => $this->koboVersion,
             "categorieId" => $this->categorie ? $this->categorie->secure_id : null,

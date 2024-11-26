@@ -226,7 +226,7 @@ class AuthService extends BaseService implements AuthServiceInterface
             $user = $request->user();
 
             // Si la suppression du token ne se passe pas correctement, une exception sera déclenchée
-            if( !$user->tokens()->delete() ) throw new Exception("Erreur pendant le processus de rafraichissement du token", 500);
+            if( !$user->token()->delete() ) throw new Exception("Erreur pendant le processus de rafraichissement du token", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ["access_token" => $user->createToken($this->hashID(8))->plainTextToken], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -334,7 +334,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
 
-            $utilisateur->token = str_replace(['/', '\\'], '', Hash::make( $utilisateur->secure_id . Hash::make($utilisateur->email) . Hash::make(Hash::make(strtotime($utilisateur->account_verification_request_sent_at)))));
+            $utilisateur->token = str_replace(['/', '\\', '.'], '', Hash::make( $utilisateur->secure_id . Hash::make($utilisateur->email) . Hash::make(Hash::make(strtotime($utilisateur->account_verification_request_sent_at)))));
 
             $utilisateur->link_is_valide = true;
 
@@ -461,7 +461,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
 
-            $utilisateur->token = str_replace(['/', '\\'], '', Hash::make( $utilisateur->secure_id . Hash::make($utilisateur->email) . Hash::make(Hash::make(strtotime($utilisateur->account_verification_request_sent_at)))));
+            $utilisateur->token = str_replace(['/', '\\', '.'], '', Hash::make( $utilisateur->secure_id . Hash::make($utilisateur->email) . Hash::make(Hash::make(strtotime($utilisateur->account_verification_request_sent_at)))));
 
             $utilisateur->link_is_valide = true;
 
