@@ -171,7 +171,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                 $action_a_mener->est_valider = $attributs['est_valider'];
 
                 if(isset($attributs['est_valider']) && $attributs['est_valider']){
-                    $action_a_mener->validated_at = Carbon::parse($attributs['validated_at']);
+                    $action_a_mener->validated_at = Carbon::now();
                 }
 
                 $action_a_mener->save();
