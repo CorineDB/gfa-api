@@ -30,6 +30,11 @@ class SuiviIndicateurResource extends JsonResource
                 "valeurCible" => $this->valeurCible->valeurCible,
                 "indicateur" => new IndicateurResource($this->indicateur()),
             ] : null,
+            "auteur" => $this->suivi_indicateurable ? [
+                "id" => $this->suivi_indicateurable->secure_id,
+                "nom" => $this->suivi_indicateurable->user->nom,
+                "prenom" => $this->suivi_indicateurable->user->prenom,
+            ] : null,
             "commentaire" => $this->commentaire,
             "commentaires" => $this->commentaires,
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")

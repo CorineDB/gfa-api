@@ -25,6 +25,7 @@ class SuiviIndicateur extends Model
      */
     protected $casts = [
         'valeurRealise' =>  'array',
+        "estValider"    => "boolean"
     ];
 
 
@@ -34,12 +35,23 @@ class SuiviIndicateur extends Model
         'estValider',
         'valeurRealise',
         'valeurCibleId', 'commentaire', 'dateSuivie',
-        'sources_de_donnee'
+        'sources_de_donnee',
+        'programmeId', 'suivi_indicateurable_id', 'suivi_indicateurable_type'
     ];
+    
+    public function suivi_indicateurable()
+    {
+        return $this->morphTo();
+    }
 
     public function valeurCible()
     {
         return $this->belongsTo(ValeurCibleIndicateur::class, 'valeurCibleId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function commentaires()

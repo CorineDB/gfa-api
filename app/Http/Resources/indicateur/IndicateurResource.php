@@ -3,7 +3,6 @@
 namespace App\Http\Resources\indicateur;
 
 use App\Http\Resources\OrganisationResource;
-use App\Http\Resources\UniteeMesureResource;
 use App\Http\Resources\user\UniteeGestionResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,7 +17,6 @@ class IndicateurResource extends JsonResource
      */
     public function toArray($request)
     {
-        //"hypothese", 'responsable', 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', 
         return [
             "id" => $this->secure_id,
             "nom" => $this->nom,

@@ -102,4 +102,9 @@ class UniteeDeGestion extends Model
         )->whereNull("composanteId");
     }
 
+    public function suivis_indicateurs()
+    {
+        return $this->morphMany(SuiviIndicateur::class, 'suivi_indicateurable');
+    }
+
 }
