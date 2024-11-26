@@ -524,7 +524,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $suiviIndicateur = $suiviIndicateur;
             }
 
-            if(!Auth::user()->hasRole('organisation')){
+            if(!Auth::user()->hasRole('unitee-de-gestion')){
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
