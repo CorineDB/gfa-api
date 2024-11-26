@@ -19,8 +19,9 @@ class RecommandationsResource extends JsonResource
             'id' => $this->secure_id,
             'recommandation' => $this->recommandation,
             //'programmeId' => $this->programme->secure_id,
-            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
-            'recommandationable' => $this->recommandationable
+            'recommandationable' => $this->recommandationable,
+            'evaluationId' => $this->evaluation->secure_id,
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
     }
 }

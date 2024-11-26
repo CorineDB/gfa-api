@@ -53,8 +53,6 @@ class Soumission extends Model
             DB::beginTransaction();
             try {
 
-                $soumission->actions_a_mener()->delete();
-                $soumission->recommandations()->delete();
                 $soumission->reponses_de_la_collecte()->delete();
 
                 DB::commit();
@@ -89,16 +87,6 @@ class Soumission extends Model
     public function programme()
     {
         return $this->belongsTo(Programme::class, 'programmeId');
-    }
-
-    public function recommandations()
-    {
-        return $this->morphMany(Recommandation::class, "recommandationable");
-    }
-
-    public function actions_a_mener()
-    {
-        return $this->morphMany(ActionAMener::class, "actionable");
     }
 
     public function reponses_de_la_collecte()

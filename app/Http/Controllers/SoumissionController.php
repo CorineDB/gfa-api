@@ -142,14 +142,4 @@ class SoumissionController extends Controller
     {
         return $this->soumissionService->deleteById($id);
     }
-
-    public function actions_a_mener($id)
-    {
-        return $this->soumissionService->actions_a_mener($id);
-    }
-
-    public function recommandations($id)
-    {
-        return $this->soumissionService->recommandations($id);
-    }
 }

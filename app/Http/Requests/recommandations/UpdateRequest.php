@@ -2,7 +2,11 @@
 
 namespace App\Http\Requests\recommandations;
 
+use App\Models\EvaluationDeGouvernance;
+use App\Models\Indicateur;
+use App\Models\PrincipeDeGouvernance;
 use App\Models\Recommandation;
+use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +19,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("organisation");
+        return request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation");
     }
 
     /**
@@ -31,7 +35,13 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'recommandation' => 'sometimes'
+            'recommandation' => 'sometimes',
+            'evaluationId'      => ['sometimes', new HashValidatorRule(new EvaluationDeGouvernance())],
+            'indicateurs'       => ['array', 'min:0'],
+            'indicateurs.*'     => ['distinct', 'string', new HashValidatorRule(new Indicateur())],
+
+            'principes_de_gouvernance'       => ['array', 'min:0'],
+            'principes_de_gouvernance.*'     => ['distinct', 'string', new HashValidatorRule(new PrincipeDeGouvernance())]
         ];
     }
 

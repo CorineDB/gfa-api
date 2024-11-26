@@ -165,13 +165,13 @@ class EvaluationDeGouvernance extends Model
 
     public function recommandations()
     {
-        return $this->hasMany(EvaluationDeGouvernance::class, 'evaluationId');
+        return $this->hasMany(Recommandation::class, 'evaluationId');
         return $this->morphMany(Recommandation::class, "recommandationable");
     }
 
     public function actions_a_mener()
     {
-        return $this->hasMany(EvaluationDeGouvernance::class, 'evaluationId');
+        return $this->hasMany(ActionAMener::class, 'evaluationId');
         return $this->morphMany(ActionAMener::class, "actionable");
     }
 

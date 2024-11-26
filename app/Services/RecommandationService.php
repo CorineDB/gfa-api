@@ -82,12 +82,14 @@ class RecommandationService extends BaseService implements RecommandationService
             $programme = Auth::user()->programme;
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
-
+           
             if(isset($attributs['evaluationId'])){
-                if(($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
-                    $recommandation = $evaluation->recommandations()->create($attributs);
+                if(!($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
+                    throw new Exception("Cette evaluation n'existe pas", 500);
                 }
             }
+
+            $recommandation = $this->repository->create($attributs);
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -115,6 +117,12 @@ class RecommandationService extends BaseService implements RecommandationService
         try {
 
             if(!is_object($recommandation) && !($recommandation = $this->repository->findById($recommandation))) throw new Exception("Ce fond n'existe pas", 500);
+           
+            if(isset($attributs['evaluationId'])){
+                if(!($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
+                    throw new Exception("Cette evaluation n'existe pas", 500);
+                }
+            }
 
             $this->repository->update($recommandation->id, $attributs);
 
