@@ -227,6 +227,11 @@ class Programme extends Model
         return $this->morphMany(CadreLogiqueIndicateur::class, 'indicatable');
     }
 
+    public function suivis_indicateurs()
+    {
+        return $this->hasMany(SuiviIndicateur::class, 'programmeId');
+    }
+
     public function objectifSpecifiques()
     {
         return $this->morphMany(ObjectifSpecifique::class, 'objectifable');

@@ -57,17 +57,23 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
         try {
 
-            $suivis = [];
+            $suivis_indicateurs = [];
 
+            if (Auth::user()->hasRole("organisation")) {
+                $suivis_indicateurs = Auth::user()->profilable->suivis_indicateurs;
+            } 
+            else if(Auth::user()->hasRole("unitee-de-gestion")){
+                $suivis_indicateurs = Auth::user()->programme->suivis_indicateurs;
+            }
 
-            $allsuivis = [];
+            /* $allsuivis = [];
             foreach ($this->repository->all() as $suivi) {
                 if ($suivi->indicateur()->programmeId != Auth::user()->programmeId) continue;
 
                 array_push($allsuivis, $suivi);
-            }
+            } */
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisIndicateurResource::collection($allsuivis), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisIndicateurResource::collection($suivis_indicateurs), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -265,7 +271,10 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 throw new Exception("La valeur realisé ne doit pas contenir de lettre à cause de l'unitée de mesure sélectionnée", 422);
             }*/
 
+            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id, 'suivi_indicateurable_id' => Auth::user()->profilable->id, 'suivi_indicateurable_type' => get_class(Auth::user()->profilable)]);
+
             $suiviIndicateur = $this->repository->fill(array_merge($attributs, ["valeurCibleId" => $valeurCibleIndicateur->id]));
+
             if(auth()->user()->type==="organisation"){
                 $suiviIndicateur->estValider = false;
             }
@@ -420,7 +429,11 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
             }
             
             unset($attributs['estValider']);
-            
+
+            if(!$suiviIndicateur->programmeId){
+                $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
+            }
+
             if (array_key_exists('valeurCible', $attributs) && isset($attributs['valeurCible'])) {
                 $suiviIndicateur->valeurCible->valeurCible = $attributs['valeurCible'];
 
@@ -479,7 +492,6 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                     }
                 }
             }
-
 
             DB::commit();
 

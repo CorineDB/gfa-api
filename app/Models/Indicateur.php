@@ -32,13 +32,13 @@ class Indicateur extends Model
             }
         });
 
-        static::deleted(function($categorie) {
+        static::deleted(function($indicateur) {
 
             DB::beginTransaction();
             try {
 
-                $categorie->update([
-                    'nom' => time() . '::' . $categorie->nom
+                $indicateur->update([
+                    'nom' => time() . '::' . $indicateur->nom
                 ]);
 
                 DB::commit();

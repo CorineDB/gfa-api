@@ -24,7 +24,6 @@ class IndicateursResource extends JsonResource
             "description" => $this->description,
             "kobo" => $this->kobo,
             "koboVersion" => $this->koboVersion,
-            //"anneeDeBase" => Carbon::parse($this->anneeDeBase)->format("Y"),
             "categorieId" => $this->categorie ? $this->categorie->secure_id : null,
             "categorie" => $this->categorie ? [
                 "id" => $this->categorie->secure_id,

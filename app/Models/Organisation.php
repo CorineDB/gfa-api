@@ -116,6 +116,12 @@ class Organisation extends Model
         return $this->morphOne(Projet::class, 'projetable');//->where('programmeId', $this->user->programmeId)->first();
     }
 
+    public function suivis_indicateurs()
+    {
+        return $this->morphMany(SuiviIndicateur::class, 'suivi_indicateurable');
+    }
+
+
     /**
      * Get organisations by programme ID.
      *

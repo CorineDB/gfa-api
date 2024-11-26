@@ -11,6 +11,7 @@ use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\ActionAMenerServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
+use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -168,6 +169,10 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
             if(isset($attributs['est_valider'])){
 
                 $action_a_mener->est_valider = $attributs['est_valider'];
+
+                if(isset($attributs['est_valider']) && $attributs['est_valider']){
+                    $action_a_mener->validated_at = Carbon::parse($attributs['validated_at']);
+                }
 
                 $action_a_mener->save();
 
