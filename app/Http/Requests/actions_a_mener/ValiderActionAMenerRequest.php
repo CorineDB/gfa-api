@@ -15,9 +15,9 @@ class ValiderActionAMenerRequest extends FormRequest
     public function authorize()
     {
 
-        dd([request()->user()->hasRole("unitee-de-gestion"), $this->action_a_mener]);
-
         if(request()->user()->hasRole("unitee-de-gestion")){
+
+        dd([request()->user()->hasRole("unitee-de-gestion"), $this->action_a_mener]);
             return "action_a_mener";
             if(is_string($this->action_a_mener))
             {
