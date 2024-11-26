@@ -162,6 +162,10 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
+            if($action_a_mener->statut != 2){
+                return response()->json(['statut' => 'error', 'message' => "Action pas encore terminer", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            }
+
             if($action_a_mener->est_valider == true){
                 return response()->json(['statut' => 'error', 'message' => "Action deje valider", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             }
@@ -223,6 +227,10 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
+            if($action_a_mener->statut < 0){
+                return response()->json(['statut' => 'error', 'message' => "Action pas encore demarrer", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            }
+
             if($action_a_mener->est_valider == true){
                 return response()->json(['statut' => 'error', 'message' => "Action deje valider", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             }
@@ -235,7 +243,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     }
                 }
 
-                $action_a_mener->statut == 1;
+                $action_a_mener->statut == 2;
                 
                 $action_a_mener->save();
 
