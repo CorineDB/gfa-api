@@ -158,7 +158,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             if(!is_object($action_a_mener) && !($action_a_mener = $this->repository->findById($action_a_mener))) throw new Exception("Ce fond n'existe pas", 500);
 
-            if(!Auth::user()->hasRole('organisation')){
+            if(!Auth::user()->hasRole('unitee-de-gestion')){
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 

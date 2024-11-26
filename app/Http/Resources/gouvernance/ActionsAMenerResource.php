@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\gouvernance;
 
+use App\Http\Resources\CommentaireResource;
 use App\Http\Resources\FichierResource;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -27,7 +28,8 @@ class ActionsAMenerResource extends JsonResource
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'actionable' => $this->actionable,
-            'preuves' => FichierResource::collection($this->preuves_de_verification)
+            'preuves' => FichierResource::collection($this->preuves_de_verification),
+            'commentaires' => CommentaireResource::collection($this->commentaires)
         ];
     }
 }
