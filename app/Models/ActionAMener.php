@@ -57,6 +57,11 @@ class ActionAMener extends Model
         return $this->morphMany(Fichier::class, "fichiertable");
     }
 
+    public function commentaires()
+    {
+        return $this->morphMany(Commentaire::class, 'commentable');
+    }
+
     public function programme()
     {
         return $this->belongsTo(Programme::class, 'programmeId');

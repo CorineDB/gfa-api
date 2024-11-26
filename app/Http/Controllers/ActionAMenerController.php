@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\actions_a_mener\StoreRequest;
 use App\Http\Requests\actions_a_mener\UpdateRequest;
+use App\Http\Requests\actions_a_mener\ActionAMenerTerminerRequest;
+use App\Http\Requests\actions_a_mener\ValiderActionAMenerRequest;
 use Core\Services\Interfaces\ActionAMenerServiceInterface;
 
 class ActionAMenerController extends Controller
@@ -75,5 +77,21 @@ class ActionAMenerController extends Controller
     public function destroy($id)
     {
         return $this->actionAMenerService->deleteById($id);
+    }
+
+    /**
+     *
+     */
+    public function notifierActionAMenerEstTerminer(ActionAMenerTerminerRequest $request, $id)
+    {
+        return $this->actionAMenerService->notifierActionAMenerEstTerminer($id, $request->all());
+    }
+
+    /**
+     *
+     */
+    public function valider(ValiderActionAMenerRequest $request, $id)
+    {
+        return $this->actionAMenerService->valider($id, $request->all());
     }
 }

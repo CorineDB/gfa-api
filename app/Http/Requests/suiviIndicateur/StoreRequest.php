@@ -10,7 +10,6 @@ use App\Rules\YearValidationRule;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class StoreRequest extends FormRequest
 {
@@ -21,7 +20,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation");
     }
 
     /**

@@ -20,6 +20,8 @@ class SuiviIndicateurResource extends JsonResource
             "id" => $this->secure_id,
             "trimestre" => $this->trimestre,
             "dateSuivie" => $this->dateSuivie,
+            "estValider" => $this->estValider,
+            "sources_de_donnee" => $this->sources_de_donnee,
             "cumul" => $this->cumul(),
             "valeurRealise" => $this->valeurRealise,
             "valeurCible" => $this->valeurCible ? [
@@ -30,7 +32,7 @@ class SuiviIndicateurResource extends JsonResource
             ] : null,
             "commentaire" => $this->commentaire,
             "commentaires" => $this->commentaires,
-              "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
 }

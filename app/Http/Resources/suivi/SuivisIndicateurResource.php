@@ -22,6 +22,8 @@ class SuivisIndicateurResource extends JsonResource
             "id" => $this->secure_id,
             "trimestre" => $this->trimestre,
             "dateSuivie" => $this->dateSuivie,
+            "estValider" => $this->estValider,
+            "sources_de_donnee" => $this->sources_de_donnee,
             "cumul" => $this->cumul(),
             "valeurRealise" => $this->valeurRealise,
             "valeurCible" => $this->valeurCible ? [
@@ -32,7 +34,7 @@ class SuivisIndicateurResource extends JsonResource
             "indicateur" => new IndicateurResource($this->indicateur()),
             "commentaire" => $this->commentaire,
             "commentaires" => CommentaireResource::collection($this->commentaires),
-              "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
 }

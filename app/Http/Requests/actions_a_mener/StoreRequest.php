@@ -32,10 +32,10 @@ class StoreRequest extends FormRequest
             'action'            => 'required',
             'start_at'          => 'required|date|date_format:Y-m-d|after:today',
             'end_at'            => 'required|date|date_format:Y-m-d|after:start_at',
-            'evaluationId'      => ['required', new HashValidatorRule(new EvaluationDeGouvernance())]/* ,
-            'recommandationId'  => ['required', new HashValidatorRule(new Recommandation())],
-            'indicateurs'       => ['required', 'array', 'min:0'],
-            'indicateurs.*'     => ['distinct', 'string', new HashValidatorRule(new Indicateur())] */
+            'evaluationId'      => ['required', new HashValidatorRule(new EvaluationDeGouvernance())],
+            'recommandationId'  => ['sometimes', new HashValidatorRule(new Recommandation())],
+            'indicateurs'       => ['sometimes', 'array', 'min:0'],
+            'indicateurs.*'     => ['distinct', 'string', new HashValidatorRule(new Indicateur())]
         ];
     }
 

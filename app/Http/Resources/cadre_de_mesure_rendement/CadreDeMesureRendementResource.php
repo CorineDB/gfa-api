@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\cadre_de_mesure_rendement;
 
-use App\Models\CadreDeMesureRendement;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
