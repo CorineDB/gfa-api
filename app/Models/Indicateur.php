@@ -250,8 +250,6 @@ class Indicateur extends Model
     public function organisations_responsable()
     {
         return $this->belongsToMany(Organisation::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at')->wherePivot("responsableable_type", Organisation::class);
-
-        return $this->belongsToMany(Organisation::class, 'indicateur_responsables', 'indicateurId', 'responsableable_id')->wherePivotNull('deleted_at')->wherePivot("responsableable_type", Organisation::class);
     }
 
     public function ug_responsable()
