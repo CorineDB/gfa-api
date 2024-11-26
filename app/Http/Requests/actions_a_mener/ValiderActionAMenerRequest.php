@@ -17,18 +17,16 @@ class ValiderActionAMenerRequest extends FormRequest
 
         if(request()->user()->hasRole("unitee-de-gestion")){
 
-        dd([request()->user()->hasRole("unitee-de-gestion"), $this->action_a_mener]);
-            return "action_a_mener";
             if(is_string($this->action_a_mener))
             {
                 $this->action_a_mener = ActionAMener::findByKey($this->action_a_mener);
                 
-                return $this->action_a_mener->est_valider == false;
             }
+            
+            return request()->user()->hasRole("unitee-de-gestion") && $this->action_a_mener->est_valider == false;
         }
-        else{
-            return false;
-        }
+
+        return false;
     }
 
     /**
