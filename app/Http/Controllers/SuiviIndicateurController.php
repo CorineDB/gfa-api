@@ -8,6 +8,7 @@ use App\Http\Requests\suiviIndicateur\StoreRequest;
 use App\Http\Requests\suiviIndicateur\SuiviKoboRequest;
 use App\Http\Requests\suiviIndicateur\UpdateRequest;
 use Core\Services\Interfaces\SuiviIndicateurServiceInterface;
+use Illuminate\Http\Request;
 
 class SuiviIndicateurController extends Controller
 {
@@ -106,5 +107,13 @@ class SuiviIndicateurController extends Controller
     public function suiviKobo(SuiviKoboRequest $request)
     {
         return $this->suiviIndicateurService->suiviKobo($request->all());
+    }
+
+    /**
+     *
+     */
+    public function valider(Request $request, $idSuiviIndicateur)
+    {
+        return $this->suiviIndicateurService->valider($idSuiviIndicateur);
     }
 }

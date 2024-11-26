@@ -71,7 +71,6 @@ use App\Repositories\PrincipeDeGouvernanceRepository;
 use App\Repositories\RecommandationRepository;
 use App\Repositories\SuiviCheckListComRepository;
 use App\Repositories\TypeDeGouvernanceRepository;
-use App\Repositories\ResultatCadreDeRendementRepository;
 use App\Repositories\SoumissionRepository;
 use App\Repositories\SourceDeVerificationRepository;
 use App\Services\ActionAMenerService;
@@ -148,7 +147,6 @@ use App\Services\OptionDeReponseService;
 use App\Services\OrganisationService;
 use App\Services\PrincipeDeGouvernanceService;
 use App\Services\RecommandationService;
-use App\Services\ResultatCadreDeRendementService;
 use App\Services\SoumissionService;
 use App\Services\SourceDeVerificationService;
 use App\Services\TypeDeGouvernanceService;
@@ -231,7 +229,6 @@ use Core\Services\Interfaces\PrincipeDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\RecommandationServiceInterface;
 use Core\Services\Interfaces\TypeDeGouvernanceServiceInterface;
 
-use Core\Services\Interfaces\ResultatCadreDeRendementServiceInterface;
 use Core\Services\Interfaces\SoumissionServiceInterface;
 use Core\Services\Interfaces\SourceDeVerificationServiceInterface;
 use Illuminate\Support\ServiceProvider;
@@ -307,7 +304,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, IndicateurDeGouvernanceRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, OptionDeReponseRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, EnqueteDeCollecteRepository::class);
-        $this->app->bind(EloquentRepositoryInterface::class, ResultatCadreDeRendementRepository::class);
 
         $this->app->bind(EloquentRepositoryInterface::class, SourceDeVerificationRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, ActionAMenerRepository::class);
@@ -389,11 +385,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OptionDeReponseServiceInterface::class, OptionDeReponseService::class);
         $this->app->bind(EnqueteDeCollecteServiceInterface::class, EnqueteDeCollecteService::class);
         $this->app->bind(IndicateurValueKeyServiceInterface::class, IndicateurValueKeyService::class);
-
-        $this->app->bind(ResultatCadreDeRendementServiceInterface::class, ResultatCadreDeRendementService::class);
         
-
-
         $this->app->bind(SourceDeVerificationServiceInterface::class, SourceDeVerificationService::class);
         $this->app->bind(SoumissionServiceInterface::class, SoumissionService::class);
         $this->app->bind(EvaluationDeGouvernanceServiceInterface::class, EvaluationDeGouvernanceService::class);

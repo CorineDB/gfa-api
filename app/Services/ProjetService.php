@@ -48,6 +48,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -87,7 +88,8 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             if(Auth::user()->hasRole('bailleur')){
                 $projets = Auth::user()->profilable->projets;
 
-            }else if(Auth::user()->hasRole('organisation')){
+            }
+            else if(Auth::user()->hasRole('organisation')){
                 $projets = optional(Auth::user()->profilable)->projet ?? null;
             }
             else if(!Auth::user()->hasRole('administrateur')){
@@ -97,7 +99,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $projets = $this->repository->all();
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => is_array($projets) ? ProjetResource::collection($projets) : ($projets ? new ProjetResource($projets) : null), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $projets instanceof Collection ? ProjetResource::collection($projets) : ($projets ? new ProjetResource($projets) : null), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {

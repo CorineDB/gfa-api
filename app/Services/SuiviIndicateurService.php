@@ -418,7 +418,9 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
             } else {
                 $suiviIndicateur = $suiviIndicateur;
             }
-
+            
+            unset($attributs['estValider']);
+            
             if (array_key_exists('valeurCible', $attributs) && isset($attributs['valeurCible'])) {
                 $suiviIndicateur->valeurCible->valeurCible = $attributs['valeurCible'];
 
@@ -492,4 +494,50 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     *
+     * @param array $attributs
+     * @return JsonResponse
+     */
+    public function valider($suiviIndicateur): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+
+            if (is_string($suiviIndicateur)) {
+                if (!($suiviIndicateur = $this->repository->findById($suiviIndicateur)))  throw new Exception("Suivi indicateur n'existe pas", 500);
+            } else {
+                $suiviIndicateur = $suiviIndicateur;
+            }
+
+            if(!Auth::user()->hasRole('organisation')){
+                return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+            }
+
+            if($suiviIndicateur->estValider == true){
+                return response()->json(['statut' => 'error', 'message' => "Suivi deja valider", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            }
+
+            $suiviIndicateur->estValider = true;
+
+            $suiviIndicateur->save();
+
+            $suiviIndicateur = $suiviIndicateur->fresh();
+
+            DB::commit();
+
+            //Cache::forget('suiviIndicateurs');
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SuivisIndicateurResource($suiviIndicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+
+            DB::rollback();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

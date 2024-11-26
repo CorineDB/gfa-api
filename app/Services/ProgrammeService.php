@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Http\Resources\ProjetResource;
 use App\Http\Resources\ComposanteResource;
-use App\Http\Resources\ActiviteResource;
 use App\Http\Resources\activites\ActivitesResource;
 use App\Http\Resources\PapResource;
 use App\Http\Resources\SitesResource;
@@ -18,7 +17,6 @@ use App\Http\Resources\TacheResource;
 use App\Http\Resources\PassationResource;
 use App\Http\Resources\programmes\ProgrammesResource;
 use App\Http\Resources\ProjetsResource;
-use App\Http\Resources\SuiviFinancierResource;
 use App\Http\Resources\user\UserResource;
 use App\Http\Resources\user\UtilisateurResource;
 use App\Jobs\MailRapportJob;
@@ -29,8 +27,6 @@ use App\Models\MOD;
 use App\Models\EmailRapport;
 use App\Models\Passation;
 use App\Models\Projet;
-use App\Models\Site;
-use App\Models\SuiviFinancier;
 use App\Models\TemplateRapport;
 use App\Models\Unitee;
 use App\Models\User;
@@ -115,7 +111,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function structures($id) : JsonResponse
     {
-
         try
         {
             $structures = [];

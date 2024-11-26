@@ -7,8 +7,6 @@ use App\Models\Programme;
 use App\Models\Projet;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\ValidationException;
 
 class StoreRequest extends FormRequest
 {
