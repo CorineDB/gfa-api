@@ -191,10 +191,10 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $suivis = [];
             
             if (Auth::user()->hasRole("organisation")) {
-                $suivis = $indicateur->valeursCible()/* ->with(["suivisIndicateur", function($query){
+                $suivis = $indicateur->valeursCible()->with(["suivisIndicateur", function($query){
                     $query->where('suivi_indicateurable_id', Auth::user()->profilable->id)
                             ->where('suivi_indicateurable_type', Auth::user()->profilable->type);
-                }])*/->get()/*->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at") */;
+                }])->get()/*->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at") */;
             } 
             else if(Auth::user()->hasRole("unitee-de-gestion")){
                 $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at");
