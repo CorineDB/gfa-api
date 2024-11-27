@@ -749,12 +749,24 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
             });
 
-            Route::apiResource('indicateur-value-keys', 'IndicateurValueKeyController')->names('indicateur-value-keys')
+            Route::apiResource('indicateur-value-keys', 'IndicateurValueKeyController', ['except' => ['index']])->names('indicateur-value-keys')
+                ->parameters([
+                    'indicateur-value-keys' => 'indicateur_value_key',
+                ])->middleware(['role:unitee-de-gestion']);
+
+            Route::apiResource('indicateur-value-keys', 'IndicateurValueKeyController', ['only' => ['index']])->names('indicateur-value-keys')
                 ->parameters([
                     'indicateur-value-keys' => 'indicateur_value_key',
                 ]);
 
-            Route::apiResource('indicateurs', 'IndicateurController')->names('indicateurs');
+            Route::apiResource('indicateurs', 'IndicateurController', ['except' => ['index']])->names('indicateurs')->middleware(['role:unitee-de-gestion']);
+
+            Route::apiResource('indicateurs', 'IndicateurController', ['only' => ['index']])->names('indicateurs');
+
+
+            Route::apiResource('sites', 'SiteController', ['except' => ['index']])->names('sites')->middleware(['role:unitee-de-gestion']);
+
+            Route::apiResource('sites', 'SiteController', ['only' => ['index']])->names('sites');
 
             Route::group(['prefix' =>  'indicateurs', 'as' => 'indicateurs.'], function () {
 

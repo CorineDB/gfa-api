@@ -21,7 +21,7 @@ class UpdateProjetRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("unitee-de-gestion");
+        return request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation");
     }
 
 
@@ -38,7 +38,7 @@ class UpdateProjetRequest extends FormRequest
             'couleur' => 'sometimes|required',
             'debut' => 'sometimes|required|date|date_format:Y-m-d',
             'fin' => 'sometimes|required|date|date_format:Y-m-d|after_or_equal:debut',
-            'pays' => 'required|max:255',
+            'pays' => 'sometimes|max:255',
             'organisationId' => ['sometimes', new HashValidatorRule(new Organisation())],
             //'bailleurId' => ['sometimes','required', new HashValidatorRule(new Bailleur())],
             'nombreEmploie' => 'sometimes|integer',
@@ -57,7 +57,7 @@ class UpdateProjetRequest extends FormRequest
                 }
             }],
             'budgetNational' => ['sometimes', 'integer', 'min:0'],
-            'sites'                         => ['required', 'array', 'min:1'],
+            'sites'                         => ['sometimes', 'array', 'min:1'],
             'sites.*'                       => ['distinct', new HashValidatorRule(new Site())]
         ];
     }
