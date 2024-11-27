@@ -264,33 +264,33 @@ class Programme extends Model
             $query->orderBy('indice','asc')->with(['categories' => function($query){
                 $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
                     $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
-                        ->when(auth()->user()->type == 'organisation', function($query) {
+                        /* ->when(auth()->user()->type == 'organisation', function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
                                 $query->where('responsableable_type', get_class(auth()->user()->profilable));
                                 $query->where('responsableable_id', auth()->user()->profilable->id);
                             });
-                        });
+                        }) */;
                 }]);
             }, 'indicateurs' => function($query){
                     $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
-                        ->when(auth()->user()->type == 'organisation', function($query) {
+                        /* ->when(auth()->user()->type == 'organisation', function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
                                 $query->where('responsableable_type', get_class(auth()->user()->profilable));
                                 $query->where('responsableable_id', auth()->user()->profilable->id);
                             });
-                        });
+                        }) */;
                 }]);
         }, 'indicateurs' => function($query){
                     $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
-                        ->when(auth()->user()->type == 'organisation', function($query) {
+                        /* ->when(auth()->user()->type == 'organisation', function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
                                 $query->where('responsableable_type', get_class(auth()->user()->profilable));
                                 $query->where('responsableable_id', auth()->user()->profilable->id);
                             });
-                        });
+                        }) */;
                 }]);
         return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
             $query->orderBy('indice','asc')->loadCategories();

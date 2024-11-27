@@ -28,6 +28,8 @@ class ActionsAMenerResource extends JsonResource
             'evaluationId' => $this->evaluation->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'actionable' => $this->actionable,
+            'indicateurs' => $this->indicateurs,
+            'principes_de_gouvernance' => $this->principes_de_gouvernance,
             'preuves' => FichierResource::collection($this->preuves_de_verification),
             'commentaires' => CommentaireResource::collection($this->commentaires)
         ];
