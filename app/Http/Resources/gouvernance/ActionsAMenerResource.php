@@ -25,9 +25,11 @@ class ActionsAMenerResource extends JsonResource
             'start_at' => Carbon::parse($this->start_at)->format("Y-m-d"),
             'end_at' => Carbon::parse($this->end_at)->format("Y-m-d"),
             'validated_at' => Carbon::parse($this->validated_at)->format("Y-m-d"),
-            'programmeId' => $this->programme->secure_id,
+            'evaluationId' => $this->evaluation->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'actionable' => $this->actionable,
+            'indicateurs' => $this->indicateurs,
+            'principes_de_gouvernance' => $this->principes_de_gouvernance,
             'preuves' => FichierResource::collection($this->preuves_de_verification),
             'commentaires' => CommentaireResource::collection($this->commentaires)
         ];

@@ -4,8 +4,13 @@ namespace App\Services;
 
 use App\Http\Resources\FichesDeSyntheseResource;
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
+use App\Models\Indicateur;
+use App\Models\Recommandation;
 use App\Repositories\ActionAMenerRepository;
 use App\Repositories\EvaluationDeGouvernanceRepository;
+use App\Repositories\IndicateurRepository;
+use App\Repositories\PrincipeDeGouvernanceRepository;
+use App\Repositories\RecommandationRepository;
 use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\ActionAMenerServiceInterface;
@@ -89,10 +94,58 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             $action_a_mener = null;
 
-            if(isset($attributs['evaluationId'])){
+            /* if(isset($attributs['evaluationId'])){
                 if(($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
                     $action_a_mener = $evaluation->actions_a_mener()->create($attributs);
                 }
+            } */
+           
+            if(isset($attributs['evaluationId'])){
+                if(!($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
+                    throw new Exception("Cette evaluation n'existe pas", 500);
+                }
+            }
+           
+            if(isset($attributs['recommandationId'])){
+                if(!($recommandation = app(RecommandationRepository::class)->findById($attributs['recommandationId']))){
+                    throw new Exception("Cette recommandation n'existe pas", 500);
+                }
+                else{
+
+                    $attributs = array_merge($attributs, ['actionable_id' => $attributs['recommandationId'], 'actionable_type' => Recommandation::class]);
+                }
+            }
+            
+            $action_a_mener = $this->repository->create($attributs);
+
+            if(isset($attributs['indicateurs'])){
+
+                $indicateurs = [];
+
+                foreach($attributs['indicateurs'] as $id)
+                {
+                    if(!($indicateur = app(IndicateurRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
+                    
+                    array_push($indicateurs, $indicateur->id);
+                }
+
+                $action_a_mener->indicateurs()->attach($indicateurs, ["programmeId" => $attributs['programmeId']]);
+
+            }
+
+            if(isset($attributs['principes_de_gouvernance'])){
+
+                $principes_de_gouvernance = [];
+                
+                foreach($attributs['principes_de_gouvernance'] as $id)
+                {
+                    if(!($principe_de_gouvernance = app(PrincipeDeGouvernanceRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
+                    
+                    array_push($principes_de_gouvernance, $principe_de_gouvernance->id);
+                }
+
+                $action_a_mener->principes_de_gouvernance()->attach($principes_de_gouvernance, ["programmeId" => $attributs['programmeId']]);
+
             }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
@@ -121,6 +174,22 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
         try {
 
             if(!is_object($action_a_mener) && !($action_a_mener = $this->repository->findById($action_a_mener))) throw new Exception("Ce fond n'existe pas", 500);
+
+            if(isset($attributs['evaluationId'])){
+                if(!($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
+                    throw new Exception("Cette evaluation n'existe pas", 500);
+                }
+            }
+           
+            if(isset($attributs['recommandationId'])){
+                if(!($recommandation = app(RecommandationRepository::class)->findById($attributs['recommandationId']))){
+                    throw new Exception("Cette recommandation n'existe pas", 500);
+                }
+                else{
+
+                    $attributs = array_merge($attributs, ['actionable_id' => $attributs['recommandationId'], 'actionable_type' => Recommandation::class]);
+                }
+            }
 
             $this->repository->update($action_a_mener->id, $attributs);
 
@@ -156,7 +225,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
         try {
 
-            if(!is_object($action_a_mener) && !($action_a_mener = $this->repository->findById($action_a_mener))) throw new Exception("Ce fond n'existe pas", 500);
+            if(!is_object($action_a_mener) && !($action_a_mener = $this->repository->findById($action_a_mener))) throw new Exception("Cette action a mener n'existe pas", 500);
 
             if(!Auth::user()->hasRole('unitee-de-gestion')){
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);

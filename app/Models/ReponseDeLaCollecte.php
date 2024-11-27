@@ -33,8 +33,6 @@ class ReponseDeLaCollecte extends Model
 
             DB::beginTransaction();
             try {
-                $reponse_de_la_collecte->actions_a_mener()->delete();
-                $reponse_de_la_collecte->recommandations()->delete();
                 $reponse_de_la_collecte->preuves_de_verification()->delete();
 
                 DB::commit();
@@ -79,16 +77,6 @@ class ReponseDeLaCollecte extends Model
     public function preuves_de_verification()
     {
         return $this->morphMany(Fichier::class, "fichiertable");
-    }
-
-    public function recommandations()
-    {
-        return $this->morphMany(Recommandation::class, "recommandationable");
-    }
-
-    public function actions_a_mener()
-    {
-        return $this->morphMany(ActionAMener::class, "actionable");
     }
 
     public function getPourcentageEvolutionAttribute()
