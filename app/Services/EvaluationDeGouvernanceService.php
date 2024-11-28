@@ -259,7 +259,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         // Fetch submissions for this organization
                         $types_soumissions = $organisation->soumissions
                             ->where('evaluationId', $evaluationDeGouvernance->id)
-                            ->groupBy('type'); // Group submissions by type
+                            ->groupBy('type')->map(function ($soumissions, $type) {return SoumissionsResource::collection($soumissions);}); // Group submissions by type
 
                         return array_merge([
                             "id"                    => $organisation->secure_id,
