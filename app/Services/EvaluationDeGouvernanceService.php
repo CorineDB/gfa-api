@@ -253,22 +253,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
 
 
-                $organisation_soumissions = $evaluationDeGouvernance->organisations()
+                $group_soumissions = $evaluationDeGouvernance->organisations()
                     ->with('soumissions') // Load the associated organisations
                     ->get()->map(function ($organisation) use ($evaluationDeGouvernance) {
                         // Fetch submissions for this organization
                         $types_soumissions = $organisation->soumissions
                             ->where('evaluationId', $evaluationDeGouvernance->id)
-                            ->groupBy('type'); // Group submissions by type
-                    });
-
-                $group_soumissions = app(OrganisationRepository::class)
-                    ->getByEvaluation($evaluationDeGouvernance->id) // Fetch all organizations for this evaluation
-                    ->map(function ($organisation) use ($evaluationDeGouvernance) {
-                        // Fetch submissions for this organization
-                        $soumissions = $evaluationDeGouvernance->soumissions()
-                            ->where('organisationId', $organisation->id)
-                            ->get()
                             ->groupBy('type'); // Group submissions by type
 
                         return array_merge([
@@ -279,7 +269,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'nom_point_focal'       => $organisation->nom_point_focal,
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
-                        ], $soumissions->toArray());
+                        ], $types_soumissions->toArray());
                     });
 
             }
