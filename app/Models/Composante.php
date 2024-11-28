@@ -246,10 +246,22 @@ class Composante extends Model
 
     public function getCodePtaAttribute()
     {
-        if ($this->composanteId !== 0 || $this->composanteId !== NULL) {
-            return '' . optional($this->composante)->codePta . '.' . $this->position;
+        if (!is_null($this->composanteId) && $this->composanteId !== 0 && $this->composante) {
+            // Return composante-based code
+            return $this->composante->codePta . '.' . $this->position;
         }
-        return '' . optional($this->projet)->codePta . '.' . $this->position;
+    
+        if ($this->projet) {
+            // Return projet-based code
+            return $this->projet->codePta . '.' . $this->position;
+        }
+    
+        return $this->position;
+
+        if ($this->composanteId !== 0 || $this->composanteId !== NULL) {
+            return '' . $this->composante->codePta . '.' . $this->position;
+        }
+        return '' . $this->projet->codePta . '.' . $this->position;
     }
 
     public function getBailleurAttribute()
