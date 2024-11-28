@@ -220,7 +220,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'contact_point_focal'   => $organisation->contact_point_focal
                 ], $group_soumissions->toArray());
             } else {
-                $organisation_soumissions = $evaluationDeGouvernance->soumissions()
+                /* $organisation_soumissions = $evaluationDeGouvernance->soumissions()
                     ->with('organisation') // Load the associated organisations
                     ->get()->groupBy('organisationId')->map(function ($group) {
                         return $group->groupBy('type'); // Then group by type within each organisation
@@ -249,7 +249,39 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'prenom_point_focal'    => $organisation->prenom_point_focal,
                         'contact_point_focal'   => $organisation->contact_point_focal
                     ], $types_de_soumission->toArray());
-                })->values();
+                })->values(); */
+
+
+
+                $organisation_soumissions = $evaluationDeGouvernance->organisations()
+                    ->with('soumissions') // Load the associated organisations
+                    ->get()->map(function ($organisation) use ($evaluationDeGouvernance) {
+                        // Fetch submissions for this organization
+                        $types_soumissions = $organisation->soumissions
+                            ->where('evaluationId', $evaluationDeGouvernance->id)
+                            ->groupBy('type'); // Group submissions by type
+                    });
+
+                $group_soumissions = app(OrganisationRepository::class)
+                    ->getByEvaluation($evaluationDeGouvernance->id) // Fetch all organizations for this evaluation
+                    ->map(function ($organisation) use ($evaluationDeGouvernance) {
+                        // Fetch submissions for this organization
+                        $soumissions = $evaluationDeGouvernance->soumissions()
+                            ->where('organisationId', $organisation->id)
+                            ->get()
+                            ->groupBy('type'); // Group submissions by type
+
+                        return array_merge([
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal,
+                        ], $soumissions->toArray());
+                    });
+
             }
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $group_soumissions, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
