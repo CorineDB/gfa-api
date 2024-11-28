@@ -318,7 +318,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     array_push($sites, $site->id);
                 }
 
-                $projet->sites()->sync($sites);
+                $projet->sites()->sync($sites, ["programmeId" => auth()->user()->programmeId]);
 
             }
 
