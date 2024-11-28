@@ -124,16 +124,43 @@ class StoreRequest extends FormRequest
             $factuelFormulaire = $formulaire1;
             $perceptionFormulaire = $formulaire2;
         }
+        
+        // Step 1: Retrieve Perception IDs from the 'perception' form
+        $perceptionIds = DB::table('categories_de_gouvernance')
+            ->where('formulaireDeGouvernanceId', $perceptionFormulaire->id)
+            ->whereNull('categorieDeGouvernanceId')
+            ->pluck('categorieable_id')
+            ->toArray();
+        
+        // Step 2: Retrieve unique Perception IDs from the 'factuel' form
+        $form2TypesWithPerceptionIds = DB::table('categories_de_gouvernance as types')
+            ->join('categories_de_gouvernance as perceptions', 'types.id', '=', 'perceptions.categorieDeGouvernanceId')
+            ->where('types.formulaireDeGouvernanceId', $factuelFormulaire->id)
+            ->whereNull('types.categorieDeGouvernanceId')
+            ->where('types.categorieable_type', get_class(new TypeDeGouvernance))
+            ->where('perceptions.categorieable_type', get_class(new PrincipeDeGouvernance))
+            ->select('perceptions.categorieable_id as perception_id')
+            ->distinct() // Ignore duplicates by selecting only unique perception IDs
+            ->pluck('perception_id')
+            ->toArray();
+
+        // Step 3: Compare perception IDs across forms
+        if (array_diff($perceptionIds, $form2TypesWithPerceptionIds) || array_diff($form2TypesWithPerceptionIds, $perceptionIds)) {
+            throw ValidationException::withMessages([
+                'formulaires_de_gouvernance' => "Mismatch in perception IDs between 'perception' and 'factuel' forms."
+            ]);
+        }
 
         // Get perception IDs from Form 1 (perception form)
-        $perceptionIds = DB::table('categories_de_gouvernance')
+        // Step 1: Retrieve Perception IDs from the 'perception' form
+        /* $perceptionIds = DB::table('categories_de_gouvernance')
             ->where('formulaireDeGouvernanceId', $perceptionFormulaire->id)
             ->where('categorieDeGouvernanceId', null)
             ->pluck('categorieable_id')
-            ->toArray();
+            ->toArray(); */
 
         // Get each 'type de gouvernance' in Form 2 and its perception IDs (subcategories)
-        $form2TypesWithPerceptionIds = DB::table('categories_de_gouvernance as types')
+        /* $form2TypesWithPerceptionIds = DB::table('categories_de_gouvernance as types')
             ->join('categories_de_gouvernance as perceptions', 'types.id', '=', 'perceptions.categorieDeGouvernanceId')
             ->where('types.categorieable_type', get_class(new TypeDeGouvernance))
             ->where('types.categorieDeGouvernanceId', NULL)
@@ -142,10 +169,10 @@ class StoreRequest extends FormRequest
             ->where('perceptions.categorieable_type', get_class(new PrincipeDeGouvernance))
             ->select('types.id as type_id', 'perceptions.categorieable_id as perception_id')
             ->get()
-            ->groupBy('type_id');
+            ->groupBy('type_id'); */
         
-            // Validate that each type de gouvernance's perception IDs in Form 2 match perception IDs in Form 1
-        foreach ($form2TypesWithPerceptionIds as $typeId => $perceptions) {
+        // Validate that each type de gouvernance's perception IDs in Form 2 match perception IDs in Form 1
+        /* foreach ($form2TypesWithPerceptionIds as $typeId => $perceptions) {
             
             $typePerceptionIds = $perceptions->pluck('perception_id')->toArray();
 
@@ -155,6 +182,6 @@ class StoreRequest extends FormRequest
                     'formulaires_de_gouvernance' => "Perceptions in Form 1 do not match perceptions in each type de gouvernance in Form 2."
                 ]);
             }
-        }
+        } */
     }
 }
