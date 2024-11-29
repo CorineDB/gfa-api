@@ -209,16 +209,18 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $soumission->refresh();
 
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function ($query) use ($soumission) {
-                    $query->where(function ($query) {
-                        $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
-                    });
+                    $query->when($soumission->formulaireDeGouvernance->type == 'factuel', function($query) {
 
-                    //$query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
+                        $query->where(function ($query) {
+                            $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
+                        });
 
-                    // Conditionally apply whereHas('preuves_de_verification') if formulaireDeGouvernance type is 'factuel'
-                    if ($soumission->formulaireDeGouvernance->type == 'factuel') {
+                        //$query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
+
+                        // Conditionally apply whereHas('preuves_de_verification') if formulaireDeGouvernance type is 'factuel'
+
                         $query->whereHas('preuves_de_verification');
-                    }
+                    });
                 })->count();
 
                 if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
