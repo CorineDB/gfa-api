@@ -711,6 +711,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-activite');
 
                     Route::post('{id}/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-activite');
+
+                    Route::get('{id}/plansDeDecaissement', 'plansDeDecaissement')->name('plansDeDecaissement')->middleware('permission:voir-un-plan-de-decaissement');
+
                 });
             });
 
