@@ -225,7 +225,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
                     $soumission->submitted_at = now();
-                    $soumission->submittedBy  = Auth::check() ? auth()->id() : $attributs['identifier_of_participant'];
+                    $soumission->submittedBy  = Auth::check() ? auth()->id() : null;
                     $soumission->statut       = true;
 
                     $soumission->save();
