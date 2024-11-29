@@ -30,7 +30,7 @@ class SoumissionsResource extends JsonResource
             'submittedBy'           => $this->authoredBy ? [
                 'id'                    => $this->authoredBy->secure_id,
                 'nom'                   => $this->authoredBy->nom
-            ] : null,
+            ] : ($this->type === 'perception' ? "Anonyme" : null),
             'formulaireDeGouvernanceId' => $this->formulaireDeGouvernance->secure_id,
             'evaluationId'              => $this->evaluation_de_gouvernance->secure_id,
             'organisationId'            => $this->organisation->secure_id,
