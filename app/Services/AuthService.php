@@ -29,7 +29,6 @@ use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-
 /**
 * Interface AuthServiceInterface
 * @package Core\Services\Interfaces
