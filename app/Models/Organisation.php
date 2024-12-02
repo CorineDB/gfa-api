@@ -59,10 +59,11 @@ class Organisation extends Model
             DB::beginTransaction();
             try {
 
-                if(!$organisation->projet){
-                    $organisation->delete();
-                    DB::commit();
+                if (($organisation->projet) && ($organisation->projet->statut > -1)) {
+                    // Prevent deletion by throwing an exception
+                    throw new Exception("Cannot delete because there are associated resource.");
                 }
+                
             } catch (\Throwable $th) {
                 DB::rollBack();
 

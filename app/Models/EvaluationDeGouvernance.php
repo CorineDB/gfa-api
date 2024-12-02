@@ -32,9 +32,9 @@ class EvaluationDeGouvernance extends Model
             DB::beginTransaction();
             try {
 
-                if($evaluation_de_gouvernance->soumissions->count() == 0 && $evaluation_de_gouvernance->statut != 1){
-                    $evaluation_de_gouvernance->delete();
-                    DB::commit();
+                if (($evaluation_de_gouvernance->soumissions->count() > 0) || ($evaluation_de_gouvernance->statut > -1)) {
+                    // Prevent deletion by throwing an exception
+                    throw new Exception("Cannot delete because there are associated resource.");
                 }
 
             } catch (\Throwable $th) {

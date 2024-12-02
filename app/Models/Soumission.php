@@ -37,10 +37,11 @@ class Soumission extends Model
             DB::beginTransaction();
             try {
 
-                if(!$soumission->statut){
-                    $soumission->delete();
-                    DB::commit();
+                if (($soumission->statut)) {
+                    // Prevent deletion by throwing an exception
+                    throw new Exception("Cannot delete because there are associated resource.");
                 }
+
             } catch (\Throwable $th) {
                 DB::rollBack();
 

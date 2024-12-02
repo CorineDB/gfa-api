@@ -30,7 +30,7 @@ class FormulaireDeGouvernance extends Model
         parent::boot();
 
         static::deleting(function ($formulaire_de_gouvernance) {
-            if ($formulaire_de_gouvernance->evaluations_de_gouvernance->count() > 0) {
+            if (($formulaire_de_gouvernance->evaluations_de_gouvernance->count() > 0) || ($formulaire_de_gouvernance->options_de_reponse->count() > 0) || ($formulaire_de_gouvernance->questions_de_gouvernance->count() > 0) || ($formulaire_de_gouvernance->categories_de_gouvernance->count() > 0)) {
                 // Prevent deletion by throwing an exception
                 throw new Exception("Cannot delete because there are associated resource.");
             }
