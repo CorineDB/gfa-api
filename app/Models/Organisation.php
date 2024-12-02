@@ -31,7 +31,7 @@ class Organisation extends Model
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
-     */fiches_de_synthese
+     */
     protected $hidden = [
         'updated_at','deleted_at','pivot'
     ];
