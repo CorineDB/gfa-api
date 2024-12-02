@@ -330,7 +330,7 @@ class EvaluationDeGouvernance extends Model
 
     
         // Sort organizations by completion rate (descending)
-        return $ranking->sortByDesc('completion_rate')->values();
+        return $ranking->sortByDesc('pourcentage_evolution')->values();
     }
     
 }

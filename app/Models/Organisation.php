@@ -232,10 +232,10 @@ class Organisation extends Model
     /**
      * Calculate the completion percentage for perception submissions.
      *
-     * @param int $evaluationId
+     * @param int $evaluationDeGouvernanceId
      * @return float
      */
-    public function getPerceptionSubmissionsCompletionAttribute($evaluationId)
+    public function getPerceptionSubmissionsCompletionAttribute($evaevaluationDeGouvernanceIdluationId)
     {
         // Fetch all perception submissions for this organisation and evaluation
         $perceptionSubmissions = $this->sousmissions_de_perception()->where('evaluationId', $evaluationDeGouvernanceId)->get();
@@ -263,7 +263,7 @@ class Organisation extends Model
         $factualCompletion = $factualSubmission ? $factualSubmission->pourcentage_evolution : 0;
 
         // Calculate perception completion using the helper method
-        $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationId);
+        $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId);
 
         // Define weightage
         $weightFactual = 0.5; // 60%
