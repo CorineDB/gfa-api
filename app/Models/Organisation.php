@@ -53,7 +53,6 @@ class Organisation extends Model
     protected static function boot() {
         parent::boot();
 
-
         static::deleting(function ($organisation) {
 
             DB::beginTransaction();
@@ -235,7 +234,7 @@ class Organisation extends Model
      * @param int $evaluationDeGouvernanceId
      * @return float
      */
-    public function getPerceptionSubmissionsCompletionAttribute($evaevaluationDeGouvernanceIdluationId)
+    public function getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId)
     {
         // Fetch all perception submissions for this organisation and evaluation
         $perceptionSubmissions = $this->sousmissions_de_perception()->where('evaluationId', $evaluationDeGouvernanceId)->get();
@@ -245,7 +244,7 @@ class Organisation extends Model
 
         // Calculate perception submission completion (average of submissions)
         $perceptionSubmissionsCompletion = $perceptionSubmissions->count() > 0
-            ? $perceptionSubmissions->avg('completion_percent')
+            ? $perceptionSubmissions->avg('pourcentage_evolution')
             : 0;
 
         // Adjust completion percentage based on number of participants
