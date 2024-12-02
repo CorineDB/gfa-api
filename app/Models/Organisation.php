@@ -18,7 +18,7 @@ class Organisation extends Model
     protected $table = 'organisations';
 
     public $timestamps = true;
-
+    
     protected $fillable = ["sigle", "code", "nom_point_focal", "prenom_point_focal", "contact_point_focal", 'type', 'pays', 'departement', 'commune', 'arrondissement', 'quartier', 'secteurActivite', 'longitude', 'latitude'];
 
     protected $dates = ['deleted_at'];
@@ -31,7 +31,7 @@ class Organisation extends Model
      * The attributes that should be hidden for serialization.
      *
      * @var array<int, string>
-     */
+     */fiches_de_synthese
     protected $hidden = [
         'updated_at','deleted_at','pivot'
     ];
@@ -59,7 +59,7 @@ class Organisation extends Model
             DB::beginTransaction();
             try {
 
-                if (($organisation->projet) && ($organisation->projet->statut > -1)) {
+                if ((($organisation->projet) && ($organisation->projet->statut > -1)) || ($organisation->evaluations_de_gouvernance->count() > 0) || ($organisation->suivis_indicateurs->count() > 0 ) || ($organisation->indicateurs->count() > 0 ) || ($organisation->soumissions->count() > 0 ) || ($organisation->fiches_de_synthese->count() > 0 ) || ($organisation->profiles->count() > 0 )) {
                     // Prevent deletion by throwing an exception
                     throw new Exception("Cannot delete because there are associated resource.");
                 }
@@ -228,4 +228,49 @@ class Organisation extends Model
     {
         return $this->belongsToMany(Indicateur::class, 'indicateur_responsables', 'responsableable_id', 'indicateurId')->wherePivotNull('deleted_at');
     }
+
+    /**
+     * Calculate the completion percentage for perception submissions.
+     *
+     * @param int $evaluationId
+     * @return float
+     */
+    public function getPerceptionSubmissionsCompletionAttribute($evaluationId)
+    {
+        // Fetch all perception submissions for this organisation and evaluation
+        $perceptionSubmissions = $this->sousmissions_de_perception()->where('evaluationId', $evaluationDeGouvernanceId)->get();
+
+        // Fetch the number of expected participants for perception evaluation
+        $nbreOfParticipants = $this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first()->pivot->nbreParticipants;
+
+        // Calculate perception submission completion (average of submissions)
+        $perceptionSubmissionsCompletion = $perceptionSubmissions->count() > 0
+            ? $perceptionSubmissions->avg('completion_percent')
+            : 0;
+
+        // Adjust completion percentage based on number of participants
+        return $nbreOfParticipants > 0
+            ? ($perceptionSubmissionsCompletion * $perceptionSubmissions->count()) / $nbreOfParticipants
+            : 0;
+    }
+
+    public function getPourcentageEvolutionAttribute($evaluationDeGouvernanceId)
+    {
+        // Fetch submissions for the organisation
+        $factualSubmission = $this->sousmissions_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
+
+        // Calculate factual completion percentage
+        $factualCompletion = $factualSubmission ? $factualSubmission->pourcentage_evolution : 0;
+
+        // Calculate perception completion using the helper method
+        $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationId);
+
+        // Define weightage
+        $weightFactual = 0.5; // 60%
+        $weightPerception = 0.5; // 40%
+
+        // Final weighted completion percentage
+        return ($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception);
+    }
+
 }

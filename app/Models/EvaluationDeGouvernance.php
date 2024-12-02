@@ -21,7 +21,7 @@ class EvaluationDeGouvernance extends Model
 
     protected $casts = ['statut'  => 'integer', 'debut'  => 'datetime', 'fin'  => 'datetime', 'annee_exercice' => 'integer', 'objectif_attendu' => 'double'];
 
-    protected $appends = ['pourcentage_evolution', 'pourcentage_evolution_des_soumissions_factuel', 'pourcentage_evolution_des_soumissions_de_perception', 'total_soumissions_factuel', 'total_soumissions_de_perception', 'total_soumissions_factuel_terminer', 'total_soumissions_de_perception_terminer', 'total_participants_evaluation_factuel', 'total_participants_evaluation_de_perception'];
+    protected $appends = ['pourcentage_evolution', 'pourcentage_evolution_des_soumissions_factuel', 'pourcentage_evolution_des_soumissions_de_perception', 'total_soumissions_factuel', 'total_soumissions_de_perception', 'total_soumissions_factuel_terminer', 'total_soumissions_de_perception_terminer', 'total_participants_evaluation_factuel', 'total_participants_evaluation_de_perception', 'organisations_ranking'];
 
     protected static function boot()
     {
@@ -312,4 +312,25 @@ class EvaluationDeGouvernance extends Model
         });
     }
 
+    public function getOrganisationsRankingAttribute()
+    {   
+        // Calculate completion for each organization and rank
+        $ranking = $this->organisations->map(function($organisation){
+            return [
+                "id"                    => $organisation->secure_id,
+                'nom'                   => $organisation->user->nom ?? null,
+                'sigle'                 => $organisation->sigle,
+                'code'                  => $organisation->code,
+                'nom_point_focal'       => $organisation->nom_point_focal,
+                'prenom_point_focal'    => $organisation->prenom_point_focal,
+                'contact_point_focal'   => $organisation->contact_point_focal,
+                'pourcentage_evolution' => $organisation->getCompletionAttribute($this->id),
+            ];
+        });
+
+    
+        // Sort organizations by completion rate (descending)
+        return $ranking->sortByDesc('completion_rate')->values();
+    }
+    
 }
