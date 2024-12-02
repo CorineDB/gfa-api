@@ -29,11 +29,14 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution_des_soumissions_de_perception' => $this->pourcentage_evolution_des_soumissions_de_perception,
             'total_participants_evaluation_factuel' => $this->getTotalParticipantsEvaluationFactuelAttribute(),
             'total_participants_evaluation_de_perception' => $this->total_soumissions_de_perception,
+            'nbreParticipants' => $this->organisations()->withPivot()->get(),
             'total_soumissions_factuel' => $this->total_soumissions_factuel,
             'total_soumissions_de_perception' => $this->total_soumissions_de_perception,
             'total_soumissions_factuel_terminer' => $this->total_soumissions_factuel_terminer,
             'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
             'organisations_ranking'=>$this->organisations_ranking,
+
+            
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,

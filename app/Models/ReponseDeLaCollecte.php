@@ -111,7 +111,6 @@ class ReponseDeLaCollecte extends Model
         else if($this->type == 'question_operationnelle'){
             $donnees_attendues = 6;
         }
-
         
         // Eviter la division par zéro
         if ($donnees_attendues != 0) {
