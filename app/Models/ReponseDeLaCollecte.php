@@ -84,7 +84,7 @@ class ReponseDeLaCollecte extends Model
         $donnees_collectees = 0;
         $donnees_attendues = $pourcentage_collecte = 0;
 
-        $donnees_collectees = 6;
+        $donnees_collectees = 5;
 
         if(!empty($this->point)){
             $donnees_collectees++;
