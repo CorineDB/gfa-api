@@ -20,6 +20,7 @@ class ReponsesDeLaCollecteResource extends JsonResource
             'id' => $this->secure_id,
             'nom' => $this->option_de_reponse->libelle,
             'type' => $this->type,
+            'pourcentage_evolution' => $this->pourcentage_evolution,
             'point' => $this->point,
             "sourceDeVerification" => $this->when($this->type === 'indicateur', $this->sourceDeVerificationId ? $this->source_de_verification->intitule : $this->sourceDeVerification),
             "sourceDeVerificationId" => $this->when($this->type === 'indicateur', ($this->source_de_verification ? $this->source_de_verification->secure_id : null)),
