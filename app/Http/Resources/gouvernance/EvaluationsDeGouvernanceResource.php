@@ -32,12 +32,12 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             
             'total_soumissions_factuel' => $this->total_soumissions_factuel,
             'total_soumissions_de_perception' => $this->total_soumissions_de_perception,
-            'total_soumissions_factuel_terminer' => $this->total_soumissions_factuel_terminer,
-            'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
+            'total_soumissions_factuel_non_demarrer' => $this->total_soumissions_factuel_non_demarrer,
+            'total_soumissions_de_perception_non_demarrer' => $this->total_soumissions_de_perception_non_demarrer,
 
             'total_soumissions_factuel_terminer' => $this->total_soumissions_factuel_terminer,
             'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
-            
+
             'organisations_ranking'=>$this->organisations_ranking,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
