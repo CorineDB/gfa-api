@@ -8,6 +8,7 @@ use App\Models\Organisation;
 use App\Models\OptionDeReponse;
 use App\Models\Programme;
 use App\Models\QuestionDeGouvernance;
+use App\Models\Soumission;
 use App\Models\SourceDeVerification;
 use App\Rules\HashValidatorRule;
 use Illuminate\Validation\Rule;
@@ -17,15 +18,7 @@ class SoumissionValidationRequest extends FormRequest
 {
     protected $formulaireCache = null;
 
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
-    {
-        if(is_string($this->evaluation_de_gouvernance))
-        {
+    SoumissionVa
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
         //return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
@@ -42,6 +35,7 @@ class SoumissionValidationRequest extends FormRequest
     {
         return [
             'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
+            'soumissionId'   => ['nullable', new HashValidatorRule(new Soumission())],
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
@@ -106,7 +100,29 @@ class SoumissionValidationRequest extends FormRequest
             }],
             'factuel.response_data.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
             'factuel.response_data.*.sourceDeVerification'          => [ Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
-            'factuel.response_data.*.preuves'                       => ['required', "array", "min:1"],
+            'factuel.response_data.*.preuves'                       => [ Rule::requiredIf(request()->input('soumissionId') == null),
+                function($attribute, $value, $fail) {
+
+                    if(request()->input('soumissionId') != null){
+                        if($this->formulaireCache){
+                            $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($value)->exists();
+                            if (!$question) {
+                                // Fail validation if no response options are available
+                                $fail("Cet Indicateur n'existe pas.");
+                            }
+
+                            $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
+
+                            if(!$reponse || !($reponse->preuves_de_verification()->count())){
+                                $fail("La preuve est required.");
+                            }
+                        }
+                        else{
+                            $fail("La preuve est required.");
+                        }
+                    }
+                    
+                }, "array", "min:1"],
             'factuel.response_data.*.preuves.*'                     => ["file", "mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv", /* "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png,audio/mpeg,audio/wav,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska", */ "max:20480"],
 
             'perception'                              => [Rule::requiredIf(!request()->input('factuel')), 'array', function($attribute, $value, $fail) {
