@@ -21,7 +21,7 @@ class EvaluationDeGouvernance extends Model
 
     protected $casts = ['statut'  => 'integer', 'debut'  => 'datetime', 'fin'  => 'datetime', 'annee_exercice' => 'integer', 'objectif_attendu' => 'double'];
 
-    protected $appends = ['pourcentage_evolution', 'pourcentage_evolution_des_soumissions_factuel', 'pourcentage_evolution_des_soumissions_de_perception', 'total_soumissions_factuel', 'total_soumissions_de_perception', 'total_soumissions_factuel_non_demarrer', 'total_soumissions_de_perception_non_demarrer', 'total_soumissions_factuel_terminer', 'total_soumissions_de_perception_terminer', 'total_participants_evaluation_factuel', 'total_participants_evaluation_de_perception', 'organisations_ranking'];
+    protected $appends = ['pourcentage_evolution', 'pourcentage_evolution_des_soumissions_factuel', 'pourcentage_evolution_des_soumissions_de_perception', 'total_soumissions_factuel', 'total_soumissions_de_perception', 'total_soumissions_factuel_non_demarrer', 'total_soumissions_de_perception_non_demarrer', 'total_soumissions_factuel_terminer', 'total_soumissions_de_perception_terminer', 'total_participants_evaluation_factuel', 'total_participants_evaluation_de_perception', 'options_de_reponse_stats', 'organisations_ranking'];
 
     protected static function boot()
     {
@@ -342,6 +342,48 @@ class EvaluationDeGouvernance extends Model
     
         // Sort organizations by completion rate (descending)
         return $ranking->sortByDesc('pourcentage_evolution')->values();
+    }
+
+    public function getOptionsDeReponseStatsAttribute(){
+
+        $soumissionIds = $this->soumissionsDePerception->pluck("id");
+        
+        $optionIds = $this->formulaire_de_perception_de_gouvernance->options_de_reponse->pluck("id");
+
+        $query = DB::table('reponses_de_la_collecte')
+            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->select(
+                'soumissions.categorieDeParticipant',  // Group by participant category
+                'options_de_reponse.libelle as response', // Group by response label
+                DB::raw('COUNT(*) as count') // Count occurrences
+            )
+            ->when(!empty($soumissionIds), function ($query) use ($soumissionIds) {
+                return $query->whereIn('reponses_de_la_collecte.soumissionId', $soumissionIds);
+            })
+            ->when(!empty($optionIds), function ($query) use ($optionIds) {
+                return $query->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds);
+            })
+            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle') // Grouping logic
+            ->orderBy('soumissions.categorieDeParticipant')
+            ->orderBy('options_de_reponse.libelle')
+            ->get();
+
+        return $query;
+        $responseCounts = DB::table('reponses_de_la_collecte')
+            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->select(
+                'soumissions.categorieDeParticipant',  // Group by soumission categorieDeParticipant
+                'options_de_reponse.libelle',          // Group by option libelle (response)
+                DB::raw('COUNT(*) as count') // Count occurrences
+            )
+            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle') // Grouping logic
+            ->orderBy('soumissions.categorieDeParticipant')
+            ->orderBy('options_de_reponse.libelle')
+            ->get();
+
+        return $responseCounts;
     }
     
 }
