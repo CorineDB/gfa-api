@@ -36,7 +36,7 @@ class OptionDeReponse extends Model
                 // Prevent deletion by throwing an exception
                 throw new Exception("Cannot delete because there are associated responses.");
             }
-        }); 
+        });
 
         static::deleted(function ($option_de_reponse) {
 
