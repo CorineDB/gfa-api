@@ -28,15 +28,12 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
             'pourcentage_evolution_des_soumissions_de_perception' => $this->pourcentage_evolution_des_soumissions_de_perception,
             'total_participants_evaluation_factuel' => $this->getTotalParticipantsEvaluationFactuelAttribute(),
-            'total_participants_evaluation_de_perception' => $this->total_soumissions_de_perception,
-            'nbreParticipants' => $this->organisations,
+            'total_participants_evaluation_de_perception' => $this->total_participants_evaluation_de_perception,
             'total_soumissions_factuel' => $this->total_soumissions_factuel,
             'total_soumissions_de_perception' => $this->total_soumissions_de_perception,
             'total_soumissions_factuel_terminer' => $this->total_soumissions_factuel_terminer,
             'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
             'organisations_ranking'=>$this->organisations_ranking,
-
-            
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
@@ -62,9 +59,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'code'                  => $this->when($organisation->code, $organisation->code),
                     'nom_point_focal'       => $organisation->nom_point_focal,
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
-                    'contact_point_focal'   => $organisation->contact_point_focal,
-                    'nbreParticipants'   => $organisation->pivot->nbreParticipants,
-                    'participants'   => $organisation->pivot->participants
+                    'contact_point_focal'   => $organisation->contact_point_focal
                 ];
             })
         ];
