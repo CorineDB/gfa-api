@@ -103,7 +103,7 @@ class ReponseDeLaCollecte extends Model
                 $donnees_collectees++;
             }
 
-            if($this->preuves && $this->preuves->count()){
+            if($this->preuves_de_verification && $this->preuves_de_verification->count()){
                 $donnees_collectees++;
             }
             
