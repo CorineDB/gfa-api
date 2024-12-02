@@ -18,7 +18,15 @@ class SoumissionValidationRequest extends FormRequest
 {
     protected $formulaireCache = null;
 
-    SoumissionVa
+    /**
+     * Determine if the user is authorized to make this request.
+     *
+     * @return bool
+     */
+    public function authorize()
+    {
+        if(is_string($this->evaluation_de_gouvernance))
+        {
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
         //return request()->user()->hasRole("unitee-de-gestion") && $this->evaluation_de_gouvernance->statut;
@@ -100,6 +108,8 @@ class SoumissionValidationRequest extends FormRequest
             }],
             'factuel.response_data.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
             'factuel.response_data.*.sourceDeVerification'          => [ Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+
+
             'factuel.response_data.*.preuves'                       => [ Rule::requiredIf(request()->input('soumissionId') == null),
                 function($attribute, $value, $fail) {
 
