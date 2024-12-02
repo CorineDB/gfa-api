@@ -97,7 +97,7 @@ class Soumission extends Model
 
     public function getPourcentageEvolutionAttribute()
     {
-        $formulaireDeGouvernance = $this->formulaireDeGouvernance()->with(['questions_de_gouvernance.reponses' => function($query){
+        /* $formulaireDeGouvernance = $this->formulaireDeGouvernance()->with(['questions_de_gouvernance.reponses' => function($query){
             $query->where('reponses_de_la_collecte.soumissionId',$this->id);
         }])->first();
 
@@ -111,9 +111,8 @@ class Soumission extends Model
                 return $question->reponses;
             });
 
-        return $allReponses->isNotEmpty() ? $allReponses->avg('pourcentage_evolution') : 0;
+        return $allReponses->isNotEmpty() ? $allReponses->avg('pourcentage_evolution') : 0; */
         
-        return $this->formulaireDeGouvernance->questions_de_gouvernance->avg('reponses.pourcentage_evolution');
         $nombre_de_questions = $this->formulaireDeGouvernance->questions_de_gouvernance->count();
 
         $total_pourcentage_de_reponse = $this->reponses_de_la_collecte->sum(function ($reponse_de_la_collecte) {
