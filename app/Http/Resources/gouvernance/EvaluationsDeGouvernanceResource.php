@@ -33,7 +33,6 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution_des_soumissions_de_perception_for_organisation' => $this->when(auth()->check() && Auth::user()->hasRole('organisation'), function(){
                 return Auth::user()->profilable->getPerceptionSubmissionsCompletionAttribute($this->id);
             }),
-            'auuth' => $user,
             
             'total_participants_evaluation_factuel' => $this->getTotalParticipantsEvaluationFactuelAttribute(),
             'total_participants_evaluation_de_perception' => $this->total_participants_evaluation_de_perception,
@@ -46,7 +45,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'total_soumissions_factuel_terminer' => $this->total_soumissions_factuel_terminer,
             'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
 
-            'organisations_ranking'=>$this->organisations_ranking,
+            'organisations_ranking' => $this->organisations_ranking,
+            'options_de_reponse_stats' => $this->options_de_reponse_stats,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
