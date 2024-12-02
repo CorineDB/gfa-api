@@ -84,7 +84,7 @@ class ReponseDeLaCollecte extends Model
         $donnees_collectees = 0;
         $donnees_attendues = $pourcentage_collecte = 0;
 
-        $donnees_collectees = 5;
+        $donnees_collectees = 4;
 
         if(!empty($this->point)){
             $donnees_collectees++;
@@ -98,18 +98,20 @@ class ReponseDeLaCollecte extends Model
 
             $donnees_attendues = 8;
 
-            //array("point", "type", 'sourceDeVerification', 'soumissionId', 'sourceDeVerificationId', 'questionId', 'optionDeReponseId', 'programmeId');
+            //array('soumissionId', 'questionId', 'optionDeReponseId', 'programmeId');
+            //array("point", "type", 'sourceDeVerification', 'sourceDeVerificationId');
 
             if($this->sourceDeVerification || $this->sourceDeVerificationId){
                 $donnees_collectees++;
             }
 
-            if($this->preuves_de_verification && $this->preuves_de_verification->count()){
+            if($this->preuves_de_verification && $this->preuves_de_verification->count() > 0){
                 $donnees_collectees++;
             }
             
         }
         else if($this->type == 'question_operationnelle'){
+            //array("point", "type", 'soumissionId', 'questionId', 'optionDeReponseId', 'programmeId');
 
             $donnees_attendues = 6;
         }
