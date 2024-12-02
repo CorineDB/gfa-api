@@ -32,7 +32,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution_des_soumissions_de_perception_for_organisation' => $this->when(auth()->check() && Auth::user()->hasRole('organisation'), function(){
                 return Auth::user()->profilable->getPerceptionSubmissionsCompletionAttribute($this->id);
             }),
-            'auuth' => Auth::user(),
+            'auuth' => $user,
             
             'total_participants_evaluation_factuel' => $this->getTotalParticipantsEvaluationFactuelAttribute(),
             'total_participants_evaluation_de_perception' => $this->total_participants_evaluation_de_perception,
