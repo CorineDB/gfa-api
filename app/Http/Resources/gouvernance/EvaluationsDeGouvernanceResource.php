@@ -27,6 +27,14 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution' => $this->pourcentage_evolution,
             'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
             'pourcentage_evolution_des_soumissions_de_perception' => $this->pourcentage_evolution_des_soumissions_de_perception,
+            'pourcentage_evolution_des_soumissions_de_perception' => $this->when(auth()->user()->hasRole('organisation'), auth()->user()->profilable()->getPerceptionSubmissionsCompletionAttribute($this->id)),
+
+                'pourcentage_evolution_des_soumissions_de_perception' => $this->when(
+                    auth()->user()->hasRole('organisation'),
+                    auth()->user()->profilable()->getPerceptionSubmissionsCompletionAttribute($this->id),
+                    $this->pourcentage_evolution_des_soumissions_de_perception
+                ),
+            
             'total_participants_evaluation_factuel' => $this->getTotalParticipantsEvaluationFactuelAttribute(),
             'total_participants_evaluation_de_perception' => $this->total_participants_evaluation_de_perception,
             
