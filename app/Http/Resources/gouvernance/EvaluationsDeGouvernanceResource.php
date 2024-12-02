@@ -16,6 +16,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
      */
     public function toArray($request)
     {
+        $user= Auth::user();
         return [
             'id' => $this->secure_id,
             'intitule' => $this->intitule,
