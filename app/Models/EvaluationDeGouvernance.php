@@ -380,8 +380,6 @@ class EvaluationDeGouvernance extends Model
             ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
             ->get();
 
-        return $responseCounts;
-
         // Combine the counts with the pre-generated combinations, ensuring no missing combinations
         $finalStats = collect($combinations)->map(function ($combination) use ($responseCounts) {
             // Find the response count for this combination
