@@ -354,6 +354,27 @@ class EvaluationDeGouvernance extends Model
             ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
+                'soumissions.categorieDeParticipant',
+                DB::raw('JSON_ARRAYAGG(JSON_OBJECT(
+                    "label", options_de_reponse.libelle,
+                    "count", COUNT(reponses_de_la_collecte.id)
+                )) as options_de_reponse')
+            )
+            ->when(!empty($soumissionIds), function ($query) use ($soumissionIds) {
+                return $query->whereIn('reponses_de_la_collecte.soumissionId', $soumissionIds);
+            })
+            ->when(!empty($optionIds), function ($query) use ($optionIds) {
+                return $query->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds);
+            })
+            ->groupBy('soumissions.categorieDeParticipant')
+            ->get();
+
+        return $query;
+
+        $query = DB::table('reponses_de_la_collecte')
+            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->select(
                 'soumissions.categorieDeParticipant',  // Participant category
                 'options_de_reponse.libelle as label', // Option de reponse label
                 DB::raw('COUNT(*) as count') // Count occurrences
