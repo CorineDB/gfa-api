@@ -383,12 +383,13 @@ class EvaluationDeGouvernance extends Model
         // Combine the counts with the pre-generated combinations, ensuring no missing combinations
         $query = collect($combinations)->map(function ($combination) use ($responseCounts) {
             // Find the response count for this combination
-            /* $responseCount = $responseCounts->firstWhere([
-                ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
-                ['libelle', '=', $combination['libelle']]
-            ]); */
 
             $responseCount = null;
+
+            $responseCount = $responseCounts->firstWhere([
+                ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
+                ['libelle', '=', $combination['libelle']]
+            ]); 
 
             // If no response count found, set to 0
             $combination['count'] = $responseCount ? $responseCount->count : 0;
