@@ -350,6 +350,31 @@ class EvaluationDeGouvernance extends Model
         
         $optionIds = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse->pluck("id");
 
+        $query = DB::table(DB::raw('(SELECT 
+                soumissions.categorieDeParticipant,
+                options_de_reponse.libelle,
+                COUNT(reponses_de_la_collecte.id) as response_count
+            FROM reponses_de_la_collecte
+            INNER JOIN soumissions 
+                ON reponses_de_la_collecte.soumissionId = soumissions.id
+            INNER JOIN options_de_reponse 
+                ON reponses_de_la_collecte.optionDeReponseId = options_de_reponse.id
+            WHERE reponses_de_la_collecte.soumissionId IN (?, ?, ?, ?, ?)
+            AND reponses_de_la_collecte.optionDeReponseId IN (?, ?, ?, ?, ?, ?)
+            GROUP BY soumissions.categorieDeParticipant, options_de_reponse.libelle
+        ) as grouped_data'))
+        ->select([
+            'grouped_data.categorieDeParticipant',
+            DB::raw('JSON_ARRAYAGG(JSON_OBJECT(
+                "label", grouped_data.libelle,
+                "count", grouped_data.response_count
+            )) as responses')
+        ])
+        ->groupBy('grouped_data.categorieDeParticipant')
+        ->get();
+
+        return $query;
+
         $query = DB::table('reponses_de_la_collecte')
             ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
