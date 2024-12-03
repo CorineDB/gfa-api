@@ -350,9 +350,36 @@ class EvaluationDeGouvernance extends Model
         
         $optionIds = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse->pluck("id");
 
+        $query = DB::table('soumissions')
+            // Left join with reponses_de_la_collecte
+            ->leftJoin('reponses_de_la_collecte', function($join) {
+                $join->on('soumissions.id', '=', 'reponses_de_la_collecte.soumissionId')
+                    ->on('reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id');
+            })
+            // Left join with options_de_reponse
+            ->leftJoin('options_de_reponse', function($join) {
+                $join->on('reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id');
+            })
+            // Select fields and count reponses
+            ->select(
+                'soumissions.categorieDeParticipant',
+                'options_de_reponse.libelle',
+                DB::raw('COUNT(reponses_de_la_collecte.id) as count')
+            )
+            // Filter for specific options
+            ->whereIn('options_de_reponse.id', [26, 27, 28, 29, 36, 37])
+            // Group by category and option
+            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
+            // Order by category and option
+            ->orderBy('soumissions.categorieDeParticipant')
+            ->orderBy('options_de_reponse.libelle')
+            ->get();
+            
+        return $query;
+
         $query = DB::table('reponses_de_la_collecte')
-            ->leftJoin('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
-            ->leftJoin('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
                 'soumissions.categorieDeParticipant',  // Participant category
                 'options_de_reponse.libelle as label', // Option de reponse label
