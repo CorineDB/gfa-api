@@ -384,14 +384,13 @@ class EvaluationDeGouvernance extends Model
         $query = collect($combinations)->map(function ($combination) use ($responseCounts) {
             // Find the response count for this combination
 
-            $responseCount = null;
             // Ensure 'categorieDeParticipant' and 'libelle' are strings for comparison
-            $category = "employe_association"; //(string)$combination['categorieDeParticipant'];
-            $libelle = "Moyennement"; //(string)$combination['libelle'];
+            $category = (string)$combination['categorieDeParticipant'];
+            $libelle = (string)$combination['libelle'];
             
             // Find the response count for this combination using filter and multiple conditions
-            $responseCount = $responseCounts->filter(function($item) use ($category, $libelle) {
-                return $item->categorieDeParticipant == $category && $item->libelle == $libelle;
+            $responseCount = $responseCounts->filter(function($item) use ($combination) {
+                return $item->categorieDeParticipant == $combination['categorieDeParticipant'] && $item->libelle == $combination['libelle'];
             })->first(); // Get the first matching response (or null if none)
 
             /* $responseCount = $responseCounts->firstWhere([
