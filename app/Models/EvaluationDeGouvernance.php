@@ -348,7 +348,52 @@ class EvaluationDeGouvernance extends Model
 
         $soumissionIds = $this->soumissionsDePerception->pluck("id");
         
-        $optionIds = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse->pluck("id");
+        $options = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse;
+        $optionIds = $options->pluck('id');
+
+        // Get all categories (soumissions)
+        $categories = ['membre_de_conseil_administration', 'employe_association', 'membre_association'];
+
+        // Generate the Cartesian product of all categories and options
+        $combinations = [];
+        foreach ($categories as $category) {
+        foreach ($options->pluck('libelle', 'id') as $optionId => $optionLibelle) {
+            $combinations[] = [
+                'categorieDeParticipant' => $category,
+                'optionDeReponseId' => $optionId,
+                'libelle' => $optionLibelle
+            ];
+        }
+        }
+
+        // Now query the database to count the responses for each combination
+        $responseCounts = DB::table('reponses_de_la_collecte')
+            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->select(
+                'soumissions.categorieDeParticipant',
+                'options_de_reponse.libelle',
+                DB::raw('COUNT(reponses_de_la_collecte.id) as count')
+            )
+            ->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds)
+            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
+            ->get();
+
+        // Combine the counts with the pre-generated combinations, ensuring no missing combinations
+        $finalStats = collect($combinations)->map(function ($combination) use ($responseCounts) {
+            // Find the response count for this combination
+            $responseCount = $responseCounts->firstWhere([
+                ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
+                ['libelle', '=', $combination['libelle']]
+            ]);
+
+            // If no response count found, set to 0
+            $combination['count'] = $responseCount ? $responseCount->count : 0;
+
+            return $combination;
+        });
+
+        return $finalStats;
 
         $query = DB::table('soumissions')
             // Left join with reponses_de_la_collecte
@@ -367,14 +412,14 @@ class EvaluationDeGouvernance extends Model
                 DB::raw('COUNT(reponses_de_la_collecte.id) as count')
             )
             // Filter for specific options
-            ->whereIn('options_de_reponse.id', [26, 27, 28, 29, 36, 37])
+            ->whereIn('options_de_reponse.id', $optionIds)
             // Group by category and option
             ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
             // Order by category and option
             ->orderBy('soumissions.categorieDeParticipant')
             ->orderBy('options_de_reponse.libelle')
             ->get();
-            
+
         return $query;
 
         $query = DB::table('reponses_de_la_collecte')
