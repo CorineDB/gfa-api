@@ -375,6 +375,7 @@ class EvaluationDeGouvernance extends Model
                 'options_de_reponse.libelle',
                 DB::raw('COUNT(reponses_de_la_collecte.id) as count')
             )
+            ->whereIn('reponses_de_la_collecte.soumissionId', $soumissionIds)
             ->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds)
             ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
             ->get();
