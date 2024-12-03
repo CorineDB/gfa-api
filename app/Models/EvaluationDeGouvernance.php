@@ -351,6 +351,40 @@ class EvaluationDeGouvernance extends Model
         $optionIds = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse->pluck("id");
 
         $query = DB::table('reponses_de_la_collecte')
+            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->select(
+                'soumissions.categorieDeParticipant',  // Participant category
+                'options_de_reponse.libelle as response', // Response label
+                DB::raw('COUNT(*) as count') // Count occurrences
+            )
+            ->when(!empty($soumissionIds), function ($query) use ($soumissionIds) {
+                return $query->whereIn('reponses_de_la_collecte.soumissionId', $soumissionIds);
+            })
+            ->when(!empty($optionIds), function ($query) use ($optionIds) {
+                return $query->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds);
+            })
+            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle') // Grouping logic
+            ->orderBy('soumissions.categorieDeParticipant')
+            ->orderBy('options_de_reponse.libelle')
+            ->get();
+
+        // Reorganize data under each categorieDeParticipant
+        $groupedStats = $query->groupBy('categorieDeParticipant')->map(function ($responses, $categorie) {
+            return [
+                'categorieDeParticipant' => $categorie,
+                'responses' => $responses->map(function ($response) {
+                    return [
+                        'response' => $response->response,
+                        'count' => $response->count,
+                    ];
+                }),
+            ];
+        });
+
+        return $groupedStats->values();
+
+        $query = DB::table('reponses_de_la_collecte')
             //->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
             ->join('soumissions', function ($join) {
                 $join->on('reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')->where('soumissions.statut', true);
@@ -370,7 +404,7 @@ class EvaluationDeGouvernance extends Model
             ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle') // Grouping logic
             ->orderBy('soumissions.categorieDeParticipant')
             ->orderBy('options_de_reponse.libelle')
-            ->get()->values();
+            ->get();
 
         return $query;
         $responseCounts = DB::table('reponses_de_la_collecte')
