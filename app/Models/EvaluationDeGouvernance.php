@@ -351,7 +351,7 @@ class EvaluationDeGouvernance extends Model
         $optionIds = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse->pluck("id");
 
         $query = DB::table('reponses_de_la_collecte')
-            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->leftJoin('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
             ->leftJoin('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
                 'soumissions.categorieDeParticipant',  // Participant category
