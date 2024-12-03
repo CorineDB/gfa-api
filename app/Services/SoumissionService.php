@@ -122,7 +122,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             if ($formulaireDeGouvernance->type == 'factuel') {
 
                 if($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()){
-                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
 
                 $soumission  = $this->repository->getInstance()->where('type', 'factuel')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first();
@@ -131,7 +131,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $evaluationOrganisation=$evaluationDeGouvernance->organisations(null, $organisation->id)->first();
 
                 if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants){
-                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
 
                 $soumission  = $this->repository->getInstance()->where('type', 'perception')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->where('identifier_of_participant', $attributs['identifier_of_participant'])->first();
@@ -143,7 +143,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $soumission->fill($attributs);
                 $soumission->save();
                 if ($soumission->statut) {
-                    return response()->json(['statut' => 'success', 'message' => "La soumission a déjà été validée.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                    return response()->json(['statut' => 'success', 'message' => "La soumission a déjà été validée.", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
             }
 
