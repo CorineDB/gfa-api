@@ -388,12 +388,11 @@ class EvaluationDeGouvernance extends Model
             // Ensure 'categorieDeParticipant' and 'libelle' are strings for comparison
             $category = "employe_association"; //(string)$combination['categorieDeParticipant'];
             $libelle = "Moyennement"; //(string)$combination['libelle'];
-
-
-            // Find the response count for this combination
-            $responseCount = $responseCounts->firstWhere(function($item) use ($category, $libelle) {
+            
+            // Find the response count for this combination using filter and multiple conditions
+            $responseCount = $responseCounts->filter(function($item) use ($category, $libelle) {
                 return $item->categorieDeParticipant == $category && $item->libelle == $libelle;
-            });
+            })->first(); // Get the first matching response (or null if none)
 
             /* $responseCount = $responseCounts->firstWhere([
                 ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
