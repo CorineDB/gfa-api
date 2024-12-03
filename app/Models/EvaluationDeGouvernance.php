@@ -370,7 +370,7 @@ class EvaluationDeGouvernance extends Model
             ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle') // Grouping logic
             ->orderBy('soumissions.categorieDeParticipant')
             ->orderBy('options_de_reponse.libelle')
-            ->get();
+            ->get()->values();
 
         return $query;
         $responseCounts = DB::table('reponses_de_la_collecte')
