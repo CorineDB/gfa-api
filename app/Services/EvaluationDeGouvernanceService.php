@@ -524,18 +524,18 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
 
-            /* if($evaluationDeGouvernance->statut==1){
+            if($evaluationDeGouvernance->statut==1){
                 return response()->json(['statut' => 'success', 'message' => "Lien expire", 'data' => null, 'statutCode' => Response::HTTP_NO_CONTENT], Response::HTTP_NO_CONTENT);
-            } */
+            }
 
             $organisation = $evaluationDeGouvernance->organisations->first();
             $terminer = false;
 
             if ($organisation != null) {
 
-                /* if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $organisation->pivot->nbreParticipants){
+                if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $organisation->pivot->nbreParticipants){
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-                } */
+                }
 
                 if(($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())){
 
