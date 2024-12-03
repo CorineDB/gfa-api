@@ -390,10 +390,10 @@ class EvaluationDeGouvernance extends Model
             $libelle = "Moyennement"; //(string)$combination['libelle'];
 
             // Find the response count for this combination
-            $responseCount = $responseCounts->firstWhere([
+            $responseCount = $responseCounts->where([
                 ['categorieDeParticipant', '=', $category], // Ensuring category is a string
                 ['libelle', '=', $libelle]                  // Ensuring option is a string
-            ]);
+            ])->first();
 
             /* $responseCount = $responseCounts->firstWhere([
                 ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
