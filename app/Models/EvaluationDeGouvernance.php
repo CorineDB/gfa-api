@@ -421,8 +421,8 @@ class EvaluationDeGouvernance extends Model
                 'categorieDeParticipant' => $categorie,
                 'options_de_reponse' => $optionsDeReponse->map(function ($optionDeReponse) {
                     return [
-                        'label' => $optionDeReponse->libelle,
-                        'count' => $optionDeReponse->count,
+                        'label' => $optionDeReponse['libelle'],
+                        'count' => $optionDeReponse['count'],
                     ];
                 }),
             ];
