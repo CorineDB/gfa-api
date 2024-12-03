@@ -358,7 +358,7 @@ class EvaluationDeGouvernance extends Model
                 DB::raw('JSON_ARRAYAGG(JSON_OBJECT(
                     "label", options_de_reponse.libelle,
                     "count", COUNT(reponses_de_la_collecte.id)
-                )) as options_de_reponse')
+                )) as responses')
             )
             ->when(!empty($soumissionIds), function ($query) use ($soumissionIds) {
                 return $query->whereIn('reponses_de_la_collecte.soumissionId', $soumissionIds);
