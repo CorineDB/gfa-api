@@ -473,7 +473,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $terminer = true;
                         $formulaire_factuel_de_gouvernance = false;
 
-                        return response()->json(['statut' => 'success', 'message' => "Soumission deja valider", 'data' => ['terminer' => $terminer, 'soumission' => $soumission], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                        return response()->json(['statut' => 'success', 'message' => "Soumission deja valider", 'data' => ['terminer' => $terminer, 'idEvaluation' => $evaluationDeGouvernance->secure_id, 'idSoumission' => $soumission->secure_id], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                     }
                     else{
                         $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
