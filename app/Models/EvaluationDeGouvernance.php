@@ -355,7 +355,7 @@ class EvaluationDeGouvernance extends Model
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
                 'soumissions.categorieDeParticipant',  // Participant category
-                'options_de_reponse.libelle as response', // Response label
+                'options_de_reponse.libelle as label', // Option de reponse label
                 DB::raw('COUNT(*) as count') // Count occurrences
             )
             ->when(!empty($soumissionIds), function ($query) use ($soumissionIds) {
@@ -370,13 +370,13 @@ class EvaluationDeGouvernance extends Model
             ->get();
 
         // Reorganize data under each categorieDeParticipant
-        $groupedStats = $query->groupBy('categorieDeParticipant')->map(function ($responses, $categorie) {
+        $groupedStats = $query->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
             return [
                 'categorieDeParticipant' => $categorie,
-                'responses' => $responses->map(function ($response) {
+                'options_de_reponse' => $optionsDeReponse->map(function ($optionDeReponse) {
                     return [
-                        'response' => $response->response,
-                        'count' => $response->count,
+                        'label' => $optionDeReponse->label,
+                        'count' => $optionDeReponse->count,
                     ];
                 }),
             ];
