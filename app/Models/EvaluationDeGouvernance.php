@@ -384,8 +384,8 @@ class EvaluationDeGouvernance extends Model
         $finalStats = collect($combinations)->map(function ($combination) use ($responseCounts) {
             // Find the response count for this combination
             $responseCount = $responseCounts->firstWhere([
-                ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
-                //['libelle', '=', $combination['libelle']]
+                //['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
+                ['libelle', '=', $combination['libelle']]
             ]);
 
             // If no response count found, set to 0
