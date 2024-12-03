@@ -352,8 +352,8 @@ class EvaluationDeGouvernance extends Model
 
         $query = DB::table('reponses_de_la_collecte')
             //->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
-            ->join('soumissions', function ($join) use ($soumissionIds) {
-                $join->on('reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')->whereIn('soumissions.statut', true);
+            ->join('soumissions', function ($join) {
+                $join->on('reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')->where('soumissions.statut', true);
             })
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
