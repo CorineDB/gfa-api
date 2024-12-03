@@ -389,14 +389,8 @@ class EvaluationDeGouvernance extends Model
             $libelle = (string)$combination['libelle'];
             
             // Find the response count for this combination using filter and multiple conditions
-            $responseCount = $responseCounts->filter(function($item) use ($combination) {
-                return $item->categorieDeParticipant == $combination['categorieDeParticipant'] && $item->libelle == $combination['libelle'];
-            })->first(); // Get the first matching response (or null if none)
-
-            /* $responseCount = $responseCounts->firstWhere([
-                ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
-                ['libelle', '=', $combination['libelle']]
-            ]); */ 
+            $responseCount = $responseCounts->where('categorieDeParticipant', $combination['categorieDeParticipant'])
+            ->where('libelle', '=', $combination['libelle'])->first();// Get the first matching response (or null if none)
 
             // If no response count found, set to 0
             $combination['count'] = $responseCount ? $responseCount->count : 0;
