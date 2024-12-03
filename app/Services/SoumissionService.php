@@ -109,6 +109,10 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 if (!(($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])) && $organisation->user->programmeId == $programme->id)) {
                     throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
+                
+                if(!($organisation = $evaluationDeGouvernance->organisations(null, $organisation->id)->first())){
+                    throw new Exception("Cette organisation n'est pas de cette evaluation.", Response::HTTP_NOT_FOUND);
+                }
             } else if (Auth::user()->hasRole('organisation')) {
                 $organisation = Auth::user()->profilable;
             }
@@ -117,8 +121,19 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             if ($formulaireDeGouvernance->type == 'factuel') {
 
+                if($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()){
+                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                }
+
                 $soumission  = $this->repository->getInstance()->where('type', 'factuel')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first();
             } else {
+
+                $evaluationOrganisation=$evaluationDeGouvernance->organisations(null, $organisation->id)->first();
+
+                if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants){
+                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                }
+
                 $soumission  = $this->repository->getInstance()->where('type', 'perception')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->where('identifier_of_participant', $attributs['identifier_of_participant'])->first();
             }
 

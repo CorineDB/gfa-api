@@ -102,10 +102,14 @@ class EvaluationDeGouvernance extends Model
     }
 
 
-    public function soumissionDePerception(string $identifier_of_participant, ?int $organisationId = null, ?string $token = null)
+    public function soumissionDePerception(?string $identifier_of_participant = null, ?int $organisationId = null, ?string $token = null)
     {
-        $soumissionDePerception = $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->where("identifier_of_participant", $identifier_of_participant);
+        $soumissionDePerception = $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception');
         
+        if ($identifier_of_participant) {
+            $soumissionDePerception = $soumissionDePerception->where("identifier_of_participant", $identifier_of_participant);
+        }
+
         if ($organisationId) {
             $soumissionDePerception = $soumissionDePerception->where('organisationId', $organisationId);
         }
