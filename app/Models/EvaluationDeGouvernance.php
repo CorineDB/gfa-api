@@ -385,7 +385,7 @@ class EvaluationDeGouvernance extends Model
             // Find the response count for this combination
             $responseCount = $responseCounts->firstWhere([
                 ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
-                ['libelle', '=', $combination['libelle']]
+                //['libelle', '=', $combination['libelle']]
             ]);
 
             // If no response count found, set to 0
