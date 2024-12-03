@@ -352,7 +352,7 @@ class EvaluationDeGouvernance extends Model
 
         $query = DB::table('reponses_de_la_collecte')
             ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
-            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->leftJoin('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
                 'soumissions.categorieDeParticipant',  // Participant category
                 'options_de_reponse.libelle as label', // Option de reponse label
