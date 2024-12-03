@@ -350,9 +350,24 @@ class EvaluationDeGouvernance extends Model
         
         $optionIds = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse->pluck("id");
 
-        $query = DB::table('reponses_de_la_collecte')
+        $responseCounts = DB::table('options_de_reponse')
+            ->leftJoin('reponses_de_la_collecte', 'options_de_reponse.id', '=', 'reponses_de_la_collecte.optionDeReponseId')
             ->leftJoin('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
-            ->leftJoin('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
+            ->select(
+                'soumissions.categorieDeParticipant',
+                'options_de_reponse.libelle',
+                'options_de_reponse.id as optionId',
+                DB::raw('COUNT(reponses_de_la_collecte.id) as count')
+            )
+            ->whereIn('options_de_reponse.id', $optionIds) // Specific IDs
+            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.id', 'options_de_reponse.libelle')
+            ->orderBy('soumissions.categorieDeParticipant')
+            ->orderBy('options_de_reponse.id')
+            ->get();
+
+        $query = DB::table('reponses_de_la_collecte')
+            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
                 'soumissions.categorieDeParticipant',  // Participant category
                 'options_de_reponse.libelle as label', // Option de reponse label
