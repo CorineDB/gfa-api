@@ -366,8 +366,6 @@ class EvaluationDeGouvernance extends Model
             }
         }
 
-        return $combinations;
-
         // Now query the database to count the responses for each combination
         $responseCounts = DB::table('reponses_de_la_collecte')
             ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
@@ -380,6 +378,8 @@ class EvaluationDeGouvernance extends Model
             ->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds)
             ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
             ->get();
+
+        return $responseCounts;
 
         // Combine the counts with the pre-generated combinations, ensuring no missing combinations
         $finalStats = collect($combinations)->map(function ($combination) use ($responseCounts) {
