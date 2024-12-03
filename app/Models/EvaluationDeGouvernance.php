@@ -381,7 +381,7 @@ class EvaluationDeGouvernance extends Model
             ->get();
 
         // Combine the counts with the pre-generated combinations, ensuring no missing combinations
-        $finalStats = collect($combinations)->map(function ($combination) use ($responseCounts) {
+        $query = collect($combinations)->map(function ($combination) use ($responseCounts) {
             // Find the response count for this combination
             /* $responseCount = $responseCounts->firstWhere([
                 ['categorieDeParticipant', '=', $combination['categorieDeParticipant']],
@@ -396,36 +396,7 @@ class EvaluationDeGouvernance extends Model
             return $combination;
         });
 
-        return $finalStats;
-
-        $query = DB::table('soumissions')
-            // Left join with reponses_de_la_collecte
-            ->leftJoin('reponses_de_la_collecte', function($join) {
-                $join->on('soumissions.id', '=', 'reponses_de_la_collecte.soumissionId')
-                    ->on('reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id');
-            })
-            // Left join with options_de_reponse
-            ->leftJoin('options_de_reponse', function($join) {
-                $join->on('reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id');
-            })
-            // Select fields and count reponses
-            ->select(
-                'soumissions.categorieDeParticipant',
-                'options_de_reponse.libelle',
-                DB::raw('COUNT(reponses_de_la_collecte.id) as count')
-            )
-            // Filter for specific options
-            ->whereIn('options_de_reponse.id', $optionIds)
-            // Group by category and option
-            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
-            // Order by category and option
-            ->orderBy('soumissions.categorieDeParticipant')
-            ->orderBy('options_de_reponse.libelle')
-            ->get();
-
-        return $query;
-
-        $query = DB::table('reponses_de_la_collecte')
+        /*$query = DB::table('reponses_de_la_collecte')
             ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
@@ -442,7 +413,7 @@ class EvaluationDeGouvernance extends Model
             ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle') // Grouping logic
             ->orderBy('soumissions.categorieDeParticipant')
             ->orderBy('options_de_reponse.libelle')
-            ->get();
+            ->get();*/
 
         // Reorganize data under each categorieDeParticipant
         $groupedStats = $query->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
@@ -450,7 +421,7 @@ class EvaluationDeGouvernance extends Model
                 'categorieDeParticipant' => $categorie,
                 'options_de_reponse' => $optionsDeReponse->map(function ($optionDeReponse) {
                     return [
-                        'label' => $optionDeReponse->label,
+                        'label' => $optionDeReponse->libelle,
                         'count' => $optionDeReponse->count,
                     ];
                 }),
