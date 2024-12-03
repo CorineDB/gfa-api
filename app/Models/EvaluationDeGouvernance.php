@@ -346,18 +346,21 @@ class EvaluationDeGouvernance extends Model
 
     public function getOptionsDeReponseStatsAttribute(){
 
+        // Get all soumission IDs
         $soumissionIds = $this->soumissionsDePerception->pluck("id");
         
+        // Get all options (options_de_reponse) and their IDs
         $options = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse;
         $optionIds = $options->pluck('id');
+        $optionLibelles = $options->pluck('libelle', 'id');
 
-        // Get all categories (soumissions)
+        // Categories to include in the Cartesian product
         $categories = ['membre_de_conseil_administration', 'employe_association', 'membre_association'];
 
         // Generate the Cartesian product of all categories and options
         $combinations = [];
         foreach ($categories as $category) {
-            foreach ($options->pluck('libelle', 'id') as $optionId => $optionLibelle) {
+            foreach ($optionLibelles as $optionId => $optionLibelle) {
                 $combinations[] = [
                     'categorieDeParticipant' => $category,
                     'optionDeReponseId' => $optionId,
@@ -366,7 +369,7 @@ class EvaluationDeGouvernance extends Model
             }
         }
 
-        // Now query the database to count the responses for each combination
+        // Get the response counts from the database
         $responseCounts = DB::table('reponses_de_la_collecte')
             ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
@@ -382,40 +385,16 @@ class EvaluationDeGouvernance extends Model
 
         // Combine the counts with the pre-generated combinations, ensuring no missing combinations
         $query = collect($combinations)->map(function ($combination) use ($responseCounts) {
-            // Find the response count for this combination
-
-            // Ensure 'categorieDeParticipant' and 'libelle' are strings for comparison
-            $category = (string)$combination['categorieDeParticipant'];
-            $libelle = (string)$combination['libelle'];
-            
-            // Find the response count for this combination using filter and multiple conditions
+            // Find the response count for this combination using where with multiple conditions
             $responseCount = $responseCounts->where('categorieDeParticipant', $combination['categorieDeParticipant'])
-            ->where('libelle', '=', $combination['libelle'])->first();// Get the first matching response (or null if none)
+                                            ->where('libelle', $combination['libelle'])
+                                            ->first();  // Get the first matching response (or null if none)
 
             // If no response count found, set to 0
             $combination['count'] = $responseCount ? $responseCount->count : 0;
 
             return $combination;
         });
-
-        /*$query = DB::table('reponses_de_la_collecte')
-            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
-            ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
-            ->select(
-                'soumissions.categorieDeParticipant',  // Participant category
-                'options_de_reponse.libelle as label', // Option de reponse label
-                DB::raw('COUNT(*) as count') // Count occurrences
-            )
-            ->when(!empty($soumissionIds), function ($query) use ($soumissionIds) {
-                return $query->whereIn('reponses_de_la_collecte.soumissionId', $soumissionIds);
-            })
-            ->when(!empty($optionIds), function ($query) use ($optionIds) {
-                return $query->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds);
-            })
-            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle') // Grouping logic
-            ->orderBy('soumissions.categorieDeParticipant')
-            ->orderBy('options_de_reponse.libelle')
-            ->get();*/
 
         // Reorganize data under each categorieDeParticipant
         $groupedStats = $query->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
@@ -430,6 +409,7 @@ class EvaluationDeGouvernance extends Model
             ];
         });
 
+        // Return the grouped stats as values
         return $groupedStats->values();
 
         $query = DB::table('reponses_de_la_collecte')
