@@ -357,14 +357,16 @@ class EvaluationDeGouvernance extends Model
         // Generate the Cartesian product of all categories and options
         $combinations = [];
         foreach ($categories as $category) {
-        foreach ($options->pluck('libelle', 'id') as $optionId => $optionLibelle) {
-            $combinations[] = [
-                'categorieDeParticipant' => $category,
-                'optionDeReponseId' => $optionId,
-                'libelle' => $optionLibelle
-            ];
+            foreach ($options->pluck('libelle', 'id') as $optionId => $optionLibelle) {
+                $combinations[] = [
+                    'categorieDeParticipant' => $category,
+                    'optionDeReponseId' => $optionId,
+                    'libelle' => $optionLibelle
+                ];
+            }
         }
-        }
+
+        return $combinations;
 
         // Now query the database to count the responses for each combination
         $responseCounts = DB::table('reponses_de_la_collecte')
