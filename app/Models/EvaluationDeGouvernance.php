@@ -386,8 +386,8 @@ class EvaluationDeGouvernance extends Model
 
             $responseCount = null;
             // Ensure 'categorieDeParticipant' and 'libelle' are strings for comparison
-            $category = (string)$combination['categorieDeParticipant'];
-            $libelle = (string)$combination['libelle'];
+            $category = "employe_association"; //(string)$combination['categorieDeParticipant'];
+            $libelle = "Moyennement"; //(string)$combination['libelle'];
 
             // Find the response count for this combination
             $responseCount = $responseCounts->firstWhere([
