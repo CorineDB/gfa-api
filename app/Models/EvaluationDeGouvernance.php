@@ -351,11 +351,14 @@ class EvaluationDeGouvernance extends Model
         $optionIds = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse->pluck("id");
 
         $query = DB::table('reponses_de_la_collecte')
-            ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            //->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
+            ->join('soumissions', function ($join) use ($soumissionIds) {
+                $join->on('reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')->whereIn('soumissions.statut', true);
+            })
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
                 'soumissions.categorieDeParticipant',  // Group by participant category
-                'options_de_reponse.libelle as response', // Group by response label
+                'options_de_reponse.libelle as label', // Group by label label
                 DB::raw('COUNT(*) as count') // Count occurrences
             )
             ->when(!empty($soumissionIds), function ($query) use ($soumissionIds) {
