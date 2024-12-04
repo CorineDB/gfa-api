@@ -14,7 +14,6 @@ class Kernel extends ConsoleKernel
         Commands\ChangeStatut::class,
         Commands\ChangeStatutEvaluations::class,
         Commands\GenerateEvaluationResultats::class,
-        //Commands\GenerateResultatsForValidatedSoumission::class,
         Commands\RappelEmissionMesureAPrendre::class,
         Commands\ChangeStatutActionAMener::class,
         Commands\Demarrage::class,
@@ -35,7 +34,6 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:change-statut')->everyMinute();
         $schedule->command('change-statut:evaluations')->everyMinute();
-        //$schedule->command('generate:report-soumissions-resultats')->everyMinute();        
 
         $schedule->command('command:demarrage')->everyMinute();
 
