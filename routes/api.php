@@ -989,7 +989,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
         Route::get('formulaire-de-perception/{participantId}/{token}', 'EvaluationDeGouvernanceController@formulaire_de_perception_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
         Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
-            Route::get('{evaluation_de_gouvernance}', 'EvaluationDeGouvernanceController@show'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+            //Route::get('{evaluation_de_gouvernance}', 'EvaluationDeGouvernanceController@show'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             Route::post('{evaluation_de_gouvernance}/perception-soumission', 'SoumissionController@storePerception')->name('evaluation.perception-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             Route::post('{evaluation_de_gouvernance}/perception-soumission-validation', 'SoumissionController@perceptionSoumissionValidation'); //->name('evaluation.perception.soumission.validation')->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
             //Route::get('{evaluation_de_gouvernance}?paricipant_id={participantId}&token={$token}', 'EvaluationDeGouvernanceController@formulaire_de_perception_de_gouvernance')->name('formulaire_de_perception_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
