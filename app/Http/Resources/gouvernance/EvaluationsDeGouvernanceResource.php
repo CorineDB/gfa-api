@@ -29,13 +29,15 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'statut' => $this->statut,
             'pourcentage_evolution' => $this->pourcentage_evolution,
             'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
+
             $this->mergeWhen(Auth::user()->type == 'unitee-de-gestion', function(){
-                [
+                return [
                     'pourcentage_evolution_des_soumissions_de_perception' => $this->pourcentage_evolution_des_soumissions_de_perception,
                 ];
             }),
+
             $this->mergeWhen(Auth::user()->type == 'organisation', function(){
-                [
+                return [
                     'pourcentage_evolution_des_soumissions_de_perception' => optional(Auth::user()->profilable)->getPerceptionSubmissionsCompletionAttribute($this->id) ?? 0,
                 ];
             }),
