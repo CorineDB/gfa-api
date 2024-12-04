@@ -67,19 +67,23 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissions()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId');
+        return $this->hasMany(Soumission::class, 'evaluationId')->when(auth()->user()->type == 'organisation', function($query) {
+            $query->where('organisationId', auth()->user()->profilable->id);
+        });
     }
 
     public function soumissionsDePerception()
     {
         return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->when(auth()->user()->type == 'organisation', function($query) {
-            $query->where('organisationId',)
+            $query->where('organisationId', auth()->user()->profilable->id);
         });
     }
 
     public function soumissionsFactuel()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel');
+        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel')->when(auth()->user()->type == 'organisation', function($query) {
+            $query->where('organisationId', auth()->user()->profilable->id);
+        });;
     }
 
     public function soumissionFactuel(?int $organisationId = null, ?string $token = null)
@@ -406,6 +410,7 @@ class EvaluationDeGouvernance extends Model
             ->join('soumissions', 'reponses_de_la_collecte.soumissionId', '=', 'soumissions.id')
             ->join('options_de_reponse', 'reponses_de_la_collecte.optionDeReponseId', '=', 'options_de_reponse.id')
             ->select(
+                'soumissions.organisationId',
                 'soumissions.categorieDeParticipant',
                 'options_de_reponse.libelle',
                 DB::raw('COUNT(reponses_de_la_collecte.id) as count')
