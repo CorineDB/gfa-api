@@ -67,28 +67,49 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissions()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId')->when(auth()->user()->type == 'organisation', function($query) {
-            $query->where('organisationId', auth()->user()->profilable->id);
+        return $this->hasMany(Soumission::class, 'evaluationId')->when(optional(auth()->user())->type === 'organisation', function($query) {
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If the organisationId is null, return an empty collection
+            if (is_null($organisationId)) {
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            } else {
+                $query->where('organisationId', $organisationId);
+            }
         });
     }
 
     public function soumissionsDePerception()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->when(auth()->user()->type == 'organisation', function($query) {
-            $query->where('organisationId', auth()->user()->profilable->id);
+        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->when(optional(auth()->user())->type === 'organisation', function($query) {
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If the organisationId is null, return an empty collection
+            if (is_null($organisationId)) {
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            } else {
+                $query->where('organisationId', $organisationId);
+            }
         });
     }
 
     public function soumissionsFactuel()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel')->when(auth()->user()->type == 'organisation', function($query) {
-            $query->where('organisationId', auth()->user()->profilable->id);
-        });;
+        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel')->when(optional(auth()->user())->type === 'organisation', function($query) {
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If the organisationId is null, return an empty collection
+            if (is_null($organisationId)) {
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            } else {
+                $query->where('organisationId', $organisationId);
+            }
+        });
     }
 
     public function soumissionFactuel(?int $organisationId = null, ?string $token = null)
     {
-        $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')->when(auth()->user()->type == 'organisation', function($query) {
+        $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')->when(optional(auth()->user())->type === 'organisation', function($query) {
             $query->where('organisationId', auth()->user()->profilable->id);
         })/* ->where('organisationId', $organisationId)->orWhere(function($query) use($token){
             $query->whereHas('organisation', function($query) use($token){
@@ -339,6 +360,25 @@ class EvaluationDeGouvernance extends Model
     }
 
     public function getTotalParticipantsEvaluationDePerceptionAttribute(){
+
+        return $this->organisations()
+            ->when(auth()->user()->type == 'organisation', function ($query) {
+                $organisationId = optional(auth()->user()->profilable)->id;
+
+                // If organisationId exists, filter by organisationId and return the sum of nbreParticipants
+                return $query->where('organisations.id', $organisationId)
+                            ->sum('pivot_nbreParticipants') ?? 0;
+            })
+            ->when(auth()->user()->type == 'unitee-de-gestion', function ($query) {
+                // Sum the nbreParticipants for all organisations when user type is 'unitee-de-gestion'
+                return $query->sum('pivot_nbreParticipants') ?? 0;
+            })
+            ->when(!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion']), function () {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                return 0;
+            })
+            ->default(0); // Default to 0 if neither condition is met
+    
         // Sum the 'nbreParticipants' attribute from the pivot table
         if(auth()->user()->type == 'organisation'){
             if(auth()->user()->profilable){
