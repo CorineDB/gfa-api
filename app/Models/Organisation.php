@@ -228,6 +228,11 @@ class Organisation extends Model
         return $this->belongsToMany(Indicateur::class, 'indicateur_responsables', 'responsableable_id', 'indicateurId')->wherePivotNull('deleted_at');
     }
 
+    public function getNbreDeParticipantsAttribute($evaluationDeGouvernanceId){
+        // Fetch the number of expected participants for perception evaluation
+        return $this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first()->pivot->nbreParticipants;
+    }
+
     /**
      * Calculate the completion percentage for perception submissions.
      *
