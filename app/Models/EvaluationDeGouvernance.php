@@ -327,22 +327,36 @@ class EvaluationDeGouvernance extends Model
     public function getTotalSoumissionsFactuelNonDemarrerAttribute()
     {
         // Filter organisations if the authenticated user's type is 'organisation'
-        $organisationsQuery = $this->organisations();
+        $totalOrganisations = $this->organisations()->when(auth()->user()->type == 'organisation', function ($query) {
+            // Get the organisation ID of the authenticated user
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If profilable is null or ID is missing, return 0
+            if (!$organisationId) {
+                return 0;
+            }
+
+            // Filter the organisations and sum the 'nbreParticipants' from the pivot table
+            $query->where('organisations.id', $organisationId);
+        })
+        ->when(!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion']), function ($query) {
+            // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+            $query->whereRaw('1 = 0'); // Ensures no results are returned
+        })->count();
     
-        if (auth()->user()->type == 'organisation') {
+        /* if (auth()->user()->type == 'organisation') {
             // Filter organisations for the authenticated organisation
             $organisationsQuery = $organisationsQuery->where('id', auth()->user()->profilable->id);
         }
     
         // Calculate the total organisations count with the filter if needed
-        $totalOrganisations = $organisationsQuery->count();
+        $totalOrganisations = $organisationsQuery->count(); */
     
         // Calculate total soumissionsFactuel count
         $totalSoumissionsFactuel = $this->soumissionsFactuel()->count();
     
         // Return the difference
         return $totalOrganisations - $totalSoumissionsFactuel;
-        
         return $this->organisations()->count() - $this->soumissionsFactuel()->count();
     }
 
