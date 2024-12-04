@@ -555,7 +555,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     return [
                         "{$evaluationDeGouvernance->annee_exercice}" => $organisation->profiles($evaluationDeGouvernance->id)
                     ];
-                })->values();
+                })->values()->toArray();
                 
                 return array_merge([
                     'id' => $organisation->secure_id,
