@@ -629,7 +629,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('{id}/cadre-de-mesure-rendement', 'cadre_de_mesure_rendement')->name('cadre-de-mesure-rendement')->middleware('permission:voir-cadre-de-rendement');
 
-                    Route::get('{id}/evolution-des-scores-au-fil-du-temps', 'scoresAuFilDuTemps')->name('evolution-des-scores-au-fil-du-temps')->middleware('permission:voir-cadre-de-rendement');
+                    Route::get('{id}/evolution-des-scores-au-fil-du-temps/{organisationId}', 'scoresAuFilDuTemps')->name('evolution-des-scores-au-fil-du-temps')->middleware('permission:voir-cadre-de-rendement');
                 });
             });
 
