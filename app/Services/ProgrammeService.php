@@ -537,7 +537,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
         {
             if(!($programme = $this->repository->findById($id))) throw new Exception( "Ce programme n'existe pas", 500);
 
-
             if(auth()->user()->type=="organisation"){
                 $organisationId = optional(auth()->user()->profilable)->id;
             }
