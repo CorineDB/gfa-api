@@ -253,13 +253,31 @@ class Organisation extends Model
             : 0;
     }
 
-    public function getPourcentageEvolutionAttribute($evaluationDeGouvernanceId)
+    /**
+     * Calculate the completion percentage for perception submissions.
+     *
+     * @param int $evaluationDeGouvernanceId
+     * @return float
+     */
+    public function getFactuelSubmissionCompletionAttribute($evaluationDeGouvernanceId)
     {
         // Fetch submissions for the organisation
         $factualSubmission = $this->sousmissions_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
 
         // Calculate factual completion percentage
-        $factualCompletion = $factualSubmission ? $factualSubmission->pourcentage_evolution : 0;
+        return $factualSubmission ? $factualSubmission->pourcentage_evolution : 0;
+    }
+
+    public function getPourcentageEvolutionAttribute($evaluationDeGouvernanceId)
+    {
+        /* // Fetch submissions for the organisation
+        $factualSubmission = $this->sousmissions_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
+
+        // Calculate factual completion percentage
+        $factualCompletion = $factualSubmission ? $factualSubmission->pourcentage_evolution : 0; */
+
+        // Calculate factual completion percentage
+        $factualCompletion = $this->getFactuelSubmissionCompletionAttribute($evaluationDeGouvernanceId);
 
         // Calculate perception completion using the helper method
         $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId);
