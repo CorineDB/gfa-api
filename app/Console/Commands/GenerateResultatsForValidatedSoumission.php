@@ -8,19 +8,18 @@ use App\Models\EvaluationDeGouvernance;
 use App\Models\FormulaireDeGouvernance;
 use App\Models\ProfileDeGouvernance;
 use App\Models\Soumission;
-use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\FicheDeSyntheseRepository;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 
-class GenerateEvaluationResultats extends Command
+class GenerateResultatsForValidatedSoumission extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'generate:report-evaluation-resultats {evaluationId}';
+    protected $signature = 'generate:report-soumissions-resultats';
 
     /**
      * The console command description.
@@ -54,19 +53,18 @@ class GenerateEvaluationResultats extends Command
      */
     public function handle()
     {
-        // Récupérer l'ID d'évaluation passé en argument
-        $evaluationId = $this->argument('evaluationId');
-        $this->evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($evaluationId);
+        EvaluationDeGouvernance::where("statut",0)->get()->map(function($evaluationDeGouvernance){
+            $evaluationDeGouvernance->soumissions()->where("statut", true);
+            $this->generateResultForEvaluation($evaluationDeGouvernance);
+        });
 
-        $this->generateResultForEvaluation($this->evaluationDeGouvernance);
-
-        $this->info("Generated result for soumission ID {$this->evaluationDeGouvernance->id}:");
+        $this->info("Generated result for soumissions");
         return 0; // Indicates successful execution
     }
     
     protected function generateResultForEvaluation(EvaluationDeGouvernance $evaluationDeGouvernance)
     {
-        $organisation_group_soumissions = $evaluationDeGouvernance->soumissions->groupBy(['organisationId', 'type']);
+        $organisation_group_soumissions = $evaluationDeGouvernance->soumissions()->where("statut", true)->groupBy(['organisationId', 'type']);
 
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
@@ -271,34 +269,6 @@ class GenerateEvaluationResultats extends Command
 
     public function generateSyntheseForFactuelleSoumission(Soumission $soumission, $organisationId)
     {
-        /*
-            $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) {
-                // Call the recursive function to load nested relationships
-                $this->loadCategories($query);
-            }])->get()->each(function ($categorie_de_gouvernance) {
-                $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) {
-                    $reponses = $this->interpretData($sous_categorie_de_gouvernance);
-
-                    // Calculate indice_factuel
-                    if (count($reponses) > 0 && $reponses->sum('point') > 0) {
-
-                        $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($reponses);
-                    } else {
-                        $sous_categorie_de_gouvernance->score_factuel = 0;
-                    }
-                });
-
-                // Calculate indice_factuel
-                if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
-
-                    $categorie_de_gouvernance->indice_factuel = $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count();
-                } else {
-                    $categorie_de_gouvernance->indice_factuel = 0;
-                }
-
-            });
-        */
-
         $principes_de_gouvernance = collect([]);
 
         $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) use ($organisationId) {
