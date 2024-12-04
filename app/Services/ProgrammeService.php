@@ -30,6 +30,7 @@ use App\Models\Projet;
 use App\Models\TemplateRapport;
 use App\Models\Unitee;
 use App\Models\User;
+use App\Repositories\OrganisationRepository;
 use App\Repositories\ProgrammeRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\ProgrammeServiceInterface;
@@ -522,6 +523,49 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => CadreDeMesureRendementResource::collection($cadre_de_mesure_rendement), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function scores_au_fil_du_temps($id, $organisationId = null) : JsonResponse
+    {
+        try
+        {
+            if(!($programme = $this->repository->findById($id))) throw new Exception( "Ce programme n'existe pas", 500);
+
+
+            if(auth()->user()->type=="organisation"){
+                $organisationId = optional(auth()->user()->profilable)->id;
+            }
+            else if($organisationId == null){
+                throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+            }
+
+            if($organisationId){
+                if (!(($organisation = app(OrganisationRepository::class)->findById($organisationId)) && $organisation->user->programmeId == $programme->id)) {
+                    throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                }
+            }
+
+            $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)->map(function($organisation) use($programme) {
+                $evaluations_scores = $programme->evaluations_de_gouvernance->map(function ($evaluationDeGouvernance) use($organisation) {
+                    return [
+                        "{$evaluationDeGouvernance->annee_exercice}" => $organisation->profiles($evaluationDeGouvernance->id)
+                    ];
+                })->values();
+                
+                return array_merge([
+                    'id' => $organisation->secure_id,
+                    'intitule' => $organisation->sigle." - ".$organisation->user->nom
+                ],$evaluations_scores);
+            });
+
+            //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $scores, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         }
         catch (\Throwable $th)
