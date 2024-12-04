@@ -326,6 +326,23 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalSoumissionsFactuelNonDemarrerAttribute()
     {
+        // Filter organisations if the authenticated user's type is 'organisation'
+        $organisationsQuery = $this->organisations();
+    
+        if (auth()->user()->type == 'organisation') {
+            // Filter organisations for the authenticated organisation
+            $organisationsQuery = $organisationsQuery->where('id', auth()->user()->profilable->id);
+        }
+    
+        // Calculate the total organisations count with the filter if needed
+        $totalOrganisations = $organisationsQuery->count();
+    
+        // Calculate total soumissionsFactuel count
+        $totalSoumissionsFactuel = $this->soumissionsFactuel()->count();
+    
+        // Return the difference
+        return $totalOrganisations - $totalSoumissionsFactuel;
+        
         return $this->organisations()->count() - $this->soumissionsFactuel()->count();
     }
 
@@ -381,20 +398,6 @@ class EvaluationDeGouvernance extends Model
             ->sum(function ($organisation) {
                 return $organisation->pivot->nbreParticipants ?? 0;
             });
-    
-        // Sum the 'nbreParticipants' attribute from the pivot table
-        if(auth()->user()->type == 'organisation'){
-            if(auth()->user()->profilable){
-                return $this->organisations(auth()->user()->profilable->id)->first()->pivot->nbreParticipants ?? 0;
-            }
-            else{ return 0; }
-        }
-        elseif(auth()->user()->type == 'unitee-de-gestion'){
-            return $this->organisations->sum(function ($organisation) {
-                return $organisation->pivot->nbreParticipants;
-            });
-        }
-        else{ return 0; }
     }
 
     public function getOrganisationsRankingAttribute()
