@@ -217,7 +217,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'code'                  => $organisation->code,
                     'nom_point_focal'       => $organisation->nom_point_focal,
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
-                    'contact_point_focal'   => $organisation->contact_point_focal
+                    'contact_point_focal'   => $organisation->contact_point_focal,
+                    'pourcentage_evolution_des_soumissions_de_perception'   => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id)
                 ], $group_soumissions->toArray());
             } else {
                 /* $organisation_soumissions = $evaluationDeGouvernance->soumissions()
