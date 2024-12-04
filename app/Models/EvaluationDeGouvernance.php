@@ -72,7 +72,9 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissionsDePerception()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception');
+        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->when(auth()->user()->type == 'organisation', function($query) {
+            $query->where('organisationId',)
+        });
     }
 
     public function soumissionsFactuel()
@@ -316,14 +318,34 @@ class EvaluationDeGouvernance extends Model
     }
 
     public function getTotalParticipantsEvaluationFactuelAttribute(){
-        return $this->organisations()->count();
+        // Sum the 'nbreParticipants' attribute from the pivot table
+        if(auth()->user()->hasRole('organisation')){
+            if(auth()->user()->profilable){
+                return $this->organisations(auth()->user()->profilable->id)->count() ?? 0;
+            }
+            else{ return 0; }
+        }
+        elseif(auth()->user()->hasRole('unitee-de-gestion')){
+            return $this->organisations()->count();
+        }
+        else{ return 0; }
+        
     }
 
     public function getTotalParticipantsEvaluationDePerceptionAttribute(){
         // Sum the 'nbreParticipants' attribute from the pivot table
-        return $this->organisations->sum(function ($organisation) {
-            return $organisation->pivot->nbreParticipants;
-        });
+        if(auth()->user()->type == 'organisation'){
+            if(auth()->user()->profilable){
+                return $this->organisations(auth()->user()->profilable->id)->first()->pivot->nbreParticipants ?? 0;
+            }
+            else{ return 0; }
+        }
+        elseif(auth()->user()->type == 'unitee-de-gestion'){
+            return $this->organisations->sum(function ($organisation) {
+                return $organisation->pivot->nbreParticipants;
+            });
+        }
+        else{ return 0; }
     }
 
     public function getOrganisationsRankingAttribute()
@@ -361,15 +383,21 @@ class EvaluationDeGouvernance extends Model
         // Categories to include in the Cartesian product
         $categories = ['membre_de_conseil_administration', 'employe_association', 'membre_association'];
 
-        // Generate the Cartesian product of all categories and options
+        // Generate the Cartesian product of all organisations, categories, and options
+        $organisations = $this->organisations->pluck("id")->unique();
+
+        // Generate the Cartesian product of all categories and options        
         $combinations = [];
-        foreach ($categories as $category) {
-            foreach ($optionLibelles as $optionId => $optionLibelle) {
-                $combinations[] = [
-                    'categorieDeParticipant' => $category,
-                    'optionDeReponseId' => $optionId,
-                    'libelle' => $optionLibelle
-                ];
+        foreach ($organisations as $organisationId) {
+            foreach ($categories as $category) {
+                foreach ($optionLibelles as $optionId => $optionLibelle) {
+                    $combinations[] = [
+                        'organisationId' => $organisationId,
+                        'categorieDeParticipant' => $category,
+                        'optionDeReponseId' => $optionId,
+                        'libelle' => $optionLibelle
+                    ];
+                }
             }
         }
 
@@ -384,15 +412,17 @@ class EvaluationDeGouvernance extends Model
             )
             ->whereIn('reponses_de_la_collecte.soumissionId', $soumissionIds)
             ->whereIn('reponses_de_la_collecte.optionDeReponseId', $optionIds)
-            ->groupBy('soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
+            ->groupBy('soumissions.organisationId', 'soumissions.categorieDeParticipant', 'options_de_reponse.libelle')
             ->get();
 
         // Combine the counts with the pre-generated combinations, ensuring no missing combinations
         $query = collect($combinations)->map(function ($combination) use ($responseCounts) {
+            
             // Find the response count for this combination using where with multiple conditions
-            $responseCount = $responseCounts->where('categorieDeParticipant', $combination['categorieDeParticipant'])
-                                            ->where('libelle', $combination['libelle'])
-                                            ->first();  // Get the first matching response (or null if none)
+            $responseCount = $responseCounts->where('organisationId', $combination['organisationId'])
+                ->where('categorieDeParticipant', $combination['categorieDeParticipant'])
+                ->where('libelle', $combination['libelle'])
+                ->first(); // Get the first matching response (or null if none)
 
             // If no response count found, set to 0
             $combination['count'] = $responseCount ? $responseCount->count : 0;
@@ -400,16 +430,21 @@ class EvaluationDeGouvernance extends Model
             return $combination;
         });
 
-        // Reorganize data under each categorieDeParticipant
-        $groupedStats = $query->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
+        // Reorganize data under each organisation and categorieDeParticipant
+        $groupedStats = $query->groupBy('organisationId')->map(function ($dataByOrganisation, $organisationId) {
             return [
-                'categorieDeParticipant' => $categorie,
-                'options_de_reponse' => $optionsDeReponse->map(function ($optionDeReponse) {
+                'organisationId' => $organisationId,
+                'categories' => $dataByOrganisation->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
                     return [
-                        'label' => $optionDeReponse['libelle'],
-                        'count' => $optionDeReponse['count'],
+                        'categorieDeParticipant' => $categorie,
+                        'options_de_reponse' => $optionsDeReponse->map(function ($optionDeReponse) {
+                            return [
+                                'label' => $optionDeReponse['libelle'],
+                                'count' => $optionDeReponse['count'],
+                            ];
+                        }),
                     ];
-                }),
+                })->values(),
             ];
         });
 
