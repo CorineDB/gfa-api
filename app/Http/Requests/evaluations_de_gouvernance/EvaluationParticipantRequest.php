@@ -19,7 +19,7 @@ class EvaluationParticipantRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("organisation");
+        return request()->user()->hasRole("organisation") && $this->evaluation_de_gouvernance->statut == 0;
     }
 
     /**
