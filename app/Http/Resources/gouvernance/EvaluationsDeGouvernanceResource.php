@@ -39,6 +39,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             $this->mergeWhen(Auth::user()->type == 'organisation', function(){
                 return [
                     'pourcentage_evolution_des_soumissions_de_perception' => optional(Auth::user()->profilable)->getPerceptionSubmissionsCompletionAttribute($this->id) ?? 0,
+                    'nbreDeParticipants' => optional(Auth::user()->profilable)->nbreOfParticipants($this->id) ?? 0
                 ];
             }),
             
