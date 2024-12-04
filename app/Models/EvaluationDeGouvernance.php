@@ -344,20 +344,11 @@ class EvaluationDeGouvernance extends Model
             $query->whereRaw('1 = 0'); // Ensures no results are returned
         })->count();
     
-        /* if (auth()->user()->type == 'organisation') {
-            // Filter organisations for the authenticated organisation
-            $organisationsQuery = $organisationsQuery->where('id', auth()->user()->profilable->id);
-        }
-    
-        // Calculate the total organisations count with the filter if needed
-        $totalOrganisations = $organisationsQuery->count(); */
-    
         // Calculate total soumissionsFactuel count
         $totalSoumissionsFactuel = $this->soumissionsFactuel()->count();
     
         // Return the difference
         return $totalOrganisations - $totalSoumissionsFactuel;
-        return $this->organisations()->count() - $this->soumissionsFactuel()->count();
     }
 
     public function getTotalSoumissionsDePerceptionNonDemarrerAttribute()
