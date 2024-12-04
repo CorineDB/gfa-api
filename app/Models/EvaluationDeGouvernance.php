@@ -390,15 +390,15 @@ class EvaluationDeGouvernance extends Model
         $categories = ['membre_de_conseil_administration', 'employe_association', 'membre_association'];
 
         // Generate the Cartesian product of all organisations, categories, and options
-        $organisations = $this->organisations->pluck("id")->unique();
+        $organisations = $this->organisations;
 
         // Generate the Cartesian product of all categories and options        
         $combinations = [];
-        foreach ($organisations as $organisationId) {
+        foreach ($organisations as $organisation) {
             foreach ($categories as $category) {
                 foreach ($optionLibelles as $optionId => $optionLibelle) {
                     $combinations[] = [
-                        'organisationId' => $organisationId,
+                        'organisationId' => $organisation->id,
                         'categorieDeParticipant' => $category,
                         'optionDeReponseId' => $optionId,
                         'libelle' => $optionLibelle
