@@ -363,16 +363,34 @@ class EvaluationDeGouvernance extends Model
 
         return $this->organisations()
             ->when(auth()->user()->type == 'organisation', function ($query) {
+                // Get the organisation ID of the authenticated user
                 $organisationId = optional(auth()->user()->profilable)->id;
+
+                // If profilable is null or ID is missing, return 0
+                if (!$organisationId) {
+                    return 0;
+                }
+
+                // Filter the organisations and sum the 'nbreParticipants' from the pivot table
+                return $query->where('organisations.id', $organisationId)
+                             ->sum(function ($organisation) {
+                                 return $organisation->pivot->nbreParticipants ?? 0;
+                             });
 
                 // If organisationId exists, filter by organisationId and return the sum of nbreParticipants
                 return $query->where('organisations.id', $organisationId)
                             ->sum('pivot_nbreParticipants') ?? 0;
-            })
+            })/* 
             ->when(auth()->user()->type == 'unitee-de-gestion', function ($query) {
                 // Sum the nbreParticipants for all organisations when user type is 'unitee-de-gestion'
                 return $query->sum('pivot_nbreParticipants') ?? 0;
-            })
+            }) */
+            ->when(auth()->user()->type == 'unitee-de-gestion', function ($query) {
+                // Sum the 'nbreParticipants' from the pivot table for all organisations
+                return $query->sum(function ($organisation) {
+                    return $organisation->pivot->nbreParticipants ?? 0;
+                });
+            })    
             ->when(!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion']), function () {
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 return 0;
