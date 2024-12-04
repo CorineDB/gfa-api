@@ -372,29 +372,14 @@ class EvaluationDeGouvernance extends Model
                 }
 
                 // Filter the organisations and sum the 'nbreParticipants' from the pivot table
-                return $query->where('organisations.id', $organisationId)->get()  // Retrieve organisations
-                             ->sum(function ($organisation) {
-                                 return $organisation->pivot->nbreParticipants ?? 0;
-                             });
-
-                // If organisationId exists, filter by organisationId and return the sum of nbreParticipants
-                return $query->where('organisations.id', $organisationId)
-                            ->sum('pivot_nbreParticipants') ?? 0;
-            })/* 
-            ->when(auth()->user()->type == 'unitee-de-gestion', function ($query) {
-                // Sum the nbreParticipants for all organisations when user type is 'unitee-de-gestion'
-                return $query->sum('pivot_nbreParticipants') ?? 0;
-            }) */
-            ->when(auth()->user()->type == 'unitee-de-gestion', function ($query) {
-                // Sum the 'nbreParticipants' from the pivot table for all organisations
-                return $query->get()  // Retrieve organisations
-                    ->sum(function ($organisation) {
-                    return $organisation->pivot->nbreParticipants ?? 0;
-                });
-            })    
-            ->when(!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion']), function () {
+                $query->where('organisations.id', $organisationId);
+            })
+            ->when(!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion']), function ($query) {
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
-                return 0;
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            })->get()  // Retrieve organisations
+            ->sum(function ($organisation) {
+                return $organisation->pivot->nbreParticipants ?? 0;
             });
     
         // Sum the 'nbreParticipants' attribute from the pivot table
