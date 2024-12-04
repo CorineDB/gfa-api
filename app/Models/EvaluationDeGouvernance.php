@@ -88,7 +88,9 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissionFactuel(?int $organisationId = null, ?string $token = null)
     {
-        $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')/* ->where('organisationId', $organisationId)->orWhere(function($query) use($token){
+        $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')->when(auth()->user()->type == 'organisation', function($query) {
+            $query->where('organisationId', auth()->user()->profilable->id);
+        })/* ->where('organisationId', $organisationId)->orWhere(function($query) use($token){
             $query->whereHas('organisation', function($query) use($token){
                 $query->whereHas('evaluations_de_gouvernance', function($query) use($token){
                     $query->wherePivot('token', $token);
@@ -436,9 +438,11 @@ class EvaluationDeGouvernance extends Model
         });
 
         // Reorganize data under each organisation and categorieDeParticipant
-        $groupedStats = $query->groupBy('organisationId')->map(function ($dataByOrganisation, $organisationId) {
+        $groupedStats = $query->groupBy('organisationId')->map(function ($dataByOrganisation, $organisationId) use ($organisations) {
+            $organisation = $organisations->firstWhere('id', $organisationId);
             return [
-                'organisationId' => $organisationId,
+                'id' => $organisation->secure_id,
+                'intitule' => $organisation->sigle." - ".$organisation->user->nom,
                 'categories' => $dataByOrganisation->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
                     return [
                         'categorieDeParticipant' => $categorie,
