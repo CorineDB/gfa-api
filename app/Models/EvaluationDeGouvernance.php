@@ -372,7 +372,7 @@ class EvaluationDeGouvernance extends Model
                 }
 
                 // Filter the organisations and sum the 'nbreParticipants' from the pivot table
-                return $query->where('organisations.id', $organisationId)
+                return $query->where('organisations.id', $organisationId)->get()  // Retrieve organisations
                              ->sum(function ($organisation) {
                                  return $organisation->pivot->nbreParticipants ?? 0;
                              });
@@ -387,7 +387,8 @@ class EvaluationDeGouvernance extends Model
             }) */
             ->when(auth()->user()->type == 'unitee-de-gestion', function ($query) {
                 // Sum the 'nbreParticipants' from the pivot table for all organisations
-                return $query->sum(function ($organisation) {
+                return $query->get()  // Retrieve organisations
+                    ->sum(function ($organisation) {
                     return $organisation->pivot->nbreParticipants ?? 0;
                 });
             })    
