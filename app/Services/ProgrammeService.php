@@ -561,7 +561,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     'id' => $organisation->secure_id,
                     'intitule' => $organisation->sigle." - ".$organisation->user->nom
                 ],$evaluations_scores);
-            });
+            })->values();
 
             //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $scores, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
