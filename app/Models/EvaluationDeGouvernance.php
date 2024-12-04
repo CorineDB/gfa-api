@@ -395,8 +395,7 @@ class EvaluationDeGouvernance extends Model
             ->when(!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion']), function () {
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 return 0;
-            })
-            ->default(0); // Default to 0 if neither condition is met
+            });
     
         // Sum the 'nbreParticipants' attribute from the pivot table
         if(auth()->user()->type == 'organisation'){
