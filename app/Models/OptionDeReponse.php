@@ -69,7 +69,7 @@ class OptionDeReponse extends Model
 
     public function reponses()
     {
-        return $this->hasMany(ReponseDeLaCollecte::class, 'optionDeReponseId', 'id');
+        return $this->hasMany(ReponseDeLaCollecte::class, 'optionDeReponseId');
     }
 
     public function formulaires_de_gouvernance()
