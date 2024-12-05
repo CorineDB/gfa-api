@@ -254,7 +254,7 @@ class Organisation extends Model
 
         // Adjust completion percentage based on number of participants
         return $nbreOfParticipants > 0
-            ? ($perceptionSubmissionsCompletion * $perceptionSubmissions->count()) / $nbreOfParticipants
+            ? round((($perceptionSubmissionsCompletion * $perceptionSubmissions->count()) / $nbreOfParticipants), 2)
             : 0;
     }
 
@@ -270,7 +270,7 @@ class Organisation extends Model
         $factualSubmission = $this->sousmissions_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
 
         // Calculate factual completion percentage
-        return $factualSubmission ? $factualSubmission->pourcentage_evolution : 0;
+        return $factualSubmission ? round($factualSubmission->pourcentage_evolution, 2) : 0;
     }
 
     public function getPourcentageEvolutionAttribute($evaluationDeGouvernanceId)
