@@ -550,9 +550,10 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                 }
             }
 
-            $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)->map(function($organisation) use($programme) {
+            /* $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)->map(function($organisation) use($programme) {
                 $evaluations_scores = $programme->evaluations_de_gouvernance->map(function ($evaluationDeGouvernance) use($organisation) {
                     return [
+                        "evaluationDeGouvernanceId" => $evaluationDeGouvernance->id,
                         "{$evaluationDeGouvernance->annee_exercice}" => $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? []
                     ];
                 })->toArray();
@@ -561,7 +562,25 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     'id' => $organisation->secure_id,
                     'intitule' => $organisation->sigle." - ".$organisation->user->nom
                 ],$evaluations_scores);
-            })->values();
+            })->values(); */
+
+            $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)
+                ->map(function ($organisation) use ($programme) {
+                    $evaluations_scores = $programme->evaluations_de_gouvernance->mapWithKeys(function ($evaluationDeGouvernance) use ($organisation) {
+                        // Key-value pairing for each year with scores
+                        $results = $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? [];
+                        return [$evaluationDeGouvernance->annee_exercice => $results];
+                    });
+
+                    // Merge evaluation scores with organizational metadata
+                    return [
+                        'id' => $organisation->secure_id,
+                        'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
+                        'scores' => $evaluations_scores,
+                    ];
+                })
+                ->values(); // Reset keys for a clean JSON output
+
 
             //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $scores, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
