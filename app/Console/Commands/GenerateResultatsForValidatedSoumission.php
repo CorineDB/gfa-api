@@ -348,7 +348,7 @@ class GenerateResultatsForValidatedSoumission extends Command
         if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$reponses, $organisationId) {
                 $responses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
-                $reponses = array_merge($reponses, $responses);
+                $reponses = array_merge($reponses, $responses->toArray());
             });
         } else {
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use (&$reponses, $organisationId) {
