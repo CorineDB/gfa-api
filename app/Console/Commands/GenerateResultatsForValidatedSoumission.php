@@ -36,17 +36,6 @@ class GenerateResultatsForValidatedSoumission extends Command
     protected $evaluationDeGouvernance;
 
     /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct(EvaluationDeGouvernance $evaluationDeGouvernance)
-    {
-        parent::__construct();
-        $this->evaluationDeGouvernance = $evaluationDeGouvernance;
-    }
-
-    /**
      * Execute the console command.
      *
      * @return int
@@ -54,6 +43,7 @@ class GenerateResultatsForValidatedSoumission extends Command
     public function handle()
     {
         EvaluationDeGouvernance::where("statut", 0)->get()->map(function($evaluationDeGouvernance){
+            $this->evaluationDeGouvernance = $evaluationDeGouvernance;
             $this->generateResultForEvaluation($evaluationDeGouvernance);
         });
 
