@@ -247,8 +247,15 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $index = 0;
                 $question_de_gouvernance->options_de_reponse = collect([]);
 
+                $counts = $question_de_gouvernance->reponses()
+                    ->selectRaw('optionDeReponseId, COUNT(*) as count')
+                    ->groupBy('optionDeReponseId')
+                    ->pluck('count', 'optionDeReponseId');
+
                 foreach ($options_de_reponse as $key => $option_de_reponse) {
-                    $reponses_count = $question_de_gouvernance->reponses()->where("optionDeReponseId", $option_de_reponse->id)->count();
+                    //$reponses_count = $question_de_gouvernance->reponses()->where("optionDeReponseId", $option_de_reponse->id)->count();
+
+                    $reponses_count = $counts[$option_de_reponse->id] ?? 0;
                     $optionPoint = $option_de_reponse->pivot->point;
 
                     // Accumulate the weighted sum
