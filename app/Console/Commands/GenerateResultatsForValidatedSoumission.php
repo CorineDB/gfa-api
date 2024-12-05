@@ -267,10 +267,11 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     $option_de_reponse->nbre_i = $nbre_i;
 
-                    $question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
+                    //$question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
 
                     $index++;
                 });
+
                 $question_de_gouvernance->options_de_reponse = $options;
 
                 // Calculate the weighted average
