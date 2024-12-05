@@ -201,9 +201,9 @@ class ProgrammeController extends Controller
         return $this->programmeService->cadre_de_mesure_rendement($id);
     }
 
-    public function scoresAuFilDuTemps($id, $organisationId)
+    public function scoresAuFilDuTemps($organisationId)
     {
-        return $this->programmeService->scores_au_fil_du_temps($id, $organisationId);
+        return $this->programmeService->scores_au_fil_du_temps($organisationId);
     }
 
     public function suiviFinanciers($id)

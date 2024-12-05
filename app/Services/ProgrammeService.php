@@ -535,7 +535,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
     {
         try
         {
-            if(!($programme = $this->repository->findById($id))) throw new Exception( "Ce programme n'existe pas", 500);
+            $programme = auth()->user()->programme;
 
             if(auth()->user()->type=="organisation"){
                 $organisationId = optional(auth()->user()->profilable)->id;
@@ -545,7 +545,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             }
 
             if($organisationId){
-                if (!(($organisation = app(OrganisationRepository::class)->findById($organisationId)) && $organisation->user->programmeId == $programme->id)) {
+                if (!(($organisation = app(OrganisationRepository::class)->findById($organisationId)) && $programme->evaluations_de_gouvernance_organisations($organisation->id)->first())) {
                     throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
             }
