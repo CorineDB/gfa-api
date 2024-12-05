@@ -279,7 +279,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $indicateurs = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
                 
                 // Calculate indice_factuel
-                if (count($reponses) > 0 && $reponses->sum('point') > 0) {
+                if ($reponses->sum('point') > 0) {
                     $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($indicateurs);
                 } else {
                     $sous_categorie_de_gouvernance->score_factuel = 0;
