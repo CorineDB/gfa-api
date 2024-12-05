@@ -63,7 +63,6 @@ class GenerateResultatsForValidatedSoumission extends Command
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
 
 
-            $this->info("Generated result for soumissions".$group_soumission);
                 if(!$evaluationOrganisationId = $evaluationDeGouvernance->organisations()->wherePivot('organisationId', $organisationId)->first()->pivot){
                     return;
                 }
@@ -80,6 +79,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                         app(FicheDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
 
+                    $this->info("Generated result for soumissions".($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())));
                     if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
                         
                         // Convert $profile->resultat_synthetique to an associative array for easy updating
