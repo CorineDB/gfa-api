@@ -241,7 +241,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
-                    $question_de_gouvernance->moyenne_ponderee = $weighted_sum / $nbre_r;
+                    $question_de_gouvernance->moyenne_ponderee = round(($weighted_sum / $nbre_r), 2);
                 } else {
                     $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
                 }
@@ -252,12 +252,12 @@ class GenerateResultatsForValidatedSoumission extends Command
             $nbre_questions_operationnelle = $categorie_de_gouvernance->questions_de_gouvernance->count();
 
             // Check to avoid division by zero
-            $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? ($total_moyenne_ponderee / $nbre_questions_operationnelle) : 0;
+            $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? round(($total_moyenne_ponderee / $nbre_questions_operationnelle), 2) : 0;
 
             $principes_de_gouvernance->push(['id' => $categorie_de_gouvernance->categorieable->id, 'nom' => $categorie_de_gouvernance->categorieable->nom, 'indice_de_perception' => $categorie_de_gouvernance->indice_de_perception]);
 
         });
-        $indice_de_perception = $results_categories_de_gouvernance->sum('indice_de_perception') / $results_categories_de_gouvernance->count();
+        $indice_de_perception = round(($results_categories_de_gouvernance->sum('indice_de_perception') / $results_categories_de_gouvernance->count()), 2);
         return [$indice_de_perception, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
     }
 

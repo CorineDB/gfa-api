@@ -201,7 +201,8 @@ class GenerateEvaluationResultats extends Command
     
         // Calculate the product of all numbers
         $product = array_product($numbers);
-    
+            // Calculate the nth root (geometric mean)
+
         // Calculate the nth root (geometric mean)
         return pow($product, 1 / $count);
     }
