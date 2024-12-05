@@ -249,7 +249,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                 foreach ($options_de_reponse as $key => $option_de_reponse) {
                     $reponses_count = $question_de_gouvernance->reponses()->where("optionDeReponseId", $option_de_reponse->id)->count();
-                    $optionPoint = $$option_de_reponse->pivot->point;
+                    $optionPoint = $option_de_reponse->pivot->point;
                     $moyenne_ponderee_i = $optionPoint * $reponses_count;
 
                     // Accumulate the weighted sum
