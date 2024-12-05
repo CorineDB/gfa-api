@@ -276,7 +276,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
 
-                $this->info("Reponse" . $reponses . " count" . count($reponses));
+                $this->info("Reponse: " . $reponses . ". count: " . count($reponses));
 
                 $indicateurs = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
                 
@@ -341,6 +341,8 @@ class GenerateResultatsForValidatedSoumission extends Command
     public function interpretData($categorie_de_gouvernance, $organisationId)
     {
         $reponses = [];
+
+        $this->info("sousCategoriesDeGouvernance count: " . $categorie_de_gouvernance->sousCategoriesDeGouvernance->count());
         if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId) {
                 $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
@@ -350,6 +352,8 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $reponses_de_collecte = $question_de_gouvernance->reponses()->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($organisationId) {
                     $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
                 })->get()->toArray();
+                $this->info("sousCategoriesDeGouvernance count: " . $reponses_de_collecte);
+
                 $reponses = array_merge($reponses, $reponses_de_collecte);
             });
         }
