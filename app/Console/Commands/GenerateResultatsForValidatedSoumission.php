@@ -58,11 +58,12 @@ class GenerateResultatsForValidatedSoumission extends Command
 
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
-            $this->info("Generated result for soumissions".$organisationId);
-
             $profile = null;
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
+
+
+            $this->info("Generated result for soumissions".$group_soumission);
                 if(!$evaluationOrganisationId = $evaluationDeGouvernance->organisations()->wherePivot('organisationId', $organisationId)->first()->pivot){
                     return;
                 }
