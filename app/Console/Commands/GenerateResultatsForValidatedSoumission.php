@@ -243,8 +243,6 @@ class GenerateResultatsForValidatedSoumission extends Command
                     $index++;
                 });
 
-                $question_de_gouvernance->responses_count = $options;
-
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
                     $question_de_gouvernance->moyenne_ponderee = round(($weighted_sum / $nbre_r), 2);
@@ -311,7 +309,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             });
 
             // Calculate indice_factuel
-            if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
+            if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
                 $categorie_de_gouvernance->indice_factuel = $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count();
             } else {
                 $categorie_de_gouvernance->indice_factuel = 0;
