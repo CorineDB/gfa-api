@@ -247,9 +247,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $index = 0;
                 $question_de_gouvernance->options_de_reponse = collect([]);
 
-                $options = $options_de_reponse;
-
-                $options->loadCount([
+                $options_de_reponse->loadCount([
                     'reponses' => function ($query) use ($question_de_gouvernance, $organisationId) {
                         $query->where('questionId', $question_de_gouvernance->id)->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
                             $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
@@ -271,8 +269,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     $index++;
                 });
-
-                $question_de_gouvernance->options_de_reponse = $options;
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
