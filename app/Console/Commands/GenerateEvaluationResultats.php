@@ -63,7 +63,6 @@ class GenerateEvaluationResultats extends Command
         $this->info("Generated result for soumission ID {$this->evaluationDeGouvernance->id}:");
         return 0; // Indicates successful execution
     }
-    
     protected function generateResultForEvaluation(EvaluationDeGouvernance $evaluationDeGouvernance)
     {
         $organisation_group_soumissions = $evaluationDeGouvernance->soumissions->groupBy(['organisationId', 'type']);
