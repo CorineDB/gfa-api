@@ -357,6 +357,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $reponses = array_merge($reponses, $reponses_de_collecte);
             });
         }
+        $this->info("sousCategoriesDeGouvernance count: " . collect($reponses));
 
         return collect($reponses);
     }
