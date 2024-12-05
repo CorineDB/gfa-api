@@ -235,7 +235,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     // Accumulate the weighted sum
                     $weighted_sum += $option_de_reponse->moyenne_ponderee_i = $note_i * $nbre_i;
-                    $option_de_reponse->nbre_i = $nbre_i;
 
                     $question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
 
