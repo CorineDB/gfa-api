@@ -153,8 +153,6 @@ class GenerateResultatsForValidatedSoumission extends Command
                 }
             }
 
-
-            $this->info("Generated result for soumissions".$profile);
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
                         
                 // Convert $profile->resultat_synthetique to an associative collection for easy updating
