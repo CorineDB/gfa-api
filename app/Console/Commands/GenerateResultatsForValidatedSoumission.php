@@ -274,6 +274,8 @@ class GenerateResultatsForValidatedSoumission extends Command
             $this->loadCategories($query, $organisationId);
         }])->get()->each(function ($categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
+                
+                $this->info("Critere: " . $sous_categorie_de_gouvernance->categorieable->nom);
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
 
                 $this->info("Reponse: " . $reponses . ". count: " . count($reponses));
