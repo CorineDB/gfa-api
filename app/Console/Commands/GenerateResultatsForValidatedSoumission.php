@@ -276,6 +276,8 @@ class GenerateResultatsForValidatedSoumission extends Command
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
 
+                $this->info("Reponse" . $reponses . " count" . count($reponses));
+
                 $indicateurs = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
                 
                 // Calculate indice_factuel
