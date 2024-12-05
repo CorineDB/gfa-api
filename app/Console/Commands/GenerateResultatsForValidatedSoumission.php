@@ -19,7 +19,7 @@ class GenerateResultatsForValidatedSoumission extends Command
      *
      * @var string
      */
-    protected $signature = 'generate:report-soumissions-resultats';
+    protected $signature = 'generate:report-for-validated-soumissions';
 
     /**
      * The console command description.

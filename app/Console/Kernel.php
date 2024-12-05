@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:change-statut')->everyMinute();
         $schedule->command('change-statut:evaluations')->everyMinute();
-        $schedule->command('generate:report-soumissions-resultats')->everyMinute();
+        $schedule->command('generate:report-for-validated-soumissions')->everyMinute();
 
         $schedule->command('command:demarrage')->everyMinute();
 
