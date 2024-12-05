@@ -291,6 +291,8 @@ class EvaluationDeGouvernance extends Model
             return 0;
         }
 
+        return round(($this->pourcentage_evolution_des_soumissions_factuel + $this->pourcentage_evolution_des_soumissions_de_perception) / 2, 2);
+
         return ($this->pourcentage_evolution_des_soumissions_factuel + $this->pourcentage_evolution_des_soumissions_de_perception) / 2;
     }
 
@@ -301,7 +303,7 @@ class EvaluationDeGouvernance extends Model
             return 0;
         }
 
-        return ($this->total_soumissions_factuel * 100) / $this->total_participants_evaluation_factuel; 
+        return round((($this->total_soumissions_factuel * 100) / $this->total_participants_evaluation_factuel), 2); 
     }
 
     public function getPourcentageEvolutionDesSoumissionsDePerceptionAttribute()
@@ -311,7 +313,7 @@ class EvaluationDeGouvernance extends Model
             return 0;
         }
 
-        return ($this->total_soumissions_de_perception  * 100) / $this->total_participants_evaluation_de_perception; 
+        return round((($this->total_soumissions_de_perception  * 100) / $this->total_participants_evaluation_de_perception), 2);
     }
 
     public function getTotalSoumissionsFactuelAttribute()
@@ -416,9 +418,9 @@ class EvaluationDeGouvernance extends Model
                 'code'                  => $organisation->code,
                 'nom_point_focal'       => $organisation->nom_point_focal,
                 'prenom_point_focal'    => $organisation->prenom_point_focal,
-                'contact_point_focal'   => $organisation->contact_point_focal,
+                'contact_point_focal'   => $organisation->contact_point_focal,/* 
                 'nbreParticipants'              => $organisation->pivot->nbreParticipants,
-                'PerceptionSubmissionsCompletion' => $organisation->getPerceptionSubmissionsCompletionAttribute($this->id),
+                'PerceptionSubmissionsCompletion' => $organisation->getPerceptionSubmissionsCompletionAttribute($this->id), */
                 'pourcentage_evolution' => $organisation->getPourcentageEvolutionAttribute($this->id),
             ];
         });
