@@ -126,6 +126,6 @@ class Soumission extends Model
             $pourcentage_global = $total_pourcentage_de_reponse / $nombre_de_questions;
         }
 
-        return $pourcentage_global;
+        return round($pourcentage_global, 2);
     }
 }

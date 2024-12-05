@@ -292,7 +292,7 @@ class Organisation extends Model
         $weightPerception = 0.5; // 40%
 
         // Final weighted completion percentage
-        return ($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception);
+        return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
     }
 
 }
