@@ -276,9 +276,11 @@ class GenerateResultatsForValidatedSoumission extends Command
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
 
+                $indicateurs = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
+                
                 // Calculate indice_factuel
                 if (count($reponses) > 0 && $reponses->sum('point') > 0) {
-                    $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($reponses);
+                    $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($indicateurs);
                 } else {
                     $sous_categorie_de_gouvernance->score_factuel = 0;
                 }
@@ -351,5 +353,20 @@ class GenerateResultatsForValidatedSoumission extends Command
         }
 
         return collect($reponses);
+    }
+
+
+    public function getIndicateurs($categorie_de_gouvernance, $organisationId)
+    {
+        $indicateurs = [];
+        if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
+            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId) {
+                $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
+            });
+        } else {
+            $indicateurs = array_merge($indicateurs, $categorie_de_gouvernance->questions_de_gouvernance);
+        }
+
+        return collect($indicateurs);
     }
 }
