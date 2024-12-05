@@ -164,7 +164,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     if ($existing = $resultat_synthetique->get($result['id'])) {
 
                         // Calculate indice_synthetique by summing indice_factuel and indice_de_perception
-                        $existing['indice_synthetique'] = round($this->geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]), 2);
+                        $existing['indice_synthetique'] = $this->geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
 
                         $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $existing);
                     }
@@ -184,9 +184,7 @@ class GenerateResultatsForValidatedSoumission extends Command
     function geometricMean(array $numbers): float
     {
         // Filter out non-positive numbers, as geometric mean is undefined for them
-        $filteredNumbers = array_filter($numbers, function($value) {
-            return $value > 0;
-        });
+        $filteredNumbers = array_filter($numbers, fn($number) => $number > 0);
 
         // If the filtered array is empty, return 0
         if (empty($filteredNumbers)) {
@@ -233,7 +231,11 @@ class GenerateResultatsForValidatedSoumission extends Command
         $principes_de_gouvernance = collect([]);
         
         $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) use ($organisationId, $options_de_reponse, &$principes_de_gouvernance) {
-            $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use ($organisationId, $options_de_reponse) {
+            $categorie_de_gouvernance->questions_de_gouvernance->load(['reponses' => function ($query) use ($organisationId) {
+                $query->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
+                    $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
+                });
+            }])->each(function ($question_de_gouvernance) use ($organisationId, $options_de_reponse) {
 
                 // Get the total number of responses for NBRE_R
                 $nbre_r = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
