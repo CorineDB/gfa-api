@@ -352,7 +352,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $reponses_de_collecte = $question_de_gouvernance->reponses()->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($organisationId) {
                     $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
                 })->get()->toArray();
-                $this->info("sousCategoriesDeGouvernance count: " . $reponses_de_collecte);
+                $this->info("sousCategoriesDeGouvernance count: " . collect($reponses_de_collecte));
 
                 $reponses = array_merge($reponses, $reponses_de_collecte);
             });
