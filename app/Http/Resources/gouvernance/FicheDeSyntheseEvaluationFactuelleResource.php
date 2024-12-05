@@ -83,6 +83,8 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
     public function reponse_de_la_collecte($reponse){
         return $reponse ? [
             'id' => $reponse->id,
+            'evalu' => $reponse->soumission->evaluation_de_gouvernance->intitule,
+            'sigle' => $reponse->soumission->organisation->sigle,
             'nom' => $reponse->option_de_reponse->libelle,
             'type' => $reponse->type,
             'point' => $reponse->point,
