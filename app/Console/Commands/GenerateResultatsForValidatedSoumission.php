@@ -238,9 +238,9 @@ class GenerateResultatsForValidatedSoumission extends Command
             }])->each(function ($question_de_gouvernance) use ($organisationId, $options_de_reponse) {
 
                 // Get the total number of responses for NBRE_R
-                $nbre_r = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
+                $nbre_r = $question_de_gouvernance->reponses/* ()->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
                     $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
-                })->count();
+                }) */->count();
 
                 // Initialize the weighted sum
                 $weighted_sum = 0;
