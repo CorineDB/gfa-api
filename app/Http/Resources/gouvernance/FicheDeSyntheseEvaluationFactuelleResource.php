@@ -85,6 +85,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'id' => $reponse->id,
             'evalu' => $reponse->soumission->evaluation_de_gouvernance->intitule,
             'sigle' => $reponse->soumission->organisation->sigle,
+            'question' => $reponse->question->indicateur_de_gouvernance->nom,
             'nom' => $reponse->option_de_reponse->libelle,
             'type' => $reponse->type,
             'point' => $reponse->point,
