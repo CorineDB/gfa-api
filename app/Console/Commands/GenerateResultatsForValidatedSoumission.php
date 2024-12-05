@@ -164,7 +164,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     if ($existing = $resultat_synthetique->get($result['id'])) {
 
                         // Calculate indice_synthetique by summing indice_factuel and indice_de_perception
-                        $existing['indice_synthetique'] = round($this->geomean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]), 2);
+                        $existing['indice_synthetique'] = round($this->geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]), 2);
 
                         $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $existing);
                     }
@@ -179,6 +179,31 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $this->info("Generated result for soumissions".$profile);
             }
         }
+    }
+
+    function geometricMean(array $numbers): float
+    {
+        // Filter out non-positive numbers, as geometric mean is undefined for them
+        $filteredNumbers = array_filter($numbers, function($value) {
+            return $value > 0;
+        });
+
+        // If the filtered array is empty, return 0
+        if (empty($filteredNumbers)) {
+            return 0;
+        }
+
+        // Calculate the product of the numbers
+        $product = array_product($filteredNumbers);
+
+        // Count the number of elements
+        $n = count($filteredNumbers);
+
+        // Calculate the geometric mean
+        $geometricMean = pow($product, 1 / $n);
+
+        // Return the result rounded to 2 decimal places
+        return round($geometricMean, 2);
     }
 
     private function geomean(array $numbers) {
