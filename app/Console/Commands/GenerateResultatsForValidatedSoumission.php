@@ -53,7 +53,6 @@ class GenerateResultatsForValidatedSoumission extends Command
     
     protected function generateResultForEvaluation(EvaluationDeGouvernance $evaluationDeGouvernance)
     {
-
         $organisation_group_soumissions = $evaluationDeGouvernance->soumissions()->where("statut", true)->get()->groupBy(['organisationId', 'type']);
 
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
@@ -155,7 +154,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
                         
-            $this->info("Generated result for soumissions".$profile);
                 // Convert $profile->resultat_synthetique to an associative collection for easy updating
                 $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
 
@@ -176,8 +174,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                 // Update the profile with the modified array
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-
-                $this->info("Generated result for soumissions".$profile);
             }
         }
     }
