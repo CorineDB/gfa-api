@@ -11,6 +11,7 @@ use App\Models\Soumission;
 use App\Repositories\FicheDeSyntheseRepository;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
 
 class GenerateResultatsForValidatedSoumission extends Command
 {
@@ -269,6 +270,10 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     $question_de_gouvernance->options_de_reponse[$key] = $option;
                 }
+
+                if (array_sum($counts->toArray()) !== $nbre_r) {
+                    Log::info('Counts:', $counts->toArray());
+                }                
 
                 /* $options_de_reponse->loadCount([
                     'reponses' => function ($query) use ($question_de_gouvernance, $organisationId) {
