@@ -531,7 +531,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
         }
     }
 
-    public function scores_au_fil_du_temps($id, $organisationId = null) : JsonResponse
+    public function scores_au_fil_du_temps($organisationId = null) : JsonResponse
     {
         try
         {
