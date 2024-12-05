@@ -280,7 +280,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 
                 // Calculate indice_factuel
                 if (count($indicateurs) > 0 && $reponses->sum('point') > 0) {
-                    $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($indicateurs);
+                    $sous_categorie_de_gouvernance->score_factuel = round(($reponses->sum('point') / count($indicateurs)), 2);
                 } else {
                     $sous_categorie_de_gouvernance->score_factuel = 0;
                 }
@@ -312,13 +312,13 @@ class GenerateResultatsForValidatedSoumission extends Command
 
             // Calculate indice_factuel
             if ( $categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
-                $categorie_de_gouvernance->indice_factuel = $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count();
+                $categorie_de_gouvernance->indice_factuel = round(($categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count()), 2);
             } else {
                 $categorie_de_gouvernance->indice_factuel = 0;
             }
         });
 
-        $indice_factuel = $results_categories_de_gouvernance->sum('indice_factuel') / $results_categories_de_gouvernance->count();
+        $indice_factuel = round(($results_categories_de_gouvernance->sum('indice_factuel') / $results_categories_de_gouvernance->count()), 2);
 
         return [$indice_factuel, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
 
