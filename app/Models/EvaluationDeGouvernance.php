@@ -370,13 +370,13 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalParticipantsEvaluationFactuelAttribute(){
         // Sum the 'nbreParticipants' attribute from the pivot table
-        if(auth()->user()->hasRole('organisation')){
+        if(auth()->user()->type == 'organisation'){
             if(auth()->user()->profilable){
                 return $this->organisations(auth()->user()->profilable->id)->count() ?? 0;
             }
             else{ return 0; }
         }
-        elseif(auth()->user()->hasRole('unitee-de-gestion')){
+        elseif(auth()->user()->type == 'unitee-de-gestion'){
             return $this->organisations()->count();
         }
         else{ return 0; }

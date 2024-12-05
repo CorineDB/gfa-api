@@ -218,9 +218,11 @@ class GenerateResultatsForValidatedSoumission extends Command
                 // Initialize the weighted sum
                 $weighted_sum = 0;
                 $index = 0;
-                $question_de_gouvernance->options_de_reponse = collect([]);
+                $question_de_gouvernance->options_de_reponse;
 
-                $options_de_reponse->loadCount([
+                $options = $options_de_reponse;
+
+                $options->loadCount([
                     'reponses' => function ($query) use ($question_de_gouvernance, $organisationId) {
                         $query->where('questionId', $question_de_gouvernance->id)->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
                             $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
@@ -233,6 +235,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     // Accumulate the weighted sum
                     $weighted_sum += $option_de_reponse->moyenne_ponderee_i = $note_i * $nbre_i;
+                    $option_de_reponse->nbre_i = $nbre_i;
 
                     $question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
 
