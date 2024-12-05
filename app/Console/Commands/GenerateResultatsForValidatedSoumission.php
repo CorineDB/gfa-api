@@ -152,7 +152,11 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                         $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
+
+                    $this->info("Generated result for soumissions".$profile);
                 }
+
+                $this->info("Generated result for soumissions".$profile);
             }
 
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
