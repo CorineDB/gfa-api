@@ -218,7 +218,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 // Initialize the weighted sum
                 $weighted_sum = 0;
                 $index = 0;
-                $question_de_gouvernance->options_de_reponse;
+                $question_de_gouvernance->options_de_reponse=collect([]);
 
                 $options = $options_de_reponse;
 
