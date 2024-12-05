@@ -243,7 +243,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     $index++;
                 });
 
-                $question_de_gouvernance->responses_count = 0;
+                $question_de_gouvernance->responses_count = $options;
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
