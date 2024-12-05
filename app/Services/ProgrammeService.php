@@ -553,7 +553,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)->map(function($organisation) use($programme) {
                 $evaluations_scores = $programme->evaluations_de_gouvernance->map(function ($evaluationDeGouvernance) use($organisation) {
                     return [
-                        "{$evaluationDeGouvernance->annee_exercice}" => $organisation->profiles($evaluationDeGouvernance->id)
+                        "{$evaluationDeGouvernance->annee_exercice}" => $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? []
                     ];
                 })->values()->toArray();
                 
