@@ -275,7 +275,7 @@ class GenerateResultatsForValidatedSoumission extends Command
         }])->get()->each(function ($categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
                 
-                $this->info("Critere: " . $sous_categorie_de_gouvernance->categorieable->nom);
+                $this->info("Principe: " . $sous_categorie_de_gouvernance->categorieable->nom);
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
 
                 $this->info("Reponse: " . $reponses . ". count: " . count($reponses));
@@ -346,8 +346,9 @@ class GenerateResultatsForValidatedSoumission extends Command
 
         $this->info("sousCategoriesDeGouvernance count: " . $categorie_de_gouvernance->sousCategoriesDeGouvernance->count());
         if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
-            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId) {
-                $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
+            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$reponses, $organisationId) {
+                $responses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
+                $reponses = array_merge($reponses, $responses);
             });
         } else {
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use (&$reponses, $organisationId) {
