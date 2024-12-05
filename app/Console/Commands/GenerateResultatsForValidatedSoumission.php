@@ -164,7 +164,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     if ($existing = $resultat_synthetique->get($result['id'])) {
 
                         // Calculate indice_synthetique by summing indice_factuel and indice_de_perception
-                        $existing['indice_synthetique'] = $this->geomean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
+                        $existing['indice_synthetique'] = round($this->geomean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]), 2);
 
                         $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $existing);
                     }
