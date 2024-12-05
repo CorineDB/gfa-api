@@ -260,15 +260,19 @@ class GenerateResultatsForValidatedSoumission extends Command
                     $note_i = $option_de_reponse->pivot->point ?? 0; // Default to 0 if there's no point
                     $nbre_i = $option_de_reponse->reponses_count ?? 0; // Default to 0 if there are no responses
 
+                    $option_de_reponse->moyenne_ponderee_i = $note_i * $nbre_i;
+
                     // Accumulate the weighted sum
-                    $weighted_sum += $option_de_reponse->moyenne_ponderee_i = $note_i * $nbre_i;
+                    $weighted_sum += $option_de_reponse->moyenne_ponderee_i;
 
                     $option_de_reponse->nbre_i = $nbre_i;
 
-                    $question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
+                    //$question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
 
                     $index++;
                 });
+
+                $question_de_gouvernance->options_de_reponse = $options;
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
