@@ -357,7 +357,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $reponses = array_merge($reponses, $reponses_de_collecte);
             });
         }
-        $this->info("reponses count: " . collect($reponses));
+        $this->info("reponses array: " . collect($reponses));
 
         return collect($reponses);
     }
