@@ -274,16 +274,12 @@ class GenerateResultatsForValidatedSoumission extends Command
             $this->loadCategories($query, $organisationId);
         }])->get()->each(function ($categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
-                
-                $this->info("Principe: " . $sous_categorie_de_gouvernance->categorieable->nom);
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
-
-                $this->info("Reponse: " . $reponses . ". count: " . count($reponses));
 
                 $indicateurs = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
                 
                 // Calculate indice_factuel
-                if ($reponses->sum('point') > 0) {
+                if (count($indicateurs) > 0 && $reponses->sum('point') > 0) {
                     $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($indicateurs);
                 } else {
                     $sous_categorie_de_gouvernance->score_factuel = 0;
@@ -315,7 +311,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             });
 
             // Calculate indice_factuel
-            if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
+            if ( $categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
                 $categorie_de_gouvernance->indice_factuel = $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count();
             } else {
                 $categorie_de_gouvernance->indice_factuel = 0;
@@ -343,24 +339,19 @@ class GenerateResultatsForValidatedSoumission extends Command
     public function interpretData($categorie_de_gouvernance, $organisationId)
     {
         $reponses = [];
-
-        $this->info("sousCategoriesDeGouvernance count: " . $categorie_de_gouvernance->sousCategoriesDeGouvernance->count());
         if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$reponses, $organisationId) {
-                $responses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
-                $reponses = array_merge($reponses, $responses->toArray());
+                $reponses_data = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
+                $reponses = array_merge($reponses, $reponses_data->toArray());
             });
         } else {
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use (&$reponses, $organisationId) {
                 $reponses_de_collecte = $question_de_gouvernance->reponses()->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($organisationId) {
                     $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
                 })->get()->toArray();
-                $this->info("reponses_de_collecte count: " . collect($reponses_de_collecte));
-
                 $reponses = array_merge($reponses, $reponses_de_collecte);
             });
         }
-        $this->info("reponses array: " . collect($reponses));
 
         return collect($reponses);
     }
@@ -370,8 +361,10 @@ class GenerateResultatsForValidatedSoumission extends Command
     {
         $indicateurs = [];
         if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
-            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId) {
-                $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
+            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$indicateurs, $organisationId) {
+               $data= $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
+
+                $indicateurs = array_merge($indicateurs, $data->toArray());
             });
         } else {
             $indicateurs = array_merge($indicateurs, $categorie_de_gouvernance->questions_de_gouvernance->toArray());
