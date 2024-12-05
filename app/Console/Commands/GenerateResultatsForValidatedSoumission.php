@@ -364,7 +364,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
             });
         } else {
-            $indicateurs = array_merge($indicateurs, $categorie_de_gouvernance->questions_de_gouvernance);
+            $indicateurs = array_merge($indicateurs, $categorie_de_gouvernance->questions_de_gouvernance->toArray());
         }
 
         return collect($indicateurs);
