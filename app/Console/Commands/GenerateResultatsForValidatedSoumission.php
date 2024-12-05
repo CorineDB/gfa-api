@@ -54,8 +54,8 @@ class GenerateResultatsForValidatedSoumission extends Command
     protected function generateResultForEvaluation(EvaluationDeGouvernance $evaluationDeGouvernance)
     {
 
-        $this->info("Generated result for soumissions".$evaluationDeGouvernance->soumissions()->where("statut", true)->count());
         $organisation_group_soumissions = $evaluationDeGouvernance->soumissions()->where("statut", true)->get()->groupBy(['organisationId', 'type']);
+        $this->info("Generated result for soumissions".$organisation_group_soumissions);
 
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
