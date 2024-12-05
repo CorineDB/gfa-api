@@ -218,7 +218,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 // Initialize the weighted sum
                 $weighted_sum = 0;
                 $index = 0;
-                $question_de_gouvernance->options_de_reponse=collect([]);
+                $question_de_gouvernance->options_de_reponse = collect([]);
 
                 $options = $options_de_reponse;
 
@@ -236,10 +236,14 @@ class GenerateResultatsForValidatedSoumission extends Command
                     // Accumulate the weighted sum
                     $weighted_sum += $option_de_reponse->moyenne_ponderee_i = $note_i * $nbre_i;
 
+                    $option_de_reponse->nbre_i = $nbre_i;
+
                     $question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
 
                     $index++;
                 });
+
+                $question_de_gouvernance->nbre_r = $nbre_r;
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
