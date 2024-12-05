@@ -23,7 +23,8 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'categories_de_gouvernance'  => $this->when(($this->sousCategoriesDeGouvernance->count() && !$this->questions_de_gouvernance->count()), FicheDeSyntheseEvaluationFactuelleResource::collection($this->sousCategoriesDeGouvernance)),
             'questions_de_gouvernance'   => $this->when((!$this->sousCategoriesDeGouvernance->count() && $this->questions_de_gouvernance->count()), $this->questions_de_gouvernance->map(function($question_de_gouvernance){
                 return $this->question_de_gouvernance($question_de_gouvernance);
-            }))
+            })),
+            'questions'   => $this->questions_de_gouvernance
         ];
     }
     
