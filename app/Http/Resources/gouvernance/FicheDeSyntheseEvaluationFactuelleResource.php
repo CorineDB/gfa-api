@@ -67,7 +67,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
                 ]);
             }
 
-            elseif((isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'question_operationnelle')){
+            else if((isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'question_operationnelle')){
                 $question = array_merge($question, [
                     "reponses" => $question_de_gouvernance->reponses->map(function($reponse){
                         return $this->reponse_de_la_collecte($reponse);

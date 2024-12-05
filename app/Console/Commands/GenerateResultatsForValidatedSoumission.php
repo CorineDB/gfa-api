@@ -247,7 +247,24 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $index = 0;
                 $question_de_gouvernance->options_de_reponse = collect([]);
 
-                $options_de_reponse->loadCount([
+                foreach ($options_de_reponse as $key => $option_de_reponse) {
+                    $reponses_count = $question_de_gouvernance->reponses()->where("optionDeReponseId", $option_de_reponse->id)->count();
+                    $optionPoint = $$option_de_reponse->pivot->point;
+                    $moyenne_ponderee_i = $optionPoint * $reponses_count;
+
+                    // Accumulate the weighted sum
+                    $weighted_sum += $moyenne_ponderee_i;
+
+                    $option = $option_de_reponse;
+
+                    $option->reponses_count = $reponses_count;
+
+                    $option->moyenne_ponderee_i = $moyenne_ponderee_i;
+
+                    $question_de_gouvernance->options_de_reponse[$key] = $option;
+                }
+
+                /* $options_de_reponse->loadCount([
                     'reponses' => function ($query) use ($question_de_gouvernance, $organisationId) {
                         $query->where('questionId', $question_de_gouvernance->id)->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
                             $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
@@ -268,7 +285,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     //$question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
 
                     $index++;
-                });
+                }); */
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
