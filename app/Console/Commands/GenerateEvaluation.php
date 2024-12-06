@@ -12,9 +12,8 @@ use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\FicheDeSyntheseRepository;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Facades\Log;
 
-class GenerateEvaluationResultats extends Command
+class GenerateEvaluation extends Command
 {
     /**
      * The name and signature of the console command.
@@ -64,21 +63,15 @@ class GenerateEvaluationResultats extends Command
         $this->info("Generated result for soumission ID {$this->evaluationDeGouvernance->id}:");
         return 0; // Indicates successful execution
     }
-
-
-    
     protected function generateResultForEvaluation(EvaluationDeGouvernance $evaluationDeGouvernance)
     {
-
-        $organisation_group_soumissions = $evaluationDeGouvernance->soumissions()->where("statut", true)->get()->groupBy(['organisationId', 'type']);
+        $organisation_group_soumissions = $evaluationDeGouvernance->soumissions->groupBy(['organisationId', 'type']);
 
         foreach ($organisation_group_soumissions as $organisationId => $groups_soumissions) {
 
             $profile = null;
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
-
-
                 if(!$evaluationOrganisationId = $evaluationDeGouvernance->organisations()->wherePivot('organisationId', $organisationId)->first()->pivot){
                     return;
                 }
@@ -124,7 +117,6 @@ class GenerateEvaluationResultats extends Command
 
                         $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                     }
-
                 }
                 else if ($group_soumission === "perception") {
 
@@ -180,7 +172,7 @@ class GenerateEvaluationResultats extends Command
                     if ($existing = $resultat_synthetique->get($result['id'])) {
 
                         // Calculate indice_synthetique by summing indice_factuel and indice_de_perception
-                        $existing['indice_synthetique'] = $this->geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
+                        $existing['indice_synthetique'] = $this->geomean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
 
                         $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $existing);
                     }
@@ -192,32 +184,8 @@ class GenerateEvaluationResultats extends Command
                 // Update the profile with the modified array
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
 
-                $this->info("Generated result for soumissions".$profile);
             }
         }
-    }
-
-    function geometricMean(array $numbers): float
-    {
-        // Filter out non-positive numbers, as geometric mean is undefined for them
-        $filteredNumbers = array_filter($numbers, fn($number) => $number > 0);
-
-        // If the filtered array is empty, return 0
-        if (empty($filteredNumbers)) {
-            return 0;
-        }
-
-        // Calculate the product of the numbers
-        $product = array_product($filteredNumbers);
-
-        // Count the number of elements
-        $n = count($filteredNumbers);
-
-        // Calculate the geometric mean
-        $geometricMean = pow($product, 1 / $n);
-
-        // Return the result rounded to 2 decimal places
-        return round($geometricMean, 2);
     }
 
     private function geomean(array $numbers) {
@@ -233,7 +201,8 @@ class GenerateEvaluationResultats extends Command
     
         // Calculate the product of all numbers
         $product = array_product($numbers);
-    
+            // Calculate the nth root (geometric mean)
+
         // Calculate the nth root (geometric mean)
         return pow($product, 1 / $count);
     }
@@ -247,50 +216,19 @@ class GenerateEvaluationResultats extends Command
         $principes_de_gouvernance = collect([]);
         
         $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) use ($organisationId, $options_de_reponse, &$principes_de_gouvernance) {
-            $categorie_de_gouvernance->questions_de_gouvernance->load(['reponses' => function ($query) use ($organisationId) {
-                $query->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
-                    $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
-                });
-            }])->each(function ($question_de_gouvernance) use ($organisationId, $options_de_reponse) {
+            $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use ($organisationId, $options_de_reponse) {
 
                 // Get the total number of responses for NBRE_R
-                $nbre_r = $question_de_gouvernance->reponses/* ()->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
+                $nbre_r = $question_de_gouvernance->reponses()->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
                     $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
-                }) */->count();
+                })->count();
 
                 // Initialize the weighted sum
                 $weighted_sum = 0;
                 $index = 0;
                 $question_de_gouvernance->options_de_reponse = collect([]);
 
-                $counts = $question_de_gouvernance->reponses()
-                    ->selectRaw('optionDeReponseId, COUNT(*) as count')
-                    ->groupBy('optionDeReponseId')
-                    ->pluck('count', 'optionDeReponseId');
-
-                foreach ($options_de_reponse as $key => $option_de_reponse) {
-                    //$reponses_count = $question_de_gouvernance->reponses()->where("optionDeReponseId", $option_de_reponse->id)->count();
-
-                    $reponses_count = $counts[$option_de_reponse->id] ?? 0;
-                    $optionPoint = $option_de_reponse->pivot->point;
-
-                    // Accumulate the weighted sum
-                    $weighted_sum += $moyenne_ponderee_i = $optionPoint * $reponses_count;
-
-                    $option = $option_de_reponse;
-
-                    $option->reponses_count = $reponses_count;
-
-                    $option->moyenne_ponderee_i = $moyenne_ponderee_i;
-
-                    $question_de_gouvernance->options_de_reponse[$key] = $option;
-                }
-
-                if (array_sum($counts->toArray()) !== $nbre_r) {
-                    Log::info('Counts:', $counts->toArray());
-                }                
-
-                /* $options_de_reponse->loadCount([
+                $options_de_reponse->loadCount([
                     'reponses' => function ($query) use ($question_de_gouvernance, $organisationId) {
                         $query->where('questionId', $question_de_gouvernance->id)->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
                             $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
@@ -301,21 +239,17 @@ class GenerateEvaluationResultats extends Command
                     $note_i = $option_de_reponse->pivot->point ?? 0; // Default to 0 if there's no point
                     $nbre_i = $option_de_reponse->reponses_count ?? 0; // Default to 0 if there are no responses
 
-                    $option_de_reponse->moyenne_ponderee_i = $note_i * $nbre_i;
-
                     // Accumulate the weighted sum
-                    $weighted_sum += $option_de_reponse->moyenne_ponderee_i;
+                    $weighted_sum += $option_de_reponse->moyenne_ponderee_i = $note_i * $nbre_i;
 
-                    $option_de_reponse->nbre_i = $nbre_i;
-
-                    //$question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
+                    $question_de_gouvernance->options_de_reponse[$index] = $option_de_reponse;
 
                     $index++;
-                }); */
+                });
 
                 // Calculate the weighted average
                 if ($nbre_r > 0) {
-                    $question_de_gouvernance->moyenne_ponderee = round(($weighted_sum / $nbre_r), 2);
+                    $question_de_gouvernance->moyenne_ponderee = round($weighted_sum / $nbre_r, 2);
                 } else {
                     $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
                 }
@@ -337,6 +271,34 @@ class GenerateEvaluationResultats extends Command
 
     public function generateSyntheseForFactuelleSoumission(Soumission $soumission, $organisationId)
     {
+        /*
+            $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) {
+                // Call the recursive function to load nested relationships
+                $this->loadCategories($query);
+            }])->get()->each(function ($categorie_de_gouvernance) {
+                $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) {
+                    $reponses = $this->interpretData($sous_categorie_de_gouvernance);
+
+                    // Calculate indice_factuel
+                    if (count($reponses) > 0 && $reponses->sum('point') > 0) {
+
+                        $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($reponses);
+                    } else {
+                        $sous_categorie_de_gouvernance->score_factuel = 0;
+                    }
+                });
+
+                // Calculate indice_factuel
+                if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
+
+                    $categorie_de_gouvernance->indice_factuel = $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count();
+                } else {
+                    $categorie_de_gouvernance->indice_factuel = 0;
+                }
+
+            });
+        */
+
         $principes_de_gouvernance = collect([]);
 
         $results_categories_de_gouvernance = $soumission->formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) use ($organisationId) {
@@ -346,11 +308,9 @@ class GenerateEvaluationResultats extends Command
             $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
                 $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
 
-                $indicateurs = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
-                
                 // Calculate indice_factuel
-                if (count($indicateurs) > 0 && $reponses->sum('point') > 0) {
-                    $sous_categorie_de_gouvernance->score_factuel = round(($reponses->sum('point') / count($indicateurs)), 2);
+                if (count($reponses) > 0 && $reponses->sum('point') > 0) {
+                    $sous_categorie_de_gouvernance->score_factuel = $reponses->sum('point') / count($reponses);
                 } else {
                     $sous_categorie_de_gouvernance->score_factuel = 0;
                 }
@@ -381,14 +341,14 @@ class GenerateEvaluationResultats extends Command
             });
 
             // Calculate indice_factuel
-            if ( $categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
-                $categorie_de_gouvernance->indice_factuel = round(($categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count()), 2);
+            if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count() > 0 && $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') > 0) {
+                $categorie_de_gouvernance->indice_factuel = $categorie_de_gouvernance->sousCategoriesDeGouvernance->sum('score_factuel') / $categorie_de_gouvernance->sousCategoriesDeGouvernance->count();
             } else {
                 $categorie_de_gouvernance->indice_factuel = 0;
             }
         });
 
-        $indice_factuel = round(($results_categories_de_gouvernance->sum('indice_factuel') / $results_categories_de_gouvernance->count()), 2);
+        $indice_factuel = $results_categories_de_gouvernance->sum('indice_factuel') / $results_categories_de_gouvernance->count();
 
         return [$indice_factuel, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
 
@@ -410,9 +370,8 @@ class GenerateEvaluationResultats extends Command
     {
         $reponses = [];
         if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
-            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$reponses, $organisationId) {
-                $reponses_data = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
-                $reponses = array_merge($reponses, $reponses_data->toArray());
+            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId) {
+                $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
             });
         } else {
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use (&$reponses, $organisationId) {
@@ -425,22 +384,4 @@ class GenerateEvaluationResultats extends Command
 
         return collect($reponses);
     }
-
-
-    public function getIndicateurs($categorie_de_gouvernance, $organisationId)
-    {
-        $indicateurs = [];
-        if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
-            $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$indicateurs, $organisationId) {
-               $data= $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
-
-                $indicateurs = array_merge($indicateurs, $data->toArray());
-            });
-        } else {
-            $indicateurs = array_merge($indicateurs, $categorie_de_gouvernance->questions_de_gouvernance->toArray());
-        }
-
-        return collect($indicateurs);
-    }
-
 }

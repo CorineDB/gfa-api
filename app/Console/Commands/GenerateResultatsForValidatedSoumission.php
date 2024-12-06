@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Http\Resources\gouvernance\FicheSyntheseEvaluationDePerceptionResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseEvaluationFactuelleResource;
 use App\Models\EvaluationDeGouvernance;
 use App\Models\FormulaireDeGouvernance;
@@ -10,7 +9,6 @@ use App\Models\ProfileDeGouvernance;
 use App\Models\Soumission;
 use App\Repositories\FicheDeSyntheseRepository;
 use Illuminate\Console\Command;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 
 class GenerateResultatsForValidatedSoumission extends Command

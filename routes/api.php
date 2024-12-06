@@ -630,6 +630,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{id}/cadre-de-mesure-rendement', 'cadre_de_mesure_rendement')->name('cadre-de-mesure-rendement')->middleware('permission:voir-cadre-de-rendement');
 
                     Route::get('evolution-des-scores-au-fil-du-temps/{organisationId}', 'scoresAuFilDuTemps')->name('evolution-des-scores-au-fil-du-temps')->middleware('permission:voir-cadre-de-rendement');
+                    Route::get('evaluations-organisations', 'evaluations_organisations')->name('evaluations-organisations')->middleware('permission:voir-cadre-de-rendement');
+
                 });
             });
 
@@ -955,7 +957,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions')->name('soumissions'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                    Route::get('{evaluation_de_gouvernance}/resultats-syntheses', 'resultats_syntheses')->name('resultats_syntheses'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
+                    
                     Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
                     Route::get('{evaluation_de_gouvernance}/recommandations', 'recommandations')->name('recommandations'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
