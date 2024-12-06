@@ -13,6 +13,7 @@ use App\Http\Resources\CategorieResource;
 use App\Http\Resources\EActiviteResource;
 use App\Http\Resources\MaitriseOeuvreResource;
 use App\Http\Resources\mods\ModsResource;
+use App\Http\Resources\OrganisationResource;
 use App\Http\Resources\TacheResource;
 use App\Http\Resources\PassationResource;
 use App\Http\Resources\programmes\ProgrammesResource;
@@ -550,20 +551,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                 }
             }
 
-            /* $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)->map(function($organisation) use($programme) {
-                $evaluations_scores = $programme->evaluations_de_gouvernance->map(function ($evaluationDeGouvernance) use($organisation) {
-                    return [
-                        "evaluationDeGouvernanceId" => $evaluationDeGouvernance->id,
-                        "{$evaluationDeGouvernance->annee_exercice}" => $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? []
-                    ];
-                })->toArray();
-                
-                return array_merge([
-                    'id' => $organisation->secure_id,
-                    'intitule' => $organisation->sigle." - ".$organisation->user->nom
-                ],$evaluations_scores);
-            })->values(); */
-
             $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)
                 ->map(function ($organisation) use ($programme) {
                     $evaluations_scores = $programme->evaluations_de_gouvernance->mapWithKeys(function ($evaluationDeGouvernance) use ($organisation) {
@@ -585,6 +572,24 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $scores, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function evaluations_organisations() : JsonResponse
+    {
+        try
+        {
+            $programme = auth()->user()->programme;
+
+            $organisations = $programme->evaluations_de_gouvernance_organisations;
+
+            //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationResource::collection($organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         }
         catch (\Throwable $th)

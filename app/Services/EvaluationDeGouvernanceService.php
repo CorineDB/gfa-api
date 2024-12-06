@@ -290,7 +290,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-
             if (Auth::user()->hasRole('administrateur')) {
                 $fiches_de_synthese = [];
             } else if (Auth::user()->hasRole('organisation')) {
@@ -666,6 +665,49 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             return response()->json(['statut' => 'success', 'message' => "Rappel envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function resultats_syntheses($evaluationDeGouvernance) : JsonResponse
+    {
+        try
+        {            
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $resultats_syntheses = [];
+
+            $organisationId = null;
+            
+            if(auth()->user()->type == "organisation"){
+                $organisationId = optional(auth()->user()->profilable)->id;
+            }
+
+            $programme = auth()->user()->programme;
+
+            $resultats_syntheses = $evaluationDeGouvernance->organisations($organisationId)->get()
+                ->map(function ($organisation) use ($programme) {
+                    $evaluations_scores = $programme->evaluations_de_gouvernance->mapWithKeys(function ($evaluationDeGouvernance) use ($organisation) {
+                        // Key-value pairing for each year with scores
+                        $results = $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? [];
+                        
+                        return [$evaluationDeGouvernance->annee_exercice => $results];
+                    });
+
+                    // Merge evaluation scores with organizational metadata
+                    return [
+                        'id' => $organisation->secure_id,
+                        'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
+                        'scores' => $evaluations_scores,
+                    ];
+                })
+                ->values(); // Reset keys for a clean JSON output
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        }
+        catch (\Throwable $th)
+        {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }

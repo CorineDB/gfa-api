@@ -103,6 +103,11 @@ class EvaluationDeGouvernanceController extends Controller
         return $this->evaluationDeGouvernanceService->fiches_de_synthese($id);
     }
 
+    public function resultats_syntheses($id)
+    {
+        return $this->evaluationDeGouvernanceService->resultats_syntheses($id);
+    }
+
     public function formulaires_de_gouvernance($id)
     {
         return $this->evaluationDeGouvernanceService->formulaires_de_gouvernance($id);
