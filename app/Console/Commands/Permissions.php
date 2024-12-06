@@ -126,7 +126,27 @@ class Permissions extends Command
             'une maitrise oeuvre',
             'un fichier',
             'une unite de mesure',
-            'un audit'
+            'un audit',
+            "un fond",
+            "un outcome",
+            "un output",
+            "une cle de valeur d'indicateur",
+            'une option de reponse',
+            'une source de verification',
+            "une categorie d'indicateur",
+            "un indicateur de gouvernance",
+            "une question operationnelle",
+            "un type de gouvernance",
+            "un principe de gouvernance",
+            "un critere de gouvernance",
+            "un formulaire de gouvernance",
+            "une evaluation de gouvernance",
+            "une soumission",
+            "une fiche de synthese",
+            "une profile de gouvernance",
+            "une recommandation",
+            "une action a mener",
+            "une enquete individuelle",
         ];
 
         $autres = [
@@ -171,7 +191,16 @@ class Permissions extends Command
             'importer un suivi financier',
             'voir une statistique activite',
             'voir suivi kobo',
-            'voir formulaire kobo'
+            'voir formulaire kobo',
+            'voir formulaire factuel',
+            'voir details soumission',
+            'valider suivi indicateur',
+            'valider une action a mener',
+            "voir plan d'action",
+            'voir statistique evolution des profiles de gouvernance au fil du temps',
+            'send invitation',
+            'send reminder',
+            'alerte validation action a mener',
         ];
 
         $bailleurs = [
