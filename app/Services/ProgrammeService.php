@@ -586,7 +586,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
         {
             $programme = auth()->user()->programme;
 
-            $organisations = $programme->evaluations_de_gouvernance_organisations;
+            $organisations = $programme->evaluations_de_gouvernance_organisations();
 
             //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationResource::collection($organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
