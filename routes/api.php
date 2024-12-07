@@ -617,6 +617,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
         Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
 
+         Route::apiResource('roles', 'RoleController')->names('roles');
+
             Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
 
                 Route::controller('ProgrammeController')->group(function () {
