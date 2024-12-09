@@ -73,6 +73,9 @@ use App\Repositories\SuiviCheckListComRepository;
 use App\Repositories\TypeDeGouvernanceRepository;
 use App\Repositories\SoumissionRepository;
 use App\Repositories\SourceDeVerificationRepository;
+use App\Repositories\SurveyRepository;
+use App\Repositories\SurveyFormRepository;
+use App\Repositories\SurveyReponseRepository;
 use App\Services\ActionAMenerService;
 use App\Services\AuthService;
 use App\Services\CategorieService;
@@ -149,6 +152,9 @@ use App\Services\PrincipeDeGouvernanceService;
 use App\Services\RecommandationService;
 use App\Services\SoumissionService;
 use App\Services\SourceDeVerificationService;
+use App\Services\SurveyService;
+use App\Services\SurveyFormService;
+use App\Services\SurveyReponseService;
 use App\Services\TypeDeGouvernanceService;
 use Core\Services\Contracts\BaseService;
 
@@ -231,6 +237,9 @@ use Core\Services\Interfaces\TypeDeGouvernanceServiceInterface;
 
 use Core\Services\Interfaces\SoumissionServiceInterface;
 use Core\Services\Interfaces\SourceDeVerificationServiceInterface;
+use Core\Services\Interfaces\SurveyServiceInterface;
+use Core\Services\Interfaces\SurveyFormServiceInterface;
+use Core\Services\Interfaces\SurveyReponseServiceInterface;
 use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
@@ -313,6 +322,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(EloquentRepositoryInterface::class, FondRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, SoumissionRepository::class);
         $this->app->bind(EloquentRepositoryInterface::class, FicheDeSyntheseRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, SurveyRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, SurveyFormRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, SurveyReponseRepository::class);
 
         $this->app->bind(AbstractServiceInterface::class, BaseService::class);
         $this->app->bind(UserServiceInterface::class, UserService::class);
@@ -397,6 +409,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(FicheDeSyntheseServiceInterface::class, FicheDeSyntheseService::class);
         $this->app->bind(RecommandationServiceInterface::class, RecommandationService::class);
         $this->app->bind(ActionAMenerServiceInterface::class, ActionAMenerService::class);
+
+
+        $this->app->bind(SurveyServiceInterface::class, SurveyService::class);
+        $this->app->bind(SurveyFormServiceInterface::class, SurveyFormService::class);
+        $this->app->bind(SurveyReponseServiceInterface::class, SurveyReponseService::class);
     }
 
     /**

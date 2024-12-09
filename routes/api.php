@@ -988,6 +988,34 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('evaluation.validate-soumission'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
             });
+
+            Route::apiResource('survey-forms', 'SurveyFormController')->names('survey-forms')
+                ->parameters([
+                    'survey-forms' => 'survey_form',
+                ]);
+
+            Route::apiResource('surveys', 'SurveyController')->names('surveys')
+                ->parameters([
+                    'surveys' => 'survey',
+                ]);
+
+
+            Route::apiResource('survey-reponses', 'SurveyReponseController')->names('survey-reponses')
+                ->parameters([
+                    'survey-reponses' => 'survey_reponse',
+                ]);
+            
+                Route::group(['prefix' =>  'surveys', 'as' => 'surveys.'], function () {
+
+                    Route::controller('SurveyController')->group(function () {
+                        Route::get('{survey}/survey-reponses', 'survey_reponses')->name('survey_reponses'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+                        Route::get('{survey}/formulaire', 'formulaire')->name('formulaire'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
+
+                    });
+                });
+
+            
+
         });
     });
 
