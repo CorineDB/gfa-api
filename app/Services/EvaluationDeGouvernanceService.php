@@ -195,6 +195,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
+
+            $url = config("app.url");
+
+            // If the URL is localhost, append the appropriate IP address and port
+            if (strpos($url, 'localhost') !== false) {
+                $url = 'http://192.168.1.16:3000';
+            }
+
             if (Auth::user()->hasRole('administrateur')) {
                 $group_soumissions = [];
             } else if (Auth::user()->hasRole('organisation')) {
@@ -221,42 +229,43 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'pourcentage_evolution_des_soumissions_de_perception'   => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id)
                 ], $group_soumissions->toArray());
             } else {
-                /* $organisation_soumissions = $evaluationDeGouvernance->soumissions()
-                    ->with('organisation') // Load the associated organisations
-                    ->get()->groupBy('organisationId')->map(function ($group) {
-                        return $group->groupBy('type'); // Then group by type within each organisation
-                    });
 
-                $group_soumissions = $organisation_soumissions->map(function ($type_soumissions, $organisationId) {
+                /* 
+                    $organisation_soumissions = $evaluationDeGouvernance->soumissions()
+                        ->with('organisation') // Load the associated organisations
+                        ->get()->groupBy('organisationId')->map(function ($group) {
+                            return $group->groupBy('type'); // Then group by type within each organisation
+                        });
 
-                    $organisation = app(OrganisationRepository::class)->findById($organisationId);
+                    $group_soumissions = $organisation_soumissions->map(function ($type_soumissions, $organisationId) {
 
-                    $types_de_soumission = $type_soumissions->map(function ($soumissions, $type) {
+                        $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
-                        return SoumissionsResource::collection($soumissions);
-                        if ($type === 'perception') {
+                        $types_de_soumission = $type_soumissions->map(function ($soumissions, $type) {
+
                             return SoumissionsResource::collection($soumissions);
-                        } else {
-                            return new SoumissionsResource($soumissions->first());
-                        }
-                    });
+                            if ($type === 'perception') {
+                                return SoumissionsResource::collection($soumissions);
+                            } else {
+                                return new SoumissionsResource($soumissions->first());
+                            }
+                        });
 
-                    return array_merge([
-                        "id"                    => $organisation->secure_id,
-                        'nom'                   => optional($organisation->user)->nom ?? null,
-                        'sigle'                 => $organisation->sigle,
-                        'code'                  => $organisation->code,
-                        'nom_point_focal'       => $organisation->nom_point_focal,
-                        'prenom_point_focal'    => $organisation->prenom_point_focal,
-                        'contact_point_focal'   => $organisation->contact_point_focal
-                    ], $types_de_soumission->toArray());
-                })->values(); */
-
-
+                        return array_merge([
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal
+                        ], $types_de_soumission->toArray());
+                    })->values();
+                */
 
                 $group_soumissions = $evaluationDeGouvernance->organisations()
                     ->with('soumissions') // Load the associated organisations
-                    ->get()->map(function ($organisation) use ($evaluationDeGouvernance) {
+                    ->get()->map(function ($organisation) use ($evaluationDeGouvernance, $url) {
                         // Fetch submissions for this organization
                         $types_soumissions = $organisation->soumissions
                             ->where('evaluationId', $evaluationDeGouvernance->id)
@@ -270,6 +279,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'nom_point_focal'       => $organisation->nom_point_focal,
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
+                            "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
+                            "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
                         ], $types_soumissions->toArray());
                     });
 
