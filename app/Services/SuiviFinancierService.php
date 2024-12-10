@@ -1119,9 +1119,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "exercice" => $exercice,
                     "cumul" => $cumul
                 ];
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'objet' => $objet, 'cumul' => $cumul, 'consommerCumul' => $consommerCumul, 'planCumul' => $planCumul, 'sumPret' => $sumPret, 'sumBudgetNational' => $sumBudgetNational, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
+                //array_push($suiviFinanciers, ['suivi' => $suivi, 'objet' => $objet, 'cumul' => $cumul, 'consommerCumul' => $consommerCumul, 'planCumul' => $planCumul, 'sumPret' => $sumPret, 'sumBudgetNational' => $sumBudgetNational, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
 
-                //array_push($suiviFinanciers, $objet);
+                array_push($suiviFinanciers, $objet);
             }
 
         return $suiviFinanciers;
