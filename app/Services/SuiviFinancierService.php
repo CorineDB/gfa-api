@@ -1057,7 +1057,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         $suiviFinanciers = [];
 
-        return $activites;
+        return $projet;
 
         foreach($activites as $activite)
             {
