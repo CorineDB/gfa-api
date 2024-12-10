@@ -139,6 +139,8 @@ class Projet extends Model
     	$sousComposantes = $this->sousComposantes();
     	$activites = [];
 
+        return $activites;
+
     	if(count($sousComposantes))
     	{
     		foreach($sousComposantes as $sc)
