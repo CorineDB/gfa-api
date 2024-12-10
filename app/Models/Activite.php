@@ -153,7 +153,7 @@ class Activite extends Model
             $query->where('annee', $annee);
         })->get();
         
-        return $plans;
+        return $plans->count();
 
         if($plans->count() > 0){
             $pret = $plans->sum('pret');
