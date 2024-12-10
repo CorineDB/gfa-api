@@ -1112,8 +1112,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 $objet = [
                     //"bailleur" => $projet->bailleur->sigle,
-                    "trimestre" => $filterData['trimestre'],
-                    "annee" => $filterData['annee'],
+                    /*"trimestre" => $filterData['trimestre'],
+                    "annee" => $filterData['annee'],*/
                     "activite" => new ActivitesResource($activite),
                     "periode" => $periode,
                     "exercice" => $exercice,
