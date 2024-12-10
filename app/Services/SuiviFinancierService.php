@@ -1066,7 +1066,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
                 })->first();
 
-                if(!$suivi) continue;
+                if(!$suivi) continue;*/
 
                 if($filterData){
                     $plan = $activite->planDeDecaissement(isset($filterData['trimestre']) ? $filterData['trimestre'] : null, isset($filterData['annee']) ? $filterData['annee'] : null);
@@ -1075,7 +1075,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $plan = $activite->planDeDecaissement();
                 }
 
-                $periode = [
+                /*$periode = [
                     "budget" => ($plan['budgetNational'] + $plan['pret']),
                     "consommer" => $suivi->consommer,
                     "disponible" => ($plan['budgetNational'] + $plan['pret']) - $suivi->consommer,
