@@ -1083,13 +1083,14 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $planParAnnee = $activite->planDeDecaissementParAnnee();
                 }
                 
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee]);
 
-                /*$consommerParAnnee = $activite->suiviFinanciers()->when($filterData != null, function($query) use($filterData) {
+                $consommerParAnnee = $activite->suiviFinanciers()->when($filterData != null, function($query) use($filterData) {
                     $query->where('annee', $filterData['annee']);
                 })->get()->sum('consommer');
 
-                $exercice = [
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee]);
+
+                /*$exercice = [
                     "budget" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']),
                     "consommer" => $consommerParAnnee,
                     "disponible" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']) - $consommerParAnnee,
