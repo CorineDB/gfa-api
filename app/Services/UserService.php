@@ -137,9 +137,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->roles()->attach($roles);
 
-            $team = $utilisateur->team()->fill($attributs);
-
-            $team->save();
+            $utilisateur->team()->create($attributs);
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
 
@@ -194,7 +192,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->roles()->attach($roles);
 
-            $team = $utilisateur->team()->fill($attributs);
+            $team = $utilisateur->team->fill($attributs);
 
             $team->save();
 
