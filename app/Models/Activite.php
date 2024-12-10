@@ -152,8 +152,6 @@ class Activite extends Model
         $plans = $this->planDeDecaissements()->when($annee != null, function($query) use ($annee) {
             $query->where('annee', $annee);
         })->get();
-        
-        return $plans->count();
 
         if($plans->count() > 0){
             $pret = $plans->sum('pret');
@@ -163,6 +161,7 @@ class Activite extends Model
             $pret = 0;
             $budgetNational = 0;
         }
+        return $plans->count();
 
         return ['pret' => $pret,
                 'budgetNational' => $budgetNational];
