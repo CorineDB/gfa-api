@@ -993,129 +993,130 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         $suiviFinanciers = [];
 
+    	$activites = collect([]);
+
         if($projet){
             if(is_object($projet)){
 
-                $suiviFinanciers = [];
-
                 $activites = $projet->activites();
-
-                foreach($activites as $activite)
-                {
-                    $suivi = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
-                        $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
-                    })->first();
-
-                    if(!$suivi) continue;
-
-                    if($filterData){
-                        $plan = $activite->planDeDecaissement(isset($filterData['trimestre']) ? $filterData['trimestre'] : null, isset($filterData['annee']) ? $filterData['annee'] : null);
-                    }
-                    else{
-                        $plan = $activite->planDeDecaissement();
-                    }
-
-                    $periode = [
-                        "budget" => ($plan['budgetNational'] + $plan['pret']),
-                        "consommer" => $suivi->consommer,
-                        "disponible" => ($plan['budgetNational'] + $plan['pret']) - $suivi->consommer,
-                        "pourcentage" => ($plan['budgetNational'] != 0 || $plan['pret'] != 0 ) ? round(($suivi->consommer*100)/($plan['budgetNational'] + $plan['pret']), 2) : 0 . " %"
-                    ];
-
-
-                    if($filterData){
-                        $planParAnnee = $activite->planDeDecaissementParAnnee(isset($filterData['annee']) ? $filterData['annee'] : null);
-                    }
-                    else{
-                        $planParAnnee = $activite->planDeDecaissementParAnnee();
-                    }
-
-                    $consommerParAnnee = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
-                        $query->where('annee', $filterData['annee']);
-                    })->sum('consommer');
-
-                    $exercice = [
-                        "budget" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']),
-                        "consommer" => $consommerParAnnee,
-                        "disponible" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']) - $consommerParAnnee,
-                        "pourcentage" => ($planParAnnee['budgetNational'] != 0 || $planParAnnee['pret'] != 0 ) ? round(($consommerParAnnee * 100) / ($planParAnnee['budgetNational'] + $planParAnnee['pret']), 2) : 0 . " %"
-                    ];
-
-                    $sumBudgetNational = $activite->planDeDecaissements->sum('budgetNational');
-                    $sumPret = $activite->planDeDecaissements->sum('pret');
-
-                    $planCumul = $sumBudgetNational + $sumPret;
-
-
-                    $consommerCumul = $projet->suiviFinanciers()->where('activiteId', $activite->id)->sum('consommer');
-
-                    $cumul = [
-                        "budget" => $planCumul,
-                        "consommer" => $consommerCumul,
-                        "disponible" => $planCumul - $consommerCumul,
-                        "pourcentage" => $planCumul != 0 ? round(($consommerCumul*100)/$planCumul,2) : 0 . " %"
-                    ];
-
-                    $objet = [
-                        "bailleur" => $projet->bailleur->sigle,
-                        "trimestre" => $filterData['trimestre'],
-                        "annee" => $filterData['annee'],
-                        "activite" => new ActivitesResource($activite),
-                        "periode" => $periode,
-                        "exercice" => $exercice,
-                        "cumul" => $cumul
-                    ];
-
-                    array_push($suiviFinanciers, $objet);
-                }
-
-                $programme = Auth::user()->programme;
-                $projets = [];
-
-                foreach($programme->suiviFinanciers as $suiviFinancier)
-                {
-                    $controle = 1;
-                    $projet = $suiviFinancier->activite->composante->projet;
-
-                    foreach($projets as $key => $p)
-                    {
-
-                        if($p['id'] == $projet->id)
-                        {
-                            $projets[$key]['total']+= $suiviFinancier->consommer;
-                            $controle = 0;
-                        }
-                    }
-
-                    if($controle)
-                    {
-                        array_push($projets, [
-                            'id' => $projet->id,
-                            'nom' => $projet->nom,
-                            'total' => $suiviFinancier->consommer
-                        ]);
-                    }
-                }
-
-                $data = [
-                    'suiviFinanciers' => $suiviFinanciers,
-                    'total' => $programme->suiviFinanciers->sum('consommer'),
-                    'projets' => $projets,
-                    'annee' => $filterData['annee'],
-                    //'bailleur' => $bailleur->sigle
-                ];
-
-                $suiviFinanciers = $data;
 
             }
             else{
                 
                 foreach ($projet as $key => $item) {
+                    $activites = array_push($activites->toArray(), $item->activites());
+                }
 
-                    $suiviFinanciers[$key] = $this->filterData($item, $filterData);
+                $activites = $activites->collapse();
+            }
+
+
+            foreach($activites as $activite)
+            {
+                $suivi = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
+                    $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
+                })->first();
+
+                if(!$suivi) continue;
+
+                if($filterData){
+                    $plan = $activite->planDeDecaissement(isset($filterData['trimestre']) ? $filterData['trimestre'] : null, isset($filterData['annee']) ? $filterData['annee'] : null);
+                }
+                else{
+                    $plan = $activite->planDeDecaissement();
+                }
+
+                $periode = [
+                    "budget" => ($plan['budgetNational'] + $plan['pret']),
+                    "consommer" => $suivi->consommer,
+                    "disponible" => ($plan['budgetNational'] + $plan['pret']) - $suivi->consommer,
+                    "pourcentage" => ($plan['budgetNational'] != 0 || $plan['pret'] != 0 ) ? round(($suivi->consommer*100)/($plan['budgetNational'] + $plan['pret']), 2) : 0 . " %"
+                ];
+
+
+                if($filterData){
+                    $planParAnnee = $activite->planDeDecaissementParAnnee(isset($filterData['annee']) ? $filterData['annee'] : null);
+                }
+                else{
+                    $planParAnnee = $activite->planDeDecaissementParAnnee();
+                }
+
+                $consommerParAnnee = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
+                    $query->where('annee', $filterData['annee']);
+                })->sum('consommer');
+
+                $exercice = [
+                    "budget" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']),
+                    "consommer" => $consommerParAnnee,
+                    "disponible" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']) - $consommerParAnnee,
+                    "pourcentage" => ($planParAnnee['budgetNational'] != 0 || $planParAnnee['pret'] != 0 ) ? round(($consommerParAnnee * 100) / ($planParAnnee['budgetNational'] + $planParAnnee['pret']), 2) : 0 . " %"
+                ];
+
+                $sumBudgetNational = $activite->planDeDecaissements->sum('budgetNational');
+                $sumPret = $activite->planDeDecaissements->sum('pret');
+
+                $planCumul = $sumBudgetNational + $sumPret;
+
+
+                $consommerCumul = $projet->suiviFinanciers()->where('activiteId', $activite->id)->sum('consommer');
+
+                $cumul = [
+                    "budget" => $planCumul,
+                    "consommer" => $consommerCumul,
+                    "disponible" => $planCumul - $consommerCumul,
+                    "pourcentage" => $planCumul != 0 ? round(($consommerCumul*100)/$planCumul,2) : 0 . " %"
+                ];
+
+                $objet = [
+                    "bailleur" => $projet->bailleur->sigle,
+                    "trimestre" => $filterData['trimestre'],
+                    "annee" => $filterData['annee'],
+                    "activite" => new ActivitesResource($activite),
+                    "periode" => $periode,
+                    "exercice" => $exercice,
+                    "cumul" => $cumul
+                ];
+
+                array_push($suiviFinanciers, $objet);
+            }
+
+            $programme = Auth::user()->programme;
+            $projets = [];
+
+            foreach($programme->suiviFinanciers as $suiviFinancier)
+            {
+                $controle = 1;
+                $projet = $suiviFinancier->activite->composante->projet;
+
+                foreach($projets as $key => $p)
+                {
+
+                    if($p['id'] == $projet->id)
+                    {
+                        $projets[$key]['total']+= $suiviFinancier->consommer;
+                        $controle = 0;
+                    }
+                }
+
+                if($controle)
+                {
+                    array_push($projets, [
+                        'id' => $projet->id,
+                        'nom' => $projet->nom,
+                        'total' => $suiviFinancier->consommer
+                    ]);
                 }
             }
 
+            $data = [
+                'suiviFinanciers' => $suiviFinanciers,
+                'total' => $programme->suiviFinanciers->sum('consommer'),
+                'projets' => $projets,
+                'annee' => $filterData['annee'],
+                //'bailleur' => $bailleur->sigle
+            ];
+
+            $suiviFinanciers = $data;
             
         }
         
