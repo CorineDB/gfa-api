@@ -993,7 +993,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         $suiviFinanciers = [];
 
-    	$activites = collect();
+    	$activites = [];
 
         if($projet){
 
@@ -1007,12 +1007,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $activites = $projet->flatMap(function ($item) {
                     return $item->activites();
                 });
-                /* foreach ($projet as $key => $item) {
-                    // Access the activites relationship correctly
-                    $activites->merge($item->activites());
-                }
-
-                $activites = $activites->collapse(); */
             }
 
             return $activites;
