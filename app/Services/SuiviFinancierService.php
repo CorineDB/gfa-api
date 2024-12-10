@@ -1095,12 +1095,12 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "pourcentage" => ($planParAnnee['budgetNational'] != 0 || $planParAnnee['pret'] != 0 ) ? round(($consommerParAnnee * 100) / ($planParAnnee['budgetNational'] + $planParAnnee['pret']), 2) : 0 . " %"
                 ];
 
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
-
-                /*$sumBudgetNational = $activite->planDeDecaissements->sum('budgetNational');
+                $sumBudgetNational = $activite->planDeDecaissements->sum('budgetNational');
                 $sumPret = $activite->planDeDecaissements->sum('pret');
 
-                $planCumul = $sumBudgetNational + $sumPret;
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'sumPret' => $sumPret, 'sumBudgetNational' => $sumBudgetNational, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
+
+                /*$planCumul = $sumBudgetNational + $sumPret;
 
                 $consommerCumul = $activite->suiviFinanciers->sum('consommer');
 
