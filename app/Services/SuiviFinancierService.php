@@ -1098,9 +1098,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $sumBudgetNational = $activite->planDeDecaissements->sum('budgetNational');
                 $sumPret = $activite->planDeDecaissements->sum('pret');
 
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'sumPret' => $sumPret, 'sumBudgetNational' => $sumBudgetNational, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
-
-                /*$planCumul = $sumBudgetNational + $sumPret;
+                $planCumul = $sumBudgetNational + $sumPret;
 
                 $consommerCumul = $activite->suiviFinanciers->sum('consommer');
 
@@ -1111,7 +1109,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "pourcentage" => $planCumul != 0 ? round(($consommerCumul*100)/$planCumul,2) : 0 . " %"
                 ];
 
-                $objet = [
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'cumul' => $cumul, 'consommerCumul' => $consommerCumul, 'planCumul' => $planCumul, 'sumPret' => $sumPret, 'sumBudgetNational' => $sumBudgetNational, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
+
+                /*$objet = [
                     //"bailleur" => $projet->bailleur->sigle,
                     "trimestre" => $filterData['trimestre'],
                     "annee" => $filterData['annee'],
