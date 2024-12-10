@@ -1069,7 +1069,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $plan = $activite->planDeDecaissement();
                 }
                 
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee]);
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'planParAnnee' => $planParAnnee]);
 
                 /* 
                 $periode = [
