@@ -1004,6 +1004,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             }
             else{
                 
+                return $projet->first()->activites();
                 foreach ($projet as $key => $item) {
                     $activites = $item->activites();
                     //$activites = array_push($activites->toArray(), $item->activites());
