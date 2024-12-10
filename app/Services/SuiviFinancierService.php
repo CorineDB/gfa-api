@@ -993,27 +993,24 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         $suiviFinanciers = [];
 
-    	$activites = [];
+    	$activites = collect([]);
 
         if($projet){
 
-            return is_object($projet);
-            if(is_object($projet)){
+            if($projet instanceof \Illuminate\Database\Eloquent\Model){
 
                 $activites = $projet->activites();
 
             }
-            else{
+            else if (($projet instanceof \Illuminate\Database\Eloquent\Collection) || (is_array($projet))) {
                 
                 foreach ($projet as $key => $item) {
-                    $activites = $item->composantes;
-                    //$activites = array_push($activites->toArray(), $item->activites());
+                    $activites = array_push($activites->toArray(), $item->activites());
                 }
 
-                //$activites = $activites->collapse();
+                $activites = $activites->collapse();
             }
 
-            return $suiviFinanciers = $projet->first()->activites();
             return $activites;
 
             foreach($activites as $activite)
