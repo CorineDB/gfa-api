@@ -77,13 +77,9 @@ class SurveyFormService extends BaseService implements SurveyFormServiceInterfac
 
         try {
 
-            if (!($survey = app(SurveyRepository::class)->findById($attributs["surveyId"]))){
-                throw new Exception("Ce formulaire n'existe pas", Response::HTTP_NOT_FOUND);
-            }
-
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'surveyFormId' => $surveyForm->id]);
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'created_by_type' => get_class(auth()->user()->profilable), 'created_by_id' => auth()->user()->profilable->id]);
             
             $surveyForm = $this->repository->create($attributs);
 
