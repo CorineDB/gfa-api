@@ -999,12 +999,12 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 //$activites = $projet->activites();
 
-                $suiviFinanciers = $this->getSuiviFinancier($projet->activites(), $projet, $filterData);
+                $suiviFinanciers = $this->getSuiviFinancier($projet->activites(), $filterData);
 
             }
             else if (($projet instanceof \Illuminate\Database\Eloquent\Collection) || (is_array($projet))) {
                 $suiviFinanciers = $projet->flatMap(function ($item) use ($filterData) {
-                    return $this->getSuiviFinancier($item->activites(), $item, $filterData);
+                    return $this->getSuiviFinancier($item->activites(), $filterData);
                 });
             }
 
@@ -1051,7 +1051,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         return $suiviFinanciers;
     }
 
-    protected function getSuiviFinancier ($activites, $projet, array $filterData = null){
+    protected function getSuiviFinancier ($activites, array $filterData = null){
 
         $suiviFinanciers = [];
 
@@ -1119,7 +1119,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "exercice" => $exercice,
                     "cumul" => $cumul
                 ];
-                //array_push($suiviFinanciers, ['suivi' => $suivi, 'objet' => $objet, 'cumul' => $cumul, 'consommerCumul' => $consommerCumul, 'planCumul' => $planCumul, 'sumPret' => $sumPret, 'sumBudgetNational' => $sumBudgetNational, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
 
                 array_push($suiviFinanciers, $objet);
             }
