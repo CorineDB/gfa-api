@@ -1124,8 +1124,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "exercice" => $exercice,
                     "cumul" => $cumul
                 ];
-
-                array_push($suiviFinanciers, $objet); */
+ */
+                array_push($suiviFinanciers, ["activites" => $activites,"projet" => $projet]);
             }
 
         return $suiviFinanciers;
