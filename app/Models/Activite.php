@@ -153,16 +153,13 @@ class Activite extends Model
             $query->where('annee', $annee);
         })->get();
 
+        $pret = 0;
+        $budgetNational = 0;
+        
         if($plans->count() > 0){
             $pret = $plans->sum('pret');
             $budgetNational = $plans->sum('budgetNational');
         }
-        else{
-            $pret = 0;
-            $budgetNational = 0;
-        }
-        return $plans->count();
-
         return ['pret' => $pret,
                 'budgetNational' => $budgetNational];
     }
