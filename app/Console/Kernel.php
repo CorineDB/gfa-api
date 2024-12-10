@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
         Commands\Demarrage::class,
         Commands\RappelCron::class,
         Commands\Rapport::class,
-        Commands\Suivi::class,
+        //Commands\Suivi::class,
     ];
     /**
      * Define the application's command schedule.
