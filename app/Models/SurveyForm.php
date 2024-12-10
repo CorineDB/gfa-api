@@ -17,7 +17,7 @@ class SurveyForm extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('intitule', 'description', 'form_data', 'created_by_type', 'created_by_id', 'programmeId');
+    protected $fillable = array('libelle', 'description', 'form_data', 'created_by_type', 'created_by_id', 'programmeId');
 
     protected $casts = ['form_data'  => 'array'];
 
