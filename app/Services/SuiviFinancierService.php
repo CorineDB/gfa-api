@@ -1063,7 +1063,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
                 })->first();
 
-                $suivi;
+                return $suivi;
 
                 if(!$suivi) continue;
 
