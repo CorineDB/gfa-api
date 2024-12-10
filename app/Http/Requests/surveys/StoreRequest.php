@@ -15,7 +15,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("unitee-de-gestion");
+        return request()->user()->hasPermissionTo("creer-une-enquete-individuelle") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**
@@ -26,10 +26,11 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'libelle'               => 'required|max:255|unique:surveys,libelle',
+            'intitule'               => 'required|max:255|unique:surveys,intitule',
             'description'           => 'nullable|max:255',
+            'prive'                 => 'required|boolean:false',
             'surveyFormId'          => ['required', new HashValidatorRule(new SurveyForm())],
-            'nbreParticipants'      => ["integer", "min:1"],
+            'nbreParticipants'      => ['required', "integer", "min:1"],
 
             'debut'                 => [
                 'required',
