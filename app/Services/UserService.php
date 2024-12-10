@@ -129,11 +129,17 @@ class UserService extends BaseService implements UserServiceInterface
 
             $password = $this->hashId(8); // Générer le mot de passe
 
-            $utilisateur = $this->repository->fill(array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'profilable_type' => Auth::user()->profilable_type, 'profilable_id' => Auth::user()->profilable_id]));
+            $attributs = array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'roleId' => $role->id, 'profilable_type' => Auth::user()->profilable_type, 'profilable_id' => Auth::user()->profilable_id]);
+
+            $utilisateur = $this->repository->fill($attributs);
 
             $utilisateur->save();
 
             $utilisateur->roles()->attach($roles);
+
+            $team = $utilisateur->team()->fill($attributs);
+
+            $team->save();
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
 
@@ -142,7 +148,6 @@ class UserService extends BaseService implements UserServiceInterface
             $utilisateur->link_is_valide = true;
 
             $utilisateur->save();
-
 
             //Envoyer les identifiants de connexion à l'utilisateur via son email
             dispatch(new SendEmailJob($utilisateur, "confirmation-de-compte", $password))->delay(now()->addSeconds(15));
@@ -181,13 +186,17 @@ class UserService extends BaseService implements UserServiceInterface
 
             unset($attributs['email']);
 
-            $attributs = array_merge($attributs, ['type' => $role->slug]);
+            $attributs = array_merge($attributs, ['type' => $role->slug,'roleId' => $role->id]);
 
             $utilisateur = $utilisateur->fill($attributs);
 
             $utilisateur->save();
 
             $utilisateur->roles()->attach($roles);
+
+            $team = $utilisateur->team()->fill($attributs);
+
+            $team->save();
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new TeamMemberResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

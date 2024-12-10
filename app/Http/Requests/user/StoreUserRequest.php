@@ -30,7 +30,7 @@ class StoreUserRequest extends FormRequest
         return [
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'contact' => 'nullable|string|max:12|unique:users',
+            'contact' => 'nullable|max:12|unique:users',
             'email' => 'required|email|max:255|unique:users',
             'roles'  => 'required|array|min:1',
             'roles.*'     => ['distinct', new HashValidatorRule(new Role())],
