@@ -993,7 +993,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         $suiviFinanciers = [];
 
-    	$activites = collect([]);
+    	$activites = [];
 
         if($projet){
 
