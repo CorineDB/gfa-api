@@ -69,7 +69,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $projet = Auth::user()->programme->projets;
             }
 
-            $suiviFinanciers = $projet->first()->activites;
+            $suiviFinanciers = $projet->first()->activites();
             //$suiviFinanciers = $this->filterData($projet);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $suiviFinanciers, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
