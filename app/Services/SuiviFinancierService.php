@@ -997,7 +997,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         if($projet){
 
-            return $projet;
             if(is_object($projet)){
 
                 $activites = $projet->activites();
@@ -1006,10 +1005,11 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             else{
                 
                 foreach ($projet as $key => $item) {
-                    $activites = array_push($activites->toArray(), $item->activites());
+                    $activites = $activites->activites();
+                    //$activites = array_push($activites->toArray(), $item->activites());
                 }
 
-                $activites = $activites->collapse();
+                //$activites = $activites->collapse();
             }
 
             return $activites;
