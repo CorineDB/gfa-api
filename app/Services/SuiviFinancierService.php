@@ -1056,7 +1056,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         $suiviFinanciers = [];
 
         foreach($activites as $activite) {
-                $suivi = $activite->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
+                $suivi = $activite->suiviFinanciers()->when($filterData != null, function($query) use($filterData) {
                     $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
                 })->first();
 
@@ -1084,9 +1084,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $planParAnnee = $activite->planDeDecaissementParAnnee();
                 }
 
-                $consommerParAnnee = $activite->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
+                $consommerParAnnee = $activite->suiviFinanciers()->when($filterData != null, function($query) use($filterData) {
                     $query->where('annee', $filterData['annee']);
-                })->sum('consommer');
+                })->get()->sum('consommer');
 
                 $exercice = [
                     "budget" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']),
@@ -1100,7 +1100,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 $planCumul = $sumBudgetNational + $sumPret;
 
-                $consommerCumul = $activite->suiviFinanciers()->where('activiteId', $activite->id)->sum('consommer');
+                $consommerCumul = $activite->suiviFinanciers->sum('consommer');
 
                 $cumul = [
                     "budget" => $planCumul,
