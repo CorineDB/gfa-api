@@ -993,23 +993,67 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         $suiviFinanciers = [];
 
-    	$activites = [];
-
         if($projet){
 
             if($projet instanceof \Illuminate\Database\Eloquent\Model){
 
-                $activites = $projet->activites();
+                //$activites = $projet->activites();
+
+                $suiviFinanciers = $this->getSuiviFinancier($projet->activites(), $projet, $filterData);
 
             }
             else if (($projet instanceof \Illuminate\Database\Eloquent\Collection) || (is_array($projet))) {
                 
-                $activites = $projet->flatMap(function ($item) {
-                    return $item->activites();
+                $suiviFinanciers = $projet->flatMap(function ($item) use($filterData) {
+                    return $this->getSuiviFinancier($item->activites(), $item, $filterData);
                 });
             }
 
-            foreach($activites as $activite)
+            $programme = Auth::user()->programme;
+            $projets = [];
+
+            foreach($programme->suiviFinanciers as $suiviFinancier)
+            {
+                $controle = 1;
+                $projet = $suiviFinancier->activite->composante->projet;
+
+                foreach($projets as $key => $p)
+                {
+
+                    if($p['id'] == $projet->id)
+                    {
+                        $projets[$key]['total']+= $suiviFinancier->consommer;
+                        $controle = 0;
+                    }
+                }
+
+                if($controle)
+                {
+                    array_push($projets, [
+                        'id' => $projet->id,
+                        'nom' => $projet->nom,
+                        'total' => $suiviFinancier->consommer
+                    ]);
+                }
+            }
+
+            $data = [
+                'suiviFinanciers' => $suiviFinanciers,
+                'total' => $programme->suiviFinanciers->sum('consommer'),
+                'projets' => $projets,
+                'annee' => isset($filterData['annee']) ? $filterData['annee'] : null,
+                //'bailleur' => $bailleur->sigle
+            ];
+
+            $suiviFinanciers = $data;
+            
+        }
+        
+        return $suiviFinanciers;
+    }
+
+    protected function getSuiviFinancier ($activites, $projet, array $filterData = null){
+        foreach($activites as $activite)
             {
                 $suivi = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
                     $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
@@ -1066,7 +1110,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 ];
 
                 $objet = [
-                    "bailleur" => $projet->bailleur->sigle,
+                    //"bailleur" => $projet->bailleur->sigle,
                     "trimestre" => $filterData['trimestre'],
                     "annee" => $filterData['annee'],
                     "activite" => new ActivitesResource($activite),
@@ -1077,47 +1121,5 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 array_push($suiviFinanciers, $objet);
             }
-
-            $programme = Auth::user()->programme;
-            $projets = [];
-
-            foreach($programme->suiviFinanciers as $suiviFinancier)
-            {
-                $controle = 1;
-                $projet = $suiviFinancier->activite->composante->projet;
-
-                foreach($projets as $key => $p)
-                {
-
-                    if($p['id'] == $projet->id)
-                    {
-                        $projets[$key]['total']+= $suiviFinancier->consommer;
-                        $controle = 0;
-                    }
-                }
-
-                if($controle)
-                {
-                    array_push($projets, [
-                        'id' => $projet->id,
-                        'nom' => $projet->nom,
-                        'total' => $suiviFinancier->consommer
-                    ]);
-                }
-            }
-
-            $data = [
-                'suiviFinanciers' => $suiviFinanciers,
-                'total' => $programme->suiviFinanciers->sum('consommer'),
-                'projets' => $projets,
-                'annee' => isset($filterData['annee']) ? $filterData['annee'] : null,
-                //'bailleur' => $bailleur->sigle
-            ];
-
-            $suiviFinanciers = $data;
-            
-        }
-        
-        return $suiviFinanciers;
     }
 }
