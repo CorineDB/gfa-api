@@ -1057,13 +1057,14 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
     protected function getSuiviFinancier ($activites, $projet, array $filterData = null){
 
         $suiviFinanciers = [];
+        
+        // Ensure $activites is a collection
+        $activites = collect($activites); 
 
         foreach($activites as $activite){
                 $suivi = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
                     $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
                 })->first();
-
-                return $suivi;
 
                 if(!$suivi) continue;
 
@@ -1104,7 +1105,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $sumPret = $activite->planDeDecaissements->sum('pret');
 
                 $planCumul = $sumBudgetNational + $sumPret;
-
 
                 $consommerCumul = $projet->suiviFinanciers()->where('activiteId', $activite->id)->sum('consommer');
 
