@@ -1006,7 +1006,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 
                 foreach ($projet as $key => $item) {
                     // Access the activites relationship correctly
-                    $activites = $activites->merge($item->activites());
+                    $activites->merge($item->activites());
                 }
 
                 $activites = $activites->collapse();
