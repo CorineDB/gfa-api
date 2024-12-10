@@ -1060,9 +1060,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
                 })->first();
 
-                array_push($suiviFinanciers, $suivi);
-
-                /* if(!$suivi) continue;
+                if(!$suivi) continue;
 
                 if($filterData){
                     $plan = $activite->planDeDecaissement(isset($filterData['trimestre']) ? $filterData['trimestre'] : null, isset($filterData['annee']) ? $filterData['annee'] : null);
@@ -1086,7 +1084,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $planParAnnee = $activite->planDeDecaissementParAnnee();
                 }
 
-                $consommerParAnnee = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
+                $consommerParAnnee = $activite->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
                     $query->where('annee', $filterData['annee']);
                 })->sum('consommer');
 
@@ -1102,7 +1100,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 $planCumul = $sumBudgetNational + $sumPret;
 
-                $consommerCumul = $projet->suiviFinanciers()->where('activiteId', $activite->id)->sum('consommer');
+                $consommerCumul = $activite->suiviFinanciers()->where('activiteId', $activite->id)->sum('consommer');
 
                 $cumul = [
                     "budget" => $planCumul,
@@ -1121,7 +1119,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "cumul" => $cumul
                 ];
 
-                array_push($suiviFinanciers, $objet); */
+                array_push($suiviFinanciers, $objet);
             }
 
         return $suiviFinanciers;
