@@ -491,7 +491,13 @@ class Programme extends Model
 
     public function suiviFinanciers()
     {
-        return $this->hasMany(SuiviFinancier::class, 'programmeId');
+        return $this->hasMany(SuiviFinancier::class, 'programmeId')->when(auth()->user()->type == 'organisation', function($query){
+            $query->whereHas('activite', function($query){
+                $query->whereHas('projet', function($query){
+                    $query->where("projetable_id", auth()->user()->profilable->id)->where("projetable_type", Organisation::class);
+                });
+            });
+        });
     }
 
     public function archiveSuiviFinanciers()
