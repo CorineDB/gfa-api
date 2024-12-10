@@ -1053,6 +1053,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
     }
 
     protected function getSuiviFinancier ($activites, $projet, array $filterData = null){
+        
+        $suiviFinanciers = [];
+
         foreach($activites as $activite)
             {
                 $suivi = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
@@ -1121,5 +1124,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 array_push($suiviFinanciers, $objet);
             }
+
+        return $suiviFinanciers;
     }
 }
