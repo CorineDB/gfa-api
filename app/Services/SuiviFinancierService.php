@@ -1088,16 +1088,16 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $query->where('annee', $filterData['annee']);
                 })->get()->sum('consommer');
 
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee]);
-
-                /*$exercice = [
+                $exercice = [
                     "budget" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']),
                     "consommer" => $consommerParAnnee,
                     "disponible" => ($planParAnnee['budgetNational'] + $planParAnnee['pret']) - $consommerParAnnee,
                     "pourcentage" => ($planParAnnee['budgetNational'] != 0 || $planParAnnee['pret'] != 0 ) ? round(($consommerParAnnee * 100) / ($planParAnnee['budgetNational'] + $planParAnnee['pret']), 2) : 0 . " %"
                 ];
 
-                $sumBudgetNational = $activite->planDeDecaissements->sum('budgetNational');
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee, 'consommerParAnnee' => $consommerParAnnee, 'exercice' => $exercice]);
+
+                /*$sumBudgetNational = $activite->planDeDecaissements->sum('budgetNational');
                 $sumPret = $activite->planDeDecaissements->sum('pret');
 
                 $planCumul = $sumBudgetNational + $sumPret;
