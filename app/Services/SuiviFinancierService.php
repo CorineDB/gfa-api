@@ -1004,12 +1004,15 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             }
             else if (($projet instanceof \Illuminate\Database\Eloquent\Collection) || (is_array($projet))) {
                 
-                foreach ($projet as $key => $item) {
+                $activites = $projet->flatMap(function ($item) {
+                    return $item->activites();
+                });
+                /* foreach ($projet as $key => $item) {
                     // Access the activites relationship correctly
                     $activites->merge($item->activites());
                 }
 
-                $activites = $activites->collapse();
+                $activites = $activites->collapse(); */
             }
 
             return $activites;
