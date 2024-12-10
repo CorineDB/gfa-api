@@ -1010,6 +1010,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $activites = $activites->collapse();
             }
 
+            return $activites;
 
             foreach($activites as $activite)
             {
