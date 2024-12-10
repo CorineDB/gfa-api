@@ -1005,9 +1005,12 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             else if (($projet instanceof \Illuminate\Database\Eloquent\Collection) || (is_array($projet))) {
                 
                 $suiviFinanciers = $projet->flatMap(function ($item) use($filterData) {
+                    return $item->activites();
                     return $this->getSuiviFinancier($item->activites(), $item, $filterData);
                 });
             }
+
+            return $suiviFinanciers;
 
             $programme = Auth::user()->programme;
             $projets = [];
@@ -1053,7 +1056,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
     }
 
     protected function getSuiviFinancier ($activites, $projet, array $filterData = null){
-        
+
         $suiviFinanciers = [];
 
         foreach($activites as $activite)
