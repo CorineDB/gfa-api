@@ -131,12 +131,13 @@ class Activite extends Model
         return $this->hasMany(PlanDecaissement::class, 'activiteId');
     }
 
-    public function planDeDecaissement($trimestre, $annee)
+    public function planDeDecaissement($trimestre = null, $annee = null)
     {
-        $plan = $this->planDeDecaissements()
-                    ->where('trimestre', $trimestre)
-                    ->where('annee', $annee)
-                    ->first();
+        $plan = $this->planDeDecaissements()->when($trimestre != null, function($query) use ($trimestre){
+            $query->where('trimestre', $trimestre);
+        })->when($annee != null, function($query) use ($annee){
+            $query->where('annee', $annee);
+        })->first();
 
         if($plan)
             return ['pret' => $plan->pret,
@@ -146,11 +147,20 @@ class Activite extends Model
                 'budgetNational' => 0];
     }
 
-    public function planDeDecaissementParAnnee($annee)
+    public function planDeDecaissementParAnnee($annee = null)
     {
-        $pret = $this->planDeDecaissements()->where('annee', $annee)->sum('pret');
+        $plans = $this->planDeDecaissements()->when($annee != null, function($query) use ($annee){
+            $query->where('annee', $annee);
+        })->get();
 
-        $budgetNational = $this->planDeDecaissements()->where('annee', $annee)->sum('budgetNational');
+        if($plans->length()>0){
+            $pret = $plans->sum('pret');
+            $budgetNational = $plans->sum('budgetNational');
+        }
+        else{
+            $pret = 0;
+            $budgetNational = 0;
+        }
 
         return ['pret' => $pret,
                 'budgetNational' => $budgetNational];

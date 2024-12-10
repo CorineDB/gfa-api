@@ -22,7 +22,7 @@ class SuiviFinancierResource extends JsonResource
             "annee" => $this->annee,
             "dateDeSuivi" => $this->dateDeSuivi,
             "trimestre" => $this->trimestre,
-              "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s"),
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s"),
             "consommer" => $this->consommer,
         ];
     }

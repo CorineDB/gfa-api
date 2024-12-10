@@ -196,11 +196,23 @@ class Permissions extends Command
             'voir details soumission',
             'valider suivi indicateur',
             'valider une action a mener',
+            'signaler une action a mener est realise',
             "voir plan d'action",
             'voir statistique evolution des profiles de gouvernance au fil du temps',
-            'send invitation',
+            'ajouter nombre de participant',
+            'envoyer une invitation',
             'send reminder',
             'alerte validation action a mener',
+            "voir resultats evaluation",
+
+            'alerte  action a mener realise',
+            'alerte evaluation de gouvernance',
+            'alerte resultats evaluation',
+            'alerte creer plan action',
+            'alerte definition nombre de participant',
+            'exporter resultats evaluation',
+            'exporter fiche synthese',
+            "exporter plan d'action",
         ];
 
         $bailleurs = [

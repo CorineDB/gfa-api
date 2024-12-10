@@ -580,6 +580,16 @@ class Programme extends Model
         return $this->hasMany(OptionDeReponse::class, 'programmeId');
     }
 
+    public function survey_forms()
+    {
+        return $this->hasMany(SurveyForm::class, 'programmeId');
+    }
+
+    public function surveys()
+    {
+        return $this->hasMany(Survey::class, 'programmeId');
+    }
+
     public function enquetesDeCollecte()
     {
         return $this->hasMany(Enquete::class, 'programmeId');
