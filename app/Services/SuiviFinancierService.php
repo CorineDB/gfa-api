@@ -996,6 +996,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
     	$activites = collect([]);
 
         if($projet){
+
+            return $projet;
             if(is_object($projet)){
 
                 $activites = $projet->activites();
