@@ -993,7 +993,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         $suiviFinanciers = [];
 
-    	$activites = collect([]);
+    	$activites = [];
 
         if($projet){
 
@@ -1005,10 +1005,10 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             else if (($projet instanceof \Illuminate\Database\Eloquent\Collection) || (is_array($projet))) {
                 
                 foreach ($projet as $key => $item) {
-                    $activites = array_push($activites->toArray(), $item->activites());
+                    $activites = array_push($activites, $item->activites());
                 }
 
-                $activites = $activites->collapse();
+                $activites = $activites;
             }
 
             return $activites;
