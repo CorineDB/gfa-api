@@ -84,9 +84,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
     public function filtre(array $attributs): JsonResponse
     {
-
         try {
-
 
             $projet = null;
 
