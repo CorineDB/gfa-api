@@ -1068,10 +1068,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 else{
                     $plan = $activite->planDeDecaissement();
                 }
-                
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan]);
 
-                /* 
                 $periode = [
                     "budget" => ($plan['budgetNational'] + $plan['pret']),
                     "consommer" => $suivi->consommer,
@@ -1079,8 +1076,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "pourcentage" => ($plan['budgetNational'] != 0 || $plan['pret'] != 0 ) ? round(($suivi->consommer*100)/($plan['budgetNational'] + $plan['pret']), 2) : 0 . " %"
                 ];
 
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode]);
 
-                if($filterData){
+                /*if($filterData){
                     $planParAnnee = $activite->planDeDecaissementParAnnee(isset($filterData['annee']) ? $filterData['annee'] : null);
                 }
                 else{
