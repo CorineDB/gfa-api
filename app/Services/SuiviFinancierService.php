@@ -69,8 +69,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $projet = Auth::user()->programme->projets;
             }
 
-            $suiviFinanciers = $projet->first()->activites();
-            //$suiviFinanciers = $this->filterData($projet);
+            $suiviFinanciers = $this->filterData($projet);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $suiviFinanciers, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
@@ -998,6 +997,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         if($projet){
 
+            return is_object($projet);
             if(is_object($projet)){
 
                 $activites = $projet->activites();
@@ -1013,6 +1013,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 //$activites = $activites->collapse();
             }
 
+            return $suiviFinanciers = $projet->first()->activites();
             return $activites;
 
             foreach($activites as $activite)
