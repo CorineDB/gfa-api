@@ -1009,8 +1009,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 });
             }
 
-            return $activites;
-
             foreach($activites as $activite)
             {
                 $suivi = $projet->suiviFinanciers()->where('activiteId', $activite->id)->when($filterData != null, function($query) use($filterData) {
@@ -1112,7 +1110,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 'suiviFinanciers' => $suiviFinanciers,
                 'total' => $programme->suiviFinanciers->sum('consommer'),
                 'projets' => $projets,
-                'annee' => $filterData['annee'],
+                'annee' => isset($filterData['annee']) ? $filterData['annee'] : null,
                 //'bailleur' => $bailleur->sigle
             ];
 
