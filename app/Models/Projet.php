@@ -136,10 +136,10 @@ class Projet extends Model
 
     public function activites()
     {
-    	$sousComposantes = $this->sousComposantes();
     	$activites = [];
 
         return $activites;
+    	$sousComposantes = $this->sousComposantes();
 
     	if(count($sousComposantes))
     	{
