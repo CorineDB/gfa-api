@@ -149,13 +149,11 @@ class Activite extends Model
 
     public function planDeDecaissementParAnnee($annee = null)
     {
-        return [
-                'pret' => 0,
-                'budgetNational' => 0
-            ];
         $plans = $this->planDeDecaissements()->when($annee != null, function($query) use ($annee) {
             $query->where('annee', $annee);
         })->get();
+        
+        return $plans;
 
         if($plans->count() > 0){
             $pret = $plans->sum('pret');
