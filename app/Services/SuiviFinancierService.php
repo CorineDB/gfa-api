@@ -1008,7 +1008,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 });
             }
 
-            return $suiviFinanciers;
             $programme = Auth::user()->programme;
             $projets = [];
 
@@ -1070,7 +1069,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $plan = $activite->planDeDecaissement();
                 }
 
-                $periode = [
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan]);
+
+                /* $periode = [
                     "budget" => ($plan['budgetNational'] + $plan['pret']),
                     "consommer" => $suivi->consommer,
                     "disponible" => ($plan['budgetNational'] + $plan['pret']) - $suivi->consommer,
@@ -1120,7 +1121,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "cumul" => $cumul
                 ];
 
-                array_push($suiviFinanciers, $objet);
+                array_push($suiviFinanciers, $objet); */
             }
 
         return $suiviFinanciers;
