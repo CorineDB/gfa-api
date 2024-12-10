@@ -1057,7 +1057,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
     protected function getSuiviFinancier ($activites, $projet, array $filterData = null){
 
         $suiviFinanciers = [];
-        
+
         // Ensure $activites is a collection
         $activites = collect($activites); 
 
@@ -1068,7 +1068,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 if(!$suivi) continue;
 
-                if($filterData){
+                /* if($filterData){
                     $plan = $activite->planDeDecaissement(isset($filterData['trimestre']) ? $filterData['trimestre'] : null, isset($filterData['annee']) ? $filterData['annee'] : null);
                 }
                 else{
@@ -1125,7 +1125,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     "cumul" => $cumul
                 ];
 
-                array_push($suiviFinanciers, $objet);
+                array_push($suiviFinanciers, $objet); */
+                array_push($suiviFinanciers, $suivi); 
             }
 
         return $suiviFinanciers;
