@@ -16,8 +16,8 @@ class UpdateRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return request()->user()->hasRole("unitee-de-gestion");
+    {        
+        return request()->user()->hasPermissionTo("modifier-une-enquete-individuelle") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**
@@ -33,10 +33,14 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'libelle'               => ['sometimes','max:255', Rule::unique('surveys', 'libelle')->ignore($this->survey)->whereNull('deleted_at')],
-            'description'           => 'sometimes|nullable|max:255',
+            'intitule'               => ['sometimes','max:255', Rule::unique('surveys', 'intitule')->ignore($this->survey)->whereNull('deleted_at')],
+
+            'description'           => 'nullable|max:255',
+            'prive'                 => 'required|boolean:false',
             'surveyFormId'          => ['required', new HashValidatorRule(new SurveyForm())],
-            'nbreParticipants'      => ["integer", "min:1"],
+            'nbreParticipants'      => ['required', "integer", "min:1"],
+
+
             'debut'                 => [
                 'required',
                 'date',

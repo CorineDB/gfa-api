@@ -17,9 +17,9 @@ class Survey extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('intitule', 'description', 'debut', 'fin', 'nbreParticipants', 'statut', 'surveyFormId', 'programmeId');
+    protected $fillable = array('intitule', 'description', 'debut', 'fin', 'prive', 'token', 'nbreParticipants', 'statut', 'surveyFormId', 'programmeId');
 
-    protected $casts = ['statut'  => 'integer', 'nbreParticipants' => 'integer', 'debut'  => 'datetime', 'fin'  => 'datetime'];
+    protected $casts = ['statut'  => 'integer', 'nbreParticipants' => 'integer', 'debut'  => 'datetime', 'prive'  => 'boolean', 'fin'  => 'datetime'];
 
     protected static function boot()
     {

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Hash;
 
 /**
 * Interface SurveyServiceInterface
@@ -117,7 +118,13 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'surveyFormId' => $surveyForm->id]);
+            // Generate the token
+            $token = str_replace(['/', '\\', '.'], '', Hash::make(
+                Hash::make(request()->ip() . auth()->user()->secure_id) .
+                    Hash::make(strtotime(now()))
+            ));
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'surveyFormId' => $surveyForm->id, 'token' => $token]);
             
             $survey = $this->repository->create($attributs);
 
