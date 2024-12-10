@@ -1069,9 +1069,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     $plan = $activite->planDeDecaissement();
                 }
 
-                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan]);
-
-                /* $periode = [
+                $periode = [
                     "budget" => ($plan['budgetNational'] + $plan['pret']),
                     "consommer" => $suivi->consommer,
                     "disponible" => ($plan['budgetNational'] + $plan['pret']) - $suivi->consommer,
@@ -1085,6 +1083,10 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 else{
                     $planParAnnee = $activite->planDeDecaissementParAnnee();
                 }
+                
+                array_push($suiviFinanciers, ['suivi' => $suivi, 'plan' => $plan, 'periode' => $periode, 'planParAnnee' => $planParAnnee]);
+                
+                /* 
 
                 $consommerParAnnee = $activite->suiviFinanciers()->when($filterData != null, function($query) use($filterData) {
                     $query->where('annee', $filterData['annee']);
