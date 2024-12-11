@@ -15,6 +15,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("creer-une-categorie") || request()->user()->hasRole("unitee-de-gestion");
         return request()->user()->hasRole("unitee-de-gestion");
     }
 

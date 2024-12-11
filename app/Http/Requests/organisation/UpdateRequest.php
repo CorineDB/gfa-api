@@ -18,7 +18,9 @@ class UpdateRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
+    {        
+        return request()->user()->hasPermissionTo("modifier-une-organisation") || request()->user()->hasRole("unitee-de-gestion");
+
         $this->user = request()->user();
         return $this->user->hasRole("unitee-de-gestion");
     }

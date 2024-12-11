@@ -18,7 +18,7 @@ class AddValueKeysRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasPermissionTo("ajouter-une-cle-de-valeur-indicateur") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

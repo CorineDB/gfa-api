@@ -15,8 +15,8 @@ class DeplacerRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return true;
+    {        
+        return request()->user()->hasPermissionTo("modifier-une-tache") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**

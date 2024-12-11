@@ -16,6 +16,8 @@ class StorePlanDecaissementRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("creer-un-plan-de-decaissement") || request()->user()->hasRole("unitee-de-gestion");
+
         return true;
     }
 

@@ -16,6 +16,8 @@ class StoreSuiviV2Request extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("creer-un-suivi") || request()->user()->hasRole("unitee-de-gestion", "organisation");
+
         return true;
     }
 

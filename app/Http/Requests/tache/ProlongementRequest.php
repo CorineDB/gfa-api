@@ -14,8 +14,8 @@ class ProlongementRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return request()->user()->hasRole("unitee-de-gestion");
+    {        
+        return request()->user()->hasPermissionTo("prolonger-une-tache") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**

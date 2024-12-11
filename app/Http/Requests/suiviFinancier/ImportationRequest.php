@@ -13,6 +13,8 @@ class ImportationRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("importer-un-suivi-financier") || request()->user()->hasRole("unitee-de-gestion", "organisation");
+
         return true;
     }
 

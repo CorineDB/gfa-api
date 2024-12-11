@@ -14,8 +14,8 @@ class StoreRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return request()->user()->hasRole("unitee-de-gestion");
+    {        
+        return request()->user()->hasPermissionTo("creer-une-source-de-verification") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

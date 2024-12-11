@@ -14,7 +14,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasPermissionTo("creer-une-unitee-de-mesure") || request()->user()->hasRole("administrateur", "super-admin");
     }
 
     /**

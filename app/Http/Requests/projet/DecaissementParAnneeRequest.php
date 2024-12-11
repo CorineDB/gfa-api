@@ -13,7 +13,7 @@ class DecaissementParAnneeRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasPermissionTo("voir-un-projet") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

@@ -19,8 +19,8 @@ class StoreProjetRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return request()->user()->hasRole("unitee-de-gestion");
+    {        
+        return request()->user()->hasPermissionTo("creer-un-projet") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

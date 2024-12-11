@@ -18,8 +18,8 @@ class UpdateRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation");
+    {        
+        return request()->user()->hasPermissionTo("modifier-une-recommandation") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**

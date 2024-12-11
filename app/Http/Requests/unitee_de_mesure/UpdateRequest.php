@@ -15,7 +15,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasPermissionTo("modifier-une-unitee-de-mesure") || request()->user()->hasRole("administrateur", "super-admin");
     }
 
     /**

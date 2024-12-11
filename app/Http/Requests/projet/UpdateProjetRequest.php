@@ -21,6 +21,7 @@ class UpdateProjetRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("modifier-un-projet") || request()->user()->hasRole("unitee-de-gestion", "organisation");
         return request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation");
     }
 

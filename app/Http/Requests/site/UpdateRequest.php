@@ -23,6 +23,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("modifier-un-site") || request()->user()->hasRole("unitee-de-gestion");
         $user = Auth::user();
 
         return $user->hasRole("unitee-de-gestion");

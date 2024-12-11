@@ -18,7 +18,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("administrateur", "super-admin");
+        return request()->user()->hasPermissionTo("creer-une-unitee-de-gestion") || request()->user()->hasRole("administrateur", "super-admin");
     }
 
     /**

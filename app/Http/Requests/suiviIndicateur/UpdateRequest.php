@@ -21,7 +21,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation");
+        return request()->user()->hasPermissionTo("modifier-un-suivi-indicateur") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**
