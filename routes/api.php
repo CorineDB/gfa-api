@@ -967,6 +967,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::controller('SurveyController')->group(function () {
                         Route::get('{survey}/survey-reponses', 'survey_reponses')->name('survey_reponses')->middleware('permission:voir-reponses-enquete-individuelle');
                         Route::get('{survey}/formulaire', 'formulaire')->name('formulaire')->middleware('permission:voir-un-formulaire-individuel');
+
+                        Route::get('{token}/form/{participantId}', 'private_survey_form')->name('private_survey_form')->middleware('permission:voir-un-formulaire-individuel');
                     });
                 });
             
@@ -983,5 +985,18 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             //Route::get('{evaluation_de_gouvernance}?paricipant_id={participantId}&token={$token}', 'EvaluationDeGouvernanceController@formulaire_de_perception_de_gouvernance')->name('formulaire_de_perception_de_gouvernance'); //->middleware('permission:faire-une-observation-indicateur-de-gouvernance');
 
         });
+
+        Route::group(['prefix' =>  'surveys', 'as' => 'surveys.'], function () {
+
+            Route::get('/{token}/form/{participantId}', 'SurveyController@public_survey_form');
+
+            Route::controller('SurveyReponseController')->group(function () {
+
+                Route::post('reponses', 'survey_reponse')->name('survey_reponse');
+
+            });
+        });
     });
+
+    
 });
