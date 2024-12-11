@@ -125,15 +125,15 @@ class Permissions extends Command
             'un rappel',
             'une maitrise oeuvre',
             'un fichier',
-            'une unite de mesure',
+            'une unitee de mesure',
             'un audit',
             "un fond",
             "un outcome",
             "un output",
-            "une cle de valeur d'indicateur",
+            "une cle de valeur indicateur",
             'une option de reponse',
             'une source de verification',
-            "une categorie d'indicateur",
+            "une categorie indicateur",
             "un indicateur de gouvernance",
             "une question operationnelle",
             "un type de gouvernance",
@@ -143,10 +143,11 @@ class Permissions extends Command
             "une evaluation de gouvernance",
             "une soumission",
             "une fiche de synthese",
-            "une profile de gouvernance",
+            "un profil de gouvernance",
             "une recommandation",
             "une action a mener",
             "une enquete individuelle",
+            "un formulaire individuel"
         ];
 
         $autres = [
@@ -194,25 +195,33 @@ class Permissions extends Command
             'voir formulaire kobo',
             'voir formulaire factuel',
             'voir details soumission',
-            'valider suivi indicateur',
+            'valider un suivi indicateur',
+            'valider une soumission',
             'valider une action a mener',
             'signaler une action a mener est realise',
-            "voir plan d'action",
+            "voir plan action",
             'voir statistique evolution des profiles de gouvernance au fil du temps',
             'ajouter nombre de participant',
             'envoyer une invitation',
-            'send reminder',
+            'envoyer un rappel soumission',
             'alerte validation action a mener',
             "voir resultats evaluation",
 
-            'alerte  action a mener realise',
+            'alerte action a mener realise',
             'alerte evaluation de gouvernance',
             'alerte resultats evaluation',
             'alerte creer plan action',
             'alerte definition nombre de participant',
             'exporter resultats evaluation',
             'exporter fiche synthese',
-            "exporter plan d'action",
+            "exporter plan action",
+            "filtrer indicateur",
+
+            "ajouter une cle de valeur indicateur",
+            "supprimer une cle de valeur indicateur",
+
+            "voir cadre de rendement",
+            "voir reponses enquete individuelle"
         ];
 
         $bailleurs = [
@@ -282,6 +291,19 @@ class Permissions extends Command
             'voir-une-activite',
             'voir-une-tache',
             'voir-un-indicateur',
+
+            //
+            'voir-formulaire-factuel',
+            'voir-details-soumission',
+            "voir-plan-action",
+            'voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps',
+            "voir-resultats-evaluation",
+            'exporter-resultats-evaluation',
+            'exporter-fiche-synthese',
+            "exporter-plan-action",
+            "filtrer-indicateur",
+            "voir-cadre-de-rendement",
+            "voir-reponses-enquete-individuelle"
         ];
 
         $gouvernements = [
@@ -481,45 +503,145 @@ class Permissions extends Command
             'voir-un-utilisateur',
             'creer-un-utilisateur',
             'modifier-un-utilisateur',
+            'supprimer-un-utilisateur',
             'voir-un-role',
             'creer-un-role',
             'modifier-un-role',
-            'voir-un-formulaire',
-            'creer-un-formulaire',
-            'modifier-un-formulaire',
-            'voir-une-mission-de-controle',
-            'modifier-une-mission-de-controle',
-            'creer-une-mission-de-controle',
-            'creer-un-suivi-environnementale',
-            'modifier-un-suivi-environnementale',
-            'voir-un-suivi-environnementale',
-            'supprimer-un-suivi-environnementale',
+            'supprimer-un-role',
             'voir-un-decaissement',
-            'voir-une-entreprise-executante',
             'voir-un-projet',
-            'voir-une-composante',
+            'modifier-un-projet',
+
+            'voir-un-outcome',
+            'creer-un-outcome',
+            'modifier-un-outcome',
+            'supprimer-un-outcome',
+            'voir-un-output',
+            'creer-un-output',
+            'modifier-un-output',
+            'supprimer-un-output',
+
             'voir-une-activite',
+            'creer-une-activite',
+            'modifier-une-activite',
+            'supprimer-une-activite',
+
+            'voir-un-plan-de-decaissement',
+            'creer-un-plan-de-decaissement',
+            'modifier-un-plan-de-decaissement',
+            'supprimer-un-plan-de-decaissement',
+
             'voir-une-tache',
+            'creer-une-tache',
+            'modifier-une-tache',
+            'supprimer-une-tache',
+
             'voir-un-indicateur',
-            'voir-une-activite-environnementale',
+            'voir-une-unitee-de-mesure',
             'voir-un-site',
-            'voir-une-checklist',
-            'voir-une-passation',
-            'voir-une-revision',
             'voir-une-categorie',
-            'voir-un-suivi-environnementale',
-            'voir-ptab',
-            'voir-formulaire-mission-de-controle',
-            'creer-un-rappel',
+            'voir-un-suivi-financier',
+
+            'voir-un-suivi-financier',
+            'creer-un-suivi-financier',
+            'modifier-un-suivi-financier',
+            'supprimer-un-suivi-financier',
+
+            'voir-un-suivi-indicateur',
+            'creer-un-suivi-indicateur',
+            'modifier-un-suivi-indicateur',
+            'supprimer-un-suivi-indicateur',
+
+            'voir-un-suivi',
+            'creer-un-suivi',
+            'modifier-un-suivi',
+            'supprimer-un-suivi',
+
+            'voir-une-cle-de-valeur-indicateur',
+            'voir-une-option-de-reponse',
+            'voir-une-source-de-verification',
+            'voir-un-indicateur-de-gouvernance',
+            'voir-un-type-de-gouvernance',
+            'voir-un-principe-de-gouvernance',
+            'voir-un-critere-de-gouvernance',
+            'voir-une-question-operationnelle',
+
+            'voir-un-fond',
             'voir-un-fichier',
+            'supprimer-un-fichier',
             'creer-un-fichier',
-            'voir-details-projet',
+
+            'voir-un-formulaire-de-gouvernance',
+            'voir-un-evaluation-de-gouvernance',
+            'voir-une-soumission',
+            'creer-une-soumission',
+            'voir-une-fiche-de-synthese',
+            'voir-un-profile-de-gouvernance',
+            
+            'voir-une-recommandation',
+            'creer-une-recommandation',
+            'modifier-une-recommandation',
+            'supprimer-une-recommandation',
+
+            'voir-une-action-a-mener',
+            'creer-une-action-a-mener',
+            'modifier-une-action-a-mener',
+            'supprimer-une-action-a-mener',
+
+            'voir-une-enquete-individuelle',
+            'creer-une-enquete-individuelle',
+            'modifier-une-enquete-individuelle',
+            'supprimer-une-enquete-individuelle',
+            
+            'voir-un-formulaire-individuel',
+            'creer-un-formulaire-individuel',
+            'modifier-un-formulaire-individuel',
+            'supprimer-un-formulaire-individuel',
+            
+            'voir-ptab',
+            'voir-le-plan-de-decaissement-du-ptab',
             'voir-une-permission',
+            'attribuer-une-permission',
+            'retirer-une-permission',
+            'voir-le-point-financier-des-activites',
+            'alerte-tache',
+            'alerte-activite',
+            'voir-statistique-activite',
+            'prolonger-une-tache',
+            'prolonger-une-activite',
+            'validation',
+            'voir-details-projet',
             'exporter-un-suivi-indicateur',
-            'exporter-un-suivi-ppm',
+            'exporter-un-decaissement',
+            'exporter-un-plan decaissement',
+            'exporter-un-suivi-financier',
             'exporter-un-suivi-ptab',
-            'exporter-un-suivi-ppm-revise',
-            'exporter-un-suivi-ptab-revise'
+            'importer-un-suivi-financier',
+            'voir-une-statistique-activite',
+
+            'voir-formulaire-factuel',
+            'voir-details-soumission',
+            'valider-une-soumission',
+            'signaler-une-action-a-mener-est-realise',
+            "voir-plan-action",
+            'voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps',
+            'ajouter-nombre-de-participant',
+            'envoyer-une-invitation',
+            'envoyer-un-rappel-soumission',
+            'alerte-validation-action-a-mener',
+            "voir-resultats-evaluation",
+
+            'alerte-evaluation-de-gouvernance',
+            'alerte-resultats-evaluation',
+            'alerte-creer-plan-action',
+            'alerte-definition-nombre-de-participant',
+            'exporter-resultats-evaluation',
+            'exporter-fiche-synthese',
+            "exporter-plan-action",
+            "filtrer-indicateur",
+
+            "voir-cadre-de-rendement",
+            "voir-reponses-enquete-individuelle"
         ];
 
         $entreprises = [
@@ -645,6 +767,32 @@ class Permissions extends Command
             'modifier-une-unitee-de-gestion',
             'creer-une-unitee-de-gestion',
             'supprimer-une-unitee-de-gestion',
+
+            
+            'voir-formulaire-factuel',
+            'voir-details-soumission',
+            'valider-un-suivi-indicateur',
+            'valider-une-action-a-mener',
+            "voir-plan-action",
+            'voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps',
+            'envoyer-une-invitation',
+            'envoyer-un-rappel-soumission',
+            "voir-resultats-evaluation",
+
+            'alerte-action-a-mener-realise',
+            'alerte-evaluation-de-gouvernance',
+            'alerte-resultats-evaluation',
+            'alerte-definition-nombre-de-participant',
+            'exporter-resultats-evaluation',
+            'exporter-fiche-synthese',
+            "exporter-plan-action",
+            "filtrer-indicateur",
+
+            "ajouter-une-cle-de-valeur-indicateur",
+            "supprimer-une-cle-de-valeur-indicateur",
+
+            "voir-cadre-de-rendement",
+            "voir-reponses-enquete-individuelle"
         ];
 
         /** Creation des permissions */
@@ -937,6 +1085,24 @@ class Permissions extends Command
                     //if(!$role->permissions->where('slug', $administrateur)->first())
                     {
                         $permission = Permission::where('slug', $administrateur)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+
+                }
+
+            }
+
+            else if($role->slug == 'organisation')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($organisations as $organisation)
+                {
+                    //if(!$role->permissions->where('slug', $organisation)->first())
+                    {
+                        $permission = Permission::where('slug', $organisation)->first();
 
                         $role->permissions()->attach($permission->id);
                     }

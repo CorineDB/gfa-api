@@ -25,9 +25,13 @@ class ProjetController extends Controller
     public function __construct(ProjetServiceInterface $projetServiceInterface)
     {
         $this->middleware('permission:voir-un-projet')->only(['index', 'show', 'statistiques']);
-        $this->middleware('permission:modifier-un-projet')->only(['update']);
+
+        $this->middleware('role:unitee-de-gestion')->only(['store','destroy']);
         $this->middleware('permission:creer-un-projet')->only(['store']);
         $this->middleware('permission:supprimer-un-projet')->only(['destroy']);
+        $this->middleware('permission:modifier-un-projet')->only(['update']);
+        $this->middleware('permission:prolonger-un-projet')->only(['prolonger']);
+        
 
         $this->projetService = $projetServiceInterface;
 

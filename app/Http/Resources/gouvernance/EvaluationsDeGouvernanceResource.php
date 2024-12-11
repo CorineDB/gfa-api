@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\gouvernance;
 
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
@@ -30,13 +32,13 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution' => $this->pourcentage_evolution,
             'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
 
-            $this->mergeWhen(Auth::user()->type == 'unitee-de-gestion', function(){
+            $this->mergeWhen(((Auth::user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class), function(){
                 return [
                     'pourcentage_evolution_des_soumissions_de_perception' => $this->pourcentage_evolution_des_soumissions_de_perception,
                 ];
             }),
 
-            $this->mergeWhen(Auth::user()->type == 'organisation', function(){
+            $this->mergeWhen(((Auth::user()->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
                 return [
                     'pourcentage_evolution_des_soumissions_de_perception' => optional(Auth::user()->profilable)->getPerceptionSubmissionsCompletionAttribute($this->id) ?? 0,
                     'nbreDeParticipants' => optional(Auth::user()->profilable)->getNbreDeParticipantsAttribute($this->id) ?? 0

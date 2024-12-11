@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Http\Resources\gouvernance\SurveyResource;
-use App\Http\Resources\gouvernance\SurveyReponseResource;
 use App\Http\Resources\gouvernance\SurveyFormResource;
+use App\Http\Resources\gouvernance\SurveyReponseResource;
+use App\Http\Resources\gouvernance\SurveyResource;
 
 use App\Repositories\SurveyRepository;
 use App\Repositories\SurveyFormRepository;
@@ -82,6 +82,21 @@ class SurveyService extends BaseService implements SurveyServiceInterface
         {
             if(!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
 
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyResource($survey->survey_form), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function survey_form($token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!($survey = $this->repository->where('token', $token)->first())) throw new Exception("Enquete individuelle inexistante", 500);
+
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyFormResource($survey->survey_form), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
@@ -155,7 +170,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
             if(!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete inexistante", 500);
 
-            if (!($surveyForm = app(SurveyFormRepository::class)->findById($attributs["surveyFormId"]))){
+            if (!($surveyForm = app(SurveyRepository::class)->findById($attributs["surveyFormId"]))){
                 throw new Exception("Ce formulaire n'existe pas", Response::HTTP_NOT_FOUND);
             }
 

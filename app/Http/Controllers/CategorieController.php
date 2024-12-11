@@ -29,7 +29,6 @@ class CategorieController extends Controller
         $this->middleware('permission:supprimer-une-categorie')->only(['destroy']);
 
         $this->categorieService = $categorieServiceInterface;
-
     }
 
     /**

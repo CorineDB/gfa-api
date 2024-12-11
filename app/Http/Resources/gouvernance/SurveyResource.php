@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\gouvernance;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SurveyResource extends JsonResource
@@ -16,14 +17,14 @@ class SurveyResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'libelle' => $this->libelle,
+            'intitule' => $this->intitule,
             'description' => $this->description,
             'nbreParticipants' => $this->nbreParticipants,
-            'debut' => $this->debut,
-            'fin' => $this->fin,
+            'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
+            'fin' => Carbon::parse($this->fin)->format("Y-m-d"),
             'statut' => $this->statut,
             'surveyFormId' => $this->survey_form->secure_id,
-            'created_at' => $this->created_at
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
     }
 }

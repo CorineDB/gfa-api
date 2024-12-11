@@ -21,6 +21,9 @@ class PtabRevisionController extends Controller
      */
     public function __construct(PtabScopeServiceInterface $ptabScopeServiceInterface)
     {
+        $this->middleware('permission:voir-revision-ptab')->only(['getOldPtaReviser', 'getListVersionPtab', 'getPtabReviser']);
+
+        $this->middleware('permission:faire-revision-ptab')->only(['reviserPtab']);
         $this->ptabScopedService = $ptabScopeServiceInterface;
     }
 

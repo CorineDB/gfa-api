@@ -21,6 +21,11 @@ class TypeDeGouvernanceController extends Controller
      */
     public function __construct(TypeDeGouvernanceServiceInterface $typeDeGouvernanceServiceInterface)
     {
+        $this->middleware('permission:voir-un-type-de-gouvernance')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-type-de-gouvernance')->only(['update']);
+        $this->middleware('permission:creer-un-type-de-gouvernance')->only(['store']);
+        $this->middleware('permission:supprimer-un-type-de-gouvernance')->only(['destroy']);
+        $this->middleware('permission:voir-un-principe-de-gouvernance')->only(['principes']);
         $this->typeDeGouvernanceService = $typeDeGouvernanceServiceInterface;
     }
 

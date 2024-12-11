@@ -20,6 +20,22 @@ class EvaluationDeGouvernanceController extends Controller
      */
     public function __construct(EvaluationDeGouvernanceServiceInterface $evaluationDeGouvernanceServiceInterface)
     {
+        $this->middleware('permission:voir-une-evaluation-de-gouvernance')->only(['index', 'show']);
+        $this->middleware('permission:modifier-une-evaluation-de-gouvernance')->only(['update']);
+        $this->middleware('permission:creer-une-evaluation-de-gouvernance')->only(['store']);
+        $this->middleware('permission:supprimer-une-evaluation-de-gouvernance')->only(['destroy']);
+        $this->middleware('permission:voir-une-organisation')->only(['organisations']);
+        $this->middleware('permission:voir-une-soumission')->only(['soumissions']);
+        $this->middleware('permission:voir-une-recommandation')->only(['recommandations']);
+        $this->middleware('permission:voir-une-action-a-mener')->only(['actions_a_mener']);
+        $this->middleware('permission:voir-une-fiche-de-synthese')->only(['fiches_de_synthese']);
+        $this->middleware('permission:voir-resultats-evaluation')->only(['resultats_syntheses']);
+        $this->middleware('permission:voir-un-formulaires-de-gouvernance')->only(['formulaires_de_gouvernance']);
+        $this->middleware('permission:voir-formulaire-factuel')->only(['formulaire_factuel', 'formulaire_factuel_de_gouvernance']);
+  
+        $this->middleware('permission:envoyer-un-rappel-soumission')->only(['rappel_soumission']);
+        $this->middleware('permission:envoyer-une-invitation')->only(['envoi_mail_au_participants']);
+        
         $this->evaluationDeGouvernanceService = $evaluationDeGouvernanceServiceInterface;
     }
 

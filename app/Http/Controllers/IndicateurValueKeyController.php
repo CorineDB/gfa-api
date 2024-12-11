@@ -19,6 +19,11 @@ class IndicateurValueKeyController extends Controller
      */
     public function __construct(IndicateurValueKeyServiceInterface $indicateurValueKeyInterface)
     {
+        $this->middleware('permission:voir-une-cle-de-valeur-indicateur')->only(['show']);
+        $this->middleware('permission:modifier-une-cle-de-valeur-indicateur')->only(['update']);
+        $this->middleware('permission:creer-une-cle-de-valeur-indicateur')->only(['store']);
+        $this->middleware('permission:supprimer-une-cle-de-valeur-indicateur')->only(['destroy']);
+
         $this->indicateurValueKey = $indicateurValueKeyInterface;
     }
 

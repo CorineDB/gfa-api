@@ -20,10 +20,13 @@ class ComposanteController extends Controller
      */
     public function __construct(ComposanteServiceInterface $composanteServiceInterface)
     {
-        $this->middleware('permission:voir-une-composante')->only(['index', 'show']);
-        $this->middleware('permission:modifier-une-composante')->only(['update']);
-        $this->middleware('permission:creer-une-composante')->only(['store']);
-        $this->middleware('permission:supprimer-une-composante')->only(['destroy']);
+        $this->middleware('permission:voir-un-outcome')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-outcome')->only(['update', 'deplacer']);
+        $this->middleware('permission:creer-un-outcome')->only(['store']);
+        $this->middleware('permission:supprimer-un-outcome')->only(['destroy']);
+        $this->middleware('permission:voir-un-suivi')->only(['suivis']);
+        $this->middleware('permission:voir-un-output')->only(['sousComposantes']);
+        $this->middleware('permission:voir-une-activite')->only(['activites']);
 
         $this->composanteService = $composanteServiceInterface;
 

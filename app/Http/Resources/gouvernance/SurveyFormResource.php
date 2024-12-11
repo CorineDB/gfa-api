@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\gouvernance;
 
+use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SurveyFormResource extends JsonResource
@@ -19,7 +20,7 @@ class SurveyFormResource extends JsonResource
             'libelle' => $this->libelle,
             'description' => $this->description,
             'form_data' => $this->form_data,
-            'created_at' => $this->created_at
+            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
     }
 }

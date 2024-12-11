@@ -22,11 +22,15 @@ class IndicateurController extends Controller
      */
     public function __construct(IndicateurServiceInterface $indicateurServiceInterface)
     {
-        $this->middleware('permission:voir-un-indicateur')->only(['index', 'show']);
+        $this->middleware('role:unitee-de-mesure')->only(['store','update', 'destroy']);
+        $this->middleware('permission:voir-un-indicateur')->only(['index', 'show', 'filtre']);
         $this->middleware('permission:modifier-un-indicateur')->only(['update']);
         $this->middleware('permission:creer-un-indicateur')->only(['store']);
         $this->middleware('permission:supprimer-un-indicateur')->only(['destroy']);
-
+        $this->middleware('permission:ajouter-une-cle-de-valeur-indicateur')->only(['addValueKeys']);
+        $this->middleware('permission:supprimer-une-cle-de-valeur-indicateur')->only(['removeValueKeys']);
+        $this->middleware('permission:voir-un-suivi-indicateur')->only(['suivis','checkSuivi']);
+        
         $this->indicateurService = $indicateurServiceInterface;
 
     }

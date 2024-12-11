@@ -27,9 +27,13 @@ class TacheController extends Controller
     public function __construct(TacheServiceInterface $tacheServiceInterface)
     {
         $this->middleware('permission:voir-une-tache')->only(['index', 'show']);
-        $this->middleware('permission:modifier-une-tache')->only(['update']);
+        $this->middleware('permission:modifier-une-tache')->only(['update', 'deplacer', 'ajouterDuree', 'modifierDuree', 'changeStatut']);
         $this->middleware('permission:creer-une-tache')->only(['store']);
         $this->middleware('permission:supprimer-une-tache')->only(['destroy']);
+        $this->middleware('permission:voir-un-suivi')->only(['suivis']);
+        $this->middleware('permission:creer-un-suivi')->only(['suivisV2']);
+        $this->middleware('permission:prolonger-une-tache')->only(['prolonger']);
+        
 
         $this->tacheService = $tacheServiceInterface;
     }

@@ -19,6 +19,11 @@ class RecommandationController extends Controller
      */
     public function __construct(RecommandationServiceInterface $recommandationServiceInterface)
     {
+        $this->middleware('permission:voir-une-recommandation')->only(['index', 'show']);
+        $this->middleware('permission:modifier-une-recommandation')->only(['update']);
+        $this->middleware('permission:creer-une-recommandation')->only(['store']);
+        $this->middleware('permission:supprimer-une-recommandation')->only(['destroy']);
+
         $this->recommandationService = $recommandationServiceInterface;
     }
 
