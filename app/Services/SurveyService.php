@@ -82,7 +82,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
         {
             if(!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyResource($survey->survey_form), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyFormResource($survey->survey_form), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
