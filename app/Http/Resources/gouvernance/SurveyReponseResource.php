@@ -16,13 +16,13 @@ class SurveyReponseResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->secure_id,
-            'idParticipant' => $this->idParticipant,
-            'response_data' => $this->response_data,
-            'submitted_at' => Carbon::parse($this->submitted_at)->format("Y-m-d"),
-            'statut' => $this->statut,
-            'surveyId' => $this->survey->secure_id,
-            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
+            'id'                => $this->secure_id,
+            'idParticipant'     => $this->idParticipant,
+            'response_data'     => $this->response_data,
+            'submitted_at'      => Carbon::parse($this->submitted_at)->format("Y-m-d"),
+            'statut'            => $this->statut,
+            'surveyId'          => $this->survey->secure_id,
+            'created_at'        => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
     }
 }

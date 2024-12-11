@@ -16,11 +16,11 @@ class SurveyFormResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->secure_id,
-            'libelle' => $this->libelle,
-            'description' => $this->description,
-            'form_data' => $this->form_data,
-            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d")
+            'id'            => $this->secure_id,
+            'libelle'       => $this->libelle,
+            'description'   => $this->description,
+            'form_data'     => $this->form_data,
+            'created_at'    => Carbon::parse($this->created_at)->format("Y-m-d")
         ];
     }
 }
