@@ -30,7 +30,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom'           => ['required','max:255', Rule::unique('users')->whereNull('deleted_at')],
-            'code'          => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || request()->user()->profilable == UniteeDeGestion::class)), 'numeric'],
+            'code'          => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric'],
             'contact'       => ['required', 'numeric','digits_between:8,24', Rule::unique('users')->whereNull('deleted_at')],
             'email'         => ['required','email','max:255', Rule::unique('users')->whereNull('deleted_at')],
             'sigle'         => ['required','string','max:255', Rule::unique('bailleurs')->whereNull('deleted_at')],

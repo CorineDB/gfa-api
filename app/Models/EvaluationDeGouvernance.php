@@ -376,7 +376,7 @@ class EvaluationDeGouvernance extends Model
             }
             else{ return 0; }
         }
-        elseif((auth()->user()->type == 'unitee-de-gestion') || auth()->user()->profilable == UniteeDeGestion::class){
+        elseif((auth()->user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class){
             return $this->organisations()->count();
         }
         else{ return 0; }

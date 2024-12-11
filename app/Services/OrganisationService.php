@@ -110,6 +110,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
             $organisation->user()->create(array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'profilable_type' => get_class($organisation), 'profilable_id' => $organisation->id]));
 
             $organisation->user->roles()->attach([$role->id]);
+            $organisation->fonds()->attach($attributs['fondId']);
 
             $organisation->refresh();
 
@@ -165,6 +166,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
             unset($attributs['programmeId']);
 
             $organisation->user->fill($attributs)->save();
+            $organisation->fonds()->sync($attributs['fondId']);
 
             $organisation->refresh();
 
