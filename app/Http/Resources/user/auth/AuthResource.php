@@ -6,6 +6,7 @@ use App\Http\Resources\fichiers\FichiersResource;
 use App\Http\Resources\programmes\ProgrammesResource;
 use App\Http\Resources\ProjetResource;
 use App\Http\Resources\role\RoleResource;
+use App\Models\Organisation;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Auth;
 
@@ -31,7 +32,7 @@ class AuthResource extends JsonResource
             "programme" => $this->type !== 'administrateur' ? $this->programme : null,
             "role" => RoleResource::collection($this->roles->load('permissions')),
             "photo" => new FichiersResource($this->photo),
-            "projet" => $this->when($this->type == 'organisation', $this->profilable->projet),
+            "projet" => $this->when((($this->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), $this->profilable->projet),
         ];
     }
 }

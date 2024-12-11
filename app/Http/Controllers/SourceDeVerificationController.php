@@ -19,6 +19,10 @@ class SourceDeVerificationController extends Controller
      */
     public function __construct(SourceDeVerificationServiceInterface $sourceDeVerificationServiceInterface)
     {
+        $this->middleware('permission:voir-une-source-de-verification')->only(['show']);
+        $this->middleware('permission:modifier-une-source-de-verification')->only(['update']);
+        $this->middleware('permission:creer-une-source-de-verification')->only(['store']);
+        $this->middleware('permission:supprimer-une-source-de-verification')->only(['destroy']);
         $this->sourceDeVerificationService = $sourceDeVerificationServiceInterface;
     }
 

@@ -24,10 +24,15 @@ class ActiviteController extends Controller
      */
     public function __construct(ActiviteServiceInterface $activiteServiceInterface)
     {
-        $this->middleware('permission:voir-une-activite')->only(['index', 'show']);
-        $this->middleware('permission:modifier-une-activite')->only(['update']);
+        $this->middleware('permission:voir-une-activite')->only(['index', 'show', 'filtre']);
+        $this->middleware('permission:modifier-une-activite')->only(['update', 'deplacer', 'ajouterDuree', 'modifierDuree']);
         $this->middleware('permission:creer-une-activite')->only(['store']);
         $this->middleware('permission:supprimer-une-activite')->only(['destroy']);
+
+
+        $this->middleware('permission:voir-une-tache')->only(['taches']);
+        $this->middleware('permission:voir-un-suivi')->only(['suivis']);
+        $this->middleware('permission:voir-un-plan-de-decaissement')->only(['plansDeDecaissement']);
 
         $this->activiteService = $activiteServiceInterface;
     }

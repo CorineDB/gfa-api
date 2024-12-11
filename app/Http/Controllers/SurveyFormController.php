@@ -19,6 +19,11 @@ class SurveyFormController extends Controller
      */
     public function __construct(SurveyFormServiceInterface $surveyFormServiceInterface)
     {
+        $this->middleware('permission:voir-un-formulaire-individuel')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-formulaire-individuel')->only(['update']);
+        $this->middleware('permission:creer-un-formulaire-individuel')->only(['store']);
+        $this->middleware('permission:supprimer-un-formulaire-individuel')->only(['destroy']);
+        
         $this->surveyFormService = $surveyFormServiceInterface;
     }
 

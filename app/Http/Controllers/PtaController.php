@@ -21,6 +21,8 @@ class PtaController extends Controller
      */
     public function __construct(PtaServiceInterface $ptaServiceInterface)
     {
+        $this->middleware('permission:voir-ptab')->only(['generer', 'filtre']);
+
         $this->ptaService = $ptaServiceInterface;
     }
 

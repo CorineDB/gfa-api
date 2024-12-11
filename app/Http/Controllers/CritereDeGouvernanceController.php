@@ -19,6 +19,11 @@ class CritereDeGouvernanceController extends Controller
      */
     public function __construct(CritereDeGouvernanceServiceInterface $critereDeGouvernanceServiceInterface)
     {
+        $this->middleware('permission:voir-un-critere-de-gouvernance')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-critere-de-gouvernance')->only(['update']);
+        $this->middleware('permission:creer-un-critere-de-gouvernance')->only(['store']);
+        $this->middleware('permission:supprimer-un-critere-de-gouvernance')->only(['destroy']);
+        $this->middleware('permission:voir-un-indicateur-de-gouvernance')->only(['indicateurs']);
         $this->critereDeGouvernanceService = $critereDeGouvernanceServiceInterface;
     }
 

@@ -19,6 +19,11 @@ class FondController extends Controller
      */
     public function __construct(FondServiceInterface $fondServiceInterface)
     {
+        $this->middleware('permission:voir-un-fond')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-fond')->only(['update']);
+        $this->middleware('permission:creer-un-fond')->only(['store']);
+        $this->middleware('permission:supprimer-un-fond')->only(['destroy']);
+        
         $this->fondService = $fondServiceInterface;
     }
 

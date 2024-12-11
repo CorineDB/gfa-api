@@ -23,6 +23,11 @@ class IndicateurDeGouvernanceController extends Controller
      */
     public function __construct(IndicateurDeGouvernanceServiceInterface $indicateurDeGouvernanceServiceInterface)
     {
+        $this->middleware('permission:voir-un-indicateur-de-gouvernance')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-indicateur-de-gouvernance')->only(['update']);
+        $this->middleware('permission:creer-un-indicateur-de-gouvernance')->only(['store']);
+        $this->middleware('permission:supprimer-un-indicateur-de-gouvernance')->only(['destroy']);
+
         $this->indicateurDeGouvernanceService = $indicateurDeGouvernanceServiceInterface;
     }
 

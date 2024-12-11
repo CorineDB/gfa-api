@@ -21,6 +21,12 @@ class ActionAMenerController extends Controller
      */
     public function __construct(ActionAMenerServiceInterface $actionAMenerServiceInterface)
     {
+        $this->middleware('permission:voir-une-action-a-mener')->only(['index', 'show']);
+        $this->middleware('permission:modifier-une-action-a-mener')->only(['update']);
+        $this->middleware('permission:creer-une-action-a-mener')->only(['store']);
+        $this->middleware('permission:creer-une-action-a-mener')->only(['destroy']);
+        $this->middleware('permission:signaler-une-action-a-mener-est-realise')->only(['notifierActionAMenerEstTerminer']);
+        $this->middleware('permission:valider-une-action-a-mener')->only(['valider']);
         $this->actionAMenerService = $actionAMenerServiceInterface;
     }
 

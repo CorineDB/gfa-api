@@ -19,6 +19,11 @@ class FormulaireDeGouvernanceController extends Controller
      */
     public function __construct(FormulaireDeGouvernanceServiceInterface $formulaireDeGouvernanceServiceInterface)
     {
+        $this->middleware('permission:voir-un-formulaire-de-gouvernance')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-formulaire-de-gouvernance')->only(['update']);
+        $this->middleware('permission:creer-un-formulaire-de-gouvernance')->only(['store']);
+        $this->middleware('permission:supprimer-un-formulaire-de-gouvernance')->only(['destroy']);
+
         $this->formulaireDeGouvernanceService = $formulaireDeGouvernanceServiceInterface;
     }
 

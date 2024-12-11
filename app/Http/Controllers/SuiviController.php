@@ -22,7 +22,7 @@ class SuiviController extends Controller
     public function __construct(SuiviServiceInterface $suiviServiceInterface)
     {
         $this->middleware('permission:voir-un-suivi')->only(['index', 'show']);
-        $this->middleware('permission:creer-un-suivi')->only(['store']);
+        $this->middleware('permission:creer-un-suivi')->only(['store', 'suivisV2']);
         $this->middleware('permission:supprimer-un-suivi')->only(['destroy']);
 
         $this->suiviService = $suiviServiceInterface;

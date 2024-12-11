@@ -28,6 +28,7 @@ class SuiviFinancierController extends Controller
         $this->middleware('permission:modifier-un-suivi-financier')->only(['update']);
         $this->middleware('permission:creer-un-suivi-financier')->only(['store']);
         $this->middleware('permission:supprimer-un-suivi-financier')->only(['destroy']);
+        $this->middleware('permission:importer-un-suivi-financier')->only(['importation']);
 
         $this->suiviFinancierService = $suiviFinancierService;
     }

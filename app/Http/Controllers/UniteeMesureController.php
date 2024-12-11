@@ -20,6 +20,10 @@ class UniteeMesureController extends Controller
      */
     public function __construct(UniteeMesureServiceInterface $uniteeMesureServiceInterface)
     {
+        $this->middleware('permission:voir-une-unitee-de-mesure')->only(['show']);
+        $this->middleware('permission:modifier-une-unitee-de-mesure')->only(['update']);
+        $this->middleware('permission:creer-une-unitee-de-mesure')->only(['store']);
+        $this->middleware('permission:supprimer-une-unitee-de-mesure')->only(['destroy']);
         $this->uniteeMesureService = $uniteeMesureServiceInterface;
 
     }

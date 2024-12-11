@@ -23,10 +23,11 @@ class SuiviIndicateurController extends Controller
      */
     public function __construct(SuiviIndicateurServiceInterface $suiviIndicateurServiceInterface)
     {
-        $this->middleware('permission:voir-un-suivi-indicateur')->only(['index', 'show']);
+        $this->middleware('permission:voir-un-suivi-indicateur')->only(['index', 'show', 'filtre', 'dateSuivie']);
         $this->middleware('permission:modifier-un-suivi-indicateur')->only(['update']);
         $this->middleware('permission:creer-un-suivi-indicateur')->only(['store']);
         $this->middleware('permission:supprimer-un-suivi-indicateur')->only(['destroy']);
+        $this->middleware('permission:valider-un-suivi-indicateur')->only(['valider']);
 
         $this->suiviIndicateurService = $suiviIndicateurServiceInterface;
 

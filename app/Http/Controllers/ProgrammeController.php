@@ -30,6 +30,22 @@ class ProgrammeController extends Controller
         $this->middleware('permission:creer-un-programme')->only(['store']);
         $this->middleware('permission:supprimer-un-programme')->only(['destroy']);
 
+        $this->middleware('permission:voir-revision-ptab')->only(['scopes']);
+        $this->middleware('permission:voir-un-projet')->only(['projets']);
+        $this->middleware('permission:voir-une-outcome')->only(['composantes']);
+        $this->middleware('permission:voir-un-output')->only(['sousComposantes']);
+        $this->middleware('permission:voir-une-activite')->only(['activites']);
+        $this->middleware('permission:voir-une-tache')->only(['taches']);
+        $this->middleware('permission:voir-un-decaissement')->only(['decaissements']);
+        $this->middleware('permission:voir-un-site')->only(['sites']);
+        $this->middleware('permission:voir-une-categorie')->only(['categories']);
+        $this->middleware('permission:voir-un-suivi-financier')->only(['suiviFinanciers']);
+        $this->middleware('permission:voir-une-organisation')->only(['evaluations_organisations']);
+        $this->middleware('permission:voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps')->only(['scoresAuFilDuTemps']);        
+        $this->middleware('permission:voir-cadre-de-rendement')->only(['cadre_de_mesure_rendement']);
+
+        
+
         $this->programmeService = $programmeServiceInterface;
 
     }

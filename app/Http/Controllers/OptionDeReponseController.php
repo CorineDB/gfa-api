@@ -19,6 +19,11 @@ class OptionDeReponseController extends Controller
      */
     public function __construct(OptionDeReponseServiceInterface $optionDeReponseServiceInterface)
     {
+        $this->middleware('permission:voir-une-option-de-reponse')->only(['index', 'show']);
+        $this->middleware('permission:modifier-une-option-de-reponse')->only(['update']);
+        $this->middleware('permission:creer-une-option-de-reponse')->only(['store']);
+        $this->middleware('permission:supprimer-une-option-de-reponse')->only(['destroy']);
+
         $this->optionDeReponseService = $optionDeReponseServiceInterface;
     }
 
