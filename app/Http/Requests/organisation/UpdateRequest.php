@@ -3,7 +3,7 @@
 namespace App\Http\Requests\organisation;
 
 use App\Models\Organisation;
-use App\Models\Programme;
+use App\Models\UniteeDeGestion;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -47,20 +47,22 @@ class UpdateRequest extends FormRequest
             'prenom_point_focal'    => ['sometimes','max:50', Rule::unique('organisations', 'prenom_point_focal')->ignore($this->organisation)->whereNull('deleted_at')],
             'contact_point_focal'   => ['sometimes', 'numeric','digits_between:8,24', Rule::unique('organisations', 'contact_point_focal')->ignore($this->organisation)->whereNull('deleted_at')],
 
-            'sigle'         => ['nullable','string','max:255', Rule::unique('organisations', 'sigle')->ignore($this->organisation)->whereNull('deleted_at')],
-            'code'          => ['numeric', "min:2", Rule::unique('organisations', 'code')->ignore($this->organisation)->whereNull('deleted_at')],
-            'type'             => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
+            'sigle'                 => ['nullable','string','max:255', Rule::unique('organisations', 'sigle')->ignore($this->organisation)->whereNull('deleted_at')],
+            'code'                  => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->ignore($this->organisation)->whereNull('deleted_at') ],
 
-            'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
-            'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'type'                  => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
+            'fondId'                => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), new HashValidatorRule(new Fond())],
 
-            'addresse'          => 'sometimes|max:255',
-            'quartier'          => 'sometimes|max:255',
-            'arrondissement'    => 'sometimes|max:255',
-            'commune'           => 'sometimes|max:255',
-            'departement'       => 'sometimes|max:255',
-            'pays'              => 'sometimes|max:255',
-            'secteurActivite'      => 'sometimes|max:255',
+            'latitude'              => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'             => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+
+            'addresse'              => 'sometimes|max:255',
+            'quartier'              => 'sometimes|max:255',
+            'arrondissement'        => 'sometimes|max:255',
+            'commune'               => 'sometimes|max:255',
+            'departement'           => 'sometimes|max:255',
+            'pays'                  => 'sometimes|max:255',
+            'secteurActivite'       => 'sometimes|max:255',
         ];
 
         return $rules;
