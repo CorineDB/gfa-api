@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Resources\gouvernance\SurveyFormResource;
 use App\Http\Resources\gouvernance\SurveyReponseResource;
 use App\Http\Resources\gouvernance\SurveyResource;
+use App\Mail\InfoEnquetteIndividuelleEmail;
 use App\Models\SurveyReponse;
 use App\Repositories\SurveyRepository;
 use App\Repositories\SurveyFormRepository;
@@ -18,11 +19,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 /**
-* Interface SurveyServiceInterface
-* @package Core\Services\Interfaces
-*/
+ * Interface SurveyServiceInterface
+ * @package Core\Services\Interfaces
+ */
 class SurveyService extends BaseService implements SurveyServiceInterface
 {
 
@@ -43,98 +45,76 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
-        try
-        {
-            if(Auth::user()->hasRole('administrateur')){
+        try {
+            if (Auth::user()->hasRole('administrateur')) {
                 $surveys = $this->repository->all();
-            }
-            else{
+            } else {
                 $surveys = Auth::user()->programme->surveys;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SurveyResource::collection($surveys), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function survey_reponses($survey, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
+        try {
+            if (!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SurveyReponseResource::collection($survey->survey_reponses), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function formulaire($survey, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
+        try {
+            if (!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyFormResource($survey->survey_form), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function survey_form($token, $idParticipant, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!($survey = $this->repository->where('token', $token)->first())) throw new Exception("Enquete individuelle inexistante", 500);
+        try {
+            if (!($survey = $this->repository->where('token', $token)->first())) throw new Exception("Enquete individuelle inexistante", 500);
 
-            if(($survey_reponse = $survey->survey_reponses()->where('idParticipant', $idParticipant)->first())){
+            if (($survey_reponse = $survey->survey_reponses()->where('idParticipant', $idParticipant)->first())) {
                 $response_data = new SurveyReponseResource($survey_reponse);
-            }
-            else{
+            } else {
                 $response_data =  new SurveyFormResource($survey->survey_form);
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $response_data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function findById($survey, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
+        try {
+            if (!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyResource($survey), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function create(array $attributs) : JsonResponse
+    public function create(array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
         try {
 
-            if (!($surveyForm = app(SurveyFormRepository::class)->findById($attributs["surveyFormId"]))){
+            if (!($surveyForm = app(SurveyFormRepository::class)->findById($attributs["surveyFormId"]))) {
                 throw new Exception("Ce formulaire n'existe pas", Response::HTTP_NOT_FOUND);
             }
 
@@ -147,10 +127,10 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             ));
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'surveyFormId' => $surveyForm->id, 'token' => $token]);
-            
+
             $survey = $this->repository->create($attributs);
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($survey));
 
@@ -158,8 +138,36 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveyResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            $url = config("app.url");
 
+            // If the URL is localhost, append the appropriate IP address and port
+            if (strpos($url, 'localhost') !== false) {
+                $url = 'http://192.168.1.16:3000';
+            }
+
+            $details['view'] = "emails.mail_template";
+
+            $details['subject'] = "Confirmation : Création de l'enquête d'auto-évaluation de gouvernance";
+            $details['content'] = [
+                "greeting"      => "Bonjour, Monsieur/Madame!",
+
+                "introduction" => "Nous avons le plaisir de vous informer que votre **enquête d'auto-évaluation de gouvernance** a été créée avec succès.",
+                "body"          => "Vous pouvez accéder aux détails de l'enquête et les partager avec les participants concernés. Veuillez utiliser le lien ci-dessous pour consulter ou gérer cette enquête. N'hésitez pas à contacter l'équipe de support en cas de besoin.",
+
+                "lien" => $url . "/dashboard/form-individuel/{$survey->token}",
+                "cta_text" => "Accéder au formulaire de l'enquete individuelle",
+                "signature" => "Cordialement, " . auth()->user()->nom,
+            ];
+
+            // Create the email instance
+            $mailer = new InfoEnquetteIndividuelleEmail($details);
+
+            // Send the email later after a delay
+            $when = now()->addSeconds(5);
+            Mail::to(auth()->user()->email)->later($when, $mailer);
+
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveyResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -169,15 +177,15 @@ class SurveyService extends BaseService implements SurveyServiceInterface
         }
     }
 
-    public function update($survey, array $attributs) : JsonResponse
+    public function update($survey, array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
         try {
 
-            if(!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete inexistante", 500);
+            if (!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete inexistante", 500);
 
-            if (!($surveyForm = app(SurveyRepository::class)->findById($attributs["surveyFormId"]))){
+            if (!($surveyForm = app(SurveyRepository::class)->findById($attributs["surveyFormId"]))) {
                 throw new Exception("Ce formulaire n'existe pas", Response::HTTP_NOT_FOUND);
             }
 
@@ -187,7 +195,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
             $survey->refresh();
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($survey));
 
@@ -196,7 +204,6 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveyResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -205,5 +212,4 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 }
