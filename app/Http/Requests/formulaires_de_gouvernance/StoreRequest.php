@@ -21,7 +21,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("unitee-de-gestion");
+        return request()->user()->hasPermissionTo("creer-un-evaluation-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

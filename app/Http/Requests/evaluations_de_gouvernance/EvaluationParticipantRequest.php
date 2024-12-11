@@ -19,7 +19,15 @@ class EvaluationParticipantRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasRole("organisation") && $this->evaluation_de_gouvernance->statut == 0;
+        if(request()->input('nbreParticipants') !== null){
+            return (request()->user()->hasPermissionTo("ajouter-nombre-de-participant") || request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation")) && $this->evaluation_de_gouvernance->statut == 0;
+        }
+        else if(request()->input('participants') !== null){
+
+            return (request()->user()->hasPermissionTo("envoyer-une-invitation") || request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation")) && $this->evaluation_de_gouvernance->statut == 0;
+        }
+
+        return false;
     }
 
     /**

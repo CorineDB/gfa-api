@@ -18,7 +18,7 @@ class RemoveValueKeysRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasPermissionTo("supprimer-une-cle-de-valeur-indicateur") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

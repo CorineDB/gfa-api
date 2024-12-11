@@ -17,7 +17,7 @@ cLass UpdateTacheRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return request()->user()->hasPermissionTo("modifier-une-tache") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     public function prepareForValidation(){

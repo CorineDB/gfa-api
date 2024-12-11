@@ -22,6 +22,8 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("creer-un-site") || request()->user()->hasRole("unitee-de-gestion");
+
         $user = Auth::user();
 
         return $user->hasRole("unitee-de-gestion");

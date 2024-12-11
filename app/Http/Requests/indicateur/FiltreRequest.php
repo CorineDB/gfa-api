@@ -4,6 +4,8 @@ namespace App\Http\Requests\indicateur;
 
 use App\Models\Bailleur;
 use App\Models\Categorie;
+use App\Models\Fond;
+use App\Models\Organisation;
 use App\Models\Unitee;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -19,9 +21,8 @@ class FiltreRequest extends FormRequest
      */
     public function authorize()
     {
-        $user = Auth::user();
-
-        return $user->hasRole("unitee-de-gestion", "bailleur");    }
+        return request()->user()->hasPermissionTo("voir-un-indicateur") || request()->user()->hasRole("unitee-de-gestion");
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -35,6 +36,10 @@ class FiltreRequest extends FormRequest
             'uniteeMesureId'   => ['sometimes', new HashValidatorRule(new Unitee())],
 
             'categorieId'   => ['sometimes', new HashValidatorRule(new Categorie())],
+
+            'organisationId'   => ['sometimes', new HashValidatorRule(new Organisation())],
+
+            'fondId'   => ['sometimes', new HashValidatorRule(new Fond())],
 
             'bailleurId'    => ['sometimes', Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
 

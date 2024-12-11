@@ -15,8 +15,8 @@ class PtabReviserRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return true;
+    {        
+        return request()->user()->hasPermissionTo("voir-revision-ptab") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

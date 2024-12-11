@@ -16,6 +16,8 @@ class UpdatePlanDecaissementRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("modifier-un-plan-de-decaissement") || request()->user()->hasRole("unitee-de-gestion");
+
         return true;
     }
 

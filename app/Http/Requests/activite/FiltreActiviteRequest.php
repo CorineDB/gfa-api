@@ -14,8 +14,8 @@ class  FiltreActiviteRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return true;
+    {        
+        return request()->user()->hasPermissionTo("voir-une-activite") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**

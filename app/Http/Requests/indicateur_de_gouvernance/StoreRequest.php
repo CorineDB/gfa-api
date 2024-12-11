@@ -16,8 +16,8 @@ class StoreRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return request()->user()->hasRole("administrateur", "super-admin", "unitee-de-gestion");
+    {        
+        return request()->user()->hasPermissionTo("creer-un-indicateur-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**

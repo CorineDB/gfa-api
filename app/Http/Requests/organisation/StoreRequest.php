@@ -3,6 +3,7 @@
 namespace App\Http\Requests\organisation;
 
 use App\Models\Programme;
+use App\Models\UniteeDeGestion;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -18,6 +19,8 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("creer-une-organisation") || request()->user()->hasRole("unitee-de-gestion");
+
         $this->user = request()->user();
         return $this->user->hasRole("unitee-de-gestion");
     }
@@ -39,7 +42,7 @@ class StoreRequest extends FormRequest
             'contact_point_focal'   => ['required', 'numeric','digits_between:8,24', Rule::unique('organisations', 'contact_point_focal')->whereNull('deleted_at')],
 
             'sigle'         => ['required','string','max:15', Rule::unique('organisations', 'sigle')->whereNull('deleted_at')],
-            'code'          => [Rule::requiredIf(request()->user()->type === 'unitee-de-gestion'), 'numeric', "min:2", Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
+            'code'          => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || request()->user()->profilable == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
             'type'             => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
 
 

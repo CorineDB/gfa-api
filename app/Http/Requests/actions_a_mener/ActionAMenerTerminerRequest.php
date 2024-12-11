@@ -4,6 +4,7 @@ namespace App\Http\Requests\actions_a_mener;
 
 use App\Models\ActionAMener;
 use App\Models\EvaluationDeGouvernance;
+use App\Models\UniteeDeGestion;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -17,14 +18,14 @@ class ActionAMenerTerminerRequest extends FormRequest
     public function authorize()
     {
 
-        if(request()->user()->hasRole("unitee-de-gestion")){
+        if(request()->user()->hasPermissionTo("signaler-une-action-a-mener-est-realise")){
 
             if(is_string($this->action_a_mener))
             {
                 $this->action_a_mener = ActionAMener::findByKey($this->action_a_mener);
             }
                 
-            return request()->user()->hasRole("unitee-de-gestion") && $this->action_a_mener->statut > -1 && $this->action_a_mener->statut < 2 && $this->action_a_mener->est_valider == false;
+            return request()->user()->hasPermissionTo("signaler-une-action-a-mener-est-realise") && $this->action_a_mener->statut > -1 && $this->action_a_mener->statut < 2 && $this->action_a_mener->est_valider == false;
         }
 
         return false;

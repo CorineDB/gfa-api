@@ -15,6 +15,8 @@ class ValidatePtabScope extends FormRequest
      */
     public function authorize()
     {
+        return request()->user()->hasPermissionTo("voir-revision-ptab") || request()->user()->hasRole("unitee-de-gestion");
+
         return true;
     }
 

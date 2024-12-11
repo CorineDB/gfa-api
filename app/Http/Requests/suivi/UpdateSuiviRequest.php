@@ -12,8 +12,8 @@ class UpdateSuiviRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
-        return true;
+    {        
+        return request()->user()->hasPermissionTo("modifier-un-suivi") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
     /**
