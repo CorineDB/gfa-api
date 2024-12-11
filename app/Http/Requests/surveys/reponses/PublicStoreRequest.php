@@ -6,7 +6,7 @@ use App\Models\Survey;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class PublicStoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +15,12 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $survey = null;
+        if (request()->input('surveyId')) {
+            $survey = Survey::findByKey(request()->input('surveyId'));
+        }
+
+        return $survey && ($survey->statut == 0 && !$survey->privee);
     }
 
     /**

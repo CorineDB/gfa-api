@@ -23,7 +23,7 @@ class SurveyController extends Controller
         $this->middleware('permission:modifier-une-enquete-individuelle')->only(['update']);
         $this->middleware('permission:creer-une-enquete-individuelle')->only(['store']);
         $this->middleware('permission:supprimer-une-enquete-individuelle')->only(['destroy']);
-        $this->middleware('permission:voir-un-formulaire-individuel')->only(['formulaire']);
+        $this->middleware('permission:voir-un-formulaire-individuel')->only(['formulaire', 'private_survey_form']);
         $this->middleware('permission:voir-reponses-enquete-individuelle')->only(['survey_reponses']);
 
         $this->surveyService = $surveyServiceInterface;
@@ -92,5 +92,15 @@ class SurveyController extends Controller
     public function formulaire($id)
     {
         return $this->surveyService->formulaire($id);
+    }
+
+    public function private_survey_form($token, $idParticipant)
+    {
+        return $this->surveyService->survey_form($token, $idParticipant);
+    }
+    
+    public function public_survey_form($token, $idParticipant)
+    {
+        return $this->surveyService->survey_form($token, $idParticipant);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Http\Resources\gouvernance\SurveyFormResource;
 use App\Http\Resources\gouvernance\SurveyReponseResource;
 use App\Http\Resources\gouvernance\SurveyResource;
-
+use App\Models\SurveyReponse;
 use App\Repositories\SurveyRepository;
 use App\Repositories\SurveyFormRepository;
 use Core\Services\Contracts\BaseService;
@@ -91,13 +91,20 @@ class SurveyService extends BaseService implements SurveyServiceInterface
         }
     }
 
-    public function survey_form($token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    public function survey_form($token, $idParticipant, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try
         {
             if(!($survey = $this->repository->where('token', $token)->first())) throw new Exception("Enquete individuelle inexistante", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyFormResource($survey->survey_form), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if(($survey_reponse = $survey->survey_reponses()->where('idParticipant', $idParticipant)->first())){
+                $response_data = new SurveyReponseResource($survey_reponse);
+            }
+            else{
+                $response_data =  new SurveyFormResource($survey->survey_form);
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $response_data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\surveys\reponses\PublicStoreRequest;
 use App\Http\Requests\surveys\reponses\StoreRequest;
 use App\Http\Requests\surveys\reponses\UpdateRequest;
 use Core\Services\Interfaces\SurveyReponseServiceInterface;
@@ -55,18 +56,6 @@ class SurveyReponseController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Activite  $paye
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateRequest $request, $id)
-    {
-        return $this->surveyReponseService->update($id, $request->all());
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Models\Activite  $paye
@@ -76,4 +65,16 @@ class SurveyReponseController extends Controller
     {
         return $this->surveyReponseService->deleteById($id);
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function survey_reponse(PublicStoreRequest $request)
+    {
+        return $this->surveyReponseService->create($request->all());
+    }
+
 }

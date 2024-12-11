@@ -15,7 +15,12 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $survey = null;
+        if (request()->input('surveyId')) {
+            $survey = Survey::findByKey(request()->input('surveyId'));
+        }
+
+        return $survey && ($survey->statut == 0 && $survey->privee);
     }
 
     /**
@@ -26,10 +31,10 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'response_data' => 'required|array|min:1',
+            'response_data'     => 'required|array|min:1',
             'surveyId'          => ['required', new HashValidatorRule(new Survey())],
-            'idParticipant'      => ["string"],
-            'commentaire'       => ["string"]
+            'idParticipant'     => ['required', "string"],
+            'commentaire'       => ['nullable', "string"]
         ];
     }
 
