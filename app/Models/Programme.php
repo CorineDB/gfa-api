@@ -264,7 +264,7 @@ class Programme extends Model
             $query->orderBy('indice','asc')->with(['categories' => function($query){
                 $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
                     $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
-                        ->when(auth()->user()->type == 'organisation', function($query) {
+                        ->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
                                 $query->where('responsableable_type', get_class(auth()->user()->profilable));
@@ -274,7 +274,7 @@ class Programme extends Model
                 }]);
             }, 'indicateurs' => function($query){
                     $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
-                        ->when(auth()->user()->type == 'organisation', function($query) {
+                        ->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
                                 $query->where('responsableable_type', get_class(auth()->user()->profilable));
@@ -284,7 +284,7 @@ class Programme extends Model
                 }]);
         }, 'indicateurs' => function($query){
                     $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
-                        ->when(auth()->user()->type == 'organisation', function($query) {
+                        ->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
                                 $query->where('responsableable_type', get_class(auth()->user()->profilable));
@@ -491,7 +491,7 @@ class Programme extends Model
 
     public function suiviFinanciers()
     {
-        return $this->hasMany(SuiviFinancier::class, 'programmeId')->when(auth()->user()->type == 'organisation', function($query){
+        return $this->hasMany(SuiviFinancier::class, 'programmeId')->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query){
             $query->whereHas('activite', function($query){
                 $query->whereHas('projet', function($query){
                     $query->where("projetable_id", auth()->user()->profilable->id)->where("projetable_type", Organisation::class);
@@ -588,12 +588,18 @@ class Programme extends Model
 
     public function survey_forms()
     {
-        return $this->hasMany(SurveyForm::class, 'programmeId');
+        return $this->hasMany(SurveyForm::class, 'programmeId')
+            ->when(auth()->user()->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class, function($query) {
+                $query->where('created_by_id', auth()->user()->profilable->id)->where('created_by_type', Organisation::class);
+            });
     }
 
     public function surveys()
     {
-        return $this->hasMany(Survey::class, 'programmeId');
+        return $this->hasMany(Survey::class, 'programmeId')
+            ->when(auth()->user()->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class, function($query) {
+                $query->where('created_by_id', auth()->user()->profilable->id)->where('created_by_type', Organisation::class);
+            });
     }
 
     public function enquetesDeCollecte()
