@@ -20,6 +20,9 @@ class SurveyReponseController extends Controller
      */
     public function __construct(SurveyReponseServiceInterface $surveyReponseServiceInterface)
     {
+        $this->middleware('permission:voir-reponses-enquete-individuelle')->only(['index', 'show']);
+        $this->middleware('permission:supprimer-une-reponse-enquete-individuelle')->only(['destroy']);
+        
         $this->surveyReponseService = $surveyReponseServiceInterface;
     }
 

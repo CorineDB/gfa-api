@@ -221,7 +221,8 @@ class Permissions extends Command
             "supprimer une cle de valeur indicateur",
 
             "voir cadre de rendement",
-            "voir reponses enquete individuelle"
+            "voir reponses enquete individuelle",
+            "supprimer une reponse enquete individuelle"
         ];
 
         $bailleurs = [
@@ -302,8 +303,7 @@ class Permissions extends Command
             'exporter-fiche-synthese',
             "exporter-plan-action",
             "filtrer-indicateur",
-            "voir-cadre-de-rendement",
-            "voir-reponses-enquete-individuelle"
+            "voir-cadre-de-rendement"
         ];
 
         $gouvernements = [
@@ -641,7 +641,8 @@ class Permissions extends Command
             "filtrer-indicateur",
 
             "voir-cadre-de-rendement",
-            "voir-reponses-enquete-individuelle"
+            "voir-reponses-enquete-individuelle",
+            "supprimer-une-reponse-enquete-individuelle"
         ];
 
         $entreprises = [
