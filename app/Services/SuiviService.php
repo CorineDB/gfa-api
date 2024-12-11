@@ -88,7 +88,7 @@ class SuiviService extends BaseService implements SuiviServiceInterface
 
             if($attributs['type'] === "compopsante")
             {
-                $suivis = $this->repository->newInstance()->where("suivitable_type", "App\\Models\\Compopsante")->orderByDesc("created_at")->get();
+                $suivis = $this->repository->newInstance()->where("suivitable_type", "App\\Models\\Composante")->orderByDesc("created_at")->get();
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisResource::collection($suivis), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

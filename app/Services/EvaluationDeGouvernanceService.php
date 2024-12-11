@@ -690,7 +690,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $organisationId = null;
             
-            if(auth()->user()->type == "organisation"){
+            if((auth()->user()->type == "organisation") || get_class(auth()->user()->profilable) == Organisation::class){
                 $organisationId = optional(auth()->user()->profilable)->id;
             }
 

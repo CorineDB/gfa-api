@@ -44,7 +44,7 @@ class SurveyFormService extends BaseService implements SurveyFormServiceInterfac
                 $surveyForms = $this->repository->all();
             }
             else{
-                $surveyForms = Auth::user()->programme->surveys;
+                $surveyForms = Auth::user()->programme->survey_forms;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SurveyFormResource::collection($surveyForms), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

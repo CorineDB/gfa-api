@@ -6,6 +6,7 @@ use App\Events\NewNotification;
 use App\Http\Resources\suivi\SuiviIndicateursResource;
 use App\Http\Resources\suivi\SuivisIndicateurResource;
 use App\Models\Indicateur;
+use App\Models\Organisation;
 use App\Models\SuiviIndicateur;
 use App\Models\User;
 use App\Notifications\CommentaireNotification;
@@ -275,7 +276,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
             $suiviIndicateur = $this->repository->fill(array_merge($attributs, ["valeurCibleId" => $valeurCibleIndicateur->id]));
 
-            if(auth()->user()->type==="organisation"){
+            if((auth()->user()->type==="organisation" || get_class(auth()->user()->profilable) == Organisation::class)){
                 $suiviIndicateur->estValider = false;
             }
 
