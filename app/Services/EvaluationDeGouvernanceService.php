@@ -413,6 +413,26 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
                     }
 
+                    // Loop through categories_de_gouvernance to process score_factuel
+                    $categories->map(function($category) use ($fiche,$scoreRanges){
+                        $scoreFactuel = $category['score_factuel'];
+                        $categoryScoreRanges = $scoreRanges;
+                        $organisationId = $fiche->organisationId;
+        
+                        // Categorize based on score_factuel
+                        if ($scoreFactuel >= 0 && $scoreFactuel <= 0.25) {
+                            $categoryScoreRanges['0-0.25']['organisations'][] = $organisationId;
+                        } elseif ($scoreFactuel > 0.25 && $scoreFactuel <= 0.50) {
+                            $categoryScoreRanges['0.25-0.50']['organisations'][] = $organisationId;
+                        } elseif ($scoreFactuel > 0.50 && $scoreFactuel <= 0.75) {
+                            $categoryScoreRanges['0.50-0.75']['organisations'][] = $organisationId;
+                        } elseif ($scoreFactuel > 0.75 && $scoreFactuel <= 1) {
+                            $categoryScoreRanges['0.75-1']['organisations'][] = $organisationId;
+                        }
+
+                        return array_merge((array) $category, ['score_ranges' => $categoryScoreRanges]);
+                    });
+
                     // Construct the final result for this synthese item
                     $finalResults[] = [
                         'id' => $syntheseId,
@@ -425,56 +445,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $finalResults, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
-            $results = DB::select(
-                DB::raw("
-                    SELECT 
-                        CASE
-                            WHEN score_factuel BETWEEN 0 AND 0.25 THEN '[0-0.25] (Non oberservé)'
-                            WHEN score_factuel BETWEEN 0.26 AND 0.50 THEN ']0.25-0.50] (Partiellement oberservé)'
-                            WHEN score_factuel BETWEEN 0.51 AND 0.75 THEN ']0.50-0.75] (Moyennement oberservé)'
-                            WHEN score_factuel BETWEEN 0.76 AND 1 THEN ']0.75-1] (Observé)'
-                            ELSE 'Out of Range'
-                        END AS score_range,
-                        COUNT(fiches_de_synthese.id) AS organization_count,
-                        GROUP_CONCAT(fiches_de_synthese.id) AS organization_ids
-                    FROM fiches_de_synthese
-                    CROSS JOIN JSON_TABLE(
-                        fiches_de_synthese.synthese, 
-                        '$[*]' COLUMNS (
-                            score_factuel FLOAT PATH '$.indice_factuel',
-                            id VARCHAR(255) PATH '$.id'
-                        )
-                    ) AS categories
-                    WHERE fiches_de_synthese.type = 'factuel'
-                    GROUP BY score_range
-                    ORDER BY score_range
-                ")
-            );
-
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $results, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
-
-
-            // Fetch records with certain conditions from the synthese JSON field
-            $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel->map(function ($fiche) {
-                $fiche->synthese = collect($fiche->synthese)->map(function ($syn) {
-                    $synthese['categories_de_gouvernance'] = collect($syn['categories_de_gouvernance'])->map(function ($category) {
-                        $category['score_range'] = $this->getScoreRange($category['score_factuel']); // Get score range
-                        return $category;
-                    });
-                    return $synthese;
-                });
-
-                return $fiche;
-            });
-
-            // Group by organization (assuming 'organisation' is an attribute or related model)
-            $groupedByOrganization = $fiches->groupBy(function ($fiche) {
-                return $fiche->organisation->name; // Change 'organisation->name' based on your relation
-            });
-
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $groupedByOrganization, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
