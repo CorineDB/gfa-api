@@ -366,7 +366,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
 
         // Fetch records with certain conditions from the synthese JSON field
-        $fiches = $evaluationDeGouvernance->fiches_de_synthese->whereJsonContains('synthese', [
+        $fiches = $evaluationDeGouvernance->fiches_de_synthese()->whereJsonContains('synthese', [
             'categories_de_gouvernance' => [
                 [
                     'score_factuel' => 1
