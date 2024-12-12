@@ -367,7 +367,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             return 'Low';
         }
     }
-    
+
     /**
      * Liste des soumissions d'une evaluation de gouvernance
      * 
@@ -381,8 +381,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
         // Fetch records with certain conditions from the synthese JSON field
         $fiches = $evaluationDeGouvernance->fiches_de_synthese->map(function ($fiche) {
-            $fiche->synthese = collect($fiche->synthese)->map(function ($synthese) {
-                $synthese['categories_de_gouvernance'] = collect($synthese['categories_de_gouvernance'])->map(function ($category) {
+            $fiche->synthese = collect($fiche->synthese)->map(function ($syn) {
+                $synthese['categories_de_gouvernance'] = collect($syn['categories_de_gouvernance'])->map(function ($category) {
                     $category['score_range'] = $this->getScoreRange($category['score_factuel']); // Get score range
                     return $category;
                 });
