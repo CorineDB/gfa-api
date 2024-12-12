@@ -354,6 +354,20 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
+
+
+    // Helper function to determine score range
+    private function getScoreRange($score)
+    {
+        if ($score >= 0.8) {
+            return 'High';
+        } elseif ($score >= 0.5) {
+            return 'Medium';
+        } else {
+            return 'Low';
+        }
+    }
+    
     /**
      * Liste des soumissions d'une evaluation de gouvernance
      * 
