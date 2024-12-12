@@ -5,8 +5,8 @@ namespace App\Services;
 use App\Http\Resources\gouvernance\SurveyFormResource;
 use App\Http\Resources\gouvernance\SurveyReponseResource;
 use App\Http\Resources\gouvernance\SurveyResource;
+use App\Http\Resources\gouvernance\SurveysResource;
 use App\Mail\InfoEnquetteIndividuelleEmail;
-use App\Models\SurveyReponse;
 use App\Repositories\SurveyRepository;
 use App\Repositories\SurveyFormRepository;
 use Core\Services\Contracts\BaseService;
@@ -52,7 +52,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
                 $surveys = Auth::user()->programme->surveys;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SurveyResource::collection($surveys), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SurveysResource::collection($surveys), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -85,10 +85,10 @@ class SurveyService extends BaseService implements SurveyServiceInterface
         try {
             if (!($survey = $this->repository->findByAttribute('token', $token)->first())) throw new Exception("Enquete individuelle inexistante", 500);
 
-            if (($survey_reponse = $survey->survey_reponses()->where('idParticipant', $idParticipant)->first())) {
-                $response_data = new SurveyReponseResource($survey_reponse);
+            if (($survey->survey_reponses()->where('idParticipant', $idParticipant)->first())) {
+                $response_data = new SurveyResource($survey->loadSurveyResponseForParticipant($idParticipant));
             } else {
-                $response_data =  new SurveyFormResource($survey->survey_form);
+                $response_data =  new SurveyResource($survey);
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $response_data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -102,7 +102,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
         try {
             if (!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete individuelle inexistante", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveyResource($survey), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SurveysResource($survey), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -167,7 +167,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             Mail::to(auth()->user()->email)->later($when, $mailer);
 
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveyResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveysResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -203,7 +203,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveyResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveysResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
 
             DB::rollBack();
