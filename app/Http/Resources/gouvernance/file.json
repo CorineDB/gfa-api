@@ -1,0 +1,121 @@
+{
+    "id": "bg8xkOBEa3G1NyBEv7rQmWRnoPD8b02QdlOd5ZKge4xjAJL6Ykq9wzXpQqd6n47L",
+    "type": "factuel",
+    "indice_de_gouvernance": 0.5,
+    "synthese": [
+        {
+            "id": "AO3WmGPvEay3Z5b8pJ2R61N74XjkLAVMGGgGM0BDoQxzrYmWvndPOwleKpkjoKLr",
+            "nom": "Gouvernance managériale et administrative",
+            "indice_factuel": 0.5,
+            "categories_de_gouvernance": [
+                {
+                    "id": "RE1ZyPY67MJkwBZmQRPlNLp2Ybd5jyg2dkVWz60nr3O1XK8vxEADaoG4e7O84Xmk",
+                    "nom": "Redevabilité",
+                    "score_factuel": 1,
+                    "categories_de_gouvernance": [
+                        {
+                            "id": "Jyb18eZm7bMJrdo2R1LQnBD4xvylP3qzaMgENwGO0zpamX85j6YZkeWKAY24Ol6P",
+                            "nom": "Contrôle interne /Contrôleur de Gestion",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "3vbV0e2j2dn0wR7VANBjbeMp4Zg3ErDWJXmQ6qklWx95XY8aG1PyKovJzN1dBXPw",
+                                    "nom": "les agents sont traités de façon équitable et sans aucune forme de discrimination",
+                                    "type": "indicateur",
+                                    "reponse": {
+                                        "id": 202,
+                                        "nom": "Oui",
+                                        "type": "indicateur",
+                                        "point": 1,
+                                        "sourceDeVerification": "Rapport de reunion"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "4PGzDB7vK2vDAQkXM1Z3BoGm5y8z0a93b4V7w4bWrnLOj6PYxdJEeRplNONexky2",
+                    "nom": "Efficacité et efficience",
+                    "score_factuel": 0,
+                    "categories_de_gouvernance": [
+                        {
+                            "id": "lGMAPX0Y2AZv1zBxlY8XM7OdKw60Neql2z9Pjk4n5yo3aWRJDrmGQLbpE5amoN2R",
+                            "nom": "Audit",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "QWnB1zg8QZkxwVeBJyz9G52YMrj41XmeaqmA8b6n7avRWgpoqPl3dKNE049JyaoN",
+                                    "nom": "Les femmes occupent des postes de responsabilité au sein de l'association",
+                                    "type": "indicateur",
+                                    "reponse": {
+                                        "id": 203,
+                                        "nom": "Non",
+                                        "type": "indicateur",
+                                        "point": 0,
+                                        "sourceDeVerification": "Rapport de reunion"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "K0w2XPMoyMor3wP2DEAknX0RZBxOvpqKaX9bm5jzGW86Keal47YQ1dLNJmYGnDzk",
+            "nom": "Gouvernance politique",
+            "indice_factuel": 0.5,
+            "categories_de_gouvernance": [
+                {
+                    "id": "RzbXMG6ePXLYDJkpOmzbor2x5GvaW0VOdm93Q7K6Ad1jER8BNlne4ywMZBvP7E54",
+                    "nom": "Egalité et non- discrimination / inclusion",
+                    "score_factuel": 1,
+                    "categories_de_gouvernance": [
+                        {
+                            "id": "eQ6WdZr8oKzeJvr8NnWZymx2Q4walpgxpwgOd1ARP3b6BE70L5YkGXDjMp0E2A4x",
+                            "nom": "Evaluation",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "WzV6YlRo3pBg6y0z1AQJNlnKZM9VGbLwZnOvqj8kEaw7RPWYd54rxXe2ogeq2drb",
+                                    "nom": "les agents sont traités de façon équitable et sans aucune forme de discrimination",
+                                    "type": "indicateur",
+                                    "reponse": {
+                                        "id": 204,
+                                        "nom": "Oui",
+                                        "type": "indicateur",
+                                        "point": 1,
+                                        "sourceDeVerification": "Rapport de reunion"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "YQm2xdDoeKmn1ZywPBYERXMOWkNL3J9Jp0q2Al4rd8v67xjpDoQ5b0GazjzL0BEA",
+                    "nom": "Redevabilité",
+                    "score_factuel": 0,
+                    "categories_de_gouvernance": [
+                        {
+                            "id": "7Z1W8nax8Yn14yGmeoNBZbwlWPKd6R9EGKqJrQ723OjkaA5EDLvz0MxXpBoMkpJL",
+                            "nom": "Evaluation",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "6XRn5MxAv7gJ32zkZbVEYRdx5MQW8KOAqwOrBqonw6XjP9plAa14NeGy07Kaje0v",
+                                    "nom": "la politique de rémunération des travailleurs est équitable",
+                                    "type": "indicateur",
+                                    "reponse": {
+                                        "id": 205,
+                                        "nom": "Non",
+                                        "type": "indicateur",
+                                        "point": 0,
+                                        "sourceDeVerification": "Rapport de reunion"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
