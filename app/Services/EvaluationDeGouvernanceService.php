@@ -376,27 +376,27 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function fiches_de_synthese_with_organisations_classement($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);          
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-
-        // Fetch records with certain conditions from the synthese JSON field
-        $fiches = $evaluationDeGouvernance->fiches_de_synthese->map(function ($fiche) {
-            $fiche->synthese = collect($fiche->synthese)->map(function ($syn) {
-                $synthese['categories_de_gouvernance'] = collect($syn['categories_de_gouvernance'])->map(function ($category) {
-                    $category['score_range'] = $this->getScoreRange($category['score_factuel']); // Get score range
-                    return $category;
+            // Fetch records with certain conditions from the synthese JSON field
+            $fiches = $evaluationDeGouvernance->fiches_de_synthese()->where("type","factuel")->get()->map(function ($fiche) {
+                $fiche->synthese = collect($fiche->synthese)->map(function ($syn) {
+                    $synthese['categories_de_gouvernance'] = collect($syn['categories_de_gouvernance'])->map(function ($category) {
+                        $category['score_range'] = $this->getScoreRange($category['score_factuel']); // Get score range
+                        return $category;
+                    });
+                    return $synthese;
                 });
-                return $synthese;
+
+                return $fiche;
             });
 
-            return $fiche;
-        });
+            // Group by organization (assuming 'organisation' is an attribute or related model)
+            $groupedByOrganization = $fiches->groupBy(function ($fiche) {
+                return $fiche->organisation->name; // Change 'organisation->name' based on your relation
+            });
 
-        // Group by organization (assuming 'organisation' is an attribute or related model)
-        $groupedByOrganization = $fiches->groupBy(function ($fiche) {
-            return $fiche->organisation->name; // Change 'organisation->name' based on your relation
-        });
-    return response()->json(['statut' => 'success', 'message' => null, 'data' => $groupedByOrganization, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $groupedByOrganization, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
