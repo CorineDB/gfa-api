@@ -5,7 +5,7 @@ namespace App\Http\Resources\gouvernance;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SurveyResource extends JsonResource
+class SurveysResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -33,19 +33,7 @@ class SurveyResource extends JsonResource
             'statut'                => $this->statut,
             'surveyFormId'          => $this->survey_form->secure_id,
             'created_at'            => Carbon::parse($this->created_at)->format("Y-m-d"),
-            "survey_form_link"      => $url . "/dashboard/form-individuel/{$this->token}",
-
-            // Include survey_form only if survey_response is NOT loaded
-            'survey_form'           => $this->when(
-                !$this->relationLoaded('survey_response'), 
-                fn() => new SurveyFormResource($this->survey_form)
-            ),
-
-            // Include survey_response only if it's loaded
-            'survey_response'           => $this->when(
-                $this->relationLoaded('survey_response'), 
-                fn() => new SurveyReponseResource($this->survey_response)
-            )        
+            "survey_form_link"      => $url . "/dashboard/form-individuel/{$this->token}"
         ];
     }
 }

@@ -17,6 +17,8 @@ class Survey extends Model
 
     protected $dates = ['deleted_at'];
 
+    protected $default = ['statut' => -1];
+
     protected $fillable = array('intitule', 'description', 'debut', 'fin', 'prive', 'token', 'nbreParticipants', 'statut', 'surveyFormId', 'programmeId');
 
     protected $casts = ['statut'  => 'integer', 'nbreParticipants' => 'integer', 'debut'  => 'datetime', 'prive'  => 'boolean', 'fin'  => 'datetime'];
@@ -72,4 +74,29 @@ class Survey extends Model
     {
         return $this->hasMany(SurveyReponse::class, 'surveyId');
     }
+
+    public function survey_response()
+    {
+        return $this->hasOne(SurveyReponse::class, 'surveyId');
+    }
+
+    public function scopeWithSurveyResponseForParticipant($query, $idParticipant)
+    {
+        return $query->with(['survey_response' => function ($query) use ($idParticipant) {
+            $this->applySurveyResponseFilter($query, $idParticipant);
+        }]);
+    }
+    
+    public function loadSurveyResponseForParticipant($idParticipant)
+    {
+        return $this->load(['survey_response' => function ($query) use ($idParticipant) {
+            $this->applySurveyResponseFilter($query, $idParticipant);
+        }]);
+    }
+
+    protected function applySurveyResponseFilter($query, $idParticipant)
+    {
+        $query->where('idParticipant', $idParticipant);
+    }
+
 }
