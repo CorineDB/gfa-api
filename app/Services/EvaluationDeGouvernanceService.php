@@ -365,7 +365,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
                 $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type'])->flatMap(function ($fiches_de_synthese, $organisation) {
-                        return $fiches_de_synthese;
+                        return [$organisation,$fiches_de_synthese];
                     });
 
                 return response()->json(['statut' => 'success', 'message' => null, 'data' => $rapportsEvaluationParOrganisation, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
