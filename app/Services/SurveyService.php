@@ -83,12 +83,12 @@ class SurveyService extends BaseService implements SurveyServiceInterface
     public function survey_form($token, $idParticipant, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            if (!($survey = $this->repository->findByAttribute('token', $token)->first())) throw new Exception("Enquete individuelle inexistante", 500);
+            if (!($survey = $this->repository->findByAttribute('token', $token))) throw new Exception("Enquete individuelle inexistante", 500);
 
             if (($survey->survey_reponses()->where('idParticipant', $idParticipant)->first())) {
                 $response_data = new SurveyResource($survey->loadSurveyResponseForParticipant($idParticipant));
             } else {
-                $response_data =  new SurveysResource($survey);
+                $response_data =  new SurveyResource($survey);
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $response_data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
