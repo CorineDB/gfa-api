@@ -101,7 +101,6 @@ class UpdateColumnsFromSurveyReponsesTable extends Migration
      */
     public function down()
     {
-
         if (Schema::hasTable('survey_reponses')) {
             Schema::table('survey_reponses', function (Blueprint $table) {
 

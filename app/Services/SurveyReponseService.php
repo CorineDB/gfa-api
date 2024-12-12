@@ -82,8 +82,9 @@ class SurveyReponseService extends BaseService implements SurveyReponseServiceIn
                 throw new Exception("Enquete introuvable", Response::HTTP_NOT_FOUND);
             }
 
-            if(($survey_reponse = $survey->survey_reponses()->where('idParticipant', $attributs['idParticipant'])->first())){
-                $surveyReponse = $survey_reponse->fill($attributs)->save();
+            if(($surveyReponse = $survey->survey_reponses()->where('idParticipant', $attributs['idParticipant'])->first())){
+                $surveyReponse->fill($attributs)->save();
+                $surveyReponse->refresh();
             }
             else{
 

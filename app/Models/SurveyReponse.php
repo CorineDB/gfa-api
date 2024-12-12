@@ -19,7 +19,7 @@ class SurveyReponse extends Model
 
     protected $fillable = array('response_data', 'submitted_at', 'idParticipant', 'statut', 'surveyId', 'programmeId');
 
-    protected $casts = ['statut'  => 'integer', 'response_data'  => 'array', 'submitted_at'  => 'datetime'];
+    protected $casts = ['statut'  => 'boolean', 'response_data'  => 'array', 'submitted_at'  => 'datetime'];
 
     protected static function boot()
     {
