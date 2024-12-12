@@ -359,12 +359,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     // Helper function to determine score range
     private function getScoreRange($score)
     {
-        if ($score >= 0.8) {
-            return 'High';
-        } elseif ($score >= 0.5) {
-            return 'Medium';
+        if ($score <= 1 && $score > 0.75) {
+            return ']0,75 - 1]';
+        } elseif ($score <= 0.75 && $score > 0.50) {
+            return ']0,50 - 0,75]';
+        } elseif ($score <= 0.50 && $score > 0.25) {
+            return ']0,25 - 0,50]';
         } else {
-            return 'Low';
+            return '[0 - 0,25]';
         }
     }
 
