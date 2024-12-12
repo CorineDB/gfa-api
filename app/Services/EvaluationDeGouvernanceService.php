@@ -364,30 +364,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            if (Auth::user()->hasRole('administrateur')) {
-                $fiches_de_synthese = [];
-            } else if (Auth::user()->hasRole('organisation')) {
-
-                $organisation = Auth::user()->profilable;
-
-                $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()->where('organisationId', $organisation->id)
-                    ->get()->groupBy(['type'])->map(function ($fiches_de_synthese, $type) {
-                        return new FicheDeSyntheseResource($fiches_de_synthese->first());
-                    });
-
-                $fiches_de_synthese = array_merge([
-                    "id"                    => $organisation->secure_id,
-                    'nom'                   => optional($organisation->user)->nom ?? null,
-                    'sigle'                 => $organisation->sigle,
-                    'code'                  => $organisation->code,
-                    'nom_point_focal'       => $organisation->nom_point_focal,
-                    'prenom_point_focal'    => $organisation->prenom_point_focal,
-                    'contact_point_focal'   => $organisation->contact_point_focal,
-                    'profile_de_gouvernance'   => $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? []
-
-                ], $fiches_de_synthese->toArray());
-                
-            } else {
                 $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
                 $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($rapportEvaluationParOrganisation, $organisationId) use ($evaluationDeGouvernance) {
@@ -409,8 +385,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'profile_de_gouvernance'   => optional($organisation->profiles($evaluationDeGouvernance->id)->first())->resultat_synthetique ?? []
                     ], $fiches_de_synthese->toArray());
                 })->values();
-            }
-
+            
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $fiches_de_synthese, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
