@@ -380,6 +380,52 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
+            $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel;
+            // Initialize the array for transformed result
+            $finalResults = [];
+
+            // Loop through each record
+            foreach ($fiches as $fiche) {
+                $synthese = json_decode($fiche->synthese, true); // Decode the JSON column
+
+                foreach ($synthese as $syntheseItem) {
+                    $syntheseId = $syntheseItem['id'];
+                    $syntheseName = $syntheseItem['nom'];
+                    $indiceFactuel = $syntheseItem['indice_factuel'];
+                    $categories = $syntheseItem['categories_de_gouvernance'];
+
+                    // Initialize score ranges
+                    $scoreRanges = [
+                        '0-0.25' => ['organisations' => []],
+                        '0.25-0.50' => ['organisations' => []],
+                        '0.50-0.75' => ['organisations' => []],
+                        '0.75-1' => ['organisations' => []],
+                    ];
+
+                    // Logic for organizing into score ranges (adjust based on actual criteria)
+                    if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
+                        $scoreRanges['0-0.25']['organisations'][] = $fiche->organisationId; // Assuming you have this info in the fiche
+                    } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
+                        $scoreRanges['0.25-0.50']['organisations'][] = $fiche->organisationId;
+                    } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
+                        $scoreRanges['0.50-0.75']['organisations'][] = $fiche->organisationId;
+                    } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
+                        $scoreRanges['0.75-1']['organisations'][] = $fiche->organisationId;
+                    }
+
+                    // Construct the final result for this synthese item
+                    $finalResults[] = [
+                        'id' => $syntheseId,
+                        'nom' => $syntheseName,
+                        'indice_factuel' => $indiceFactuel,
+                        'score_ranges' => $scoreRanges,
+                        'categories_de_gouvernance' => $categories
+                    ];
+                }
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $finalResults, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
             $results = DB::select(
                 DB::raw("
                     SELECT 
