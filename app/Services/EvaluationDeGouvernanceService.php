@@ -366,29 +366,23 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
 
         // Fetch records with certain conditions from the synthese JSON field
-        $fiches = $evaluationDeGouvernance->fiches_de_synthese()->whereJsonContains('synthese', [
-            'categories_de_gouvernance' => [
-                [
-                    'score_factuel' => 1
-                ]
-            ]
-        ])
-        ->get();
+        $fiches = $evaluationDeGouvernance->fiches_de_synthese->map(function ($fiche) {
+            $fiche->synthese = collect($fiche->synthese)->map(function ($synthese) {
+                $synthese['categories_de_gouvernance'] = collect($synthese['categories_de_gouvernance'])->map(function ($category) {
+                    $category['score_range'] = $this->getScoreRange($category['score_factuel']); // Get score range
+                    return $category;
+                });
+                return $synthese;
+            });
 
-    // Optionally, filter on nested conditions
-    // Example: Filter fiches where score_factuel is 1 in any of the nested categories_de_gouvernance
-    $filteredFiches = $fiches->filter(function ($fiche) {
-        foreach ($fiche->synthese as $syntheseItem) {
-            foreach ($syntheseItem['categories_de_gouvernance'] as $category) {
-                if ($category['score_factuel'] == 1) {
-                    return true; // Include fiche if a category has score_factuel = 1
-                }
-            }
-        }
-        return false; // Exclude fiche if no category matches
-    });
+            return $fiche;
+        });
 
-    return response()->json(['statut' => 'success', 'message' => null, 'data' => $filteredFiches, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        // Group by organization (assuming 'organisation' is an attribute or related model)
+        $groupedByOrganization = $fiches->groupBy(function ($fiche) {
+            return $fiche->organisation->name; // Change 'organisation->name' based on your relation
+        });
+    return response()->json(['statut' => 'success', 'message' => null, 'data' => $groupedByOrganization, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
