@@ -386,7 +386,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             // Loop through each record
             foreach ($fiches as $fiche) {
-                $synthese = $fiche->synthese;json_decode($fiche->synthese, true); // Decode the JSON column
+                $synthese = $fiche->synthese;//json_decode($fiche->synthese, true); // Decode the JSON column
 
                 foreach ($synthese as $syntheseItem) {
                     $syntheseId = $syntheseItem['id'];
