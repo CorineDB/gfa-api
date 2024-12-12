@@ -364,6 +364,32 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);          
 
+
+        // Fetch records with certain conditions from the synthese JSON field
+        $fiches = $evaluationDeGouvernance->fiches_de_synthese->whereJsonContains('synthese', [
+            'categories_de_gouvernance' => [
+                [
+                    'score_factuel' => 1
+                ]
+            ]
+        ])
+        ->get();
+
+    // Optionally, filter on nested conditions
+    // Example: Filter fiches where score_factuel is 1 in any of the nested categories_de_gouvernance
+    $filteredFiches = $fiches->filter(function ($fiche) {
+        foreach ($fiche->synthese as $syntheseItem) {
+            foreach ($syntheseItem['categories_de_gouvernance'] as $category) {
+                if ($category['score_factuel'] == 1) {
+                    return true; // Include fiche if a category has score_factuel = 1
+                }
+            }
+        }
+        return false; // Exclude fiche if no category matches
+    });
+
+    return response()->json(['statut' => 'success', 'message' => null, 'data' => $filteredFiches, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
             $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($rapportEvaluationParOrganisation, $organisationId) use ($evaluationDeGouvernance) {
