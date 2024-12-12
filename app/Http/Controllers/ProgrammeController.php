@@ -222,7 +222,7 @@ class ProgrammeController extends Controller
         return $this->programmeService->scores_au_fil_du_temps($organisationId);
     }
 
-    public function evaluations_organisations()
+    public function evaluations_organisations($id = null)
     {
         return $this->programmeService->evaluations_organisations();
     }

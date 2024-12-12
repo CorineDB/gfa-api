@@ -588,7 +588,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $organisations = $programme->evaluations_de_gouvernance_organisations();
 
-            //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationResource::collection($organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         }
@@ -597,8 +596,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
-    
 
     public function suiviFinanciers($id) : JsonResponse
     {
