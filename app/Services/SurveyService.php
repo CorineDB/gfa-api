@@ -88,7 +88,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             if (($survey->survey_reponses()->where('idParticipant', $idParticipant)->first())) {
                 $response_data = new SurveyResource($survey->loadSurveyResponseForParticipant($idParticipant));
             } else {
-                $response_data =  new SurveyResource($survey);
+                $response_data =  new SurveysResource($survey);
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $response_data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -130,6 +130,8 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
             $survey = $this->repository->create($attributs);
 
+            $survey->refresh();
+
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($survey));
@@ -165,7 +167,6 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             // Send the email later after a delay
             $when = now()->addSeconds(5);
             Mail::to(auth()->user()->email)->later($when, $mailer);
-
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SurveysResource($survey), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
