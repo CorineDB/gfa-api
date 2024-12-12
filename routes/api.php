@@ -634,7 +634,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{id}/cadre-de-mesure-rendement', 'cadre_de_mesure_rendement')->name('cadre-de-mesure-rendement')->middleware('permission:voir-cadre-de-rendement');
 
                     Route::get('evolution-des-scores-au-fil-du-temps/{organisationId}', 'scoresAuFilDuTemps')->name('evolution-des-scores-au-fil-du-temps')->middleware('permission:voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps');
-                    Route::get('evaluations-organisations', 'evaluations_organisations')->name('evaluations-organisations')->middleware('permission:voir-une-organisation');
+                    Route::get('evaluations-organisations/{id?}', 'evaluations_organisations')->name('evaluations-organisations')->middleware('permission:voir-une-organisation');
 
                 });
             });

@@ -556,14 +556,13 @@ class Programme extends Model
      */
     public function evaluations_de_gouvernance_organisations(?int $organisationId = null)
     {
-        return $this->evaluations_de_gouvernance()
-            ->with(['organisations' => function ($query) use ($organisationId) {
-                if ($organisationId) {
-                    $query->where('organisations.id', $organisationId);
-                }
-            }])
-            ->get()
-            ->flatMap(function ($evaluation) {
+        return $this->evaluations_de_gouvernance()->when($organisationId, function($query) use ($organisationId) {
+                $query->with(['organisations' => function ($query) use ($organisationId) {
+                    if ($organisationId) {
+                        $query->where('organisations.id', $organisationId);
+                    }
+                }]);
+            })->get()->flatMap(function ($evaluation) {
                 return $evaluation->organisations;
             })
             ->unique('id'); // Ensure only distinct organisations by their ID
