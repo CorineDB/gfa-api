@@ -366,6 +366,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
+                return response()->json(['statut' => 'success', 'message' => null, 'data' => $rapportsEvaluationParOrganisation, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+
                 $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($rapportEvaluationParOrganisation, $organisationId) use ($evaluationDeGouvernance) {
 
                     $organisation = app(OrganisationRepository::class)->findById($organisationId);
