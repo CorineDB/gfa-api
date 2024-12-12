@@ -255,6 +255,26 @@ class EvaluationDeGouvernance extends Model
         return $fiches_de_synthese;
     }
 
+
+    public function fiches_de_synthese_factuel(?int $organisationId = null, ?string $type = null): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        // Start with the base relationship
+        $fiches_de_synthese = $this->hasMany(FicheDeSynthese::class, 'evaluationDeGouvernanceId')->where("type","factuel");
+
+        // Apply additional filtering conditions if needed
+        if ($type) {
+            $fiches_de_synthese = $fiches_de_synthese->where("type", $type);
+        }
+
+        if ($organisationId) {
+            $fiches_de_synthese = $fiches_de_synthese->where("organisationId", $organisationId);
+        }
+
+        // Get the results and apply grouping on the collection level
+
+        return $fiches_de_synthese;
+    }
+
     public function profiles(?int $organisationId = null, ?int $evaluationOrganisationId = null): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         // Start with the base relationship
