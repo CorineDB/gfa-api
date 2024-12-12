@@ -366,7 +366,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $rapportsEvaluationParOrganisation = (new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()));
             
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $rapportsEvaluationParOrganisation->categories_de_gouvernance, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $rapportsEvaluationParOrganisation['categories_de_gouvernance'], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
