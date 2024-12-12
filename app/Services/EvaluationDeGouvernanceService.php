@@ -362,11 +362,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function fiches_de_synthese_with_organisations_classement($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
-
-            $rapportsEvaluationParOrganisation = (new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()));
-            
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $rapportsEvaluationParOrganisation['categories_de_gouvernance'], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);          
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
