@@ -371,7 +371,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
                     $fiches_de_synthese = $rapportEvaluationParOrganisation->map(function ($fiches_de_synthese, $type) {
-                        return new $fiches_de_synthese->first();
+                        return $fiches_de_synthese;
                     });
 
                     return array_merge([
