@@ -415,7 +415,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $categories = collect($categories)->map(function($category) use($fiche) {
 
-                        dd($category);
+                        dd([is_object($category),is_array($category)]);
                         $categoryScoreRanges = [
                             '0-0.25' => ['organisations' => []],
                             '0.25-0.50' => ['organisations' => []],
