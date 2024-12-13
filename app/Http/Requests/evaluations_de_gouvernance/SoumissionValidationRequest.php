@@ -143,7 +143,7 @@ class SoumissionValidationRequest extends FormRequest
 
                             $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
-                            if(!$reponse || !($reponse->preuves_de_verification()->count())){
+                            if((!$reponse || !($reponse->preuves_de_verification()->count())) && empty(request()->input($attribute))){
                                 $fail("La preuve est required.");
                             }
                         }
