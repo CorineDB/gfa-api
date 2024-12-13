@@ -397,9 +397,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $category['score_ranges'] = $categoryScoreRanges;
 
-                /* if(isset($category['categories_de_gouvernance'])){
+                if(isset($category['categories_de_gouvernance'])){
                     $category['categories_de_gouvernance'] = $this->getCategories($category['categories_de_gouvernance'], $fiche);
-                } */
+                }
             }
 
             return $category;
