@@ -7,7 +7,9 @@ use App\Http\Requests\evaluations_de_gouvernance\PerceptionSoumissionValidationR
 use App\Http\Requests\evaluations_de_gouvernance\SoumissionRequest;
 use App\Http\Requests\evaluations_de_gouvernance\SoumissionValidationRequest;
 use Core\Services\Interfaces\SoumissionServiceInterface;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 
 class SoumissionController extends Controller
 {
@@ -83,6 +85,7 @@ class SoumissionController extends Controller
     public function validated(SoumissionValidationRequest $request, $evaluationId)
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
+
         return $this->soumissionService->create($atttributs);
     }
 
@@ -95,6 +98,7 @@ class SoumissionController extends Controller
     public function perceptionSoumissionValidation(PerceptionSoumissionValidationRequest $request, $evaluationId)
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
+        return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => $atttributs, 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
 
         return $this->soumissionService->create($atttributs);
     }
