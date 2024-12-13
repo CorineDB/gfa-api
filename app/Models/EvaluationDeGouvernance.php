@@ -67,16 +67,21 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissions()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
-            $organisationId = optional(auth()->user()->profilable)->id;
-
-            // If the organisationId is null, return an empty collection
-            if (is_null($organisationId)) {
-                $query->whereRaw('1 = 0'); // Ensures no results are returned
-            } else {
-                $query->where('organisationId', $organisationId);
-            }
-        });
+        if(auth()->check()){
+            return $this->hasMany(Soumission::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+                $organisationId = optional(auth()->user()->profilable)->id;
+    
+                // If the organisationId is null, return an empty collection
+                if (is_null($organisationId)) {
+                    $query->whereRaw('1 = 0'); // Ensures no results are returned
+                } else {
+                    $query->where('organisationId', $organisationId);
+                }
+            });
+        }
+        else{
+            return $this->hasMany(Soumission::class, 'evaluationId');
+        }
     }
 
     public function soumissionsDePerception()
