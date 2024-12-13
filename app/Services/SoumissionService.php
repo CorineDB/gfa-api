@@ -161,6 +161,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             $soumission->type = $soumission->formulaireDeGouvernance->type;
 
             $soumission->save();
+            throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
 
             if (isset($attributs['factuel']) && !empty($attributs['factuel'])) {
                 $soumission->fill($attributs['factuel']);
@@ -202,9 +203,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         }
                     }
                 }
-
-                throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
-
             }
             
             else if (isset($attributs['perception']) && !empty($attributs['perception'])) {
