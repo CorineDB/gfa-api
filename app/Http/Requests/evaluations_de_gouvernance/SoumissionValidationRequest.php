@@ -120,7 +120,7 @@ class SoumissionValidationRequest extends FormRequest
                         
                         if($this->formulaireCache){
 
-                            $fail("La preuve est required at index : ".request()->input('factuel.response_data'));
+                            $fail("La preuve est required at index : ".json_encode(request()->input('factuel.response_data')));
 
                             // Get the index from the attribute name
                             // Step 1: Use preg_match to extract the index
