@@ -46,9 +46,9 @@ class SoumissionValidationRequest extends FormRequest
     {
         return [
             'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
-            'soumissionId'   => ['nullable', new HashValidatorRule(new Soumission())],
-            'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
-            'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
+            'soumissionId'   => ['nullable', 'bail', new HashValidatorRule(new Soumission())],
+            'organisationId'   => ['bail', Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
+            'formulaireDeGouvernanceId'   => ["required", 'bail', new HashValidatorRule(new FormulaireDeGouvernance()), function ($attribute, $value, $fail) {
                     // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_de_gouvernance()
                                         ->wherePivot('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))
@@ -64,7 +64,7 @@ class SoumissionValidationRequest extends FormRequest
                 }
             ],
 
-            'factuel'                                         => ['required', 'array'],
+            'factuel'                                         => ['bail', 'required', 'array'],
             
             'factuel.comite_members'                                        => ['required', 'array', 'min:1'],
             'factuel.comite_members.*.nom'                                  => ['required', 'string'],
@@ -76,7 +76,7 @@ class SoumissionValidationRequest extends FormRequest
                     }
                 }
             ],            
-            'factuel.response_data.*.questionId'      => [Rule::requiredIf(!request()->input('perception')), 'distinct', 
+            'factuel.response_data.*.questionId'      => ['bail', Rule::requiredIf(!request()->input('perception')), 'distinct', 
                 new HashValidatorRule(new QuestionDeGouvernance()),
                 function($attribute, $value, $fail) {
                     
@@ -97,7 +97,7 @@ class SoumissionValidationRequest extends FormRequest
                     }*/
                 }
             ],
-            'factuel.response_data.*.optionDeReponseId'   => [Rule::requiredIf(!request()->input('perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
+            'factuel.response_data.*.optionDeReponseId'   => ['bail', Rule::requiredIf(!request()->input('perception')), new HashValidatorRule(new OptionDeReponse()), function($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  * 
@@ -109,11 +109,11 @@ class SoumissionValidationRequest extends FormRequest
                     }
                 }
             }],
-            'factuel.response_data.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
-            'factuel.response_data.*.sourceDeVerification'          => [ Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+            'factuel.response_data.*.sourceDeVerificationId'        => ['bail', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())], 
+            'factuel.response_data.*.sourceDeVerification'          => ['bail', Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
 
 
-            'factuel.response_data.*.preuves'                       => [ Rule::requiredIf(request()->input('soumissionId') == null),
+            'factuel.response_data.*.preuves'                       => ['bail', Rule::requiredIf(request()->input('soumissionId') == null),
                 function($attribute, $value, $fail) {
 
                     if(request()->input('soumissionId') != null){
