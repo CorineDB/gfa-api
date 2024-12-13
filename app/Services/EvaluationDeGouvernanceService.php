@@ -370,6 +370,42 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
+    private function getCategories($categories, $fiche){
+        return collect($categories)->map(function($category) use($fiche) {
+
+            if(isset($category['score_factuel'])){
+                $categoryScoreRanges = [
+                    '0-0.25' => ['organisations' => []],
+                    '0.25-0.50' => ['organisations' => []],
+                    '0.50-0.75' => ['organisations' => []],
+                    '0.75-1' => ['organisations' => []],
+                ];
+
+                $scoreFactuel = $category['score_factuel'];
+                $organisationId =  $fiche->organisationId;
+
+                // Logic for organizing into score ranges (adjust based on actual criteria)
+                if ($scoreFactuel >= 0 && $scoreFactuel <= 0.25) {
+                    $categoryScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel]; // Assuming you have this info in the fiche
+                } elseif ($scoreFactuel > 0.25 && $scoreFactuel <= 0.50) {
+                    $categoryScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
+                } elseif ($scoreFactuel > 0.50 && $scoreFactuel <= 0.75) {
+                    $categoryScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
+                } elseif ($scoreFactuel > 0.75 && $scoreFactuel <= 1) {
+                    $categoryScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
+                }
+
+                $category['score_ranges'] = $categoryScoreRanges;
+
+                /* if(isset($category['categories_de_gouvernance'])){
+                    $category['categories_de_gouvernance'] = $this->getCategories($category['categories_de_gouvernance'], $fiche);
+                } */
+            }
+
+            return $category;
+        })->values();
+    }
+
     /**
      * Liste des soumissions d'une evaluation de gouvernance
      * 
@@ -413,33 +449,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
                     }
 
-                    $categories = collect($categories)->map(function($category) use($fiche) {
-
-                        $categoryScoreRanges = [
-                            '0-0.25' => ['organisations' => []],
-                            '0.25-0.50' => ['organisations' => []],
-                            '0.50-0.75' => ['organisations' => []],
-                            '0.75-1' => ['organisations' => []],
-                        ];
-
-                        $scoreFactuel = $category['score_factuel'];
-                        $organisationId =  $fiche->organisationId;
-
-                        // Logic for organizing into score ranges (adjust based on actual criteria)
-                        if ($scoreFactuel >= 0 && $scoreFactuel <= 0.25) {
-                            $categoryScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel]; // Assuming you have this info in the fiche
-                        } elseif ($scoreFactuel > 0.25 && $scoreFactuel <= 0.50) {
-                            $categoryScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
-                        } elseif ($scoreFactuel > 0.50 && $scoreFactuel <= 0.75) {
-                            $categoryScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
-                        } elseif ($scoreFactuel > 0.75 && $scoreFactuel <= 1) {
-                            $categoryScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
-                        }
-
-                        $category['score_ranges'] = $categoryScoreRanges;
-
-                        return $category;
-                    })->values();
+                    $categories = $this->getCategories($categories, $fiche);
 
                     // Construct the final result for this synthese item
                     $finalResults[] = [
