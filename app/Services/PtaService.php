@@ -51,7 +51,7 @@ class PtaService extends BaseService implements PtaServiceInterface
             {
                 $file = Storage::disk('local')->get('pta/pta.json');
 
-                if(!strlen($file))
+                if(strlen($file))
                 {
 
                     $pta = json_decode($file);
