@@ -117,9 +117,22 @@ class SoumissionValidationRequest extends FormRequest
                 function($attribute, $value, $fail) {
 
                     if(request()->input('soumissionId') != null){
-                        $fail("La preuve est required.");
                         
-                        
+                        if($this->formulaireCache){
+
+                            $fail(request()->input('factuel.response_data'));
+
+                            // Get the index from the attribute name
+                            // Step 1: Use preg_match to extract the index
+                            preg_match('/factuel\.response_data\.(\d+)\.questionId/', $attribute, $matches);
+
+                            // Step 2: Check if the index is found
+                            $index = $matches[1] ?? null; // Get the index if it exists
+                            $fail("La preuve est required.".$index);
+                        }
+                        else{
+                            $fail("La preuve est required.");
+                        }
                     }
                     
                 }, "array", "min:1"],
