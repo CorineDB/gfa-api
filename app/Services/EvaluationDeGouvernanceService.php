@@ -413,7 +413,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
                     }
 
-                    collect($categories)->map(function($category) use($fiche, $scoreRanges) {
+                    $categories = collect($categories)->map(function($category) use($fiche, $scoreRanges) {
 
                         $categoryScoreRanges = [
                             '0-0.25' => ['organisations' => []],
