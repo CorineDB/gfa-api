@@ -415,7 +415,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $categories = collect($categories)->map(function($category) use($fiche) {
 
-                        dd([is_object($category),is_array($category)]);
                         $categoryScoreRanges = [
                             '0-0.25' => ['organisations' => []],
                             '0.25-0.50' => ['organisations' => []],
@@ -438,7 +437,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         }
 
                         return $category['score_ranges'] = $categoryScoreRanges;
-                    });
+                    })->values();
 
                     // Construct the final result for this synthese item
                     $finalResults[] = [
