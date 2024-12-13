@@ -935,15 +935,17 @@ class Permissions extends Command
                 $ids = $role->permissions->pluck('id');
                 $role->permissions()->detach($ids);
 
-                foreach($organisations as $mission)
+                foreach($organisations as $organisation)
                 {
-                    //if(!$role->permissions->where('slug', $mission)->first())
+                    //if(!$role->permissions->where('slug', $organisation)->first())
                     {
-                        $permission = Permission::where('slug', $mission)->first();
+                        $permission = Permission::where('slug', $organisation)->first();
 
                         $role->permissions()->attach($permission->id);
                     }
+
                 }
+
             }
 
             else if($role->slug == 'mod')
@@ -1086,24 +1088,6 @@ class Permissions extends Command
                     //if(!$role->permissions->where('slug', $administrateur)->first())
                     {
                         $permission = Permission::where('slug', $administrateur)->first();
-
-                        $role->permissions()->attach($permission->id);
-                    }
-
-                }
-
-            }
-
-            else if($role->slug == 'organisation')
-            {
-                $ids = $role->permissions->pluck('id');
-                $role->permissions()->detach($ids);
-
-                foreach($organisations as $organisation)
-                {
-                    //if(!$role->permissions->where('slug', $organisation)->first())
-                    {
-                        $permission = Permission::where('slug', $organisation)->first();
 
                         $role->permissions()->attach($permission->id);
                     }
