@@ -106,7 +106,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
-            return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => $attributs, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             if (isset($attributs['organisationId'])) {
 
@@ -125,6 +124,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             else{
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
+            return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => $attributs, 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
