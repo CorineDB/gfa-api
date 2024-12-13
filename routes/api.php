@@ -634,7 +634,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('/deleteAllNotifications', 'deleteAllNotifications')->name('deleteAllNotifications');
                     Route::get('/fichiers', 'fichiers')->name('fichiers')->middleware('permission:voir-un-fichier');
                     Route::put('/{id}', 'update')->name('update');
-                    Route::put('/{id}', 'updatePassword')->name('updatePassword');
+                    Route::put('/updatePassword', 'updatePassword')->name('updatePassword');
                 });
             });
 
