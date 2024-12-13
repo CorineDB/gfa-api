@@ -535,7 +535,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $actions_a_mener = [];
 
             if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
-                $actions_a_mener = $evaluationDeGouvernance->actions_a_mener()->where("organisationId", auth()->user()->profileable->id)->get();
+                $actions_a_mener = $evaluationDeGouvernance->actions_a_mener()->where("organisationId", auth()->user()->profilable->id)->get();
             }
             else{
                 $actions_a_mener = $evaluationDeGouvernance->actions_a_mener;
@@ -556,7 +556,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $recommandations = [];
 
             if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
-                $recommandations = $evaluationDeGouvernance->recommandations()->where("organisationId", auth()->user()->profileable->id)->get();
+                $recommandations = $evaluationDeGouvernance->recommandations()->where("organisationId", auth()->user()->profilable->id)->get();
             }
             else{
                 $recommandations = $evaluationDeGouvernance->recommandations;
