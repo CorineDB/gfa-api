@@ -125,7 +125,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
 
-
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
             if ($formulaireDeGouvernance->type == 'factuel') {
