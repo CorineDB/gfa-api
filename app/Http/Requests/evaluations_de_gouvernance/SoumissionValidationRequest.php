@@ -120,18 +120,36 @@ class SoumissionValidationRequest extends FormRequest
                         
                         if($this->formulaireCache){
 
-                            $fail(request()->input('factuel.response_data'));
+                            $fail("La preuve est required at index : ".request()->input('factuel.response_data'));
 
                             // Get the index from the attribute name
                             // Step 1: Use preg_match to extract the index
-                            preg_match('/factuel\.response_data\.(\d+)\.questionId/', $attribute, $matches);
+                            /* preg_match('/factuel\.response_data\.(\d+)\.questionId/', $attribute, $matches);
 
                             // Step 2: Check if the index is found
                             $index = $matches[1] ?? null; // Get the index if it exists
-                            $fail("La preuve est required.".$index);
+                            $fail("La preuve est required at index : ".$index);
+
+                            // Step 3: Retrieve the questionId from the request input based on the index
+                            if ($index !== null) {
+                                $responseData = request()->input('factuel.response_data'); // Get the response_data array
+                                $questionId = $responseData[$index]['questionId'] ?? null; // Retrieve the questionId if it exists
+                            }
+
+                            $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($questionId)->exists();
+                            if (!$question) {
+                                // Fail validation if no response options are available
+                                $fail("Cet Indicateur n'existe pas.");
+                            }
+
+                            $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
+
+                            if(!$reponse || !($reponse->preuves_de_verification()->count())){
+                                $fail("La preuve est required.");
+                            } */
                         }
                         else{
-                            $fail("La formulaire est required.");
+                            $fail("La preuve est required.");
                         }
                     }
                     
