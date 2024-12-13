@@ -37,7 +37,6 @@ class UpdatePasswordRequest extends FormRequest
             'new_password' => [
                 'required',
                 'min:8',
-                'regex:/^.*(?=.{3,})(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\d\x])(?=.*[!$#%]).*$/',
                 'confirmed'
             ]
         ];
