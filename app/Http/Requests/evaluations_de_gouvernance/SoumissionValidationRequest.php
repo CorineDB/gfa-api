@@ -136,8 +136,7 @@ class SoumissionValidationRequest extends FormRequest
 
                             $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($questionId)->first();
                             
-                            $fail("La question introuvable : " . $question);
-                            /*if (!$question) {
+                            if (!$question) {
                                 // Fail validation if no response options are available
                                 $fail("Cet Indicateur n'existe pas.");
                             }
@@ -146,7 +145,7 @@ class SoumissionValidationRequest extends FormRequest
 
                             if(!$reponse || !($reponse->preuves_de_verification()->count())){
                                 $fail("La preuve est required.");
-                            }*/
+                            }
                         }
                         else{
                             $fail("La preuve est required.");
