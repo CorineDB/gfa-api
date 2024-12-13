@@ -73,6 +73,8 @@ class SoumissionController extends Controller
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
+        unset($atttributs['organisationId']);
+
         return $this->soumissionService->create($atttributs);
     }
 
@@ -86,6 +88,7 @@ class SoumissionController extends Controller
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
 
+        unset($atttributs['organisationId']);
         return $this->soumissionService->create($atttributs);
     }
 
