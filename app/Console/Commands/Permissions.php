@@ -1105,7 +1105,9 @@ class Permissions extends Command
                     {
                         $permission = Permission::where('slug', $organisation)->first();
 
-                        $role->permissions()->attach($permission->id);
+                        if($permission){
+
+                        $role->permissions()->attach($permission->id);}
                     }
 
                 }
