@@ -6,6 +6,7 @@ use App\Http\Requests\user\bailleur\StoreBailleurRequest;
 use App\Http\Requests\user\bailleur\UpdateBailleurRequest;
 use App\Http\Requests\user\CreateLogoRequest;
 use App\Http\Requests\user\StoreUserRequest;
+use App\Http\Requests\user\UpdatePasswordRequest;
 use App\Http\Requests\user\UpdateUserRequest;
 use App\Http\Requests\utilisateur\CreatePhotoRequest;
 use App\Http\Requests\utilisateur\ReadNotificationRequest;
@@ -174,5 +175,16 @@ class UserController extends Controller
     public function fichiers()
     {
         return $this->userService->fichiers();
+    }
+
+    /**
+     * Réinitilisation de mot de passe
+     *
+     * @param  App\Http\Requests\auth\ResetPasswordRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updatePassword(UpdatePasswordRequest $request)
+    {
+        return $this->userService->updatePassword($request->all());
     }
 }

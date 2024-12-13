@@ -8,6 +8,7 @@ use App\Http\Resources\user\UserResource;
 use App\Http\Resources\user\TeamMemberResource;
 use App\Jobs\SendEmailJob;
 use App\Models\Ano;
+use App\Models\Password;
 use App\Models\Projet;
 use App\Models\ReponseAno;
 use App\Models\User;
@@ -388,6 +389,88 @@ class UserService extends BaseService implements UserServiceInterface
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Réinitialisation du mot de passe de l'utilisateur
+     *
+     * @param String $token
+     * @param array $attributes
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function updatePassword(array $attributes): JsonResponse
+    {
+
+        DB::beginTransaction();
+
+        try {
+
+            $utilisateur = Auth::user();
+
+            // S'assurer que le nouveau mot de passe est différent du mot de passe actuel
+            if ((Hash::check($attributes['new_password'], $utilisateur->password))) throw new Exception("Le nouveau mot de passe doit être différent de l'actuel mot de passe. Veuillez vérifier", 422);
+
+            if ((Hash::check($attributes['new_password'], $utilisateur->last_password_remember))) throw new Exception("Le mot de passe doit être différent de vos anciens mot de passe. Veuillez changer", 422);
+
+            Password::where("userId", $utilisateur->id)->get()->map(function($item) use ($attributes){
+
+                if( (Hash::check( $attributes['new_password'], $item->password)) )
+                {
+                    throw new Exception("Le mot de passe doit être différent de vos anciens mot de passe. Veuillez changer", 422);
+                }
+
+            });
+
+            Password::create(["password" => $utilisateur->password, "userId" => $utilisateur->id]);
+
+            $utilisateur->last_password_remember = $utilisateur->password;
+
+            // Enrégistrer la donnée
+            $utilisateur->password =  Hash::make($attributes['new_password']);
+
+            $utilisateur->password_update_at = now();
+
+            if($utilisateur->emailVerifiedAt === null){
+                // Enrégistrement de la date et l'heure de vérification du compte
+                $utilisateur->emailVerifiedAt = now();
+
+                $utilisateur->statut = 1;
+
+                $utilisateur->first_connexion = 1;
+            }
+            elseif($utilisateur->statut === 0 )
+            {
+                $utilisateur->statut = 1;
+
+                if($utilisateur->first_connexion === 0) $utilisateur->first_connexion = 1;
+            }
+            else;
+
+            $utilisateur->account_verification_request_sent_at = null;
+
+            $utilisateur->token = null;
+
+            // Sauvegarder les informations
+            $utilisateur->save();
+
+            $utilisateur->tokens()->delete();
+
+            DB::commit();
+
+            $acteur = $utilisateur ? $utilisateur->nom . " ". $utilisateur->prenom : "Inconnu";
+
+            $message = Str::ucfirst($acteur) . " vient de réinitiliser son mot de passe.";
+
+            LogActivity::addToLog("Connexion", $message, get_class($utilisateur), $utilisateur->id);
+
+            return response()->json(['statut' => 'success', 'message' => 'Mot de passe réinitialisé', 'data' => [], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
