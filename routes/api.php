@@ -940,6 +940,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('{evaluation_de_gouvernance}/recommandations', 'recommandations')->name('recommandations')->middleware('permission:voir-une-recommandation');
                     Route::get('{evaluation_de_gouvernance}/actions-a-mener', 'actions_a_mener')->name('actions-a-mener')->middleware('permission:voir-une-action-a-mener');
+
+                    Route::get('{evaluation_de_gouvernance}/feuille-de-route', 'feuille_de_route')->name('feuille-de-route')->middleware('permission:voir-plan-action');
                 });
 
                 Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('evaluation.validate-soumission')->middleware('permission:valider-une-soumission');
