@@ -527,6 +527,32 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
+    public function feuille_de_route($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $feuille_de_route = [];
+
+            if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
+                $feuille_de_route = $evaluationDeGouvernance->load(["recommandations" => function($query){
+                    $query->where("organisationId", auth()->user()->profilable->id)->with(["actions_a_mener" => function($query){
+                        $query->where("organisationId", auth()->user()->profilable->id);
+                    }]);
+                },"actions_a_mener" => function($query){
+                        $query->where("organisationId", auth()->user()->profilable->id)->whereHasNot("actionable");
+                    }]);
+            }
+            else{
+                $feuille_de_route = $evaluationDeGouvernance->actions_a_mener;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $feuille_de_route, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function actions_a_mener($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {

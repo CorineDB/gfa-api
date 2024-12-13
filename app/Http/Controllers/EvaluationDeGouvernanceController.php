@@ -28,6 +28,7 @@ class EvaluationDeGouvernanceController extends Controller
         $this->middleware('permission:voir-une-soumission')->only(['soumissions']);
         $this->middleware('permission:voir-une-recommandation')->only(['recommandations']);
         $this->middleware('permission:voir-une-action-a-mener')->only(['actions_a_mener']);
+        $this->middleware('permission:voir-plan-action')->only(['feuille_de_route']);
         $this->middleware('permission:voir-une-fiche-de-synthese')->only(['fiches_de_synthese']);
         $this->middleware('permission:voir-resultats-evaluation')->only(['resultats_syntheses']);
         $this->middleware('permission:voir-un-formulaires-de-gouvernance')->only(['formulaires_de_gouvernance']);
@@ -113,6 +114,11 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->actions_a_mener($id);
     }
+
+    public function feuille_de_route($id)
+    {
+        return $this->evaluationDeGouvernanceService->feuille_de_route($id);
+    }    
 
     public function fiches_de_synthese($id)
     {
