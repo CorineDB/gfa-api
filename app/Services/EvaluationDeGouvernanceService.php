@@ -540,7 +540,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $query->where("organisationId", auth()->user()->profilable->id);
                     }]);
                 },"actions_a_mener" => function($query){
-                        $query->where("organisationId", auth()->user()->profilable->id)->whereHasNot("actionable");
+                        $query->where("organisationId", auth()->user()->profilable->id)->whereDoesntHave("actionable");
                     }]);
             }
             else{
