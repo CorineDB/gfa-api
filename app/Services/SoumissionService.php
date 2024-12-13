@@ -130,7 +130,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             if ($formulaireDeGouvernance->type == 'factuel') {
 
-                if($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()){
+                if(($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut){
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
 
