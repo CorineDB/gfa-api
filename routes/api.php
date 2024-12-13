@@ -619,6 +619,25 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
             Route::apiResource('roles', 'RoleController')->names('roles');
 
+            Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function () {
+
+                Route::controller('UserController')->group(function () {
+
+                    Route::post('/creation-de-compte-bailleur', 'creationDeCompteBailleur')->name('creationDeCompteBailleur')->middleware('permission:creer-un-bailleur');
+                    Route::put('/mis-à-jour-de-compte-bailleur/{id}', 'miseAJourDeCompteBailleur')->name('miseAJourDeCompteBailleur')->middleware('permission:modifier-un-bailleur');
+                    Route::get('/bailleurs', 'bailleurs')->name('bailleurs')->middleware('permission:voir-un-bailleur');
+                    Route::post('/logo', 'createLogo')->name('createLogo')->middleware('permission:modifier-un-bailleur');
+                    Route::post('/photo', 'createPhoto')->name('createPhoto')->middleware('permission:modifier-un-utilisateur');
+                    Route::get('/getNotifications', 'getNotifications')->name('getNotifications');
+                    Route::put('/readNotifications', 'readNotifications')->name('readNotifications');
+                    Route::get('/deleteNotifications/{id}', 'deleteNotifications')->name('deleteNotifications');
+                    Route::get('/deleteAllNotifications', 'deleteAllNotifications')->name('deleteAllNotifications');
+                    Route::get('/fichiers', 'fichiers')->name('fichiers')->middleware('permission:voir-un-fichier');
+                    Route::put('/{id}', 'update')->name('update');
+                    Route::put('/{id}', 'updatePassword')->name('updatePassword');
+                });
+            });
+
             Route::apiResource('programmes', 'ProgrammeController')->names('programmes')->middleware(['role:administrateur,super-admin']);
             
             Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
