@@ -122,9 +122,9 @@ class SoumissionValidationRequest extends FormRequest
 
 
                             $fail("La preuve est required at index : ".json_encode($attribute));
-                            // Get the index from the attribute name
+                            
                             // Step 1: Use preg_match to extract the index
-                            /*preg_match('/factuel.response_data\.(\d+)\.questionId/', $attribute, $matches);
+                            preg_match('/factuel.response_data\.(\d+)\.preuves/', $attribute, $matches);
                             $fail("La preuve est required at index : ".json_encode($matches));
 
                             // Step 2: Check if the index is found
@@ -132,7 +132,7 @@ class SoumissionValidationRequest extends FormRequest
                             $fail("La preuve est required at index : ".$index);
 
                             // Step 3: Retrieve the questionId from the request input based on the index
-                            if ($index !== null) {
+                            /*if ($index !== null) {
                                 $responseData = request()->input('factuel.response_data'); // Get the response_data array
                                 $questionId = $responseData[$index]['questionId'] ?? null; // Retrieve the questionId if it exists
                             }
