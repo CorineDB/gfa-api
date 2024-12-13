@@ -413,7 +413,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     private function getQuestions($questions, $fiche){
         return collect($questions)->map(function($question) use($fiche) {
 
-            if(isset($question['reponse'])){
+            //if(isset($question['reponse'])){
                 $questionScoreRanges = [
                     '0-0.25' => ['organisations' => []],
                     '0.25-0.50' => ['organisations' => []],
@@ -436,7 +436,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 }
 
                 $point['score_ranges'] = $questionScoreRanges;
-            }
+            //}
 
             return $question;
         })->values();
