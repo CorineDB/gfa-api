@@ -436,7 +436,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             $categoryScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
                         }
 
-                        return $category['score_ranges'] = $categoryScoreRanges;
+                        $category['score_ranges'] = $categoryScoreRanges;
+
+                        return $category;
                     })->values();
 
                     // Construct the final result for this synthese item
