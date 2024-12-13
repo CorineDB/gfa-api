@@ -51,13 +51,13 @@ class PtaService extends BaseService implements PtaServiceInterface
             {
                 $file = Storage::disk('local')->get('pta/pta.json');
 
-                /* if(strlen($file))
+                if(!strlen($file))
                 {
 
                     $pta = json_decode($file);
 
                     return response()->json(['statut' => 'success', 'message' => null, 'data' => $pta, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-                } */
+                }
             }
 
             if(isset($attributs['programmeId'])){
