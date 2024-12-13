@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Str;
+use App\Traits\Helpers\LogActivity;
 use App\Http\Resources\FichierResource;
 use App\Http\Resources\NotificationResource;
 use App\Http\Resources\user\UserResource;
@@ -431,36 +433,14 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->password_update_at = now();
 
-            if($utilisateur->emailVerifiedAt === null){
-                // Enrégistrement de la date et l'heure de vérification du compte
-                $utilisateur->emailVerifiedAt = now();
-
-                $utilisateur->statut = 1;
-
-                $utilisateur->first_connexion = 1;
-            }
-            elseif($utilisateur->statut === 0 )
-            {
-                $utilisateur->statut = 1;
-
-                if($utilisateur->first_connexion === 0) $utilisateur->first_connexion = 1;
-            }
-            else;
-
-            $utilisateur->account_verification_request_sent_at = null;
-
-            $utilisateur->token = null;
-
             // Sauvegarder les informations
             $utilisateur->save();
-
-            $utilisateur->tokens()->delete();
 
             DB::commit();
 
             $acteur = $utilisateur ? $utilisateur->nom . " ". $utilisateur->prenom : "Inconnu";
 
-            $message = Str::ucfirst($acteur) . " vient de réinitiliser son mot de passe.";
+            $message = \Str::ucfirst($acteur) . " vient de réinitiliser son mot de passe.";
 
             LogActivity::addToLog("Connexion", $message, get_class($utilisateur), $utilisateur->id);
 
