@@ -47,18 +47,18 @@ class PtaService extends BaseService implements PtaServiceInterface
     {
         try
         {
-            /* if (file_exists(storage_path('app')."/pta/pta.json"))
+            if (file_exists(storage_path('app')."/pta/pta.json"))
             {
                 $file = Storage::disk('local')->get('pta/pta.json');
 
-                if(strlen($file))
+                /* if(strlen($file))
                 {
 
                     $pta = json_decode($file);
 
                     return response()->json(['statut' => 'success', 'message' => null, 'data' => $pta, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-                }
-            } */
+                } */
+            }
 
             if(isset($attributs['programmeId'])){
                 if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
