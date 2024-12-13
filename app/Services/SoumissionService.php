@@ -106,7 +106,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
-            throw new Exception("Organisation introuvable dans le programme." . $attributs['organisationId'], Response::HTTP_NOT_FOUND);
 
             if (isset($attributs['organisationId'])) {
 
@@ -114,12 +113,18 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
                 
-                if(!($organisation = $evaluationDeGouvernance->organisations(null, $organisation->id)->first())){
+                if(!($organisation = $evaluationDeGouvernance->organisations($organisation->id)->first())){
                     throw new Exception("Cette organisation n'est pas de cette evaluation.", Response::HTTP_NOT_FOUND);
                 }
-            } else if (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
-                $organisation = Auth::user()->profilable;
+            } else if(auth()->check()){ 
+                if (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
+                    $organisation = Auth::user()->profilable;
+                } 
             }
+            else{
+                throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+            }
+
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
@@ -132,9 +137,9 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $soumission  = $this->repository->getInstance()->where('type', 'factuel')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first();
             } else {
 
-                $evaluationOrganisation=$evaluationDeGouvernance->organisations(null, $organisation->id)->first();
+                $evaluationOrganisation = $evaluationDeGouvernance->organisations($organisation->id)->first();
 
-                if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants){
+                if($evaluationDeGouvernance->soumissionsDePerception($organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants){
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
 
