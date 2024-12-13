@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Jobs\GenererPta;
+use App\Models\Organisation;
 use App\Repositories\PtaRepository;
 use App\Repositories\ProgrammeRepository;
 use App\Models\Projet;
@@ -66,7 +67,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                 $programme = Auth::user()->programme;
             }
 
-            if(Auth::user()->hasRole('organisation'))
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))
             {
                 $projets = Projet::where('programmeId', $programme->id)
                                  ->where('projetable_id', Auth::user()->profilable->id)

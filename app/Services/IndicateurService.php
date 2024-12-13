@@ -82,7 +82,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     ->where('bailleurId', Auth::user()->profilable->id)
                     ->get();
                 //});
-            } elseif (Auth::user()->hasRole('organisation')) {
+            } elseif (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
                 $indicateurs = Auth::user()->profilable->indicateurs;
             } else  {
                 $indicateurs = Auth::user()->programme->indicateurs;

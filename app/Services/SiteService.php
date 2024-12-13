@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Resources\SitesResource;
 use App\Models\BailleurSite;
 use App\Models\EntrepriseExecutant;
+use App\Models\Organisation;
 use App\Models\Programme;
 use App\Repositories\SiteRepository;
 use App\Traits\Helpers\LogActivity;
@@ -47,7 +48,7 @@ class SiteService extends BaseService implements SiteServiceInterface
             if(!Auth::user()->hasRole('administrateur')){
                 $sites = $this->repository->all();
             }
-            else if(!Auth::user()->hasRole('organisation')){
+            else if(!Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) != Organisation::class)){
                 $sites = Auth::user()->profilable->projet->sites;
             }
             else{

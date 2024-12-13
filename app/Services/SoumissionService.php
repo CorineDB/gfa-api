@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Http\Resources\gouvernance\FichesDeSyntheseResource;
 use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
+use App\Jobs\AppJob;
+use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\FormulaireDeGouvernanceRepository;
 use App\Repositories\OptionDeReponseRepository;
@@ -23,6 +25,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Interface SoumissionServiceInterface
@@ -103,7 +106,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
-            throw new Exception("Organisation introuvable dans le programme." . $attributs['organisationId'], Response::HTTP_NOT_FOUND);
+            //throw new Exception("Organisation introuvable dans le programme." . $attributs['organisationId'], Response::HTTP_NOT_FOUND);
 
             if (isset($attributs['organisationId'])) {
 
@@ -114,7 +117,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 if(!($organisation = $evaluationDeGouvernance->organisations(null, $organisation->id)->first())){
                     throw new Exception("Cette organisation n'est pas de cette evaluation.", Response::HTTP_NOT_FOUND);
                 }
-            } else if (Auth::user()->hasRole('organisation')) {
+            } else if (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
                 $organisation = Auth::user()->profilable;
             }
 
@@ -245,6 +248,12 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     $soumission->statut       = true;
 
                     $soumission->save();
+
+                    AppJob::dispatch(
+                        // Call the GenerateEvaluationResultats command with the evaluation ID
+                        Artisan::call('generate:report-for-validated-soumissions')
+                    )->delay(now()->addMinutes(3)); // Optionally add additional delay at dispatch time->addMinutes(10)
+
                 }
             }
 

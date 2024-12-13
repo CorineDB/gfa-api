@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Http\Resources\FichesDeSyntheseResource;
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Models\Indicateur;
+use App\Models\Organisation;
 use App\Models\Recommandation;
 use App\Repositories\ActionAMenerRepository;
 use App\Repositories\EvaluationDeGouvernanceRepository;
@@ -52,6 +53,8 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
         {
             if(Auth::user()->hasRole('administrateur')){
                 $actions_a_mener = $this->repository->all();
+            } else if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
+                $actions_a_mener = Auth::user()->profilable->actions_a_mener;
             }
             else{
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
@@ -90,7 +93,9 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'statut' => -1]);
+            $organisation = Auth::user()->profilable;
+
+            $attributs = array_merge($attributs, ['organisationId' => $organisation->id, 'programmeId' => $programme->id, 'statut' => -1]);
 
             $action_a_mener = null;
 
@@ -111,7 +116,6 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     throw new Exception("Cette recommandation n'existe pas", 500);
                 }
                 else{
-
                     $attributs = array_merge($attributs, ['actionable_id' => $attributs['recommandationId'], 'actionable_type' => Recommandation::class]);
                 }
             }
@@ -292,7 +296,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             if(!is_object($action_a_mener) && !($action_a_mener = $this->repository->findById($action_a_mener))) throw new Exception("Ce fond n'existe pas", 500);
 
-            if(!Auth::user()->hasRole('organisation')){
+            if((!Auth::user()->hasRole('organisation')) && ( get_class(auth()->user()->profilable) != Organisation::class)){
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
