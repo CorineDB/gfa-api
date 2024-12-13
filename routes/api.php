@@ -667,9 +667,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
             Route::apiResource('organisations', 'OrganisationController', ['only' => ['index']])->names('organisation')->middleware('permission:voir-une-organisation');
 
-            Route::apiResource('projets', 'ProjetController', ['except' => ['index', 'update']])->names('projets')->middleware(['role:unitee-de-gestion']);
+            Route::apiResource('projets', 'ProjetController', ['except' => ['index','show', 'update']])->names('projets')->middleware(['role:unitee-de-gestion']);
 
-            Route::apiResource('projets', 'ProjetController', ['only' => ['index']])->names('projet')->middleware('permission:voir-un-projet');
+            Route::apiResource('projets', 'ProjetController', ['only' => ['index','show']])->names('projet')->middleware('permission:voir-un-projet');
 
             Route::group(['prefix' =>  'projets', 'as' => 'projets.'], function () {
 
