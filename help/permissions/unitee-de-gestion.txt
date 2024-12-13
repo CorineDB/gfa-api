@@ -87,12 +87,12 @@ voir-un-pap
 voir-une-activite-environnementale
 voir-un-site
 voir-une-checklist
-voir ptab
-voir ppm
-voir le plan de decaissement du ptab
-attribuer une permission
-retirer une permission
-voir le point financier des activites
+voir-ptab
+voir-ppm
+voir-le-plan-de-decaissement-du-ptab
+attribuer-une-permission
+retirer-une-permission
+voir-le point-financier-des-activites
 creer-un-indicateur-mod
 creer-unee-institution
 creer-une-reponse-ano
