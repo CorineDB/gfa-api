@@ -435,7 +435,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
                 }
 
-                $point['score_ranges'] = $questionScoreRanges;
+                $question['score_ranges'] = $questionScoreRanges;
             //}
 
             return $question;
