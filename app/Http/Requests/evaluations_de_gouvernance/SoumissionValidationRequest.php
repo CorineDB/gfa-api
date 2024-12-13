@@ -119,25 +119,25 @@ class SoumissionValidationRequest extends FormRequest
                     if(request()->input('soumissionId') != null){
                         
                         if($this->formulaireCache){
-
-
-                            $fail("La preuve est required at index : ".json_encode($attribute));
                             
                             // Step 1: Use preg_match to extract the index
                             preg_match('/factuel.response_data\.(\d+)\.preuves/', $attribute, $matches);
-                            $fail("La preuve est required at index : ".json_encode($matches));
 
                             // Step 2: Check if the index is found
                             $index = $matches[1] ?? null; // Get the index if it exists
-                            $fail("La preuve est required at index : ".$index);
 
                             // Step 3: Retrieve the questionId from the request input based on the index
-                            /*if ($index !== null) {
-                                $responseData = request()->input('factuel.response_data'); // Get the response_data array
-                                $questionId = $responseData[$index]['questionId'] ?? null; // Retrieve the questionId if it exists
+                            if ($index !== null) {
+                                $questionId = request()->input('factuel.response_data.*.questionId')[$index] ?? null;
+                            }
+                            else{
+                                $fail("La question introuvable.");
                             }
 
-                            $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($questionId)->exists();
+                            $fail("La preuve est required at index : ".$questionId);
+
+
+                            /*$question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($questionId)->exists();
                             if (!$question) {
                                 // Fail validation if no response options are available
                                 $fail("Cet Indicateur n'existe pas.");
