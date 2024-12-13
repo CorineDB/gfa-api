@@ -126,7 +126,13 @@ class SoumissionValidationRequest extends FormRequest
                             // Step 2: Check if the index is found
                             $index = $matches[1] ?? null; // Get the index if it exists
 
-                            $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey(request()->input('factuel.response_data.*.questionId')[$index])->exists();
+                            // Step 3: Retrieve the questionId from the request input based on the index
+                            if ($index !== null) {
+                                $responseData = request()->input('factuel.response_data'); // Get the response_data array
+                                $questionId = $responseData[$index]['questionId'] ?? null; // Retrieve the questionId if it exists
+                            }
+
+                            $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($questionId)->exists();
                             if (!$question) {
                                 // Fail validation if no response options are available
                                 $fail("Cet Indicateur n'existe pas.");
