@@ -930,7 +930,7 @@ class Permissions extends Command
                 }
             }
 
-            else if($role->slug == 'organisation')
+            /* else if($role->slug == 'organisation')
             {
                 $ids = $role->permissions->pluck('id');
                 $role->permissions()->detach($ids);
@@ -944,7 +944,7 @@ class Permissions extends Command
                         $role->permissions()->attach($permission->id);
                     }
                 }
-            }
+            } */
 
             else if($role->slug == 'mod')
             {
