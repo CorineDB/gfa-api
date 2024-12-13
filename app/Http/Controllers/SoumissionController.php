@@ -85,8 +85,6 @@ class SoumissionController extends Controller
     public function validated(SoumissionValidationRequest $request, $evaluationId)
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
-        return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => $atttributs, 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
-
         return $this->soumissionService->create($atttributs);
     }
 
