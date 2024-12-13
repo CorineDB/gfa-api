@@ -57,7 +57,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (Auth::user()->hasRole('administrateur')) {
                 $evaluationsDeGouvernance = $this->repository->all();
-            } else if (Auth::user()->hasRole('organisation')) {
+            } else if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance()->whereHas('organisations', function ($query) {
                     $query->where('organisationId', Auth::user()->profilable->id);
                 })->get();
@@ -205,7 +205,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if (Auth::user()->hasRole('administrateur')) {
                 $group_soumissions = [];
-            } else if (Auth::user()->hasRole('organisation')) {
+            } else if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
 
                 $organisation = Auth::user()->profilable;
 
@@ -303,7 +303,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if (Auth::user()->hasRole('administrateur')) {
                 $fiches_de_synthese = [];
-            } else if (Auth::user()->hasRole('organisation')) {
+            } else if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
 
                 $organisation = Auth::user()->profilable;
 
@@ -413,26 +413,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
                     }
 
-                    // Loop through categories_de_gouvernance to process score_factuel
-                    $categories->map(function($category) use ($fiche,$scoreRanges){
-                        $scoreFactuel = $category['score_factuel'];
-                        $categoryScoreRanges = $scoreRanges;
-                        $organisationId = $fiche->organisationId;
-        
-                        // Categorize based on score_factuel
-                        if ($scoreFactuel >= 0 && $scoreFactuel <= 0.25) {
-                            $categoryScoreRanges['0-0.25']['organisations'][] = $organisationId;
-                        } elseif ($scoreFactuel > 0.25 && $scoreFactuel <= 0.50) {
-                            $categoryScoreRanges['0.25-0.50']['organisations'][] = $organisationId;
-                        } elseif ($scoreFactuel > 0.50 && $scoreFactuel <= 0.75) {
-                            $categoryScoreRanges['0.50-0.75']['organisations'][] = $organisationId;
-                        } elseif ($scoreFactuel > 0.75 && $scoreFactuel <= 1) {
-                            $categoryScoreRanges['0.75-1']['organisations'][] = $organisationId;
-                        }
-
-                        return array_merge((array) $category, ['score_ranges' => $categoryScoreRanges]);
-                    });
-
                     // Construct the final result for this synthese item
                     $finalResults[] = [
                         'id' => $syntheseId,
@@ -478,10 +458,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-
             $actions_a_mener = [];
-            if (!Auth::user()->hasRole('administrateur')) {
-                
+
+            if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
+                $actions_a_mener = $evaluationDeGouvernance->actions_a_mener()->where("organisationId", auth()->user()->profileable->id)->get();
+            }
+            else{
                 $actions_a_mener = $evaluationDeGouvernance->actions_a_mener;
             }
 
@@ -498,7 +480,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             $recommandations = [];
-            if (!Auth::user()->hasRole('administrateur')) {
+
+            if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
+                $recommandations = $evaluationDeGouvernance->recommandations()->where("organisationId", auth()->user()->profileable->id)->get();
+            }
+            else{
                 $recommandations = $evaluationDeGouvernance->recommandations;
             }
 
@@ -533,7 +519,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         try {
 
-            if(!Auth::user()->hasRole('organisation')){
+            if((!Auth::user()->hasRole('organisation') && (get_class(auth()->user()->profilable) != Organisation::class))){
 
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
 
@@ -625,7 +611,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => [
-                'id' => $evaluationDeGouvernance->secure_id,
+                'id'                => $evaluationDeGouvernance->secure_id,
                 'intitule' => $evaluationDeGouvernance->intitule,
                 'description' => $evaluationDeGouvernance->description,
                 'objectif_attendu' => $evaluationDeGouvernance->objectif_attendu,
@@ -712,7 +698,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            if (Auth::user()->hasRole('organisation')) {
+            if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
                 $attributs['organisationId'] = Auth::user()->profilable->id;
             }
             else{
@@ -737,7 +723,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            if (!(Auth::user()->hasRole('organisation'))) {
+            if (!(Auth::user()->hasRole('organisation')) && ( get_class(auth()->user()->profilable) != Organisation::class)) {
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 

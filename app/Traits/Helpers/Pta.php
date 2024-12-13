@@ -5,6 +5,7 @@ namespace App\Traits\Helpers;
 
 use App\Models\Activite;
 use App\Models\Composante;
+use App\Models\Organisation;
 use App\Models\Projet;
 use App\Models\Tache;
 use Exception;
@@ -410,7 +411,7 @@ trait Pta{
         $projets = Projet::where('programmeId', $attributs['programmeId'])
                            ->get();
         
-        if(Auth::user()->hasRole('organisation'))
+        if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))
         {
             $projets = $projets->where('projetable_id', Auth::user()->profilable->id);
             /*$programme = Auth::user()->programme;
@@ -701,7 +702,7 @@ trait Pta{
                                ->get();
         }
 
-        else if(Auth::user()->hasRole('organisation'))
+        else if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))
         {
             $programme = Auth::user()->programme;
             $projets = Projet::where('programmeId', $programme->id)

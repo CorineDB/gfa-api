@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\RecommandationsResource;
+use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\RecommandationRepository;
 use Core\Services\Contracts\BaseService;
@@ -43,9 +44,11 @@ class RecommandationService extends BaseService implements RecommandationService
         {
             if(Auth::user()->hasRole('administrateur')){
                 $recommandations = $this->repository->all();
+            } 
+            else if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
+                $recommandations = Auth::user()->profilable->recommandations;
             }
             else{
-                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $recommandations = Auth::user()->programme->recommandations;
             }
 
@@ -81,7 +84,9 @@ class RecommandationService extends BaseService implements RecommandationService
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            $organisation = Auth::user()->profilable;
+
+            $attributs = array_merge($attributs, ['organisationId' => $organisation->id, 'programmeId' => $programme->id, 'statut' => -1]);
            
             if(isset($attributs['evaluationId'])){
                 if(!($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){

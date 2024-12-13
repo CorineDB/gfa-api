@@ -15,7 +15,7 @@ class Recommandation extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array("recommandation", "recommandationable_id", "recommandationable_type", 'evaluationId', 'programmeId');
+    protected $fillable = array("recommandation", "recommandationable_id", "recommandationable_type", 'organisationId', 'evaluationId', 'programmeId');
 
     protected $casts = [];
 
@@ -42,5 +42,10 @@ class Recommandation extends Model
     public function actions_a_mener()
     {
         return $this->morphMany(ActionAMener::class, "actionable");
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class, 'organisationId');
     }
 }

@@ -18,7 +18,7 @@ class ActionAMener extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array("action", "statut", "est_valider", "validated_at", "start_at", "end_at", "actionable_id", "actionable_type", 'evaluationId', 'programmeId');
+    protected $fillable = array("action", "statut", "est_valider", "validated_at", "start_at", "end_at", "actionable_id", "actionable_type","organisationId", 'evaluationId', 'programmeId');
 
     protected $casts = [
         "start_at" => "datetime",
@@ -71,6 +71,11 @@ class ActionAMener extends Model
     public function evaluation()
     {
         return $this->belongsTo(EvaluationDeGouvernance::class, 'evaluationId');
+    }
+
+    public function organisation()
+    {
+        return $this->belongsTo(Organisation::class, 'organisationId');
     }
 
     /**

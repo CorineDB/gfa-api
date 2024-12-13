@@ -295,4 +295,13 @@ class Organisation extends Model
         return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
     }
 
+    public function actions_a_mener()
+    {
+        return $this->hasMany(ActionAMener::class, 'organisationId');
+    }
+
+    public function recommandations()
+    {
+        return $this->hasMany(Recommandation::class, 'organisationId');
+    }
 }
