@@ -935,11 +935,11 @@ class Permissions extends Command
                 $ids = $role->permissions->pluck('id');
                 $role->permissions()->detach($ids);
 
-                foreach($organisations as $organisation)
+                foreach($organisations as $mission)
                 {
                     //if(!$role->permissions->where('slug', $mission)->first())
                     {
-                        $permission = Permission::where('slug', $organisation)->first();
+                        $permission = Permission::where('slug', $mission)->first();
 
                         $role->permissions()->attach($permission->id);
                     }
