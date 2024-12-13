@@ -935,7 +935,7 @@ class Permissions extends Command
                 $ids = $role->permissions->pluck('id');
                 $role->permissions()->detach($ids);
 
-                foreach($organisations as $mission)
+                foreach($missionDeControles as $mission)
                 {
                     //if(!$role->permissions->where('slug', $mission)->first())
                     {
