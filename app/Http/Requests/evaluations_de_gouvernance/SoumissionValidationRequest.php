@@ -116,39 +116,7 @@ class SoumissionValidationRequest extends FormRequest
             'factuel.response_data.*.preuves'                       => [ Rule::requiredIf(request()->input('soumissionId') == null),
                 function($attribute, $value, $fail) {
 
-                    if(request()->input('soumissionId') != null){
-                        if($this->formulaireCache){
-
-                            // Get the index from the attribute name
-                            // Step 1: Use preg_match to extract the index
-                            preg_match('/factuel\.response_data\.(\d+)\.questionId/', $attribute, $matches);
-
-                            // Step 2: Check if the index is found
-                            $index = $matches[1] ?? null; // Get the index if it exists
-                            $fail("Cet Indicateur n'existe pas.".$index);
-
-                            // Step 3: Retrieve the questionId from the request input based on the index
-                            if ($index !== null) {
-                                $responseData = request()->input('factuel.response_data'); // Get the response_data array
-                                $questionId = $responseData[$index]['questionId'] ?? null; // Retrieve the questionId if it exists
-                            }
-
-                            $question = QuestionDeGouvernance::where("formulaireDeGouvernanceId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($questionId)->exists();
-                            if (!$question) {
-                                // Fail validation if no response options are available
-                                $fail("Cet Indicateur n'existe pas.");
-                            }
-
-                            $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
-
-                            if(!$reponse || !($reponse->preuves_de_verification()->count())){
-                                $fail("La preuve est required.");
-                            }
-                        }
-                        else{
-                            $fail("La preuve est required.");
-                        }
-                    }
+                    $fail("La preuve est required.");
                     
                 }, "array", "min:1"],
             'factuel.response_data.*.preuves.*'                     => ["file", "mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv", /* "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png,audio/mpeg,audio/wav,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska", */ "max:20480"],
