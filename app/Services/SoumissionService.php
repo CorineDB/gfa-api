@@ -149,11 +149,11 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
             if ($soumission == null) {
                 $soumission = $this->repository->create($attributs);
             } else {
-                $soumission->fill($attributs);
-                $soumission->save();
                 if ($soumission->statut) {
                     return response()->json(['statut' => 'success', 'message' => "La soumission a déjà été validée.", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
+                $soumission->fill($attributs);
+                $soumission->save();
             }
 
             $soumission->refresh();
@@ -202,6 +202,9 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         }
                     }
                 }
+
+                throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+
             }
             
             else if (isset($attributs['perception']) && !empty($attributs['perception'])) {
