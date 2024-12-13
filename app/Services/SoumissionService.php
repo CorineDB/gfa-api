@@ -106,7 +106,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
             }
-            throw new Exception("Cette organisation n'est pas de cette evaluation.", Response::HTTP_NOT_FOUND);
 
             if (isset($attributs['organisationId'])) {
 
