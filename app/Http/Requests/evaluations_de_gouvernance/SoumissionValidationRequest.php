@@ -125,6 +125,7 @@ class SoumissionValidationRequest extends FormRequest
 
                             // Step 2: Check if the index is found
                             $index = $matches[1] ?? null; // Get the index if it exists
+                            $fail("Cet Indicateur n'existe pas.".$index);
 
                             // Step 3: Retrieve the questionId from the request input based on the index
                             if ($index !== null) {
