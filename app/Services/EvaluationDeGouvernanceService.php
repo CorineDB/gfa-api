@@ -400,10 +400,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 if(isset($category['categories_de_gouvernance'])){
                     $category['categories_de_gouvernance'] = $this->getCategories($category['categories_de_gouvernance'], $fiche);
                 }
+            }
 
-                if(isset($category['questions_de_gouvernance'])){
-                    $category['questions_de_gouvernance'] = $this->getQuestions($category['questions_de_gouvernance'], $fiche);
-                }
+            if(isset($category['questions_de_gouvernance'])){
+                $category['questions_de_gouvernance'] = $this->getQuestions($category['questions_de_gouvernance'], $fiche);
             }
 
             return $category;
