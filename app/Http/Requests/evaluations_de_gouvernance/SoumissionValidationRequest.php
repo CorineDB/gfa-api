@@ -124,6 +124,8 @@ class SoumissionValidationRequest extends FormRequest
                                 $fail("Cet Indicateur n'existe pas.");
                             }
 
+                            $fail($question);
+
                             $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
                             if(!$reponse || !($reponse->preuves_de_verification()->count())){
