@@ -517,6 +517,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $synthese = $fiche->synthese;
 
                     foreach ($synthese as $syntheseItem) {
+                        dd($syntheseItem);
                         $indiceFactuel = $syntheseItem['indice_de_perception'];
                         //$categories = $syntheseItem['categories_de_gouvernance'];
 
