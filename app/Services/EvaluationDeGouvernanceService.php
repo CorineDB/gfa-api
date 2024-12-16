@@ -569,7 +569,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance();
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $formulaire_factuel_de_gouvernance->load("categories_de_gouvernance"), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $formulaire_factuel_de_gouvernance->load("categories_de_gouvernance.categories_de_gouvernance"), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
 
             $formulaire_factuel_de_gouvernance = $formulaire_factuel_de_gouvernance->categories_de_gouvernance->map(function ($category_de_gouvernance) use ($evaluationDeGouvernance) {
