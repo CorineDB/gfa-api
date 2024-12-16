@@ -452,7 +452,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel;
+           /*  $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel;
             // Initialize the array for transformed result
             $finalResults = [];
 
@@ -488,7 +488,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $categories = $this->getCategories($categories, $fiche);
 
                     // Construct the final result for this synthese item
-                    $finalResults[] = [
+                    $finalResults['factuel'][] = [
                         'id' => $syntheseId,
                         'nom' => $syntheseName,
                         'indice_factuel' => $indiceFactuel,
@@ -496,9 +496,57 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'categories_de_gouvernance' => $categories
                     ];
                 }
-            }
+            } */
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $finalResults, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $formulaire_de_perception_de_gouvernance = $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance;
+
+            $formulaire_de_perception_de_gouvernance = $formulaire_de_perception_de_gouvernance->categories_de_gouvernance->map(function($category_de_gouvernance) use($evaluationDeGouvernance) {
+
+                $fiches = $evaluationDeGouvernance->fiches_de_synthese_de_perception;
+
+                // Initialize score ranges
+                $scoreRanges = [
+                    '0-0.25' => ['organisations' => []],
+                    '0.25-0.50' => ['organisations' => []],
+                    '0.50-0.75' => ['organisations' => []],
+                    '0.75-1' => ['organisations' => []],
+                ];
+
+                // Loop through each record
+                foreach ($fiches as $fiche) {
+                    $synthese = $fiche->synthese;
+
+                    foreach ($synthese as $syntheseItem) {
+                        $indiceFactuel = $syntheseItem['indice_de_perception'];
+                        $categories = $syntheseItem['categories_de_gouvernance'];
+
+                        // Logic for organizing into score ranges (adjust based on actual criteria)
+                        if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
+                            $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel]; // Assuming you have this info in the fiche
+                        } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
+                            $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                        } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
+                            $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                        } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
+                            $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                        }
+
+                        /* $categories = $this->getCategories($categories, $fiche);
+
+                        // Construct the final result for this synthese item
+                        $finalResults['perception'][] = [
+                            'indice_de_perception' => $indiceFactuel,
+                            'score_ranges' => $scoreRanges,
+                            'categories_de_gouvernance' => $categories
+                        ]; */
+                    }
+                }
+
+                $category_de_gouvernance->score_ranges = $scoreRanges;
+            });
+            
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ["perception" => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 

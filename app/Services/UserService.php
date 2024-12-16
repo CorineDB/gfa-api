@@ -440,7 +440,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             $acteur = $utilisateur ? $utilisateur->nom . " ". $utilisateur->prenom : "Inconnu";
 
-            $message = \Str::ucfirst($acteur) . " vient de réinitiliser son mot de passe.";
+            $message = Str::ucfirst($acteur) . " vient de réinitiliser son mot de passe.";
 
             LogActivity::addToLog("Connexion", $message, get_class($utilisateur), $utilisateur->id);
 
