@@ -518,7 +518,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     foreach ($synthese as $syntheseItem) {
                         $indiceFactuel = $syntheseItem['indice_de_perception'];
-                        $categories = $syntheseItem['categories_de_gouvernance'];
+                        //$categories = $syntheseItem['categories_de_gouvernance'];
 
                         // Logic for organizing into score ranges (adjust based on actual criteria)
                         if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
