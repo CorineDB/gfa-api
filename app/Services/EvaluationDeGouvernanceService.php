@@ -377,6 +377,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             foreach ($syntheseCategories as $key => $syntheseCategorie) {
 
+                dd($syntheseCategorie['id'] == $category->secure_id);
+
                 if ($syntheseCategorie['id'] == $category->secure_id) {
 
                     if (isset($syntheseCategorie['score_factuel'])) {
