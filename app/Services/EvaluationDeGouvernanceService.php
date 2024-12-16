@@ -375,22 +375,22 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         return collect($categories)->map(function ($category) use ($fiche, $syntheseCategories) {
 
+            if (!isset($category['score_ranges'])) {
+                $categoryScoreRanges = [
+                    '0-0.25' => ['organisations' => []],
+                    '0.25-0.50' => ['organisations' => []],
+                    '0.50-0.75' => ['organisations' => []],
+                    '0.75-1' => ['organisations' => []],
+                ];
+            } else {
+                $categoryScoreRanges = $category['score_ranges'];
+            }
+
             foreach ($syntheseCategories as $key => $syntheseCategorie) {
 
                 if ($syntheseCategorie['id'] == $category->secure_id) {
 
                     if (isset($syntheseCategorie['score_factuel'])) {
-
-                        if (!isset($category['score_ranges'])) {
-                            $categoryScoreRanges = [
-                                '0-0.25' => ['organisations' => []],
-                                '0.25-0.50' => ['organisations' => []],
-                                '0.50-0.75' => ['organisations' => []],
-                                '0.75-1' => ['organisations' => []],
-                            ];
-                        } else {
-                            $categoryScoreRanges = $category['score_ranges'];
-                        }
 
                         $scoreFactuel = $syntheseCategorie['score_factuel'];
                         $organisationId =  $fiche->organisationId;
@@ -406,18 +406,18 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             $categoryScoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $scoreFactuel];
                         }
 
-                        $category['score_ranges'] = $categoryScoreRanges;
-
-                            if ($category->categories_de_gouvernance->count() && isset($syntheseCategorie['categories_de_gouvernance'])) {
+                            /* if ($category->categories_de_gouvernance->count() && isset($syntheseCategorie['categories_de_gouvernance'])) {
                                 $category->categories_de_gouvernance = $this->getCategories($category->categories_de_gouvernance, $fiche, $syntheseCategorie['categories_de_gouvernance']);
-                            }
+                            } */
                     }
 
-                    if (isset($syntheseCategorie['questions_de_gouvernance'])) {
+                    /* if (isset($syntheseCategorie['questions_de_gouvernance'])) {
                         $category['questions_de_gouvernance'] = $this->getQuestions($category->questions_de_gouvernance, $fiche, $syntheseCategorie['questions_de_gouvernance']);
-                    }
+                    } */
                 }
             }
+
+            $category['score_ranges'] = $categoryScoreRanges;
 
             return new CategoriesDeGouvernanceResource($category);
         })->values();
@@ -427,7 +427,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         return collect($questions)->map(function ($question) use ($fiche, $questionsOperationnelle) {
 
-            /* foreach ($questionsOperationnelle as $questionOperationnelle) {
+            foreach ($questionsOperationnelle as $questionOperationnelle) {
 
                 if ($questionOperationnelle['id'] == $question->secure_id) {
 
@@ -461,7 +461,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $question['score_ranges'] = $questionScoreRanges;
                     //}
                 }
-            } */
+            }
             return $question;
         })->values();
     }
