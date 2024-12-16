@@ -451,8 +451,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             foreach ($syntheseItem['questions_de_gouvernance'] as $questionOperationnelle) {
 
-                dd([$question, $questionOperationnelle]);
-
                 if ($questionOperationnelle['id'] == $question->secure_id) {
 
                     if (!isset($question['score_ranges'])) {
