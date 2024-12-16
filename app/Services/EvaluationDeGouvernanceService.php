@@ -517,7 +517,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $synthese = $fiche->synthese;
 
                     foreach ($synthese as $syntheseItem) {
-                        dd($syntheseItem);
                         $indiceFactuel = $syntheseItem['indice_de_perception'];
                         //$categories = $syntheseItem['categories_de_gouvernance'];
 
@@ -531,6 +530,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
                             $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
                         }
+                        dd($syntheseItem);
 
                         /* $categories = $this->getCategories($categories, $fiche);
 
