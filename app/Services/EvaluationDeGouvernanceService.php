@@ -444,11 +444,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     //if(isset($question['reponse'])){
 
-                    /* $point = $question['reponse']['point'];
+                    $point = $question['reponse']['point'];
                     $organisationId =  $fiche->organisationId;
 
                     // Logic for organizing into score ranges (adjust based on actual criteria)
-                    if ($point >= 0 && $point <= 0.25) {
+                    /* if ($point >= 0 && $point <= 0.25) {
                         $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $point]; // Assuming you have this info in the fiche
                     } elseif ($point > 0.25 && $point <= 0.50) {
                         $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $point];
