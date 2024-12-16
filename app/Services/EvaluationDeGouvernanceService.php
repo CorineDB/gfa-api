@@ -551,7 +551,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             });
             
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ["perception" => new FormulairesDeGouvernanceResource($formulaire_de_perception_de_gouvernance)], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ["perception" => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
