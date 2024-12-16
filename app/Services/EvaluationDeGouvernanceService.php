@@ -604,7 +604,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $category_de_gouvernance->score_ranges = $scoreRanges;
 
-                return new CategoriesDeGouvernanceResource($category_de_gouvernance);
+                return $category_de_gouvernance;
             });
 
             $formulaire_de_perception_de_gouvernance = $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance();
