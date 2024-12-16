@@ -518,7 +518,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     foreach ($synthese as $syntheseItem) {
                         dump($syntheseItem);
-                        if($syntheseItem['id'] == $category_de_gouvernance->id){
+                        if($syntheseItem['id'] == $category_de_gouvernance->secure_id){
                             $indiceFactuel = $syntheseItem['indice_de_perception'];
                             //$categories = $syntheseItem['categories_de_gouvernance'];
 
