@@ -490,13 +490,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     // Logic for organizing into score ranges (adjust based on actual criteria)
                     if ($moyenne_ponderee >= 0 && $moyenne_ponderee <= 0.25) {
-                        $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee]; // Assuming you have this info in the fiche
+                        $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'moyenne_ponderee' => $moyenne_ponderee]; // Assuming you have this info in the fiche
                     } elseif ($moyenne_ponderee > 0.25 && $moyenne_ponderee <= 0.50) {
-                        $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
+                        $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'moyenne_ponderee' => $moyenne_ponderee];
                     } elseif ($moyenne_ponderee > 0.50 && $moyenne_ponderee <= 0.75) {
-                        $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
+                        $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'moyenne_ponderee' => $moyenne_ponderee];
                     } elseif ($moyenne_ponderee > 0.75 && $moyenne_ponderee <= 1) {
-                        $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
+                        $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'moyenne_ponderee' => $moyenne_ponderee];
                     }
 
                     $question->score_ranges = $questionScoreRanges;
@@ -633,13 +633,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                             // Logic for organizing into score ranges (adjust based on actual criteria)
                             if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
-                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel]; // Assuming you have this info in the fiche
+                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'indice_de_perception' => $indiceFactuel]; // Assuming you have this info in the fiche
                             } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
-                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'indice_de_perception' => $indiceFactuel];
                             } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
-                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'indice_de_perception' => $indiceFactuel];
                             } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
-                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'indice_de_perception' => $indiceFactuel];
                             }
 
                             if (isset($syntheseItem['questions_de_gouvernance'])) {
