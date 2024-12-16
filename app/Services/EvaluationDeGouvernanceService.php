@@ -406,9 +406,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             $categoryScoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $scoreFactuel];
                         }
 
-                            /* if ($category->categories_de_gouvernance->count() && isset($syntheseCategorie['categories_de_gouvernance'])) {
-                                $category->categories_de_gouvernance = $this->getCategories($category->categories_de_gouvernance, $fiche, $syntheseCategorie['categories_de_gouvernance']);
-                            } */
+                        if ($category->categories_de_gouvernance->count() && isset($syntheseCategorie['categories_de_gouvernance'])) {
+                                $category['categories_de_gouvernance'] = $this->getCategories($category->categories_de_gouvernance, $fiche, $syntheseCategorie['categories_de_gouvernance']);
+                        }
                     }
 
                     /* if (isset($syntheseCategorie['questions_de_gouvernance'])) {
