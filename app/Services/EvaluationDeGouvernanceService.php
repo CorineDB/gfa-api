@@ -517,28 +517,30 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $synthese = $fiche->synthese;
 
                     foreach ($synthese as $syntheseItem) {
-                        $indiceFactuel = $syntheseItem['indice_de_perception'];
-                        //$categories = $syntheseItem['categories_de_gouvernance'];
+                        if($syntheseItem['id'] == $category_de_gouvernance->id){
+                            $indiceFactuel = $syntheseItem['indice_de_perception'];
+                            //$categories = $syntheseItem['categories_de_gouvernance'];
 
-                        // Logic for organizing into score ranges (adjust based on actual criteria)
-                        if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
-                            $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel]; // Assuming you have this info in the fiche
-                        } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
-                            $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
-                        } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
-                            $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
-                        } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
-                            $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                            // Logic for organizing into score ranges (adjust based on actual criteria)
+                            if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
+                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel]; // Assuming you have this info in the fiche
+                            } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
+                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                            } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
+                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                            } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
+                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                            }
+
+                            /* $categories = $this->getCategories($categories, $fiche);
+
+                            // Construct the final result for this synthese item
+                            $finalResults['perception'][] = [
+                                'indice_de_perception' => $indiceFactuel,
+                                'score_ranges' => $scoreRanges,
+                                'categories_de_gouvernance' => $categories
+                            ]; */
                         }
-
-                        /* $categories = $this->getCategories($categories, $fiche);
-
-                        // Construct the final result for this synthese item
-                        $finalResults['perception'][] = [
-                            'indice_de_perception' => $indiceFactuel,
-                            'score_ranges' => $scoreRanges,
-                            'categories_de_gouvernance' => $categories
-                        ]; */
                     }
                 }
 
