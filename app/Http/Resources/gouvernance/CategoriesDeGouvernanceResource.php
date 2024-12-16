@@ -43,15 +43,15 @@ class CategoriesDeGouvernanceResource extends JsonResource
             'categorieDeGouvernanceId' => optional($this->categorieDeGouvernanceParent)->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
-            'categories_de_gouvernance' => $this->when($this->sousCategoriesDeGouvernance->count(), $this->sousCategoriesDeGouvernance->map(function($sousCategorieDeGouvernance){
+            'categories_de_gouvernance' => $this->when($this->categories_de_gouvernance->count(), $this->categories_de_gouvernance->map(function($sousCategorieDeGouvernance){
                 return new CategoriesDeGouvernanceResource($sousCategorieDeGouvernance, $this->can_load_response, $this->soumissionId);
             })),
-            //'categories_de_gouvernance' => $this->when($this->sousCategoriesDeGouvernance->count(), CategoriesDeGouvernanceResource::collection($this->sousCategoriesDeGouvernance)),
+            //'categories_de_gouvernance' => $this->when($this->categories_de_gouvernance->count(), CategoriesDeGouvernanceResource::collection($this->categories_de_gouvernance)),
 
-            'questions_de_gouvernance' => $this->when(!$this->sousCategoriesDeGouvernance->count(), $this->questions_de_gouvernance->map(function($questionDeGouvernance){
+            'questions_de_gouvernance' => $this->when(!$this->categories_de_gouvernance->count(), $this->questions_de_gouvernance->map(function($questionDeGouvernance){
                 return new QuestionsDeGouvernanceResource($questionDeGouvernance, $this->can_load_response, $this->soumissionId);
             })),
-            //'questions_de_gouvernance' => $this->when(!$this->sousCategoriesDeGouvernance->count(), QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance))
+            //'questions_de_gouvernance' => $this->when(!$this->categories_de_gouvernance->count(), QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance))
 
             //'questions_de_gouvernance' => QuestionsDeGouvernanceResource::collection($this->questions_de_gouvernance)
         ];
