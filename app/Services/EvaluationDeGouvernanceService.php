@@ -545,6 +545,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     }
                 }
 
+                dd($scoreRanges);
                 $category_de_gouvernance->score_ranges = $scoreRanges;
             });
             
