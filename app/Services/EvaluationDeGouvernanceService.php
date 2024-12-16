@@ -448,7 +448,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $organisationId =  $fiche->organisationId;
 
                     // Logic for organizing into score ranges (adjust based on actual criteria)
-                    /* if ($point >= 0 && $point <= 0.25) {
+                    if ($point >= 0 && $point <= 0.25) {
                         $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $point]; // Assuming you have this info in the fiche
                     } elseif ($point > 0.25 && $point <= 0.50) {
                         $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $point];
@@ -456,7 +456,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $point];
                     } elseif ($point > 0.75 && $point <= 1) {
                         $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'score_factuel' => $point];
-                    } */
+                    }
                     //}
                 }
             }
