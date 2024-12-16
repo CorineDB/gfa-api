@@ -408,12 +408,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                         $category['score_ranges'] = $categoryScoreRanges;
 
-                        if ($category->categories_de_gouvernance && isset($syntheseCategorie['categories_de_gouvernance'])) {
+                        if ($category->categories_de_gouvernance->count() && isset($syntheseCategorie['categories_de_gouvernance'])) {
                             $category->categories_de_gouvernance = $this->getCategories($category->categories_de_gouvernance, $fiche, $syntheseCategorie['categories_de_gouvernance']);
                         }
                     }
 
-                    if ($category->questions_de_gouvernance && isset($syntheseCategorie['questions_de_gouvernance'])) {
+                    if ($category->questions_de_gouvernance->count() && isset($syntheseCategorie['questions_de_gouvernance'])) {
                         $category->questions_de_gouvernance = $this->getQuestions($category->questions_de_gouvernance, $fiche, $syntheseCategorie['questions_de_gouvernance']);
                     }
                 }
