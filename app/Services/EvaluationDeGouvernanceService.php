@@ -377,8 +377,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             foreach ($syntheseCategories as $key => $syntheseCategorie) {
 
-                dump($syntheseCategorie['id'] == $category->secure_id);
-
                 if ($syntheseCategorie['id'] == $category->secure_id) {
 
                     if (isset($syntheseCategorie['score_factuel'])) {
@@ -415,8 +413,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             }
                     }
 
-                    if ($category->questions_de_gouvernance->count() && isset($syntheseCategorie['questions_de_gouvernance'])) {
-                        //$category->questions_de_gouvernance = $this->getQuestions($category->questions_de_gouvernance, $fiche, $syntheseCategorie['questions_de_gouvernance']);
+                    if (isset($syntheseCategorie['questions_de_gouvernance'])) {
+                        $category['questions_de_gouvernance'] = $this->getQuestions($category->questions_de_gouvernance, $fiche, $syntheseCategorie['questions_de_gouvernance']);
                     }
                 }
             }
