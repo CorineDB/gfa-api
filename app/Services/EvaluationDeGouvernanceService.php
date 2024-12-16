@@ -445,39 +445,44 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         })->values();
     }
 
-    private function getQuestionsOperationnelle($questions, $fiche)
+    private function getQuestionsOperationnelle($questions, $fiche, $syntheseItem)
     {
-        return collect($questions)->map(function ($question) use ($fiche) {
+        return collect($questions)->map(function ($question) use ($fiche, $syntheseItem) {
 
-            dd($question);
+            foreach ($syntheseItem['questions_operationnelle'] as $questionOperationnelle) {
 
-            if (!isset($question['score_ranges'])) {
-                $questionScoreRanges = [
-                    '0-0.25' => ['organisations' => []],
-                    '0.25-0.50' => ['organisations' => []],
-                    '0.50-0.75' => ['organisations' => []],
-                    '0.75-1' => ['organisations' => []],
-                ];
-            } else {
-                $questionScoreRanges = $question->score_ranges;
+                dd([$question, $questionOperationnelle]);
+
+                if ($questionOperationnelle['id'] == $question->secure_id) {
+
+                    if (!isset($question['score_ranges'])) {
+                        $questionScoreRanges = [
+                            '0-0.25' => ['organisations' => []],
+                            '0.25-0.50' => ['organisations' => []],
+                            '0.50-0.75' => ['organisations' => []],
+                            '0.75-1' => ['organisations' => []],
+                        ];
+                    } else {
+                        $questionScoreRanges = $question->score_ranges;
+                    }
+
+                    $moyenne_ponderee = $questionOperationnelle['moyenne_ponderee'];
+                    $organisationId =  $fiche->organisationId;
+
+                    // Logic for organizing into score ranges (adjust based on actual criteria)
+                    if ($moyenne_ponderee >= 0 && $moyenne_ponderee <= 0.25) {
+                        $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee]; // Assuming you have this info in the fiche
+                    } elseif ($moyenne_ponderee > 0.25 && $moyenne_ponderee <= 0.50) {
+                        $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
+                    } elseif ($moyenne_ponderee > 0.50 && $moyenne_ponderee <= 0.75) {
+                        $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
+                    } elseif ($moyenne_ponderee > 0.75 && $moyenne_ponderee <= 1) {
+                        $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
+                    }
+
+                    $question->score_ranges = $questionScoreRanges;
+                }
             }
-            
-            $moyenne_ponderee = $question['moyenne_ponderee'];
-            $organisationId =  $fiche->organisationId;
-
-            // Logic for organizing into score ranges (adjust based on actual criteria)
-            if ($moyenne_ponderee >= 0 && $moyenne_ponderee <= 0.25) {
-                $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee]; // Assuming you have this info in the fiche
-            } elseif ($moyenne_ponderee > 0.25 && $moyenne_ponderee <= 0.50) {
-                $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
-            } elseif ($moyenne_ponderee > 0.50 && $moyenne_ponderee <= 0.75) {
-                $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
-            } elseif ($moyenne_ponderee > 0.75 && $moyenne_ponderee <= 1) {
-                $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'moyenne_ponderee' => $moyenne_ponderee];
-            }
-
-            $question->score_ranges = $questionScoreRanges;
-
             return $question;
         })->values();
     }
@@ -574,7 +579,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             }
 
                             if (isset($syntheseItem['questions_de_gouvernance'])) {
-                                $category_de_gouvernance->questions_de_gouvernance = $this->getQuestionsOperationnelle($category_de_gouvernance->questions_de_gouvernance, $fiche);
+                                $category_de_gouvernance->questions_de_gouvernance = $this->getQuestionsOperationnelle($category_de_gouvernance->questions_de_gouvernance, $fiche, $syntheseItem);
                             }
 
                             /*
