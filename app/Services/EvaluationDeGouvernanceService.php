@@ -449,7 +449,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         return collect($questions)->map(function ($question) use ($fiche, $syntheseItem) {
 
-            foreach ($syntheseItem['questions_operationnelle'] as $questionOperationnelle) {
+            foreach ($syntheseItem['questions_de_gouvernance'] as $questionOperationnelle) {
 
                 dd([$question, $questionOperationnelle]);
 
