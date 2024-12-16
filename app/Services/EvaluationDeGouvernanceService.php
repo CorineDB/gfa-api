@@ -444,7 +444,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     //if(isset($question['reponse'])){
 
-                    $point = $question['reponse']['point'];
+                    $point = $questionOperationnelle['reponse']['point'];
                     $organisationId =  $fiche->organisationId;
 
                     // Logic for organizing into score ranges (adjust based on actual criteria)
