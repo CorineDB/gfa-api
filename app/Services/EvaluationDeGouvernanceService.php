@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
+use App\Http\Resources\gouvernance\CategoriesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
@@ -547,7 +548,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $category_de_gouvernance->score_ranges = $scoreRanges;
 
-                return $category_de_gouvernance;
+                return new CategoriesDeGouvernanceResource($category_de_gouvernance);
             });
             
 
