@@ -371,76 +371,97 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
-    private function getCategories($categories, $fiche)
+    private function getCategories($categories, $fiche, $syntheseCategories)
     {
-        return collect($categories)->map(function ($category) use ($fiche) {
+        return collect($categories)->map(function ($category) use ($fiche, $syntheseCategories) {
 
-            if (isset($category['score_factuel'])) {
-                $categoryScoreRanges = [
-                    '0-0.25' => ['organisations' => []],
-                    '0.25-0.50' => ['organisations' => []],
-                    '0.50-0.75' => ['organisations' => []],
-                    '0.75-1' => ['organisations' => []],
-                ];
+            foreach ($syntheseCategories as $key => $syntheseCategorie) {
 
-                $scoreFactuel = $category['score_factuel'];
-                $organisationId =  $fiche->organisationId;
+                if ($syntheseCategorie['id'] == $category->secure_id) {
 
-                // Logic for organizing into score ranges (adjust based on actual criteria)
-                if ($scoreFactuel >= 0 && $scoreFactuel <= 0.25) {
-                    $categoryScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel]; // Assuming you have this info in the fiche
-                } elseif ($scoreFactuel > 0.25 && $scoreFactuel <= 0.50) {
-                    $categoryScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
-                } elseif ($scoreFactuel > 0.50 && $scoreFactuel <= 0.75) {
-                    $categoryScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
-                } elseif ($scoreFactuel > 0.75 && $scoreFactuel <= 1) {
-                    $categoryScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
+                    if (isset($syntheseCategorie['score_factuel'])) {
+
+                        if (!isset($category['score_ranges'])) {
+                            $categoryScoreRanges = [
+                                '0-0.25' => ['organisations' => []],
+                                '0.25-0.50' => ['organisations' => []],
+                                '0.50-0.75' => ['organisations' => []],
+                                '0.75-1' => ['organisations' => []],
+                            ];
+                        } else {
+                            $categoryScoreRanges = $category['score_ranges'];
+                        }
+
+                        $scoreFactuel = $syntheseCategorie['score_factuel'];
+                        $organisationId =  $fiche->organisationId;
+
+                        // Logic for organizing into score ranges (adjust based on actual criteria)
+                        if ($scoreFactuel >= 0 && $scoreFactuel <= 0.25) {
+                            $categoryScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel]; // Assuming you have this info in the fiche
+                        } elseif ($scoreFactuel > 0.25 && $scoreFactuel <= 0.50) {
+                            $categoryScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
+                        } elseif ($scoreFactuel > 0.50 && $scoreFactuel <= 0.75) {
+                            $categoryScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
+                        } elseif ($scoreFactuel > 0.75 && $scoreFactuel <= 1) {
+                            $categoryScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $scoreFactuel];
+                        }
+
+                        $category['score_ranges'] = $categoryScoreRanges;
+
+                        if ($category->categories_de_gouvernance && isset($syntheseCategorie['categories_de_gouvernance'])) {
+                            $category->categories_de_gouvernance = $this->getCategories($category->categories_de_gouvernance, $fiche, $syntheseCategorie['categories_de_gouvernance']);
+                        }
+                    }
+
+                    if ($category->questions_de_gouvernance && isset($syntheseCategorie['questions_de_gouvernance'])) {
+                        $category->questions_de_gouvernance = $this->getQuestions($category->questions_de_gouvernance, $fiche, $syntheseCategorie['questions_de_gouvernance']);
+                    }
                 }
-
-                $category['score_ranges'] = $categoryScoreRanges;
-
-                if (isset($category['categories_de_gouvernance'])) {
-                    $category['categories_de_gouvernance'] = $this->getCategories($category['categories_de_gouvernance'], $fiche);
-                }
-            }
-
-            if (isset($category['questions_de_gouvernance'])) {
-                $category['questions_de_gouvernance'] = $this->getQuestions($category['questions_de_gouvernance'], $fiche);
             }
 
             return $category;
         })->values();
     }
 
-    private function getQuestions($questions, $fiche)
+    private function getQuestions($questions, $fiche, $questionsOperationnelle)
     {
-        return collect($questions)->map(function ($question) use ($fiche) {
+        return collect($questions)->map(function ($question) use ($fiche, $questionsOperationnelle) {
 
-            //if(isset($question['reponse'])){
-            $questionScoreRanges = [
-                '0-0.25' => ['organisations' => []],
-                '0.25-0.50' => ['organisations' => []],
-                '0.50-0.75' => ['organisations' => []],
-                '0.75-1' => ['organisations' => []],
-            ];
+            foreach ($questionsOperationnelle as $questionOperationnelle) {
 
-            $point = $question['reponse']['point'];
-            $organisationId =  $fiche->organisationId;
+                if ($questionOperationnelle['id'] == $question->secure_id) {
 
-            // Logic for organizing into score ranges (adjust based on actual criteria)
-            if ($point >= 0 && $point <= 0.25) {
-                $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point]; // Assuming you have this info in the fiche
-            } elseif ($point > 0.25 && $point <= 0.50) {
-                $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
-            } elseif ($point > 0.50 && $point <= 0.75) {
-                $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
-            } elseif ($point > 0.75 && $point <= 1) {
-                $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
+                    if (!isset($question['score_ranges'])) {
+                        $questionScoreRanges = [
+                            '0-0.25' => ['organisations' => []],
+                            '0.25-0.50' => ['organisations' => []],
+                            '0.50-0.75' => ['organisations' => []],
+                            '0.75-1' => ['organisations' => []],
+                        ];
+                    } else {
+                        $questionScoreRanges = $question['score_ranges'];
+                    }
+
+                    //if(isset($question['reponse'])){
+
+                    $point = $question['reponse']['point'];
+                    $organisationId =  $fiche->organisationId;
+
+                    // Logic for organizing into score ranges (adjust based on actual criteria)
+                    if ($point >= 0 && $point <= 0.25) {
+                        $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point]; // Assuming you have this info in the fiche
+                    } elseif ($point > 0.25 && $point <= 0.50) {
+                        $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
+                    } elseif ($point > 0.50 && $point <= 0.75) {
+                        $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
+                    } elseif ($point > 0.75 && $point <= 1) {
+                        $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
+                    }
+
+                    $question['score_ranges'] = $questionScoreRanges;
+                    //}
+                }
             }
-
-            $question['score_ranges'] = $questionScoreRanges;
-            //}
-
             return $question;
         })->values();
     }
@@ -541,9 +562,54 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 }
             } */
 
+            $formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance();
+
+            $formulaire_factuel_de_gouvernance = $formulaire_factuel_de_gouvernance->categories_de_gouvernance->map(function ($category_de_gouvernance) use ($evaluationDeGouvernance) {
+
+                $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel;
+
+                // Initialize score ranges
+                $scoreRanges = [
+                    '0-0.25' => ['organisations' => []],
+                    '0.25-0.50' => ['organisations' => []],
+                    '0.50-0.75' => ['organisations' => []],
+                    '0.75-1' => ['organisations' => []],
+                ];
+
+                // Loop through each record
+                foreach ($fiches as $fiche) {
+                    $synthese = $fiche->synthese;
+
+                    foreach ($synthese as $syntheseItem) {
+
+                        if ($syntheseItem['id'] == $category_de_gouvernance->secure_id) {
+                            $indiceFactuel = $syntheseItem['indice_factuel'];
+                            $categories = $syntheseItem['categories_de_gouvernance'];
+
+                            // Logic for organizing into score ranges (adjust based on actual criteria)
+                            if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
+                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel]; // Assuming you have this info in the fiche
+                            } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
+                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
+                            } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
+                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
+                            } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
+                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
+                            }
+
+                            $category_de_gouvernance->categories_de_gouvernance = $this->getCategories($categories->categories_de_gouvernance, $fiche, $syntheseItem['categories_de_gouvernance']);
+                        }
+                    }
+                }
+
+                $category_de_gouvernance->score_ranges = $scoreRanges;
+
+                return new CategoriesDeGouvernanceResource($category_de_gouvernance);
+            });
+
             $formulaire_de_perception_de_gouvernance = $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance();
 
-            $formulaire_de_perception_de_gouvernance/* ->categories_de_gouvernance */ = $formulaire_de_perception_de_gouvernance->categories_de_gouvernance->map(function ($category_de_gouvernance) use ($evaluationDeGouvernance) {
+            $formulaire_de_perception_de_gouvernance = $formulaire_de_perception_de_gouvernance->categories_de_gouvernance->map(function ($category_de_gouvernance) use ($evaluationDeGouvernance) {
 
                 $fiches = $evaluationDeGouvernance->fiches_de_synthese_de_perception;
 
@@ -579,17 +645,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             if (isset($syntheseItem['questions_de_gouvernance'])) {
                                 $category_de_gouvernance->questions_de_gouvernance = $this->getQuestionsOperationnelle($category_de_gouvernance->questions_de_gouvernance, $fiche, $syntheseItem);
                             }
-
-                            /*
-                                $categories = $this->getCategories($categories, $fiche);
-
-                                // Construct the final result for this synthese item
-                                $finalResults['perception'][] = [
-                                    'indice_de_perception' => $indiceFactuel,
-                                    'score_ranges' => $scoreRanges,
-                                    'categories_de_gouvernance' => $categories
-                                ]; 
-                            */
                         }
                     }
                 }
@@ -600,7 +655,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             });
 
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ["perception" => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ["factuel" => $formulaire_factuel_de_gouvernance, "perception" => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
