@@ -425,6 +425,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     private function getQuestions($questions, $fiche, $questionsOperationnelle)
     {
+        dd($questions);
         return collect($questions)->map(function ($question) use ($fiche, $questionsOperationnelle) {
 
             if (!isset($question['score_ranges'])) {
