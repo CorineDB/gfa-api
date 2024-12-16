@@ -28,6 +28,11 @@ class CategorieDeGouvernance extends Model
         parent::boot();
     }
 
+    public function categoriesDeGouvernance()
+    {
+        return $this->hasMany(CategorieDeGouvernance::class, 'categorieDeGouvernanceId');
+    }
+
     public function sousCategoriesDeGouvernance()
     {
         return $this->hasMany(CategorieDeGouvernance::class, 'categorieDeGouvernanceId');
