@@ -601,7 +601,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
                             }
 
-                            dd($category_de_gouvernance->categories_de_gouvernance);
+                            dd($category_de_gouvernance->load('categories_de_gouvernance'));
 
                             $category_de_gouvernance->categories_de_gouvernance = $this->getCategories($category_de_gouvernance->categories_de_gouvernance, $fiche, $syntheseItem['categories_de_gouvernance']);
                         }
