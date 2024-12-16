@@ -517,7 +517,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $synthese = $fiche->synthese;
 
                     foreach ($synthese as $syntheseItem) {
-                        dump($syntheseItem);
+                        
                         if($syntheseItem['id'] == $category_de_gouvernance->secure_id){
                             $indiceFactuel = $syntheseItem['indice_de_perception'];
                             //$categories = $syntheseItem['categories_de_gouvernance'];
@@ -545,7 +545,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     }
                 }
 
-                dd($scoreRanges);
                 $category_de_gouvernance->score_ranges = $scoreRanges;
             });
             
