@@ -39,6 +39,7 @@ class CategoriesDeGouvernanceResource extends JsonResource
                     'nom' => $this->categorieDeGouvernanceParent->categorieable->nom,
                 ];
             }),*/
+            'score_ranges'  => $this->when($this->score_ranges, $this->score_ranges),
             'categorieDeGouvernanceId' => optional($this->categorieDeGouvernanceParent)->secure_id,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
