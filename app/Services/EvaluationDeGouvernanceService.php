@@ -443,6 +443,40 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         })->values();
     }
 
+    private function getQuestionsOperationnelle($questions, $fiche){
+        return collect($questions)->map(function($question) use($fiche) {
+
+            dd($question);
+
+            if(isset($question['reponse'])){
+                $questionScoreRanges = [
+                    '0-0.25' => ['organisations' => []],
+                    '0.25-0.50' => ['organisations' => []],
+                    '0.50-0.75' => ['organisations' => []],
+                    '0.75-1' => ['organisations' => []],
+                ];
+
+                $point = $question['reponse']['point'];
+                $organisationId =  $fiche->organisationId;
+
+                // Logic for organizing into score ranges (adjust based on actual criteria)
+                if ($point >= 0 && $point <= 0.25) {
+                    $questionScoreRanges['0-0.25']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point]; // Assuming you have this info in the fiche
+                } elseif ($point > 0.25 && $point <= 0.50) {
+                    $questionScoreRanges['0.25-0.50']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
+                } elseif ($point > 0.50 && $point <= 0.75) {
+                    $questionScoreRanges['0.50-0.75']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
+                } elseif ($point > 0.75 && $point <= 1) {
+                    $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $organisationId, 'score_factuel' => $point];
+                }
+
+                $question['score_ranges'] = $questionScoreRanges;
+            }
+
+            return $question;
+        })->values();
+    }
+
     /**
      * Liste des soumissions d'une evaluation de gouvernance
      * 
@@ -532,6 +566,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
                             } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
                                 $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
+                            }
+
+
+                            if(isset($category_de_gouvernance->questions_de_gouvernance)){
+                                $category_de_gouvernance->questions_de_gouvernance = $this->getQuestionsOperationnelle($category_de_gouvernance->questions_de_gouvernance);
                             }
 
                             /* $categories = $this->getCategories($categories, $fiche);
