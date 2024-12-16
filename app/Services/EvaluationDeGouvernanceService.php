@@ -530,7 +530,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
                             $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_de_perception' => $indiceFactuel];
                         }
-                        dd($syntheseItem);
+                        dd([$syntheseItem,$scoreRanges]);
 
                         /* $categories = $this->getCategories($categories, $fiche);
 
