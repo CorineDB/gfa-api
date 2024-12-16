@@ -421,7 +421,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 }
             }
 
-            return $category;
+            return new CategoriesDeGouvernanceResource($category);
         })->values();
     }
 
