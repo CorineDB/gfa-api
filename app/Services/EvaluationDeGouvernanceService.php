@@ -427,7 +427,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         return collect($questions)->map(function ($question) use ($fiche, $questionsOperationnelle) {
 
-            foreach ($questionsOperationnelle as $questionOperationnelle) {
+            /* foreach ($questionsOperationnelle as $questionOperationnelle) {
 
                 if ($questionOperationnelle['id'] == $question->secure_id) {
 
@@ -461,7 +461,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $question['score_ranges'] = $questionScoreRanges;
                     //}
                 }
-            }
+            } */
             return $question;
         })->values();
     }
