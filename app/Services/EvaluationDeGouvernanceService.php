@@ -498,7 +498,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 }
             } */
 
-            $formulaire_de_perception_de_gouvernance = $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance;
+            $formulaire_de_perception_de_gouvernance = $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance();
 
             $formulaire_de_perception_de_gouvernance = $formulaire_de_perception_de_gouvernance->categories_de_gouvernance->map(function($category_de_gouvernance) use($evaluationDeGouvernance) {
 
