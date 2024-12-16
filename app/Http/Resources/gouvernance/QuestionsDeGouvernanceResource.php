@@ -30,6 +30,7 @@ class QuestionsDeGouvernanceResource extends JsonResource
             'id' => $this->secure_id,
             'nom' => $this->indicateur_de_gouvernance->nom,
             'type' => $this->type,
+            'score_ranges'  => $this->when($this->score_ranges, $this->score_ranges),
             'indicateur_de_gouvernance' => $this->when($this->type==='indicateur', $this->indicateur_de_gouvernance ? [
                 'id' => $this->indicateur_de_gouvernance->secure_id,
                 'nom' => $this->indicateur_de_gouvernance->nom
