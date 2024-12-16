@@ -375,10 +375,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         return collect($categories)->map(function ($category) use ($fiche, $syntheseCategories) {
 
-            dd($syntheseCategories);
-
             foreach ($syntheseCategories as $key => $syntheseCategorie) {
-                dd($syntheseCategorie);
 
                 if ($syntheseCategorie['id'] == $category->secure_id) {
 
