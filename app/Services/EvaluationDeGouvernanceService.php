@@ -373,6 +373,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     private function getCategories($categories, $fiche, $syntheseCategories)
     {
+        dd($categories);
+
         return collect($categories)->map(function ($category) use ($fiche, $syntheseCategories) {
 
             dd($syntheseCategories);
