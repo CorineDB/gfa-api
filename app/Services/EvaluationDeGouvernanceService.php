@@ -584,7 +584,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                         if ($syntheseItem['id'] == $category_de_gouvernance->secure_id) {
                             $indiceFactuel = $syntheseItem['indice_factuel'];
-                            $categories = $syntheseItem['categories_de_gouvernance'];
 
                             // Logic for organizing into score ranges (adjust based on actual criteria)
                             if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
@@ -597,7 +596,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
                             }
 
-                            $category_de_gouvernance->categories_de_gouvernance = $this->getCategories($categories->categories_de_gouvernance, $fiche, $syntheseItem['categories_de_gouvernance']);
+                            $category_de_gouvernance->categories_de_gouvernance = $this->getCategories($category_de_gouvernance->categories_de_gouvernance, $fiche, $syntheseItem['categories_de_gouvernance']);
                         }
                     }
                 }
