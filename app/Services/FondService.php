@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Http\Resources\FondsResource;
+use App\Models\UniteeDeGestion;
 use App\Repositories\FondRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\FondServiceInterface;
@@ -40,10 +41,9 @@ class FondService extends BaseService implements FondServiceInterface
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
-                $fonds = $this->repository->all();
-            }
-            else{
+            $fonds = [];
+            if(Auth::user()->hasRole('unitee-de-gestion') || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+
                 $fonds = Auth::user()->programme->fonds;
             }
 
