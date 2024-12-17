@@ -505,7 +505,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             return $question;
         })->values();
     }
-
+    
     /**
      * Liste des soumissions d'une evaluation de gouvernance
      * 

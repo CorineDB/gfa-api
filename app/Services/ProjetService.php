@@ -404,17 +404,17 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 $tefs =  $projet->tefParAnnee();
 
-                $site = optional($projet->bailleur->sites()->where('programmeId', $projet->programmeId)->first());
+                $site = optional($projet->sites()->where('programmeId', $projet->programmeId)->first());
 
                 $allprojet = $projet->programme->projets;
 
                 $totale = 0;
-                $bailleurs = [];
+                $owners = [];
 
                 foreach($allprojet as $p)
                 {
                     $totale += $p->tep;
-                    array_push($bailleurs, $p->bailleur->sigle);
+                    array_push($owners, optional($p->projetable->sigle) ?? "UG");
                 }
 
                 $teps = [];
@@ -426,7 +426,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 $stats = [
                     "tep_allProjets" => [
-                        'bailleurs' => $bailleurs,
+                        'bailleurs' => $owners,
                         'percent' => $teps
                     ],
                     "stats_composantes" => $projet->composantes->map(function ($composante) {
@@ -467,9 +467,9 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     ],
 
                     "total_realisation" => $projet->tef  + (!$site ? 0 : Sinistre::where('siteId', $site->id)->where('programmeId', $projet->programmeId)->sum('payer')),
-                    "total_decaissement_bailleur" => $projet->decaissements->where('decaissementable_type', get_class(new Bailleur()))->sum('montant'),
-                    "entreprises" => $projet->bailleur->entrepriseExecutants(),
-                    "sites" => $projet->bailleur->sites,
+                    //"total_decaissement_bailleur" => $projet->decaissements->where('decaissementable_type', get_class(new Bailleur()))->sum('montant'),
+                    //"entreprises" => $projet->bailleur->entrepriseExecutants(),
+                    "sites" => $projet->sites,
                     "equipes" => UserResource::collection(User::where('programmeId', $projet->programme->id)->
                                                 where('profilable_type', get_class(new  UniteeDeGestion()))->
                                                 where('profilable_id', $projet->programme->uniteeDeGestion->profilable->id)->
@@ -483,9 +483,6 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 ];
 
                 $data  = array_merge( json_decode($projet->toJson(), true), $stats);
-
-
-
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
