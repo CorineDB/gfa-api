@@ -1111,7 +1111,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             }
 
-            foreach(Unitee::where('type', 1)->get() as $unitee)
+            /* foreach(Unitee::where('type', 1)->get() as $unitee)
             {
                 foreach($unitee->indicateurs->where('programmeId', Auth::user()->programmeId) as $indicateur)
                 {
@@ -1160,7 +1160,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                         array_push($indicateurs[$indicateur->secure_id]['suivis'], $cumul);
                     }
                 }
-            }
+            } */
 
             $stat = [
                 'nbreProjets' => $nbreProjets,
