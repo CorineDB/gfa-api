@@ -1032,7 +1032,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     'montantDepense' => collect($projet->suiviFinanciers())->pluck('consommer')->sum()
                 ]);
 
-                $sites = $projet->projetable->sites()->where('programmeId', $programme->id)->get();
+                $sites = $projet->sites()->where('programmeId', $programme->id)->get();
                 $paps = array_merge($paps, [
                     optional($projet->projetable->sigle) ?? "UG" => [
                         'annee' => [],
@@ -1091,7 +1091,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                 }
 
             }
-            
+
             foreach($executionFinanciers as $data)
             {
                 $montantTotal += $data['montantTotal'];
