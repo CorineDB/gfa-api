@@ -409,12 +409,12 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $allprojet = $projet->programme->projets;
 
                 $totale = 0;
-                $bailleurs = [];
+                $owners = [];
 
                 foreach($allprojet as $p)
                 {
                     $totale += $p->tep;
-                    array_push($bailleurs, $p->sigle);
+                    array_push($owners, optional($p->projetable->sigle) ?? "UG");
                 }
 
                 $teps = [];
@@ -426,7 +426,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 $stats = [
                     "tep_allProjets" => [
-                        'bailleurs' => $bailleurs,
+                        'bailleurs' => $owners,
                         'percent' => $teps
                     ],
                     "stats_composantes" => $projet->composantes->map(function ($composante) {
