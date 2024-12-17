@@ -673,4 +673,9 @@ class Programme extends Model
     {
         return $this->hasMany(Recommandation::class, 'programmeId');
     }
+
+    public function fonds()
+    {
+        return $this->hasMany(Fond::class, 'programmeId');
+    }
 }

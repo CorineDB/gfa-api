@@ -44,7 +44,6 @@ class FondService extends BaseService implements FondServiceInterface
                 $fonds = $this->repository->all();
             }
             else{
-                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $fonds = Auth::user()->programme->fonds;
             }
 
