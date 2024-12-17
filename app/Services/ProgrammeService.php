@@ -1022,7 +1022,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             $min = (int)Carbon::parse($programme->debut)->format("Y");
             $max = (int)Carbon::parse($programme->fin)->format("Y");
 
-            /* foreach($programme->projets as $projet)
+            foreach($programme->projets as $projet)
             {
                 array_push($executionFinanciers, [
                     'sigle' => optional($projet->projetable->sigle) ?? "UG",
@@ -1108,7 +1108,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
                 $nbreActivite++;
 
-            } */
+            }
 
             foreach(Unitee::where('type', 1)->get() as $unitee)
             {
