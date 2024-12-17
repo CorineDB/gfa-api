@@ -10,7 +10,7 @@ class Kernel extends ConsoleKernel
 {
 
     protected $commands = [
-        /* Commands\SendPasswordValidityExpirationSoonMail::class,
+        Commands\SendPasswordValidityExpirationSoonMail::class,
         Commands\ChangeStatut::class,
         Commands\ChangeStatutEvaluations::class,
         Commands\GenerateEvaluationResultats::class,
@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\ChangeStatutActionAMener::class,
         Commands\Demarrage::class,
         Commands\RappelCron::class,
-        Commands\Rapport::class, */
+        Commands\Rapport::class,
         //Commands\Suivi::class,
     ];
     /**
@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly
-        /* $schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
+        $schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
 
         $schedule->command('command:change-statut')->everyMinute();
         $schedule->command('change-statut:evaluations')->everyMinute();
@@ -55,7 +55,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('backup:run')->$backupFrequence();
 
-        $schedule->command('gauge:prune')->daily(); */
+        $schedule->command('gauge:prune')->daily();
 
     }
 
