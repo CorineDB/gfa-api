@@ -438,7 +438,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     }),
 
                     "suivis_indicateurs" => SuiviIndicateur::whereHas('valeurCible', function($query) use ($projet){
-                        $query->where("cibleable_type", "App\\Models\\Indicateur")->whereIn('cibleable_id', $projet->bailleur->indicateurs->pluck('id'));
+                        $query->where("cibleable_type", "App\\Models\\Indicateur")->whereIn('cibleable_id', $projet->indicateurs->pluck('id'));
                     })->get()->map(function($suiviIndicateur){
 
                         return [
