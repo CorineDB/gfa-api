@@ -1164,7 +1164,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             $stat = [
                 'nbreProjets' => $nbreProjets,
                 //'nbreBailleur' => $programme->bailleurs->count(),
-                'nbreOscs' => $programme->projets->loadCount(["projetable" => function($query) {$query->whereNot("projetable_type", UniteeDeGestion::class);}]),
+                'nbreOscs' => $programme->projets->count(),//->loadCount(["projetable" => function($query) {$query->whereNot("projetable_type", UniteeDeGestion::class);}]),
                 'nbreActivite' => $nbreActivite,
                 "nbreActiviteRealise" => $nbreActiviteRealise,
                 "montantTotal" => $montantTotal,
