@@ -39,9 +39,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
     Route::post('reinitialisation-de-mot-de-passe', [AuthController::class, 'reinitialisationDeMotDePasse'])->name('reinitialisationDeMotDePasse');
 
-
     Route::post('authentification', [AuthController::class, 'authentification'])->name('auth.authentification'); // Route d'authentification
 
+    Route::post('organisation-authentification', [AuthController::class, 'organisationAuthentification'])->name('auth.org-authentification'); // Route d'authentification
 
     Route::group(['middleware' => [/*'deconnexion', */'auth:sanctum'/*, 'cookie'*/]], function () {
 
