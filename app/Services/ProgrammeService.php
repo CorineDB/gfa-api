@@ -1092,7 +1092,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             }
 
-            foreach($executionFinanciers as $data)
+            /* foreach($executionFinanciers as $data)
             {
                 $montantTotal += $data['montantTotal'];
                 $montantDecaisse += $data['montantDecaisse'];
@@ -1109,9 +1109,9 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
                 $nbreActivite++;
 
-            }
+            } */
 
-            /* foreach(Unitee::where('type', 1)->get() as $unitee)
+            foreach(Unitee::where('type', 1)->get() as $unitee)
             {
                 foreach($unitee->indicateurs->where('programmeId', Auth::user()->programmeId) as $indicateur)
                 {
@@ -1160,7 +1160,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                         array_push($indicateurs[$indicateur->secure_id]['suivis'], $cumul);
                     }
                 }
-            } */
+            }
 
             $stat = [
                 'nbreProjets' => $nbreProjets,
