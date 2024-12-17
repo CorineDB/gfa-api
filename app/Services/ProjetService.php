@@ -404,7 +404,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 $tefs =  $projet->tefParAnnee();
 
-                $site = optional($projet->sites->where('sites.programmeId', $projet->programmeId)->first());
+                $site = optional($projet->sites()->where('sites.programmeId', $projet->programmeId)->first());
 
                 $allprojet = $projet->programme->projets;
 
