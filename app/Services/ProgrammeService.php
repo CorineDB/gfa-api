@@ -1022,7 +1022,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             $min = (int)Carbon::parse($programme->debut)->format("Y");
             $max = (int)Carbon::parse($programme->fin)->format("Y");
 
-            foreach($programme->projets as $projet)
+            /* foreach($programme->projets as $projet)
             {
                 array_push($executionFinanciers, [
                     'sigle' => optional($projet->projetable->sigle) ?? "UG",
@@ -1047,7 +1047,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     ]
                 ]);
 
-                /* for($i = $min; $i <= $max; $i++)
+                for($i = $min; $i <= $max; $i++)
                 {
                     array_push($paps[optional($projet->projetable->sigle) ?? "UG"]['annee'], $i);
                     array_push($teps[optional($projet->projetable->sigle) ?? "UG"]['annee'], $i);
@@ -1087,11 +1087,11 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     }
 
                     array_push($teps[optional($projet->projetable->sigle) ?? "UG"]['teps'], $total ? $effectue * 100 / $total : 0);
-                } */
+                }
 
             }
 
-            /* foreach($executionFinanciers as $data)
+            foreach($executionFinanciers as $data)
             {
                 $montantTotal += $data['montantTotal'];
                 $montantDecaisse += $data['montantDecaisse'];
