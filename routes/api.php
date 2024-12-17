@@ -796,7 +796,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'indicateur-value-keys' => 'indicateur_value_key',
                 ]);
 
-            Route::apiResource('indicateurs', 'IndicateurController', ['except' => ['index']])->names('indicateurs')->middleware(['role:unitee-de-gestion']);
+            Route::apiResource('indicateurs', 'IndicateurController', ['except' => ['index']])->names('indicateurs')/* ->middleware(['role:unitee-de-gestion']) */;
 
             Route::apiResource('indicateurs', 'IndicateurController', ['only' => ['index']])->names('indicateurs');
 
