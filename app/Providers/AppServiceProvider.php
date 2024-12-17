@@ -14,7 +14,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        SecureIds::load();
+        //SecureIds::load();
         Schema::defaultStringLength(191);
     }
 
