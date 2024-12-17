@@ -1022,7 +1022,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             $min = (int)Carbon::parse($programme->debut)->format("Y");
             $max = (int)Carbon::parse($programme->fin)->format("Y");
 
-
             foreach($programme->projets as $projet)
             {
                 array_push($executionFinanciers, [
