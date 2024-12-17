@@ -39,9 +39,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
     Route::post('reinitialisation-de-mot-de-passe', [AuthController::class, 'reinitialisationDeMotDePasse'])->name('reinitialisationDeMotDePasse');
 
-
     Route::post('authentification', [AuthController::class, 'authentification'])->name('auth.authentification'); // Route d'authentification
 
+    Route::post('organisation-authentification', [AuthController::class, 'organisationAuthentification'])->name('auth.org-authentification'); // Route d'authentification
 
     Route::group(['middleware' => [/*'deconnexion', */'auth:sanctum'/*, 'cookie'*/]], function () {
 
@@ -796,7 +796,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'indicateur-value-keys' => 'indicateur_value_key',
                 ]);
 
-            Route::apiResource('indicateurs', 'IndicateurController', ['except' => ['index']])->names('indicateurs')->middleware(['role:unitee-de-gestion']);
+            Route::apiResource('indicateurs', 'IndicateurController', ['except' => ['index']])->names('indicateurs')/* ->middleware(['role:unitee-de-gestion']) */;
 
             Route::apiResource('indicateurs', 'IndicateurController', ['only' => ['index']])->names('indicateurs');
 

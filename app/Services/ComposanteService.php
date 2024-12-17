@@ -109,7 +109,7 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
 
             $this->changeState(0);
 
-            $attributs = array_merge($attributs, ['statut' => -2]);
+            $attributs = array_merge($attributs, ['statut' => -1]);
 
             $composante = $this->repository->create($attributs);
 
