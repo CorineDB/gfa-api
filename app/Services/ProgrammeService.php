@@ -1047,7 +1047,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     ]
                 ]);
 
-                for($i = $min; $i <= $max; $i++)
+                /* for($i = $min; $i <= $max; $i++)
                 {
                     array_push($paps[optional($projet->projetable->sigle) ?? "UG"]['annee'], $i);
                     array_push($teps[optional($projet->projetable->sigle) ?? "UG"]['annee'], $i);
@@ -1087,7 +1087,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     }
 
                     array_push($teps[optional($projet->projetable->sigle) ?? "UG"]['teps'], $total ? $effectue * 100 / $total : 0);
-                }
+                } */
 
             }
 
