@@ -1032,7 +1032,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     'montantDepense' => collect($projet->suiviFinanciers())->pluck('consommer')->sum()
                 ]);
 
-                $sites = $projet->sites()->where('programmeId', $programme->id)->get();
+                $sites = $projet->sites()->where('sites.programmeId', $programme->id)->get();
                 $paps = array_merge($paps, [
                     optional($projet->projetable->sigle) ?? "UG" => [
                         'annee' => [],
