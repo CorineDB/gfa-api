@@ -30,6 +30,7 @@ use App\Models\Passation;
 use App\Models\Projet;
 use App\Models\TemplateRapport;
 use App\Models\Unitee;
+use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Repositories\OrganisationRepository;
 use App\Repositories\ProgrammeRepository;
@@ -1000,6 +1001,192 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
     }
 
     public function dashboard() : JsonResponse
+    {
+
+        try
+        {
+            $stat = [];
+
+            if(!($programme = $this->repository->findById(Auth::user()->programmeId))) throw new Exception( "Ce programme n'existe pas", 500);
+
+            $nbreProjets = 0;
+            $montantTotal = 0;
+            $montantDecaisse = 0;
+            $montantDepense = 0;
+            $nbreActivite = 0;
+            $nbreActiviteRealise = 0;
+            $executionFinanciers = [];
+            $paps = [];
+            $teps = [];
+            $indicateurs = [];
+            $min = (int)Carbon::parse($programme->debut)->format("Y");
+            $max = (int)Carbon::parse($programme->fin)->format("Y");
+
+
+            foreach($programme->projets as $projet)
+            {
+                array_push($executionFinanciers, [
+                    'sigle' => optional($projet->projetable->sigle) ?? "UG",
+                    'montantTotal' => $projet->budgetNational + $projet->pret,
+                    'montantDecaisse' => $projet->decaissements->pluck('montant')->sum(),
+                    'montantDepense' => collect($projet->suiviFinanciers())->pluck('consommer')->sum()
+                ]);
+
+                $sites = $projet->projetable->sites()->where('programmeId', $programme->id)->get();
+                $paps = array_merge($paps, [
+                    optional($projet->projetable->sigle) ?? "UG" => [
+                        'annee' => [],
+                        'montant' => [],
+                        'nombre' => []
+                    ]
+                ]);
+
+                $teps = array_merge($teps, [
+                    optional($projet->projetable->sigle) ?? "UG" => [
+                        'annee' => [],
+                        'teps' => []
+                    ]
+                ]);
+
+                for($i = $min; $i <= $max; $i++)
+                {
+                    array_push($paps[optional($projet->projetable->sigle) ?? "UG"]['annee'], $i);
+                    array_push($teps[optional($projet->projetable->sigle) ?? "UG"]['annee'], $i);
+                    $montant = 0;
+                    $nombre = 0;
+
+                    foreach($sites as $site)
+                    {
+                        foreach($site->sinistres->where('dateDePaiement', '>=', $i.'-01-01')->where('dateDePaiement', '<=', $i.'-12-31') as $sinistre)
+                        {
+                            $montant += $sinistre->payer;
+                            $nombre++;
+                        }
+                    }
+                    array_push($paps[optional($projet->projetable->sigle) ?? "UG"]['montant'], $montant);
+                    array_push($paps[optional($projet->projetable->sigle) ?? "UG"]['nombre'], $nombre);
+
+                    $total = 0;
+                    $effectue = 0;
+
+                    foreach($projet->allComposantes as $composante)
+                    {
+                        foreach($composante->activites as $activite)
+                        {
+                            if($activite->durees->last()->debut >= $i.'-01-01' && $activite->durees->last()->fin <= $i.'-12-31')
+                            {
+                                foreach($activite->taches as $tache)
+                                {
+                                    $total += $tache->poids;
+                                    if($tache->statut == 2)
+                                    {
+                                        $effectue += $tache->poids;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    array_push($teps[optional($projet->projetable->sigle) ?? "UG"]['teps'], $total ? $effectue * 100 / $total : 0);
+                }
+
+            }
+            
+            foreach($executionFinanciers as $data)
+            {
+                $montantTotal += $data['montantTotal'];
+                $montantDecaisse += $data['montantDecaisse'];
+                $montantDepense += $data['montantDepense'];
+                $nbreProjets++;
+            }
+
+            foreach($programme->activites() as $activite)
+            {
+                if($activite->statut == 2)
+                {
+                    $nbreActiviteRealise++;
+                }
+
+                $nbreActivite++;
+
+            }
+
+            foreach(Unitee::where('type', 1)->get() as $unitee)
+            {
+                foreach($unitee->indicateurs->where('programmeId', Auth::user()->programmeId) as $indicateur)
+                {
+                    $indicateurs = array_merge($indicateurs, [
+                        $indicateur->secure_id => [
+                            'indicateur' => $indicateur->nom,
+                            'annee' => [],
+                            'suivis' => []
+                        ]
+                    ]);
+
+                    for($i = $min; $i <= $max; $i++)
+                    {
+                        array_push($indicateurs[$indicateur->secure_id]['annee'], $i);
+                        $cumul = [];
+                        $total = 0;
+
+                        $data = $indicateur->suivis->where('annee', $i)->first();
+
+                        if(!$data)
+                        {
+                            array_push($indicateurs[$indicateur->secure_id]['suivis'], $cumul);
+                            continue;
+                        }
+
+
+                        foreach($data->suivisIndicateur[0]->valeurRealise as $key => $valeur)
+                        {
+
+                            $total = $valeur;
+
+                            foreach($data->suivisIndicateur as $keytwo => $suivi)
+                            {
+
+                                if($keytwo)
+                                {
+                                    $total += $suivi->valeurRealise[$key];
+                                }
+
+                            }
+
+                            array_push($cumul, $total);
+                        }
+
+
+                        array_push($indicateurs[$indicateur->secure_id]['suivis'], $cumul);
+                    }
+                }
+            }
+
+            $stat = [
+                'nbreProjets' => $nbreProjets,
+                //'nbreBailleur' => $programme->bailleurs->count(),
+                'nbreOscs' => $programme->projets->loadCount(["projetable" => function($query) {$query->whereNot("projetable_type", UniteeDeGestion::class);}]),
+                'nbreActivite' => $nbreActivite,
+                "nbreActiviteRealise" => $nbreActiviteRealise,
+                "montantTotal" => $montantTotal,
+                "montantDecaisse" => $montantDecaisse,
+                "montantDepense" => $montantDepense,
+                "executionFinanciers" =>$executionFinanciers,
+                "paps" => $paps,
+                'teps' => $teps,
+                "indicateurs" => $indicateurs
+            ];
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $stat, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function oldDashboard() : JsonResponse
     {
 
         try
