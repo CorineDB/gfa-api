@@ -627,7 +627,7 @@ class Projet extends Model
     {
         $montantFinancement = $this->pret + $this->budgetNational;
         $activites = $this->activites();
-        $sites = $this->bailleur->sites()->where('programmeId', $this->programmeId)->get();
+        $sites = $this->sites()->where('programmeId', $this->programmeId)->get();
         $tef = [];
         $total = 0;
 
