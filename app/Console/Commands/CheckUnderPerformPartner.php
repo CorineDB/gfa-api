@@ -2,6 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Models\EvaluationDeGouvernance;
+use App\Notifications\AlertUnderPerformance;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class CheckUnderPerformPartner extends Command
