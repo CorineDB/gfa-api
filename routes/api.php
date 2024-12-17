@@ -616,6 +616,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
         Route::apiResource('reponses', 'ReponseController')->names('reponses');
 
         Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
+            
+            Route::apiResource('permissions', 'PermissionController', ['only' => ['index']])->names('permissions')->middleware(['permission:voir-une-permission']);
 
             Route::apiResource('roles', 'RoleController')->names('roles');
 

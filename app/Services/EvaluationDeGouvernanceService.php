@@ -505,7 +505,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             return $question;
         })->values();
     }
-    
+
     /**
      * Liste des soumissions d'une evaluation de gouvernance
      * 
@@ -515,52 +515,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
-
-            /*  $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel;
-            // Initialize the array for transformed result
-            $finalResults = [];
-
-            // Loop through each record
-            foreach ($fiches as $fiche) {
-                $synthese = $fiche->synthese;//json_decode($fiche->synthese, true); // Decode the JSON column
-
-                foreach ($synthese as $syntheseItem) {
-                    $syntheseId = $syntheseItem['id'];
-                    $syntheseName = $syntheseItem['nom'];
-                    $indiceFactuel = $syntheseItem['indice_factuel'];
-                    $categories = $syntheseItem['categories_de_gouvernance'];
-
-                    // Initialize score ranges
-                    $scoreRanges = [
-                        '0-0.25' => ['organisations' => []],
-                        '0.25-0.50' => ['organisations' => []],
-                        '0.50-0.75' => ['organisations' => []],
-                        '0.75-1' => ['organisations' => []],
-                    ];
-
-                    // Logic for organizing into score ranges (adjust based on actual criteria)
-                    if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
-                        $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel]; // Assuming you have this info in the fiche
-                    } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
-                        $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
-                    } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
-                        $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
-                    } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
-                        $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisationId, 'indice_factuel' => $indiceFactuel];
-                    }
-
-                    $categories = $this->getCategories($categories, $fiche);
-
-                    // Construct the final result for this synthese item
-                    $finalResults['factuel'][] = [
-                        'id' => $syntheseId,
-                        'nom' => $syntheseName,
-                        'indice_factuel' => $indiceFactuel,
-                        'score_ranges' => $scoreRanges,
-                        'categories_de_gouvernance' => $categories
-                    ];
-                }
-            } */
 
             $formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance();
 
@@ -629,7 +583,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                         if ($syntheseItem['id'] == $category_de_gouvernance->secure_id) {
                             $indiceFactuel = $syntheseItem['indice_de_perception'];
-                            //$categories = $syntheseItem['categories_de_gouvernance'];
 
                             // Logic for organizing into score ranges (adjust based on actual criteria)
                             if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
@@ -657,28 +610,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ["factuel" => $formulaire_factuel_de_gouvernance, "perception" => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
-            $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
-
-            $fiches_de_synthese = $rapportsEvaluationParOrganisation->map(function ($rapportEvaluationParOrganisation, $organisationId) use ($evaluationDeGouvernance) {
-
-                $organisation = app(OrganisationRepository::class)->findById($organisationId);
-
-                $fiches_de_synthese = $rapportEvaluationParOrganisation->map(function ($fiches_de_synthese, $type) {
-                    return new FicheDeSyntheseResource($fiches_de_synthese->first());
-                });
-
-                return array_merge([
-                    "id"                    => $organisation->secure_id,
-                    'nom'                   => optional($organisation->user)->nom ?? null,
-                    'sigle'                 => $organisation->sigle,
-                    'code'                  => $organisation->code,
-                    'nom_point_focal'       => $organisation->nom_point_focal,
-                    'prenom_point_focal'    => $organisation->prenom_point_focal,
-                    'contact_point_focal'   => $organisation->contact_point_focal,
-                ], $fiches_de_synthese->toArray());
-            })->values();
-
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $fiches_de_synthese, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
