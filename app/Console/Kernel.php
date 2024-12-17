@@ -56,10 +56,6 @@ class Kernel extends ConsoleKernel
         $schedule->command('backup:run')->$backupFrequence();
 
         $schedule->command('gauge:prune')->daily();
-        
-        $schedule->call(function () {
-            \Log::info('Scheduler is running!');
-        })->everyMinute();
 
     }
 
