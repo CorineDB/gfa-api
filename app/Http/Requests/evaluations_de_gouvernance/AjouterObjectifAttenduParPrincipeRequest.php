@@ -33,7 +33,18 @@ class AjouterObjectifAttenduParPrincipeRequest extends FormRequest
 
         return [
             'objectifsAttendu'      => ['required', "array", "min:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count(), "max:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count()],
-            'objectifsAttendu.*.principeId'   => ['required', 'distinct', new HashValidatorRule(new PrincipeDeGouvernance())],
+            'objectifsAttendu.*.principeId'   => ['required', 'distinct', new HashValidatorRule(new PrincipeDeGouvernance()), function ($attribute, $value, $fail) {
+
+                // Get the index from the attribute name
+                preg_match('/objectifsAttendu\.(\d+)\.principeId/', $attribute, $matches);
+                $index = $matches[1] ?? null; // Get the index if it exists
+                
+                // Ensure each keyId in valeurDeBase is one of the value_keys.id
+                if (!in_array(request()->input('objectifsAttendu.*.principeId')[$index], $this->evaluation_de_gouvernance->principes_de_gouvernance()->pluck('id'))) {
+                    $fail("Le principe n'est pas dans cette evaluation.");
+                }
+    
+            }],
             'objectifsAttendu.*.objectif_attendu'  => 'required|numeric|min:0|max:1',
 
         ];
