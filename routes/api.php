@@ -967,7 +967,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{evaluation_de_gouvernance}/actions-a-mener', 'actions_a_mener')->name('actions-a-mener')->middleware('permission:voir-une-action-a-mener');
 
                     Route::get('{evaluation_de_gouvernance}/feuille-de-route', 'feuille_de_route')->name('feuille-de-route')->middleware('permission:voir-plan-action');
-                    Route::get('{evaluation_de_gouvernance}/ajouterObjectifAttenduParPrincipe', 'ajouterObjectifAttenduParPrincipe')->name('feuille-de-route')->middleware('permission:creer-une-evaluation-de-gouvernance');
+                    Route::post('{evaluation_de_gouvernance}/ajouterObjectifAttenduParPrincipe', 'ajouterObjectifAttenduParPrincipe')->name('feuille-de-route')->middleware('permission:creer-une-evaluation-de-gouvernance');
 
                     
                 });
