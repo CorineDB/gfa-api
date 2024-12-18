@@ -425,6 +425,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
 
                 $stats = [
+                    "projet_manager" => $projet->projetable->user->type == 'organisation' ? $projet->projetable->sigle : "UG" . " - " . $projet->projetable->user->nom,
                     "tep_allProjets" => [
                         'bailleurs' => $owners,
                         'percent' => $teps
@@ -639,12 +640,12 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     if(!count($tef))
                     {
                         //dd(count($suivis));
-                        array_push($tef, ($suivi/$montantFinancement) *100);
+                        array_push($tef, round(($suivi/$montantFinancement) *100, 2));
                     }
 
                     else
                     {
-                        array_push($tef, (($suivi/$montantFinancement) *100) + $tef[count($tef)-1]);
+                        array_push($tef, round((($suivi/$montantFinancement) *100) + $tef[count($tef)-1], 2));
                     }
                 }
             }
