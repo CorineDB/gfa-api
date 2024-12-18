@@ -32,7 +32,7 @@ class AjouterObjectifAttenduParPrincipeRequest extends FormRequest
         }
 
         return [
-            'objectifsAttendu'      => ['required', "array", "min:0"/* , "min:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count(), "max:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count() */],
+            'objectifsAttendu'      => ['required', "array", "min:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count(), "max:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count()],
             'objectifsAttendu.*.principeId'   => ['required', 'distinct', new HashValidatorRule(new PrincipeDeGouvernance())],
             'objectifsAttendu.*.objectif_attendu'  => 'required|numeric|min:0|max:1',
 
