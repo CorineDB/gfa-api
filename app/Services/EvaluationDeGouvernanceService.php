@@ -18,6 +18,7 @@ use App\Models\EvaluationDeGouvernance;
 use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\OrganisationRepository;
+use App\Repositories\PrincipeDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
 use Exception;
@@ -862,6 +863,46 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 'programmeId' => $evaluationDeGouvernance->programme->secure_id,
                 'formulaire_de_gouvernance' => $formulaire_de_perception_de_gouvernance
             ], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Envoi
+     * 
+     * return JsonResponse
+     */
+    public function ajouterObjectifAttenduParPrincipe($evaluationDeGouvernance, array $attributs): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $principes = $evaluationDeGouvernance->principes_de_gouvernance();
+
+            if(isset($attributs['objectifsAttendu'])){
+                $objectifsAttendu=[];
+            
+                foreach ($attributs['objectifsAttendu'] as $key => $objectifAttendu) {
+
+                    if(!($principe = app(PrincipeDeGouvernanceRepository::class)->findById($objectifAttendu['principeId']))) throw new Exception("Principe inconnu", 1);
+
+                    if(($principes->whereIn('id', $principe->id)->exists())) throw new Exception("Principe n'est pas de cette evaluation", 1);
+
+                    // Add directly to the array with the expected format
+                    $objectifsAttendu[$principe->id] = [
+                        "objectif_attendu" => $objectifAttendu['objectif_attendu'],
+                        "programmeId" => auth()->user()->programme->id,
+                        "created_at" => now(),
+                        "updated_at" => now()
+                    ];
+                }
+
+                $evaluationDeGouvernance->objectifs_par_principes()->attach($objectifsAttendu);
+            }
+
+            $evaluationDeGouvernance->refresh();
+            return response()->json(['statut' => 'success', 'message' => "Objectif defini", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

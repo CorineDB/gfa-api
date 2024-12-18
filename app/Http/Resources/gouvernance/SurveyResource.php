@@ -31,6 +31,7 @@ class SurveyResource extends JsonResource
             'debut'                 => Carbon::parse($this->debut)->format("Y-m-d"),
             'fin'                   => Carbon::parse($this->fin)->format("Y-m-d"),
             'statut'                => $this->statut,
+            'prive'                => $this->prive,
             'surveyFormId'          => $this->survey_form->secure_id,
             'created_at'            => Carbon::parse($this->created_at)->format("Y-m-d"),
             "survey_form_link"      => $url . "/dashboard/form-individuel/{$this->token}",

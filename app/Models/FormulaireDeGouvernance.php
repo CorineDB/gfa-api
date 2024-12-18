@@ -89,4 +89,11 @@ class FormulaireDeGouvernance extends Model
     {
         return $this->belongsToMany(EvaluationDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'formulaireDeGouvernanceId', 'evaluationDeGouvernanceId')->wherePivotNull('deleted_at');
     }
+
+    public function principes_de_gouvernance()
+    {
+        return $this->categories_de_gouvernance->map(function($categorie_de_gouvernance){
+            return $categorie_de_gouvernance->categorieable;
+        });
+    }
 }
