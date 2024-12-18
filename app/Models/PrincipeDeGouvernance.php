@@ -62,6 +62,11 @@ class PrincipeDeGouvernance extends Model
         $this->criteres_de_gouvernance->each->count();
     }
 
+    public function objectifs_par_principe()
+    {
+        return $this->belongsToMany(EvaluationDeGouvernance::class, 'evaluation_principes_de_gouvernance_objectifs', 'principeId', 'evaluationId')->wherePivotNull('deleted_at')->withPivot(['objectif_attendu', 'programmeId']);
+    }
+
     /**
      * Renvoie le programme auquel est lié le principe de gouvernance
      * 

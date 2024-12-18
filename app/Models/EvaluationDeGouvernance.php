@@ -16,6 +16,8 @@ class EvaluationDeGouvernance extends Model
 
     use HasSecureIds, HasFactory ;
 
+    protected $default = ['objectif_attendu'=>0];
+
     protected $dates = ['deleted_at'];
 
     protected $fillable = array('intitule', 'objectif_attendu', 'annee_exercice', 'description', 'debut', 'fin', 'statut', 'programmeId');
@@ -211,9 +213,9 @@ class EvaluationDeGouvernance extends Model
         return $this->formulaire_de_perception_de_gouvernance()->principes_de_gouvernance();
     }
 
-    public function objectifs_par_principes()
+    public function objectifs_par_principe()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
+        return $this->belongsToMany(PrincipeDeGouvernance::class,'evaluation_principes_de_gouvernance_objectifs', 'evaluationId', 'principeId')->wherePivotNull('deleted_at')->withPivot(['objectif_attendu', 'programmeId']);
     }
 
     public function recommandations()
