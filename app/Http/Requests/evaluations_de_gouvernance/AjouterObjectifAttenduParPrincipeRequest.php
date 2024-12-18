@@ -2,15 +2,10 @@
 
 namespace App\Http\Requests\evaluations_de_gouvernance;
 
-use App\Models\Enquete;
 use App\Models\EvaluationDeGouvernance;
-use App\Models\FormulaireDeGouvernance;
-use App\Models\Organisation;
 use App\Models\PrincipeDeGouvernance;
-use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class AjouterObjectifAttenduParPrincipeRequest extends FormRequest
 {
@@ -37,7 +32,7 @@ class AjouterObjectifAttenduParPrincipeRequest extends FormRequest
         }
 
         return [
-            'objectifsAttendu'      => ['required', "array", "min:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count(), "max:".$this->evaluation_de_gouvernance->principes_de_gouvernance->count()],
+            'objectifsAttendu'      => ['required', "array", "min:0"/* , "min:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count(), "max:".$this->evaluation_de_gouvernance->principes_de_gouvernance()->count() */],
             'objectifsAttendu.*.principeId'   => ['required', 'distinct', new HashValidatorRule(new PrincipeDeGouvernance())],
             'objectifsAttendu.*.objectif_attendu'  => 'required|numeric|min:0|max:1',
 

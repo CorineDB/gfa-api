@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
@@ -119,7 +120,7 @@ class EvaluationDeGouvernance extends Model
     public function soumissionFactuel(?int $organisationId = null, ?string $token = null)
     {
         $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
-            $query->where('organisationId', auth()->user()->profilable->id);
+            $query->where('organisationId', optional(auth()->user()->profilable)->id);
         })/* ->where('organisationId', $organisationId)->orWhere(function($query) use($token){
             $query->whereHas('organisation', function($query) use($token){
                 $query->whereHas('evaluations_de_gouvernance', function($query) use($token){
@@ -212,7 +213,6 @@ class EvaluationDeGouvernance extends Model
 
     public function objectifs_par_principes()
     {
-
         return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
     }
 
@@ -419,13 +419,13 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalParticipantsEvaluationFactuelAttribute(){
         // Sum the 'nbreParticipants' attribute from the pivot table
-        if((auth()->user()->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class){
+        if((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class){
             if(auth()->user()->profilable){
-                return $this->organisations(auth()->user()->profilable->id)->count() ?? 0;
+                return $this->organisations(optional(auth()->user()->profilable)->id)->count() ?? 0;
             }
             else{ return 0; }
         }
-        elseif((auth()->user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class){
+        elseif((auth()->user()->type == 'unitee-de-gestion') || get_class(optional(auth()->user()->profilable)) == UniteeDeGestion::class){
             return $this->organisations()->count();
         }
         else{ return 0; }
@@ -435,7 +435,7 @@ class EvaluationDeGouvernance extends Model
     public function getTotalParticipantsEvaluationDePerceptionAttribute(){
 
         return $this->organisations()
-            ->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
+            ->when((auth()->user()->type == 'organisation' || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
                 // Get the organisation ID of the authenticated user
                 $organisationId = optional(auth()->user()->profilable)->id;
 

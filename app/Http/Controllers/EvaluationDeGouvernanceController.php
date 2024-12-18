@@ -97,7 +97,7 @@ class EvaluationDeGouvernanceController extends Controller
     }
     public function ajouterObjectifAttenduParPrincipe(AjouterObjectifAttenduParPrincipeRequest $request, $id)
     {
-        return $this->evaluationDeGouvernanceService->ajouterObjectifAttenduParPrincipe($id);
+        return $this->evaluationDeGouvernanceService->ajouterObjectifAttenduParPrincipe($id, $request->all());
     }
 
     

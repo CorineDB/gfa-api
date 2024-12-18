@@ -880,6 +880,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $principes = $evaluationDeGouvernance->principes_de_gouvernance();
 
+            dd($principes);
+
             if(isset($attributs['objectifsAttendu'])){
                 $objectifsAttendu=[];
             
