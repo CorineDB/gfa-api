@@ -697,7 +697,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
 
             if(isset($attributs['responsables']['ug'])){
-                $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
+                $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => auth()->user()->programmeId, "created_at" => now(), "updated_at" => now()]]);
             }
 
             if(isset($attributs['responsables']['organisations'])){
@@ -719,7 +719,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $indicateur->organisations_responsable()->attach($responsables);
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($indicateurId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             DB::rollback();
