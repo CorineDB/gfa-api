@@ -897,7 +897,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ];
                 }
 
-                $evaluationDeGouvernance->objectifs_par_principe()->attach($objectifsAttendu);
+                $evaluationDeGouvernance->objectifs_par_principe()->sync($objectifsAttendu);
             }
 
             $evaluationDeGouvernance->refresh();
