@@ -33,7 +33,7 @@ class EvaluationDeGouvernanceController extends Controller
         $this->middleware('permission:voir-une-fiche-de-synthese')->only(['fiches_de_synthese']);
         $this->middleware('permission:voir-resultats-evaluation')->only(['resultats_syntheses']);
         $this->middleware('permission:voir-un-formulaires-de-gouvernance')->only(['formulaires_de_gouvernance']);
-        $this->middleware('permission:voir-formulaire-factuel')->only(['formulaire_factuel', 'formulaire_factuel_de_gouvernance']);
+        //$this->middleware('permission:voir-formulaire-factuel')->only(['formulaire_factuel', 'formulaire_factuel_de_gouvernance']);
   
         $this->middleware('permission:envoyer-un-rappel-soumission')->only(['rappel_soumission']);
         $this->middleware('permission:envoyer-une-invitation')->only(['envoi_mail_au_participants']);
