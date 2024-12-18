@@ -425,7 +425,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
 
                 $stats = [
-                    "projet_manager" => $projet->projetable->user->type == 'organisation' ? $projet->projetable->sigle : "UG" . " - " . $projet->projetable->user->nom,
+                    "projet_manager" => $projet->projetable->user->type == 'organisation' ? $projet->projetable->sigle : "UG" . " - " . $projet->projetable->user->nom . $projet->projetable->user->prenom,
                     "tep_allProjets" => [
                         'bailleurs' => $owners,
                         'percent' => $teps
