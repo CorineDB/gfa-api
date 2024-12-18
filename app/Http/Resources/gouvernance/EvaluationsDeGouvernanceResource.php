@@ -25,7 +25,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'intitule' => $this->intitule,
             'description' => $this->description,
             //'objectif_attendu' => $this->objectif_attendu,
-            'objectif_attendu' => $this->objectifs_par_principe->pluck('pivot_objectif_attendu'),
+            'objectif_attendu' => $this->objectifs_par_principe->count()?$this->objectifs_par_principe->pluck('pivot.objectif_attendu'):[],
             'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
             'fin' => Carbon::parse($this->fin)->format("Y-m-d"),
             'annee_exercice' => $this->annee_exercice,
