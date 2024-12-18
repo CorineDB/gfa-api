@@ -853,7 +853,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 'id' => $evaluationDeGouvernance->secure_id,
                 'intitule' => $evaluationDeGouvernance->intitule,
                 'description' => $evaluationDeGouvernance->description,
-                'objectif_attendu' => $evaluationDeGouvernance->objectif_attendu,
+                'objectif_attendu' => $evaluationDeGouvernance->objectifs_par_principe->pluck('pivot_objectif_attendu'),
                 'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
                 'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
