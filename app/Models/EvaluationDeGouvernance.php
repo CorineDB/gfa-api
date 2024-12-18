@@ -205,6 +205,17 @@ class EvaluationDeGouvernance extends Model
         return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
     }
 
+    /* public function principes_de_gouvernance()
+    {
+        return $this->formulaire_de_perception_de_gouvernance()->principes_de_gouvernance();
+    } */
+
+    public function objectifs_par_principes()
+    {
+
+        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
+    }
+
     public function recommandations()
     {
         return $this->hasMany(Recommandation::class, 'evaluationId');
@@ -367,7 +378,7 @@ class EvaluationDeGouvernance extends Model
     public function getTotalSoumissionsFactuelNonDemarrerAttribute()
     {
         // Filter organisations if the authenticated user's type is 'organisation'
-        $totalOrganisations = $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
+        $totalOrganisations = $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
             // Get the organisation ID of the authenticated user
             $organisationId = optional(auth()->user()->profilable)->id;
 
@@ -379,7 +390,7 @@ class EvaluationDeGouvernance extends Model
             // Filter the organisations and sum the 'nbreParticipants' from the pivot table
             $query->where('organisations.id', $organisationId);
         })
-        ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (auth()->user()->profilable != Organisation::class && auth()->user()->profilable != UniteeDeGestion::class)), function ($query) {
+        ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
             // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
             $query->whereRaw('1 = 0'); // Ensures no results are returned
         })->count();
@@ -436,7 +447,7 @@ class EvaluationDeGouvernance extends Model
                 // Filter the organisations and sum the 'nbreParticipants' from the pivot table
                 $query->where('organisations.id', $organisationId);
             })
-            ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (auth()->user()->profilable != Organisation::class && auth()->user()->profilable != UniteeDeGestion::class)), function ($query) {
+            ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (optional(auth()->user()->profilable) != Organisation::class && auth()->user()->profilable != UniteeDeGestion::class)), function ($query) {
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()  // Retrieve organisations

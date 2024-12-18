@@ -454,7 +454,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            unset($attributs["programmeId"]);
 
             if (array_key_exists('categorieId', $attributs) && !($attributs['categorieId'] = $this->categorieRepository->findById($attributs['categorieId']))) throw new Exception("Catégorie inconnue", 404);
 
@@ -463,6 +463,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             else;
 
             $unitee = null;
+            
+            /* 
 
             if (isset($attributs["uniteeMesureId"])) {
 
@@ -618,7 +620,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                     $oldValeursCible->each->delete();
                 
-            }
+            } 
+            */
 
             $this->changeState(0);
 
@@ -681,6 +684,74 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+    
+    public function addStrutureResponsable($indicateur, array $attributs): JsonResponse
+    {
+
+        DB::beginTransaction();
+
+        try {
+
+            if(!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
+
+
+            if(isset($attributs['responsables']['ug'])){
+                $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
+            }
+
+            if(isset($attributs['responsables']['organisations'])){
+                $responsables = [];
+            
+                foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
+
+                    if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+
+                    // Add directly to the array with the expected format
+                    $responsables[$organisation->id] = [
+                        "responsableable_type" => Organisation::class,
+                        "programmeId" => $attributs["programmeId"],
+                        "created_at" => now(),
+                        "updated_at" => now()
+                    ];
+                }
+
+                $indicateur->organisations_responsable()->attach($responsables);
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($indicateurId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+
+            DB::rollback();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
+    }
+    
+    public function addAnneesCible($indicateur, array $attributs): JsonResponse
+    {
+
+        DB::beginTransaction();
+
+        try {
+
+            if(!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
+
+            $this->setIndicateurValeursCible($indicateur, $attributs["anneesCible"]);
+
+            $indicateur->refresh();
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+
+            DB::rollback();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     /**

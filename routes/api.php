@@ -818,6 +818,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('{indicateur}/addValueKeys', 'addValueKeys')->name('addValueKeys')->middleware('permission:ajouter-une-cle-de-valeur-indicateur');
 
                     Route::post('{indicateur}/removeValueKeys', 'removeValueKeys')->name('removeValueKeys')->middleware('permission:supprimer-une-cle-de-valeur-indicateur');
+
+                    Route::post('{indicateur}/addAnneesCible', 'addAnneesCible')->name('addAnneesCible')->middleware('permission:creer-un-indicateur');
+
+                    Route::post('{indicateur}/addStrutureResponsable', 'addStrutureResponsable')->name('addStrutureResponsable')->middleware('permission:creer-un-indicateur');
                 });
             });
 

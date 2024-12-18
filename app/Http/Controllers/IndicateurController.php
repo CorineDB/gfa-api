@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\indicateur\AddAnneesCibleRequest;
+use App\Http\Requests\indicateur\AddStrutureResponsableRequest;
 use App\Http\Requests\indicateur\AddValueKeysRequest;
 use App\Http\Requests\indicateur\FiltreRequest;
 use App\Http\Requests\indicateur\RemoveValueKeysRequest;
@@ -22,7 +24,7 @@ class IndicateurController extends Controller
      */
     public function __construct(IndicateurServiceInterface $indicateurServiceInterface)
     {
-        $this->middleware('role:unitee-de-mesure')->only(['store','update', 'destroy']);
+        //$this->middleware('role:unitee-de-mesure')->only(['store','update', 'destroy']);
         $this->middleware('permission:voir-un-indicateur')->only(['index', 'show', 'filtre']);
         $this->middleware('permission:modifier-un-indicateur')->only(['update']);
         $this->middleware('permission:creer-un-indicateur')->only(['store']);
@@ -117,6 +119,30 @@ class IndicateurController extends Controller
     public function filtre(FiltreRequest $request)
     {
         return $this->indicateurService->filtre($request->all());
+    }
+
+    /**
+     * Add new keys
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addStrutureResponsable(AddStrutureResponsableRequest $request, $idIndicateur)
+    {
+        return $this->indicateurService->addStrutureResponsable($idIndicateur, $request->all());
+    }
+
+    /**
+     * Add new keys
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function addAnneesCible(AddAnneesCibleRequest $request, $idIndicateur)
+    {
+        return $this->indicateurService->addAnneesCible($idIndicateur, $request->all());
     }
 
     /**

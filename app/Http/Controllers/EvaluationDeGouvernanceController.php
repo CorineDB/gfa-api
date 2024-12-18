@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\evaluations_de_gouvernance\AjouterObjectifAttenduParPrincipeRequest;
 use App\Http\Requests\evaluations_de_gouvernance\EvaluationParticipantRequest;
 use App\Http\Requests\evaluations_de_gouvernance\StoreRequest;
 use App\Http\Requests\evaluations_de_gouvernance\UpdateRequest;
@@ -94,6 +95,12 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->deleteById($id);
     }
+    public function ajouterObjectifAttenduParPrincipe(AjouterObjectifAttenduParPrincipeRequest $request, $id)
+    {
+        return $this->evaluationDeGouvernanceService->ajouterObjectifAttenduParPrincipe($id);
+    }
+
+    
 
     public function organisations($id)
     {

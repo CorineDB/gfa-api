@@ -23,6 +23,7 @@ class Projet extends Model
     public $timestamps = true;
 
     protected $dates = ['deleted_at'];
+    protected $default = ['nombreEmpoie' => 1];
 
     protected $fillable = array(
         'nom',
