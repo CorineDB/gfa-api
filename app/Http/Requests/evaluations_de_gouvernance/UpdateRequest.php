@@ -38,7 +38,6 @@ class UpdateRequest extends FormRequest
         return [
             'intitule'              => ['sometimes','max:255', Rule::unique('evaluations_de_gouvernance', 'intitule')->ignore($this->evaluation_de_gouvernance)->whereNull('deleted_at')],
             
-            'objectif_attendu'  => 'required|numeric|min:0|max:1',
             'annee_exercice'        => 'sometimes|integer',
             'description'           => 'nullable|max:255',
             'debut'                 => 'sometimes|date|date_format:Y-m-d',

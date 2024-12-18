@@ -33,7 +33,6 @@ class StoreRequest extends FormRequest
     {
         return [
             'intitule'          => 'required|max:255|unique:evaluations_de_gouvernance,intitule',
-            'objectif_attendu'  => 'required|numeric|min:0|max:1',
             'annee_exercice'    => 'required|integer',
             'description'       => 'nullable|max:255',
             'debut'             => [
