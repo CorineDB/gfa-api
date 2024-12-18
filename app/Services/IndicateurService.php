@@ -710,7 +710,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     // Add directly to the array with the expected format
                     $responsables[$organisation->id] = [
                         "responsableable_type" => Organisation::class,
-                        "programmeId" => $attributs["programmeId"],
+                        "programmeId" => auth()->user()->programmeId,
                         "created_at" => now(),
                         "updated_at" => now()
                     ];
