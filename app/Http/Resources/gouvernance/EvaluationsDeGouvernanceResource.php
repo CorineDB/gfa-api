@@ -25,7 +25,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'intitule' => $this->intitule,
             'description' => $this->description,
             //'objectif_attendu' => $this->objectif_attendu,
-            'objectif_attendu' => $this->objectifs_par_principe->count()?$this->objectifs_par_principe->mapWithKeys(function ($item) {
+            'objectif_attendu' => $this->objectifs_par_principe->count()?$this->objectifs_par_principe->map(function ($item) {
                 return [
                     "id" => $item->secure_id,
                     "nom" => $item->nom,
