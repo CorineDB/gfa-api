@@ -40,7 +40,7 @@ class AjouterObjectifAttenduParPrincipeRequest extends FormRequest
                 $index = $matches[1] ?? null; // Get the index if it exists
                 
                 // Ensure each keyId in valeurDeBase is one of the value_keys.id
-                if (!in_array(request()->input('objectifsAttendu.*.principeId')[$index], $this->evaluation_de_gouvernance->principes_de_gouvernance()->pluck('id'))) {
+                if (!in_array(request()->input('objectifsAttendu.*.principeId')[$index], $this->evaluation_de_gouvernance->principes_de_gouvernance()->pluck('id')->toArray())) {
                     $fail("Le principe n'est pas dans cette evaluation.");
                 }
     
