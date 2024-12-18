@@ -886,7 +886,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     if(!($principe = app(PrincipeDeGouvernanceRepository::class)->findById($objectifAttendu['principeId']))) throw new Exception("Principe inconnu", 1);
 
-                    if(($principes->whereIn('id', $principe->id)->exists())) throw new Exception("Principe n'est pas de cette evaluation", 1);
+                    if(!($principes->whereIn('id', $principe->id)->count())) throw new Exception("Principe n'est pas de cette evaluation", 1);
 
                     // Add directly to the array with the expected format
                     $objectifsAttendu[$principe->id] = [
