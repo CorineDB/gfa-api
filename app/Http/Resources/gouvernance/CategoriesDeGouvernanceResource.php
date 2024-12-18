@@ -30,6 +30,7 @@ class CategoriesDeGouvernanceResource extends JsonResource
         return [
             'id' => $this->secure_id,
             'nom' => $this->categorieable->nom,
+            'categorieable' => $this->categorieable,
             //'position' => $this->position,
             /*'categorieDeGouvernanceParent' => $this->when($this->categorieDeGouvernanceParent, function(){
                 // Unset multiple relations individually
