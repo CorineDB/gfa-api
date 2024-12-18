@@ -24,6 +24,7 @@ class Projet extends Model
 
     protected $dates = ['deleted_at'];
     protected $default = ['nombreEmpoie' => 1];
+    protected $appends = ['consommer'];
 
     protected $fillable = array(
         'nom',
