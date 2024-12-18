@@ -206,10 +206,10 @@ class EvaluationDeGouvernance extends Model
         return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
     }
 
-    /* public function principes_de_gouvernance()
+    public function principes_de_gouvernance()
     {
         return $this->formulaire_de_perception_de_gouvernance()->principes_de_gouvernance();
-    } */
+    }
 
     public function objectifs_par_principes()
     {
