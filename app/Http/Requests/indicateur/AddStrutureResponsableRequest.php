@@ -35,9 +35,6 @@ class AddStrutureResponsableRequest extends FormRequest
             $this->indicateur = Indicateur::findByKey($this->indicateur);
         }
 
-        if($this->indicateur->suivis->isNotEmpty()) throw ValidationException::withMessages(["Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour."]);
-        if(!$this->indicateur->agreger) throw ValidationException::withMessages(["Cet indicateur n'est pas agreger."]);
-
         return [
             
            'responsables'                  => ['required', 'array'],
