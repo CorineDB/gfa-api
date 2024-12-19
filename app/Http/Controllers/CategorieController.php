@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Categorie;
-use Illuminate\Http\Request;
-use App\Http\Requests\categorie\StoreCategorieRequest;
 use App\Http\Requests\categorie\StoreRequest;
-use App\Http\Requests\categorie\UpdateCategorieRequest;
 use App\Http\Requests\categorie\UpdateRequest;
 use Core\Services\Interfaces\CategorieServiceInterface;
 

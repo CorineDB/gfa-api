@@ -68,7 +68,7 @@ class Organisation extends Model
                 $organisation->teamMembers->each(function ($teamMember) {
                     optional($teamMember->user)->update(['statut' => -1]);
                 });
-                
+                DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
 
