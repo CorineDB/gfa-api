@@ -381,6 +381,10 @@ class Projet extends Model
 
     public function getTefAttribute()
     {
+        $count = $this->composantes->count();
+        return $count > 0
+            ? round(($this->composantes->map(fn($composante) => $composante->tef)->sum() / $count), 2)
+            : 0; // Or any default value
 
         $ptab = 0;
         for($i = 1 ; $i < 5; $i++)
@@ -415,6 +419,11 @@ class Projet extends Model
 
     public function getTepAttribute()
     {
+        $count = $this->composantes->count();
+        return $count > 0
+            ? $this->composantes->map(fn($composante) => $composante->tep)->sum() / $count
+            : 0; // Or any default value
+
         /*$composantes = $this->composantes;
         $somme = 0;
         $sommeActuel = 0;

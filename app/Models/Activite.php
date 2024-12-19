@@ -298,6 +298,11 @@ class Activite extends Model
 
     public function getTepAttribute()
     {
+        $count = $this->taches->count();
+        return $count > 0
+            ? $this->taches->map(fn($tache) => $tache->tep)->sum() / $count
+            : 0; // Or any default value
+
         $taches = $this->taches;
         $somme = 0;
         $sommeActuel = 0;
@@ -319,6 +324,12 @@ class Activite extends Model
         else if($this->statut == 2) return $this->poids;
 
         return ($sommeActuel * 100) / $somme;
+    }
+
+    public function getTefAttribute()
+    {
+        $total = $this->planDeDecaissements->sum('pret') + $this->planDeDecaissements->sum('budgetNational');
+        return $total ? ($this->consommer(null, null) * 100) / $total : 0;
     }
 
     public function getPoidActuelAttribute()

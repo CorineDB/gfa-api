@@ -61,6 +61,8 @@ class ChangeStatut extends Command
                 $statut = $tache->statuts()->create($etat);*/
                 $tache->statut = 0;
                 $tache->save();
+                $tache->suivis()->create(["poidsActuel" => 50, "programmeId" => $tache->programmeId, "commentaire" => "Etat actuel"]);
+                $tache->refresh();
 
                 $allUsers = User::where('programmeId', $tache->activite->composante->projet->programmeId);
                 foreach($allUsers as $user)

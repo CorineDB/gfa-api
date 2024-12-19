@@ -174,8 +174,6 @@ class Composante extends Model
         return $this->morphMany(Commentaire::class, 'commentable');
     }
 
-
-
     public function getConsommerAttribute($annee = null, $type = null)
     {
         // Sum 'comsommer' for the current composante's activites
@@ -191,10 +189,56 @@ class Composante extends Model
         return $total;
     }
 
+    private function calculateSousComposantesTep($sousComposantes)
+    {
+        if ($sousComposantes->isEmpty()) {
+            return 0;
+        }
+
+        return $sousComposantes->map(function ($sousComposante) {
+            // Get tep for the current sousComposante
+            $currentTep = $sousComposante->tep;
+
+            // Recursively calculate tep for nested sousComposantes
+            $nestedTep = $this->calculateSousComposantesTep($sousComposante->sousComposantes);
+
+            return $currentTep + $nestedTep;
+        })->sum() / $sousComposantes->count();
+    }
+
+    private function calculateSousComposantesTef($sousComposantes)
+    {
+        if ($sousComposantes->isEmpty()) {
+            return 0;
+        }
+
+        return $sousComposantes->map(function ($sousComposante) {
+            // Get tef for the current sousComposante
+            $currentTef = $sousComposante->tef;
+
+            // Recursively calculate tef for nested sousComposantes
+            $nestedTef = $this->calculateSousComposantesTef($sousComposante->sousComposantes);
+
+            return $currentTef + $nestedTef;
+        })->sum() / $sousComposantes->count();
+    }
+
     public function getTepAttribute()
     {
         $activites = $this->activites;
-        $sousComposantes = $this->sousComposantes;
+
+        // Calculate tep for activites
+        $activitesCount = $activites->count();
+        $activitesTep = $activitesCount > 0
+            ? $activites->map(fn($activite) => $activite->tep)->sum() / $activitesCount
+            : 0;
+
+        // Calculate tep for sousComposantes recursively
+        $sousComposantesTep = $this->calculateSousComposantesTep($this->sousComposantes);
+
+        // Aggregate the results
+        return $activitesTep + $sousComposantesTep;
+        
         $somme = 0;
         $sommeActuel = 0;
 
@@ -217,6 +261,23 @@ class Composante extends Model
         if (!$somme) return 0;
 
         return ($sommeActuel * 100) / $somme;
+    }
+
+    public function getTefAttribute()
+    {
+        $activites = $this->activites;
+
+        // Calculate tep for activites
+        $activitesCount = $activites->count();
+        $activitesTef = $activitesCount > 0
+            ? $activites->map(fn($activite) => $activite->tef)->sum() / $activitesCount
+            : 0;
+
+        // Calculate tep for sousComposantes recursively
+        $sousComposantesTef = $this->calculateSousComposantesTef($this->sousComposantes);
+
+        // Aggregate the results
+        return $activitesTef + $sousComposantesTef;
     }
 
     public function sousComposanteTerminer()

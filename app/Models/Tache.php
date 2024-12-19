@@ -6,13 +6,11 @@ use App\Traits\Helpers\Pta;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Tache extends Model
 {
-
     protected $table = 'taches';
     public $timestamps = true;
 
@@ -34,8 +32,6 @@ class Tache extends Model
             }
         });
     }
-
-
 
     public function projet()
     {
@@ -169,6 +165,7 @@ class Tache extends Model
 
         if(!$suivi) return 0;
 
+        return $suivi->poidsActuel;
         return ( optional($suivi)->poidsActuel * 100) / $this->poids;
     }
 
