@@ -16,7 +16,7 @@ class EvaluationDeGouvernance extends Model
 
     use HasSecureIds, HasFactory ;
 
-    protected $default = ['objectif_attendu'=>0];
+    protected $default = ['objectif_attendu' => 1];
 
     protected $dates = ['deleted_at'];
 
