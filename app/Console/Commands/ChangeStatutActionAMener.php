@@ -59,7 +59,7 @@ class ChangeStatutActionAMener extends Command
 
         // Fetch up to $maxUpdates evaluations that should start today and update their status to '0' (demarrage)
         $startingActions = ActionAMener:: //DB::table('evaluations_de_gouvernance')->
-            where('debut', '<=', $today)
+            where('start_at', '<=', $today)
             ->where('statut', '<', 0)
             ->get();
         
@@ -82,7 +82,7 @@ class ChangeStatutActionAMener extends Command
         } */
 
 
-        $endedActions = ActionAMener::where('fin', '<=', $today)
+        $endedActions = ActionAMener::where('end_at', '<=', $today)
             ->where('statut', '==', 0)
             ->get();
 
