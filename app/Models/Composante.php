@@ -22,7 +22,7 @@ class Composante extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'position', 'poids', 'pret', 'budgetNational', 'description', 'projetId', 'composanteId', 'statut');
+    protected $fillable = array('nom', 'position', 'poids', 'pret', 'budgetNational', 'description', 'projetId', 'programmeId', 'composanteId', 'statut');
 
     protected static function boot()
     {
@@ -66,6 +66,11 @@ class Composante extends Model
     public function projet()
     {
         return $this->belongsTo(Projet::class, 'projetId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function statuts()

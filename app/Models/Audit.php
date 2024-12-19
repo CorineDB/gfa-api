@@ -17,13 +17,18 @@ class Audit extends Model
         'dateDeTransmission',
         'etat',
         'statut',
-        'projetId',
+        'projetId', 'programmeId',
         'categorie'
     ];
 
     public function projet()
     {
         return $this->belongsTo(Projet::class, 'projetId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function fichiers()

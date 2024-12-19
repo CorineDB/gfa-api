@@ -19,7 +19,7 @@ class TeamMember extends Model
         'profilable_type', 
         'profilable_id', 
         'roleId', 
-        'userId'
+        'userId', 'programmeId'
     ];
 
     protected $with = [];
@@ -61,5 +61,10 @@ class TeamMember extends Model
     public function role()
     {
         return $this->belongsTo(Role::class, 'roleId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

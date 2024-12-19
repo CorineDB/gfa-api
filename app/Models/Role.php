@@ -18,7 +18,7 @@ class Role extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'slug', 'description', 'roleable_type', 'roleable_id');
+    protected $fillable = array('nom', 'slug', 'description', 'roleable_type', 'roleable_id', 'programmeId');
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -53,6 +53,11 @@ class Role extends Model
     public function roleable()
     {
         return $this->morphTo();
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     /**

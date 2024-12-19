@@ -22,7 +22,7 @@ class Activite extends Model
 
     public $timestamps = true;
 
-    protected $fillable = ['nom', 'position', 'poids', 'type', 'pret', 'budgetNational', 'userId', 'composanteId', 'statut'];
+    protected $fillable = ['nom', 'position', 'poids', 'type', 'pret', 'budgetNational', 'userId', 'composanteId', 'statut', 'programmeId'];
 
     protected $appends = ['consommer'];
 
@@ -63,6 +63,11 @@ class Activite extends Model
     public function responsable()
     {
         return $this->belongsTo(User::class, 'userId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function structures()

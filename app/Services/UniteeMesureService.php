@@ -40,7 +40,13 @@ class UniteeMesureService extends BaseService implements UniteeMesureServiceInte
     {
         try
         {
-            $unitees_de_mesure = $this->repository->all();
+            $unitees_de_mesure = collect([]);
+
+            if(!Auth::user()->hasRole('administrateur')){
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $unitees_de_mesure = Auth::user()->programme->unitees_de_mesure;
+            }
+
             return response()->json(['statut' => 'success', 'message' => null, 'data' => UniteeMesureResource::collection($unitees_de_mesure), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
@@ -55,7 +61,7 @@ class UniteeMesureService extends BaseService implements UniteeMesureServiceInte
 
         try {
 
-            $attributs = array_merge($attributs, ['nom' => strtolower($attributs['nom'])]);
+            $attributs = array_merge($attributs, ['nom' => strtolower($attributs['nom']), 'programmeId' => Auth::user()->programme->id]);
 
             $unitee_de_mesure = $this->repository->create($attributs);
 
@@ -94,7 +100,7 @@ class UniteeMesureService extends BaseService implements UniteeMesureServiceInte
                 $unitee_de_mesure = $unitee_de_mesure;
             }
 
-            $attributs = array_merge($attributs, ['nom' => strtolower($attributs['nom'])]);
+            $attributs = array_merge($attributs, ['nom' => strtolower($attributs['nom']), 'programmeId' => Auth::user()->programme->id]);
 
             $unitee_de_mesure = $unitee_de_mesure->fill($attributs);
 

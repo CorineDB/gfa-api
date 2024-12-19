@@ -19,7 +19,7 @@ class IndicateurDeGouvernance extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('nom', 'description', 'type', 'can_have_multiple_reponse');
+    protected $fillable = array('nom', 'description', 'type', 'can_have_multiple_reponse', 'programmeId');
 
     protected $attributes = ["can_have_multiple_reponse" => false];
 
@@ -79,5 +79,10 @@ class IndicateurDeGouvernance extends Model
     public function recommandations(): MorphMany
     {
         return $this->morphMany(Recommandation::class, 'recommandationable');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

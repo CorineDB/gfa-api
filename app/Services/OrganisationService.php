@@ -160,6 +160,8 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
                 $organisation = $organisationId;
             }
 
+            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
+
             $organisation->fill($attributs)->save();
 
             unset($attributs['email']);
