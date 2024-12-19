@@ -44,7 +44,7 @@ class UniteeMesureService extends BaseService implements UniteeMesureServiceInte
 
             if(!Auth::user()->hasRole('administrateur')){
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
-                $unitees_de_mesure = Auth::user()->programme->unitees_de_mesure;
+                $unitees_de_mesure = $this->repository->all();//Auth::user()->programme->unitees_de_mesure;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => UniteeMesureResource::collection($unitees_de_mesure), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
