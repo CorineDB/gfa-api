@@ -33,7 +33,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('criteres_de_gouvernance', 'nom')->ignore($this->critere_de_gouvernance)->whereNull('deleted_at')],
+            'nom'       => ['sometimes', 'string', Rule::unique('criteres_de_gouvernance', 'nom')->ignore($this->critere_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             'description' => 'sometimes|nullable|max:255'
         ];
     }

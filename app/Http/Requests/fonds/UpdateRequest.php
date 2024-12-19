@@ -36,7 +36,8 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom_du_fond'  => ['sometimes','max:255', Rule::unique('fonds', 'nom_du_fond')->ignore($this->fond)->whereNull('deleted_at')],
+            'nom_du_fond'               => ['sometimes', 'string', Rule::unique('fonds', 'nom_du_fond')->ignore($this->fond)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'fondDisponible' => 'sometimes|integer|min:0'
         ];
     }

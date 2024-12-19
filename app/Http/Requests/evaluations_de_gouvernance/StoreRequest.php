@@ -10,6 +10,7 @@ use App\Models\TypeDeGouvernance;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class StoreRequest extends FormRequest
@@ -32,7 +33,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'intitule'          => 'required|max:255|unique:evaluations_de_gouvernance,intitule',
+            'intitule'               => ['required', 'string', Rule::unique('evaluations_de_gouvernance', 'intitule')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'annee_exercice'    => 'required|integer',
             'description'       => 'nullable|max:255',
             'debut'             => [

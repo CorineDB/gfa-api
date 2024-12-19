@@ -34,7 +34,8 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'libelle'  => ['sometimes','max:255', Rule::unique('options_de_reponse', 'libelle')->ignore($this->option_de_reponse)->whereNull('deleted_at')],
+            'libelle'   => ['sometimes', 'string', Rule::unique('options_de_reponse', 'libelle')->ignore($this->option_de_reponse)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'sometimes|nullable|max:255'
         ];
     }

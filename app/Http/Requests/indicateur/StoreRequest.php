@@ -39,7 +39,8 @@ class StoreRequest extends FormRequest
         $programme = auth()->user()->programme;
 
         return [
-            'nom'                           => 'required|string|unique:indicateurs,nom',
+            'nom'                           => ['required', 'string', Rule::unique('indicateurs', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'sources_de_donnee'             => 'required',
             'frequence_de_la_collecte'      => 'required',
             'methode_de_la_collecte'        => 'required',

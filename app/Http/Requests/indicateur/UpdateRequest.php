@@ -46,7 +46,8 @@ class UpdateRequest extends FormRequest
         $nbreKeys = $this->indicateur->valueKeys->count() ?? 1;
 
         return [
-            'nom'                           => ['sometimes', 'string', Rule::unique('indicateurs', 'nom')->ignore($this->indicateur)->whereNull('deleted_at')],
+            'nom'                           => ['sometimes', 'string', Rule::unique('indicateurs', 'nom')->ignore($this->indicateur)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'sources_de_donnee'             => 'sometimes',
             'frequence_de_la_collecte'      => 'sometimes',
             'methode_de_la_collecte'        => 'sometimes',
