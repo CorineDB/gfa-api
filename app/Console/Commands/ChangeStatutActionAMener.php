@@ -67,7 +67,7 @@ class ChangeStatutActionAMener extends Command
             ->whereIn('id', $startingActions->pluck('id'))
             ->update(['statut' => 0]);
 
-        try {
+        /* try {
             AppJob::dispatch(
                 // Your action code here, for example, sending an email, processing data, etc.
                 $this->starting_actions_notification($unitee_de_gestion, $startingActions, $url)
@@ -77,7 +77,7 @@ class ChangeStatutActionAMener extends Command
         } catch (\Exception $e) {
             // Handle the exception, log an error, or notify of failure
             Log::error('Failed to send notifications: ' . $e->getMessage());
-        }
+        } */
 
 
         $endedActions = ActionAMener::where('fin', '<=', $today)
@@ -89,7 +89,7 @@ class ChangeStatutActionAMener extends Command
             ->whereIn('id', $endedActions->pluck('id'))
             ->update(['statut' => 1]); // Assuming '1' indicates a finished evaluation
 
-        try {
+        /* try {
             AppJob::dispatch(
                 // Your action code here, for example, sending an email, processing data, etc.
                 $this->starting_actions_notification($unitee_de_gestion, $endedActions, $url)
@@ -99,7 +99,7 @@ class ChangeStatutActionAMener extends Command
         } catch (\Exception $e) {
             // Handle the exception, log an error, or notify of failure
             Log::error('Failed to send notifications: ' . $e->getMessage());
-        }
+        } */
 
         return 0;
     }

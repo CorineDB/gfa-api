@@ -207,6 +207,7 @@ class Permissions extends Command
             'alerte validation action a mener',
             "voir resultats evaluation",
 
+            'alerte action a mener',
             'alerte action a mener realise',
             'alerte evaluation de gouvernance',
             'alerte resultats evaluation',
@@ -629,6 +630,7 @@ class Permissions extends Command
             'envoyer-une-invitation',
             'envoyer-un-rappel-soumission',
             'alerte-validation-action-a-mener',
+            'alerte-action-a-mener',
             "voir-resultats-evaluation",
 
             'alerte-evaluation-de-gouvernance',
@@ -780,6 +782,7 @@ class Permissions extends Command
             'envoyer-un-rappel-soumission',
             "voir-resultats-evaluation",
 
+            'alerte-action-a-mener',
             'alerte-action-a-mener-realise',
             'alerte-evaluation-de-gouvernance',
             'alerte-resultats-evaluation',
