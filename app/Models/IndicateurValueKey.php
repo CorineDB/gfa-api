@@ -17,7 +17,7 @@ class IndicateurValueKey extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('libelle', 'key', 'type', 'description', 'uniteeMesureId');
+    protected $fillable = array('libelle', 'key', 'type', 'description', 'uniteeMesureId', 'programmeId');
 
     protected static function boot()
     {
@@ -64,5 +64,10 @@ class IndicateurValueKey extends Model
     public function uniteeMesure()
     {
         return $this->belongsTo(Unitee::class, 'uniteeMesureId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

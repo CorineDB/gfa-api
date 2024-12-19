@@ -19,7 +19,7 @@ class Tache extends Model
     use HasSecureIds, HasFactory, Pta;
 
     protected $dates = ['deleted_at'];
-    protected $fillable = array('nom', 'position', 'poids', 'activiteId', 'description', 'statut');
+    protected $fillable = array('nom', 'position', 'poids', 'activiteId', 'programmeId', 'description', 'statut');
 
     protected static function boot() {
         parent::boot();
@@ -51,6 +51,11 @@ class Tache extends Model
     public function activite()
     {
         return $this->belongsTo(Activite::class, 'activiteId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
     public function durees()

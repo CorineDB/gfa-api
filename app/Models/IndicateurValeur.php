@@ -17,7 +17,7 @@ class IndicateurValeur extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('value', 'indicateur_valueable_type', 'indicateur_valueable_id', 'indicateurValueKeyMapId');
+    protected $fillable = array('value', 'indicateur_valueable_type', 'indicateur_valueable_id', 'indicateurValueKeyMapId', 'programmeId');
 
     protected static function boot()
     {
@@ -27,5 +27,10 @@ class IndicateurValeur extends Model
     public function indicateur_valueable()
     {
         return $this->morphTo();
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

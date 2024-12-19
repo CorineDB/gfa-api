@@ -10,10 +10,14 @@ class EmailRapport extends Model
 {
     use HasFactory, HasSecureIds;
 
-    protected $fillable = array('objet', 'rapport', 'destinataires', 'userId');
+    protected $fillable = array('objet', 'rapport', 'destinataires', 'userId', 'programmeId');
 
     public function auteur()
     {
         return $this->belongsTo(User::class, 'userId');
+    }
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

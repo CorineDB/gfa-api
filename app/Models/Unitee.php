@@ -38,7 +38,8 @@ class Unitee extends Model
      */
     protected $fillable = [
         'nom',
-        'type'
+        'type',
+        'programmeId'
     ];
 
     /**
@@ -60,6 +61,16 @@ class Unitee extends Model
         "updated_at" => "datetime:Y-m-d",
         "deleted_at" => "datetime:Y-m-d"
     ];
+
+    /**
+     * Liste des indicateurs d'un bailleur lié à une unitée de mésure
+     *
+     * return List<Indicateur>
+     */
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
+    }
 
     /**
      * Liste des indicateurs d'un bailleur lié à une unitée de mésure

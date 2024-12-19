@@ -17,11 +17,16 @@ class PlanDecaissement extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['trimestre', 'annee', 'pret', 'budgetNational', 'activiteId'];
+    protected $fillable = ['trimestre', 'annee', 'pret', 'budgetNational', 'activiteId', 'programmeId'];
 
     public function activite()
     {
         return $this->belongsTo(Activite::class, 'activiteId');
+    }
+    
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 
 }

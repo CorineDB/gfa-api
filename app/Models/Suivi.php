@@ -17,7 +17,7 @@ class Suivi extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('poidsActuel', 'commentaire', 'suivitable_id', 'suivitable_type');
+    protected $fillable = array('poidsActuel', 'commentaire', 'suivitable_id', 'suivitable_type', 'programmeId');
 
     protected static function boot()
     {
@@ -112,5 +112,10 @@ class Suivi extends Model
     public function suivitable()
     {
         return $this->morphTo();
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

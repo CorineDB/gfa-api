@@ -10,10 +10,15 @@ class TemplateRapport extends Model
 {
     use HasFactory, HasSecureIds;
 
-    protected $fillable = array('nom','rapport','userId');
+    protected $fillable = array('nom','rapport','userId', 'programmeId');
 
     public function user()
     {
         return $this->belongsTo(User::class, 'userId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(Programme::class, 'programmeId');
     }
 }

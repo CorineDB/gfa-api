@@ -12,7 +12,7 @@ class Decaissement extends Model
     use HasSecureIds, HasFactory;
 
     protected $dates = ['deleted_at'];
-    protected $fillable = array('projetId', 'montant', 'date', 'decaissementable_type', 'decaissementable_id', 'userId', "methodeDePaiement", "beneficiaireId");
+    protected $fillable = array('projetId', 'montant', 'date', 'decaissementable_type', 'decaissementable_id', 'programmeId', 'userId', "methodeDePaiement", "beneficiaireId");
 
     public function decaissementable()
     {
@@ -27,6 +27,11 @@ class Decaissement extends Model
     public function auteur()
     {
         return $this->belongsTo(User::class, 'userId');
+    }
+
+    public function programme()
+    {
+        return $this->belongsTo(User::class, 'programmeId');
     }
 
     public function beneficiaire()
