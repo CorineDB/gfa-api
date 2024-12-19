@@ -5,6 +5,7 @@ namespace App\Http\Requests\fonds;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -26,7 +27,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom_du_fond' => 'required|max:255|unique:fonds,nom_du_fond',
+            'nom_du_fond'               => ['required', 'string', Rule::unique('fonds', 'nom_du_fond')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             'fondDisponible' => 'required|integer|min:0'
         ];
     }

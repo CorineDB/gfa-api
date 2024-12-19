@@ -7,6 +7,7 @@ use App\Models\OptionDeReponse;
 use App\Models\PrincipeDeGouvernance;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -29,7 +30,8 @@ class StoreRequest extends FormRequest
     {
         // Base rules
         return [
-            'nom'                       => 'required|max:255|unique:indicateurs_de_gouvernance,nom',
+            'nom'   => ['required', 'string', Rule::unique('indicateurs_de_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'type'                      => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description'               => 'nullable|max:255',
             //'can_have_multiple_reponse' => ['sometimes','boolean'],

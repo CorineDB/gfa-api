@@ -32,7 +32,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'libelle'          => 'required|max:255|unique:formulaires_de_gouvernance,libelle',
+            'libelle'               => ['required', 'string', Rule::unique('formulaires_de_gouvernance', 'libelle')->ignore($this->evaluation_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'annee_exercice'   => ['required', 'integer', Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
                 ->where(function ($query) {
                     return $query->where('type', request()->input('type'));

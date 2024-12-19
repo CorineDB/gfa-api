@@ -5,6 +5,7 @@ namespace App\Http\Requests\option_de_reponse;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -26,7 +27,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'libelle' => 'required|max:255|unique:options_de_reponse,libelle',
+            'libelle'   => ['sometimes', 'string', Rule::unique('options_de_reponse', 'libelle')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'nullable|max:255'
         ];
     }

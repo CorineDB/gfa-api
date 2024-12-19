@@ -5,6 +5,7 @@ namespace App\Http\Requests\indicateur_value_keys;
 use App\Models\Unitee;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -26,7 +27,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            "libelle" => ["required", "max:255", "unique:indicateur_value_keys,libelle"],
+            'libelle'                       => ['required', 'string', Rule::unique('indicateur_value_keys', 'libelle')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             "key" => ["required", "max:255", "unique:indicateur_value_keys,key"],
             "description" => "nullable", "max:255",
             "uniteeMesureId"   => ["required", new HashValidatorRule(new Unitee())]

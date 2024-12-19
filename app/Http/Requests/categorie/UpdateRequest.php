@@ -32,7 +32,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom'           => ['sometimes', 'string', Rule::unique('categories', 'nom')->ignore($this->categorie)->where("programmeId", '!=', auth()->user()->programmeId)->whereNull('deleted_at')],
+            'nom'           => ['sometimes', 'string', Rule::unique('categories', 'nom')->ignore($this->categorie)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             "type"          => ["sometimes", "in:impact,effet,produit"],
             "indice"        => ["sometimes", "integer", "min:0"],
             'categorieId'   => ['sometimes', 'nullable', new HashValidatorRule(new Categorie())]

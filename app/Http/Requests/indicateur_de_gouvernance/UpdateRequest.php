@@ -36,7 +36,8 @@ class UpdateRequest extends FormRequest
 
         // Base rules
         $rules = [
-            'nom'                       => ['sometimes', 'max:255', Rule::unique('indicateurs_de_gouvernance', 'nom')->ignore($this->indicateur_de_gouvernance)->whereNull('deleted_at')],
+            'nom'                       => ['sometimes', 'string', Rule::unique('indicateurs_de_gouvernance', 'nom')->ignore($this->indicateur_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'type'                      => 'sometimes|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description'               => 'sometimes|nullable|max:255',
             /*'can_have_multiple_reponse' => 'sometimes|boolean',
