@@ -16,9 +16,7 @@ class PrincipeDeGouvernanceResource extends JsonResource
     {
         return [
             'id' => $this->secure_id,
-            'nom' => $this->nom,
-            'description' => $this->description,
-            'programmeId'   => $this->programme ? $this->programme->secure_id : null
+            'nom' => $this->nom
         ];
     }
 }
