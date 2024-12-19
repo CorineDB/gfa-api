@@ -60,33 +60,19 @@ class Organisation extends Model
 
                 if ((($organisation->projet) && ($organisation->projet->statut > -1)) || ($organisation->evaluations_de_gouvernance->count() > 0) || ($organisation->suivis_indicateurs->count() > 0 ) || ($organisation->indicateurs->count() > 0 ) || ($organisation->soumissions->count() > 0 ) || ($organisation->fiches_de_synthese->count() > 0 ) || ($organisation->profiles->count() > 0 )) {
                     // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete because there are associated resource. ".$organisation->projet->toJson());
+                    throw new Exception("Cannot delete because there are associated resource. ".$organisation->projet);
                 }
-                
-            } catch (\Throwable $th) {
-                DB::rollBack();
-
-                throw new Exception($th->getMessage(), 1);
-            }
-        });
-
-        static::deleted(function($organisation) {
-
-            DB::beginTransaction();
-            try {
 
                 $organisation->user()->delete();
 
                 $organisation->teamMembers->each(function ($teamMember) {
                     optional($teamMember->user)->update(['statut' => -1]);
                 });
-
-                DB::commit();
+                
             } catch (\Throwable $th) {
                 DB::rollBack();
 
                 throw new Exception($th->getMessage(), 1);
-
             }
         });
     }

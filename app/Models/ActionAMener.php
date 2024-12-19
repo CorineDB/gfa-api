@@ -32,7 +32,7 @@ class ActionAMener extends Model
     {
         parent::boot();
 
-        static::deleted(function ($action_a_mener) {
+        static::deleting(function ($action_a_mener) {
 
             DB::beginTransaction();
             try {
