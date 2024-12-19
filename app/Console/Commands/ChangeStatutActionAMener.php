@@ -62,7 +62,9 @@ class ChangeStatutActionAMener extends Command
             where('debut', '<=', $today)
             ->where('statut', '<', 0)
             ->get();
-
+        
+        $this->info("Generated result for soumission ID {$startingActions}:");
+        
         DB::table('actions_a_mener')
             ->whereIn('id', $startingActions->pluck('id'))
             ->update(['statut' => 0]);
