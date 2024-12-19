@@ -32,7 +32,6 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom'  => ['sometimes','string', Rule::unique('categories','nom')->ignore($this->categorie)->whereNull('deleted_at')],
             'nom'           => ['sometimes', 'string', Rule::unique('categories', 'nom')->ignore($this->categorie)->whereNot("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
 
             "type"          => ["sometimes", "in:impact,effet,produit"],
