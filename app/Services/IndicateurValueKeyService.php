@@ -40,7 +40,14 @@ class IndicateurValueKeyService extends BaseService implements IndicateurValueKe
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursValueKeyResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $indicateurs_values_keys = collect([]);
+
+            if(!Auth::user()->hasRole('administrateur')){
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $indicateurs_values_keys = Auth::user()->programme->indicateurs_values_keys;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursValueKeyResource::collection($indicateurs_values_keys), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -70,7 +77,7 @@ class IndicateurValueKeyService extends BaseService implements IndicateurValueKe
 
         try {
 
-            $indicateurValueKey = $this->repository->create($attributs);
+            $indicateurValueKey = $this->repository->create(array_merge($attributs, ['programmeId' => Auth::user()->programme->id]));
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
@@ -99,7 +106,7 @@ class IndicateurValueKeyService extends BaseService implements IndicateurValueKe
 
             if(!is_object($indicateurValueKey) && !($indicateurValueKey = $this->repository->findById($indicateurValueKey))) throw new Exception("Cle d'indicateur introuvable.", Response::HTTP_NOT_FOUND);
 
-            $this->repository->update($indicateurValueKey->id, $attributs);
+            $this->repository->update($indicateurValueKey->id, array_merge($attributs, ['programmeId' => Auth::user()->programme->id]));
 
             $indicateurValueKey->refresh();
 
