@@ -18,12 +18,6 @@ class UpdateColumnNomFromCategoriesTable extends Migration
             Schema::table('categories', function (Blueprint $table) {
                 // Check if the column exists
                 if(Schema::hasColumn('categories', 'nom')){
-                    
-                    // Fallback: Drop unique constraint using column name
-                    $table->dropUnique(['nom']);
-
-
-/* 
                     // Query to fetch the unique constraint name for the 'nom' column
                     $uniqueKey = \DB::select(\DB::raw("
                         SELECT CONSTRAINT_NAME 
@@ -40,8 +34,8 @@ class UpdateColumnNomFromCategoriesTable extends Migration
                         // Use try-catch to handle potential errors gracefully
                         try {
                             // Drop the unique constraint
-                            //$table->dropUnique("$uniqueConstraintName");
-                            $table->dropUnique("categories_nom_unique");
+                            $table->dropUnique("$uniqueConstraintName");
+                            //$table->dropUnique("categories_nom_unique");
                             //$table->dropUnique(['nom']);
                         } catch (\Illuminate\Database\QueryException $e) {
                             // Log a warning if the unique constraint couldn't be dropped
@@ -50,7 +44,7 @@ class UpdateColumnNomFromCategoriesTable extends Migration
                     }else {
                         // Fallback: Drop unique constraint using column name
                         $table->dropUnique(['nom']);
-                    } */
+                    }
                 }
             });
         }
