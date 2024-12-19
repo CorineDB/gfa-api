@@ -963,7 +963,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     
                     Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants')->middleware('permission:envoyer-une-invitation');
 
-                    Route::get('{evaluation_de_gouvernance}/principes-de-gouvernance', 'principes_de_gouvernance')->name('principes-de-gouvernance')->middleware('permission:voir-une-evaluation-de-gouvernance');
+                    Route::get('{evaluation_de_gouvernance}/principes-de-gouvernance', 'principes')->name('principes-de-gouvernance')->middleware('permission:voir-une-evaluation-de-gouvernance');
 
                     Route::get('{evaluation_de_gouvernance}/recommandations', 'recommandations')->name('recommandations')->middleware('permission:voir-une-recommandation');
                     Route::get('{evaluation_de_gouvernance}/actions-a-mener', 'actions_a_mener')->name('actions-a-mener')->middleware('permission:voir-une-action-a-mener');
