@@ -67,7 +67,9 @@ class UpdateColumnNomFromCategoriesTable extends Migration
             Schema::table('categories', function (Blueprint $table) {
                 // Check if the column exists
                 if(Schema::hasColumn('categories', 'nom')){
-                    $table->string('nom')->unique()->change();
+                    // Re-add the unique constraint on the 'nom' column if needed
+                        $table->unique('nom');
+                    
                 }
             });
         }
