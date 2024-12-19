@@ -42,10 +42,9 @@ class CategorieService extends BaseService implements CategorieServiceInterface
     {
         try
         {
+            $categories = [];
+            
             if(!Auth::user()->hasRole('administrateur')){
-                $categories = $this->repository->all();
-            }
-            else{
                 $categories = Auth::user()->programme->categories;
             }
 
