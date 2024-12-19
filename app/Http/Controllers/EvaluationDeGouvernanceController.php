@@ -122,6 +122,11 @@ class EvaluationDeGouvernanceController extends Controller
         return $this->evaluationDeGouvernanceService->actions_a_mener($id);
     }
 
+    public function principes($id)
+    {
+        return $this->evaluationDeGouvernanceService->principes_de_gouvernance($id);
+    }
+
     public function feuille_de_route($id)
     {
         return $this->evaluationDeGouvernanceService->feuille_de_route($id);

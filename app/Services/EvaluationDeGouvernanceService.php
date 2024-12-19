@@ -7,6 +7,7 @@ use App\Http\Resources\gouvernance\CategoriesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
+use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
 use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
@@ -635,6 +636,19 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ['recommandations' => RecommandationsResource::collection($feuille_de_route->recommandations), 'actions_a_mener' => ActionsAMenerResource::collection($feuille_de_route->actions_a_mener)], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function principes_de_gouvernance($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $principes_de_gouvernance = $evaluationDeGouvernance->principes_de_gouvernance();
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => PrincipeDeGouvernanceResource::collection($principes_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
