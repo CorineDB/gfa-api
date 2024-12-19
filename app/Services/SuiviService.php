@@ -108,7 +108,7 @@ class SuiviService extends BaseService implements SuiviServiceInterface
         {
             if(!($tache = $this->tacheRepository->findById($attributs['tacheId']))) throw new Exception( "Cette tache n'existe pas", 500);
 
-            $suivi = $tache->suivis()->create(array_merge($attributs, ['poidsActuel'=> $tache->poids]));
+            $suivi = $tache->suivis()->create(array_merge($attributs, ['poidsActuel'=> $tache->poids, 'programmeId' => auth()->user()->programmeId]));
 
             //$tache->statuts()->create(['etat' => 2]);
 

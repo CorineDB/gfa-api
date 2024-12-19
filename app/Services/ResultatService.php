@@ -53,14 +53,14 @@ class ResultatService extends BaseService implements ResultatServiceInterface
             {
                 $programme = $this->programmeRepository->findById($attributs['programmeId']);
 
-                $resultat = $programme->resultats()->create($attributs);
+                $resultat = $programme->resultats()->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
             }
 
             else
             {
                 $projet = $this->projetRepository->findById($attributs['projetId']);
 
-                $resultat = $projet->resultats()->create($attributs);
+                $resultat = $projet->resultats()->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
             }
 
             DB::commit();

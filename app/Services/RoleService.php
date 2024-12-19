@@ -76,7 +76,7 @@ class RoleService extends BaseService implements RoleServiceInterface
 
             $idSearch = Permission::where('slug', 'voir-un-projet')->first();
 
-            $role = $this->repository->fill($attributs);
+            $role = $this->repository->fill(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
 
             $role->save();
 

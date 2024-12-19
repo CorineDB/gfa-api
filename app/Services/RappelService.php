@@ -45,7 +45,7 @@ class RappelService extends BaseService implements RappelServiceInterface
             $user = Auth::user();
             $attributs = array_merge($attributs, ['userId' => $user->id]);
 
-            $rappel = $this->repository->create($attributs);
+            $rappel = $this->repository->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 

@@ -40,10 +40,9 @@ class OptionDeReponseService extends BaseService implements OptionDeReponseServi
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
-                $optionsDeReponse = $this->repository->all();
-            }
-            else{
+            $optionsDeReponse = collect([]);
+            
+            if(!Auth::user()->hasRole('administrateur')){
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $optionsDeReponse = Auth::user()->programme->optionsDeReponse;
             }
