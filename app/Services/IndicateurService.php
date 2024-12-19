@@ -9,6 +9,7 @@ use App\Http\Resources\suivis\SuivisResource;
 use App\Models\Indicateur;
 use App\Models\IndicateurValueKey;
 use App\Models\Organisation;
+use App\Models\Programme;
 use App\Models\Site;
 use App\Models\Unitee;
 use App\Models\UniteeDeGestion;
@@ -346,7 +347,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             }
 
-            $valeurDeBase = $this->setIndicateurValue($indicateur, $valeursDeBase);
+            $valeurDeBase = $this->setIndicateurValue($indicateur, $programme, $valeursDeBase);
 
             /*
                 if (is_array($valeursDeBase)) {
@@ -371,7 +372,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $indicateur->valeurDeBase = $valeurDeBase;
 
-            $this->setIndicateurValeursCible($indicateur, $attributs["anneesCible"]);
+            $this->setIndicateurValeursCible($indicateur, $programme, $attributs["anneesCible"]);
 
             $this->changeState(0);
 
@@ -739,7 +740,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if(!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
 
-            $this->setIndicateurValeursCible($indicateur, $attributs["anneesCible"]);
+            $this->setIndicateurValeursCible($indicateur, auth()->user()->programme->id, $attributs["anneesCible"]);
 
             $indicateur->refresh();
 
@@ -928,12 +929,12 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      * 
      * @return array
      */
-    protected function setIndicateurValue(Indicateur $indicateur, $valeursDeBase, array $valeurDeBase =[]){
+    protected function setIndicateurValue(Indicateur $indicateur, Programme $programme, $valeursDeBase, array $valeurDeBase =[]){
 
         if (is_array($valeursDeBase)) {
             foreach ($valeursDeBase as $key => $item) {
                 if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $item['keyId'])->first())) {
-                    $valeur = $indicateur->valeursDeBase()->create(["value" => $item["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+                    $valeur = $indicateur->valeursDeBase()->create(["value" => $item["value"], "indicateurValueKeyMapId" => $key->pivot->id, 'programmeId' => $programme->id]);
 
                     $valeurDeBase = array_merge($valeurDeBase, ["{$key->key}" => $valeur->value]);
                 }
@@ -944,7 +945,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if (is_null($mapKey)) throw new Exception("Cle d'indicateur inconnu.", 404);
 
-            $valeur = $indicateur->valeursDeBase()->create(["value" => $valeursDeBase, "indicateurValueKeyMapId" => $mapKey]);
+            $valeur = $indicateur->valeursDeBase()->create(["value" => $valeursDeBase, "indicateurValueKeyMapId" => $mapKey, 'programmeId' => $programme->id]);
 
             $valeurDeBase = array_merge($valeurDeBase, ["{$indicateur->valueKey()->key}" => $valeur->value]);
         }
@@ -961,7 +962,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      * 
      * @return array
      */
-    protected function setIndicateurValeursCible(Indicateur $indicateur, $annneesCible =[]){
+    protected function setIndicateurValeursCible(Indicateur $indicateur, Programme $programme, $annneesCible =[]){
         if (is_array($annneesCible)) {
             foreach ($annneesCible as $key => $anneeCible) {
 
@@ -969,7 +970,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                     if (!array_key_exists('valeurCible', $anneeCible) || !isset($anneeCible['valeurCible'])) throw new Exception("Veuillez préciser la valeur cible de l'année {$anneeCible['annee']}.", 400);
 
-                    $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($anneeCible, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur)]));
+                    $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($anneeCible, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur), 'programmeId' => $programme->id]));
                     $valeurCibleIndicateur->save();
                     $valeurCibleIndicateur->refresh();
 
@@ -980,7 +981,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                         foreach ($anneeCible["valeurCible"] as $key => $data) {
 
                             if (($key = $indicateur->valueKeys()->where("indicateur_value_keys.id", $data['keyId'])->first())) {
-                                $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $data["value"], "indicateurValueKeyMapId" => $key->pivot->id]);
+                                $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $data["value"], "indicateurValueKeyMapId" => $key->pivot->id, 'programmeId' => $programme->id]);
 
                                 $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
                             }
@@ -990,7 +991,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     
                     else if (!$indicateur->agreger && !is_array($anneeCible["valeurCible"])) {
                         //dd($anneeCible["valeurCible"]);
-                        $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
+                        $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id, 'programmeId' => $programme->id]);
                         
                         $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
                         //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
