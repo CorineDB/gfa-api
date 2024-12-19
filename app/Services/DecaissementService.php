@@ -119,7 +119,7 @@ class DecaissementService extends BaseService implements DecaissementServiceInte
             
             $user = Auth::user();
 
-            $attributs = array_merge($attributs, ['userId' => $user->id]);
+            $attributs = array_merge($attributs, ['userId' => $user->id, 'programmeId' => auth()->user()->programmeId]);
 
             switch ($attributs['methodeDePaiement']) {
                 case 0:

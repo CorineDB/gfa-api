@@ -64,6 +64,7 @@ trait HelperTrait
                     'fichiertable_id'      => $model ? $model->id : 1,
                     'auteurId'             => Auth::user()->id,
                     'description'         => $description,
+                    'programmeId'         => auth()->user()->programmeId
                   ]);
 
                 if($description == "image" || $description == "logo" || $description == "photo")
@@ -96,6 +97,7 @@ trait HelperTrait
                     'fichiertable_type'    => $model ? get_class($model) : 'Autre',
                     'fichiertable_id'      => $model ? $model->id : 1,
                     'auteurId'             => Auth::user()->id,
+                    'programmeId'         => auth()->user()->programmeId,
                     'description'         => $fichier->description,
                     'sharedId'           => $shared['userId']
                   ]);

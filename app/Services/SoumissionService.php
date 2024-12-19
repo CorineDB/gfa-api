@@ -52,11 +52,12 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
+
         try {
-            if (Auth::user()->hasRole('administrateur')) {
-                $soumissions = $this->repository->all();
-            } else {
-                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+
+            $soumissions = collect([]);
+
+            if (!Auth::user()->hasRole('administrateur')) {
                 $soumissions = Auth::user()->programme->soumissions;
             }
 

@@ -94,7 +94,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             if($activiteduree->fin < $attributs['fin']) throw new Exception( "La date de fin de la tache est supérieur à celui de l'activite", 500);*/
 
-            $attributs = array_merge($attributs, ['activiteId' => $activite->id]);
+            $attributs = array_merge($attributs, ['activiteId' => $activite->id, 'programmeId' => auth()->user()->programmeId]);
 
             $attributs = array_merge($attributs, ['statut' => -1]);
 

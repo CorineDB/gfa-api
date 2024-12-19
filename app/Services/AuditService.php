@@ -83,7 +83,7 @@ class AuditService extends BaseService implements AuditServiceInterface
 
             if($projet == null) throw new Exception("Ce projet n'existe pas", 500);
 
-            $attributs = array_merge($attributs, ['projetId' => $projet->id]);
+            $attributs = array_merge($attributs, ['projetId' => $projet->id, 'programmeId' => auth()->user()->programmeId]);
 
             switch ($attributs['categorie']) {
                 case 0:

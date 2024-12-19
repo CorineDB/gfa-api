@@ -99,7 +99,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
                     throw new Exception("Le plan ne peut qu'être faire sur les 4 trimestres d'une année.", 1);
             }
 
-            $planDecaissement = $this->repository->create($attributs);
+            $planDecaissement = $this->repository->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
