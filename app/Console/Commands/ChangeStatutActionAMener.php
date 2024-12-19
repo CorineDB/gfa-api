@@ -81,6 +81,15 @@ class ChangeStatutActionAMener extends Command
             Log::error('Failed to send notifications: ' . $e->getMessage());
         } */
 
+        $endedActions = ActionAMener::where('end_at', '<=', $today)
+            ->where('statut', '==', 0)
+            ->get();
+
+        // Change the status based on the date        
+        DB::table('actions_a_mener')
+            ->whereIn('id', $endedActions->pluck('id'))
+            ->update(['statut' => 1]); // Assuming '1' indicates a finished evaluation
+
 
         $endedActions = ActionAMener::where('end_at', '<=', $today)
             ->where('statut', '==', 0)
