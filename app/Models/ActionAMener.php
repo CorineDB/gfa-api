@@ -83,7 +83,7 @@ class ActionAMener extends Model
      */
     public function indicateurs(): MorphToMany
     {
-        return $this->morphedByMany(Indicateur::class, 'actionable');
+        return $this->morphedByMany(IndicateurDeGouvernance::class, 'actionable');
     }
 
     /**

@@ -27,10 +27,22 @@ class Indicateur extends Model
         parent::boot();
 
         static::deleting(function ($indicateur) {
-            if (($indicateur->ug_responsable->count() > 0) || ($indicateur->organisations_responsable->count() > 0) || ($indicateur->valeursCible->count() > 0) || ($indicateur->valeursDeBase->count() > 0) || ($indicateur->sites->count() > 0)) {
+
+            if (($indicateur->suivis->pluck('suivisIndicateur')->count() > 0)) {
                 // Prevent deletion by throwing an exception
                 throw new Exception("Cannot delete");
             }
+            /* if (($indicateur->ug_responsable->count() > 0) || ($indicateur->organisations_responsable->count() > 0) || ($indicateur->valeursCible->count() > 0) || ($indicateur->valeursDeBase->count() > 0) || ($indicateur->sites->count() > 0)) {
+                // Prevent deletion by throwing an exception
+                throw new Exception("Cannot delete");
+            } */
+
+            $indicateur->ug_responsable()->detach();
+            $indicateur->organisations_responsable()->detach();
+            $indicateur->sites()->detach();
+            $indicateur->valeursDeBase()->detach();
+            $indicateur->valeursCible()->detach();
+            $indicateur->valueKeys()->detach();
         });
 
         static::deleted(function($indicateur) {
@@ -238,22 +250,6 @@ class Indicateur extends Model
             }
         });
         return $totals;
-    }
-
-    /**
-     * Get all of the actions_a_mener for the indicateur.
-     */
-    public function actions_a_mener(): MorphToMany
-    {
-        return $this->morphToMany(ActionAMener::class, 'actionable');
-    }
-
-    /**
-     * Get all of the recommandations for the indicateur.
-     */
-    public function recommandations(): MorphMany
-    {
-        return $this->morphMany(Recommandation::class, 'recommandationable');
     }
 
     /**
