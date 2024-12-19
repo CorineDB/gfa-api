@@ -43,6 +43,7 @@ class ProjetStatistiqueResource extends JsonResource
             "statut" => $this->statut,
             "tep" => round($this->tep, 2),
             "tef" => round($this->tef, 2),
+            "consommer" => round($this->consommer, 2),
             "tepByAnnee" => round($this->tepByAnnee, 2),
             "fichiers" => FichierResource::collection($this->allFichiers()->where('sharedId', null)),
             "tauxDecaissementParAnnee" => $this->tauxDeDecaissementParAnnee(),

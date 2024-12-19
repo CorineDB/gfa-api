@@ -476,7 +476,6 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                                                 where('profilable_id', $projet->programme->uniteeDeGestion->profilable->id)->
                                                 /*where('id', '!=', $user->id)->*/
                                                 get()),
-                    "consommer" => $projet->consommer,
                     "nbrJourRestant" => $now->diff($fin)->days,
                     "decaissementPrevu" => $projet->planDeDecaissementParAnnee(date('Y'))['pret'],
                     "decaissementObtenu" => $decaissementObtenu,
