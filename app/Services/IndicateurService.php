@@ -381,7 +381,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $this->changeState(1);
 
             if(isset($attributs['responsables']['ug'])){
-                $indicateur->ug_responsable()->attach([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
+                $indicateur->ug_responsable()->attach([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $programme->id, "created_at" => now(), "updated_at" => now()]]);
             }
 
             if(isset($attributs['responsables']['organisations'])){
@@ -394,7 +394,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     // Add directly to the array with the expected format
                     $responsables[$organisation->id] = [
                         "responsableable_type" => Organisation::class,
-                        "programmeId" => $attributs["programmeId"],
+                        "programmeId" => $programme->id,
                         "created_at" => now(),
                         "updated_at" => now()
                     ];
@@ -631,7 +631,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $this->changeState(1);
 
             if(isset($attributs['responsables']['ug'])){
-                $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $attributs["programmeId"], "created_at" => now(), "updated_at" => now()]]);
+                $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $programme->id, "created_at" => now(), "updated_at" => now()]]);
             }
 
             if(isset($attributs['responsables']['organisations'])){
@@ -644,7 +644,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     // Add directly to the array with the expected format
                     $responsables[$organisation->id] = [
                         "responsableable_type" => Organisation::class,
-                        "programmeId" => $attributs["programmeId"],
+                        "programmeId" => $programme->id,
                         "created_at" => now(),
                         "updated_at" => now()
                     ];

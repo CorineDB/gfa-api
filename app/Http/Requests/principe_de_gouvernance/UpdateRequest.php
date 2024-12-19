@@ -33,7 +33,8 @@ class UpdateRequest extends FormRequest
         //dd($this->principe_de_gouvernance);
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('principes_de_gouvernance', 'nom')->ignore($this->principe_de_gouvernance)->whereNull('deleted_at')],
+            'nom'           => ['sometimes', 'string', Rule::unique('principes_de_gouvernance', 'nom')->ignore($this->principe_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'sometimes|nullable|max:255'
         ];
     }

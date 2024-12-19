@@ -35,7 +35,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'intitule'  => ['sometimes','max:255', Rule::unique('sources_de_verification', 'intitule')->ignore($this->source_de_verification)->whereNull('deleted_at')],
+            'intitule'               => ['sometimes', 'string', Rule::unique('sources_de_verification', 'intitule')->ignore($this->source_de_verification)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             'description' => 'sometimes|nullable|max:255'
         ];
     }

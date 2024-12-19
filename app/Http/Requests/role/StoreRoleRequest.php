@@ -3,6 +3,7 @@
 namespace App\Http\Requests\role;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRoleRequest extends FormRequest
 {
@@ -24,7 +25,8 @@ class StoreRoleRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom' => 'required|max:255|unique:roles,nom',
+            'nom'               => ['required', 'string', Rule::unique('roles', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'required|max:255'
         ];
     }

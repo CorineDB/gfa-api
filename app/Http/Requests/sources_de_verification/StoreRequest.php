@@ -5,6 +5,7 @@ namespace App\Http\Requests\sources_de_verification;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -26,7 +27,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'intitule' => 'required|max:255|unique:sources_de_verification,intitule',
+            'intitule'               => ['required', 'string', Rule::unique('sources_de_verification', 'intitule')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             'description' => 'nullable|max:255'
         ];
     }

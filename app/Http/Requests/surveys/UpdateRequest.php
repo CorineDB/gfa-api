@@ -33,7 +33,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'intitule'               => ['sometimes','max:255', Rule::unique('surveys', 'intitule')->ignore($this->survey)->whereNull('deleted_at')],
+            'intitule'               => ['sometimes', 'string', Rule::unique('surveys', 'intitule')->ignore($this->survey)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'description'           => 'nullable|max:255',
             'prive'                 => 'required|boolean:false',

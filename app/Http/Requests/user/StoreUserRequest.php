@@ -6,6 +6,7 @@ use App\Models\Programme;
 use App\Models\Role;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class StoreUserRequest extends FormRequest
@@ -30,8 +31,9 @@ class StoreUserRequest extends FormRequest
         return [
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'contact' => 'nullable|max:12|unique:users',
-            'email' => 'required|email|max:255|unique:users',
+            'contact'               => ['required', 'string','max:12', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'email'               => ['required', 'email', 'string', Rule::unique('users', 'email')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'roles'  => 'required|array|min:1',
             'roles.*'     => ['distinct', new HashValidatorRule(new Role())],
             'programmeId'               => ['sometimes', new HashValidatorRule(new Programme()), function(){

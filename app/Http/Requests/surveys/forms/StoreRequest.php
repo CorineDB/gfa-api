@@ -3,6 +3,7 @@
 namespace App\Http\Requests\surveys\forms;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -24,7 +25,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'libelle' => 'required|max:255|unique:survey_forms,libelle',
+            'libelle'               => ['required', 'string', Rule::unique('survey_forms', 'libelle')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'nullable|max:255',
             'form_data' => 'required|array|min:1'
         ];

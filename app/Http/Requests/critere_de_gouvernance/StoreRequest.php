@@ -29,7 +29,6 @@ class StoreRequest extends FormRequest
         return [
             //'nom' => 'required|unique:criteres_de_gouvernance,nom',
             'nom'           => ['required', 'string', Rule::unique('criteres_de_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
-
             'description' => 'nullable|max:255'
         ];
     }

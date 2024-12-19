@@ -30,7 +30,8 @@ class StoreRequest extends FormRequest
     {
         return [
 
-            'nom'               => ['required','max:255', Rule::unique('roles')->whereNull('deleted_at')],
+            'nom'               => ['required', 'string', Rule::unique('roles', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description'       => 'required|max:255',
             'permissions'       => 'sometimes|required|array|min:1',
             'permissions.*'     => ['distinct', new DecodeArrayHashIdRule(new Permission())]

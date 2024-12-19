@@ -32,7 +32,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom' => ['required', 'max:255', Rule::unique('unitees','nom')->ignore($this->unitees_de_mesure)->whereNull('deleted_at')],
+            'nom'               => ['sometimes', 'string', Rule::unique('unitees', 'nom')->ignore($this->unitees_de_mesure)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
         ];
     }
 
