@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom'           => ['required', 'string', Rule::unique('categories', 'nom')->where("programmeId", '!=', auth()->user()->programmeId)->whereNull('deleted_at')],
+            'nom'           => ['required', 'string', Rule::unique('categories', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             "type"          => ["required", "in:impact,effet,produit"],
             "indice"        => ["required", "integer", "min:0"],
             'categorieId'   => ['sometimes', 'nullable', new HashValidatorRule(new Categorie())],
