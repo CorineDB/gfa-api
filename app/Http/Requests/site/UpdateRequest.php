@@ -43,7 +43,8 @@ class UpdateRequest extends FormRequest
 
         return [
 
-            'nom'               => ['sometimes', 'max:255', Rule::unique('sites', 'nom')->ignore($this->site->id)->whereNull('deleted_at')],
+            'nom'               => ['sometimes', 'string', Rule::unique('sites', 'nom')->ignore($this->site->id)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'quartier'          => 'required|string',
             'arrondissement'    => 'required|string',
             'commune'           => 'required|string',

@@ -5,6 +5,7 @@ namespace App\Http\Requests\surveys;
 use App\Models\SurveyForm;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -26,7 +27,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'intitule'               => 'required|max:255|unique:surveys,intitule',
+            'intitule'               => ['required', 'string', Rule::unique('surveys', 'intitule')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description'           => 'nullable|max:255',
             'prive'                 => 'required|boolean:false',
             'surveyFormId'          => ['required', new HashValidatorRule(new SurveyForm())],

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\principe_de_gouvernance;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -24,7 +25,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom' => 'required|max:255|unique:principes_de_gouvernance,nom',
+            'nom'           => ['required', 'string', Rule::unique('principes_de_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'nullable|max:255'
         ];
     }

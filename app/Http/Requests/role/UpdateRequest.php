@@ -29,7 +29,8 @@ class UpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom'  => ['required','max:255', Rule::unique('roles')->ignore($this->role)->whereNull('deleted_at')],
+            'nom'               => ['sometimes', 'string', Rule::unique('roles', 'nom')->ignore($this->role)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'required|max:255',
             'permissions'       => 'sometimes|required|array|min:1',
             'permissions.*'     => ['distinct', new DecodeArrayHashIdRule(new Permission())]

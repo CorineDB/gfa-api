@@ -31,7 +31,8 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'libelle'  => ['sometimes','max:255', Rule::unique('survey_forms', 'libelle')->ignore($this->survey)->whereNull('deleted_at')],
+            'libelle'               => ['sometimes', 'string', Rule::unique('survey_forms', 'libelle')->ignore($this->survey)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'sometimes|nullable|max:255',
             'form_data' => 'sometimes|array|min:1'
         ];

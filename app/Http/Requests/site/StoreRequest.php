@@ -39,7 +39,8 @@ class StoreRequest extends FormRequest
 
         return [
 
-            'nom'               => ['required', Rule::unique('sites', 'nom')->whereNull('deleted_at')],
+            'nom'               => ['required', 'string', Rule::unique('sites', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'quartier'          => 'required|string',
             'arrondissement'    => 'required|string',
             'commune'           => 'required|string',
