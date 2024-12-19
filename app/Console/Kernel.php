@@ -47,7 +47,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
 
-        $schedule->command('change-statut:action-a-mener')->dailyAt('00:00');
+        $schedule->command('change-statut:action-a-mener')->everyMinute('00:00');
 
         $backupConfig = AlerteConfig::where('module', 'backup')->first();
 
