@@ -10,7 +10,6 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Suivi extends Model
 {
-
     use HasSecureIds, HasFactory ;
 
     protected $table = 'suivis';

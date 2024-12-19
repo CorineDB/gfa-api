@@ -31,7 +31,6 @@ class Projet extends Model
         'description',
         'ville',
         'pret',
-        'fondPropre',
         'budgetNational',
         'debut',
         'fin',
