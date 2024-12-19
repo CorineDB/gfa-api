@@ -68,19 +68,6 @@ class EvaluationDeGouvernance extends Model
         });
     }
 
-
-    /**
-     * Set the objectif_attendu attribute.
-     *
-     * @param  mixed  $value
-     * @return void
-     */
-    public function setObjectifAttenduAttribute($value)
-    {
-        // Example logic: Trim whitespace and ensure the value is uppercase
-        $this->attributes['objectif_attendu'] = 1;
-    }
-
     public function soumissions()
     {
         if(auth()->check()){
