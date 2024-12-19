@@ -5,6 +5,7 @@ namespace App\Http\Requests\categorie;
 use App\Models\Categorie;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreRequest extends FormRequest
 {
@@ -27,7 +28,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom'           => 'required|string|unique:categories,nom',
+            'nom'           => ['required', 'string', Rule::unique('categories', 'nom')->whereNot("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             "type"          => ["required", "in:impact,effet,produit"],
             "indice"        => ["required", "integer", "min:0"],
             'categorieId'   => ['sometimes', 'nullable', new HashValidatorRule(new Categorie())],
