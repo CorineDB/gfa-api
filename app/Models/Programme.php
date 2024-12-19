@@ -629,6 +629,23 @@ class Programme extends Model
     {
         return $this->hasMany(Unitee::class, 'programmeId');
     }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function indicateurs_values_keys()
+    {
+        return $this->hasMany(IndicateurValueKey::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function indicateurs_valeurs()
+    {
+        return $this->hasMany(IndicateurValeur::class, 'programmeId');
+    }
+    
     
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
