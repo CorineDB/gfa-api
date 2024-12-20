@@ -811,7 +811,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     return [
                         "id" => $item->secure_id,
                         "nom" => $item->nom,
-                        "objectif_attendu" => $item->pivot->objectif_attendu
+                        "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                     ];
                 }):[],
                 
@@ -879,7 +879,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     return [
                         "id" => $item->secure_id,
                         "nom" => $item->nom,
-                        "objectif_attendu" => $item->pivot->objectif_attendu
+                        "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                     ];
                 }):[],                'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),

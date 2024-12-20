@@ -29,7 +29,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                 return [
                     "id" => $item->secure_id,
                     "nom" => $item->nom,
-                    "objectif_attendu" => $item->pivot->objectif_attendu
+                    "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                 ];
             }):[],
             
