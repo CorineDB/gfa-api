@@ -7,6 +7,7 @@ use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Models\Indicateur;
 use App\Models\Organisation;
 use App\Models\Recommandation;
+use App\Models\UniteeDeGestion;
 use App\Repositories\ActionAMenerRepository;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\IndicateurRepository;
@@ -51,13 +52,12 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
-                $actions_a_mener = $this->repository->all();
-            } else if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
+            $actions_a_mener = [];
+
+            if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
                 $actions_a_mener = Auth::user()->profilable->actions_a_mener;
             }
-            else{
-                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $actions_a_mener = Auth::user()->programme->actions_a_mener;
             }
 
