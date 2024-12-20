@@ -740,7 +740,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if(!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
 
-            $this->setIndicateurValeursCible($indicateur, auth()->user()->programme->id, $attributs["anneesCible"]);
+            $this->setIndicateurValeursCible($indicateur, auth()->user()->programme, $attributs["anneesCible"]);
 
             $indicateur->refresh();
 
