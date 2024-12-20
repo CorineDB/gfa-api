@@ -47,7 +47,7 @@ class PtaService extends BaseService implements PtaServiceInterface
     {
         try
         {
-            if (file_exists(storage_path('app')."/pta/pta.json"))
+            /* if (file_exists(storage_path('app')."/pta/pta.json"))
             {
                 $file = Storage::disk('local')->get('pta/pta.json');
 
@@ -58,7 +58,7 @@ class PtaService extends BaseService implements PtaServiceInterface
 
                     return response()->json(['statut' => 'success', 'message' => null, 'data' => $pta, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 }
-            }
+            } */
 
             if(isset($attributs['programmeId'])){
                 if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
@@ -354,7 +354,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                 }
             }
 
-            if (!file_exists(storage_path('app')."/pta"))
+            /* if (!file_exists(storage_path('app')."/pta"))
             {
                 //mkdir (".".Storage::url('app')."/pta", 0777);
                 File::makeDirectory(storage_path('app').'/pta',0777,true);
@@ -363,7 +363,7 @@ class PtaService extends BaseService implements PtaServiceInterface
             $file = json_encode($pta);
             $filename = "/pta/pta.json";
             $path = storage_path('app').$filename;
-            $bytes = file_put_contents($path, $file);
+            $bytes = file_put_contents($path, $file); */
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $pta, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
