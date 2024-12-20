@@ -41,7 +41,13 @@ class CritereDeGouvernanceService extends BaseService implements CritereDeGouver
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => CriteresDeGouvernanceResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $criteres_de_gouvernance = collect([]);
+            
+            if(!Auth::user()->hasRole('administrateur')){
+                $criteres_de_gouvernance = Auth::user()->programme->criteres_de_gouvernance;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => CriteresDeGouvernanceResource::collection($criteres_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

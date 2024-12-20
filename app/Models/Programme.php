@@ -232,6 +232,11 @@ class Programme extends Model
         return $this->hasMany(SuiviIndicateur::class, 'programmeId');
     }
 
+    public function suivis()
+    {
+        return $this->hasMany(Suivi::class, 'programmeId');
+    }
+
     public function objectifSpecifiques()
     {
         return $this->morphMany(ObjectifSpecifique::class, 'objectifable');

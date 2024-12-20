@@ -42,7 +42,14 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+            $indicateurs_de_gouvernance = collect([]);
+            
+            if(!Auth::user()->hasRole('administrateur')){
+                $indicateurs_de_gouvernance = Auth::user()->programme->indicateurs_de_gouvernance;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($indicateurs_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

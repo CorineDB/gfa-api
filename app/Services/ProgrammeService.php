@@ -1376,7 +1376,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
         try
         {
             $user = Auth::user();
-            $attributs = array_merge($attributs, ['userId' => $user->id]);
+            $attributs = array_merge($attributs, ['userId' => $user->id, 'programmeId' => $user->programme->id]);
 
             $rapport = TemplateRapport::create($attributs);
 
@@ -1403,7 +1403,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
         try
         {
             $user = Auth::user();
-            $attributs = array_merge($attributs, ['userId' => $user->id]);
+            $attributs = array_merge($attributs, ['userId' => $user->id, 'programmeId' => $user->programme->id]);
 
             $rapport = TemplateRapport::findByKey($id);
 
@@ -1465,9 +1465,11 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
         {
             $users = $attributs['destinataires'];
 
+            $user = Auth::user();
             $attributs = array_merge($attributs, [
-                'userId' => Auth::user()->id,
-                'destinataires' => implode(', ', $attributs['destinataires'])
+                'userId' => $user->id,
+                'destinataires' => implode(', ', $attributs['destinataires']),
+                'programmeId' => $user->programme->id
             ]);
 
             $email = EmailRapport::create($attributs);
@@ -1507,8 +1509,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
     public function emailRapports() : JsonResponse
     {
-
-
         try
         {
 

@@ -49,7 +49,6 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                 $formulaires_de_gouvernance = $this->repository->all();
             }
             else{
-                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $formulaires_de_gouvernance = Auth::user()->programme->formulaires_de_gouvernance;
             }
 
