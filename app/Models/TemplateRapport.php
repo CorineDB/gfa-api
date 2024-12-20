@@ -21,4 +21,9 @@ class TemplateRapport extends Model
     {
         return $this->belongsTo(Programme::class, 'programmeId');
     }
+
+    public function preuve()
+    {
+        return $this->morphOne(Fichier::class, 'fichiertable');
+    }
 }
