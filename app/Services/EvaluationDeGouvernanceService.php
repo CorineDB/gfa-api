@@ -917,7 +917,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     // Add directly to the array with the expected format
                     $objectifsAttendu[$principe->id] = [
-                        "objectif_attendu" => $objectifAttendu['outils'],
+                        "objectif_attendu" => json_encode($objectifAttendu['outils']),
                         "programmeId" => auth()->user()->programme->id,
                         "created_at" => now(),
                         "updated_at" => now()
