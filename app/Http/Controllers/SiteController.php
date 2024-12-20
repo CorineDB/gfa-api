@@ -20,7 +20,7 @@ class SiteController extends Controller
      */
     public function __construct(SiteServiceInterface $siteServiceInterface)
     {
-        $this->middleware('role:unitee-de-mesure')->only(['store','update', 'destroy']);
+        $this->middleware('role:unitee-de-gestion')->only(['store','update', 'destroy']);
         $this->middleware('permission:voir-un-site')->only(['index', 'show']);
         $this->middleware('permission:modifier-un-site')->only(['update']);
         $this->middleware('permission:creer-un-site')->only(['store']);
