@@ -52,10 +52,10 @@ class SendEmailJob implements ShouldQueue
 
             if ($this->type == "confirmation-compte") {
                 $details['view'] = "emails.auth.confirmation_compte";
-                $details['subject'] = "Bienvenue dans le projet PAPC";
+                $details['subject'] = "Bienvenue";
                 $details['content'] = [
                     "greeting" => "Bienvenu Mr/Mme " . $this->user->nom,
-                    "introduction" => "Voici vos identifiant de connexion au projet PAPC",
+                    "introduction" => "Voici vos identifiant de connexion",
                     "identifiant" => $this->user->email,
                     "password" => $this->password,
                     "lien" => config("app.url"),
