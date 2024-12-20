@@ -15,7 +15,7 @@ class EditObjectifAttenduColumnOfEvaluationPrincipesDeGouvernanceObjectifsTable 
     {
         Schema::table('evaluation_principes_de_gouvernance_objectifs', function (Blueprint $table) {
             if(Schema::hasColumn('evaluation_principes_de_gouvernance_objectifs', 'objectif_attendu')){
-                $table->json('objectif_attendu')->default(null);
+                $table->json('objectif_attendu')->default(null)->change();
             }
 
         });
