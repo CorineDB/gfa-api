@@ -46,9 +46,7 @@ class SurveyReponseService extends BaseService implements SurveyReponseServiceIn
             $surveyReponses = [];
             
             if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
-                $surveyReponses = Auth::user()->programme->surveys->flatMap(fn($survey) => $survey->survey_reponses ?? []);
-
-                //Auth::user()->profilable->surveys->mapWithKeys(fn($survey) => $survey->survey_reponses);
+                $surveyReponses = Auth::user()->profilable->surveys->flatMap(fn($survey) => $survey->survey_reponses ?? []);
             }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $surveyReponses = Auth::user()->programme->surveys->flatMap(fn($survey) => $survey->survey_reponses ?? []);

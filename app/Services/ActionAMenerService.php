@@ -316,6 +316,8 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     }
                 }
 
+                $action_a_mener->has_upload_preuves = true;
+
                 $action_a_mener->statut == 2;
                 
                 $action_a_mener->save();

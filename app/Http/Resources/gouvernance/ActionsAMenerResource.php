@@ -18,15 +18,16 @@ class ActionsAMenerResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->secure_id,
-            'action' => $this->action,
-            'statut' => $this->statut,
-            'est_valider' => $this->est_valider,
-            'start_at' => Carbon::parse($this->start_at)->format("Y-m-d"),
-            'end_at' => Carbon::parse($this->end_at)->format("Y-m-d"),
-            'validated_at' => Carbon::parse($this->validated_at)->format("Y-m-d"),
-            'evaluationId' => $this->evaluation->secure_id,
-            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'id'                => $this->secure_id,
+            'action'            => $this->action,
+            'statut'            => $this->statut,
+            'est_valider'       => $this->est_valider,
+            'start_at'          => Carbon::parse($this->start_at)->format("Y-m-d"),
+            'end_at'            => Carbon::parse($this->end_at)->format("Y-m-d"),
+            'validated_at'      => Carbon::parse($this->validated_at)->format("Y-m-d"),
+            'evaluationId'      => $this->evaluation->secure_id,
+            'created_at'        => Carbon::parse($this->created_at)->format("Y-m-d"),
+            'has_upload_preuves'=>$this->has_upload_preuves,
             'actionable' => $this->actionable,/* 
             'indicateurs' => $this->indicateurs,
             'principes_de_gouvernance' => $this->principes_de_gouvernance, */

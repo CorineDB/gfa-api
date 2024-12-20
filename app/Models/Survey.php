@@ -19,7 +19,7 @@ class Survey extends Model
 
     protected $default = ['statut' => -1];
 
-    protected $fillable = array('intitule', 'description', 'debut', 'fin', 'prive', 'token', 'nbreParticipants', 'statut', 'surveyFormId', 'programmeId');
+    protected $fillable = array('intitule', 'description', 'debut', 'fin', 'prive', 'token', 'nbreParticipants', 'statut', 'surveyable_id', 'surveyable_type', 'surveyFormId', 'programmeId');
 
     protected $casts = ['statut'  => 'integer', 'nbreParticipants' => 'integer', 'debut'  => 'datetime', 'prive'  => 'boolean', 'fin'  => 'datetime'];
 
@@ -58,6 +58,11 @@ class Survey extends Model
                 throw new Exception($th->getMessage(), 1);
             }
         });
+    }
+
+    public function surveyable()
+    {
+        return $this->morphTo();
     }
 
     public function programme()
