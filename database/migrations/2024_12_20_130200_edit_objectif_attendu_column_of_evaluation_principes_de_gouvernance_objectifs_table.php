@@ -13,7 +13,7 @@ class EditObjectifAttenduColumnOfEvaluationPrincipesDeGouvernanceObjectifsTable 
      */
     public function up()
     {
-        Schema::create('evaluation_principes_de_gouvernance_objectifs', function (Blueprint $table) {
+        Schema::table('evaluation_principes_de_gouvernance_objectifs', function (Blueprint $table) {
             if(Schema::hasColumn('evaluation_principes_de_gouvernance_objectifs', 'objectif_attendu')){
                 $table->json('objectif_attendu')->default(null);
             }
@@ -28,7 +28,7 @@ class EditObjectifAttenduColumnOfEvaluationPrincipesDeGouvernanceObjectifsTable 
      */
     public function down()
     {
-        Schema::create('evaluation_principes_de_gouvernance_objectifs', function (Blueprint $table) {
+        Schema::table('evaluation_principes_de_gouvernance_objectifs', function (Blueprint $table) {
             if(Schema::hasColumn('evaluation_principes_de_gouvernance_objectifs', 'objectif_attendu')){
                 $table->double('objectif_attendu', 8, 2)->default(0)->change();
             }
