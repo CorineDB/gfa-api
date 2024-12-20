@@ -41,13 +41,15 @@ class GenererPta implements ShouldQueue
     public function handle()
     {
 
+        $pta_path="pta/pta{$this->programme->secure_id}".date('Y').".json";
+
         if (!file_exists(storage_path('app') . "/pta")) {
             //mkdir (".".Storage::url('app')."/pta", 0777);
             File::makeDirectory(storage_path('app') . '/pta', 0777, true);
         }
 
         $file = "";
-        $filename = "/pta/pta.json";
+        $filename = "/".$pta_path;
         $path = storage_path('app') . $filename;
         $bytes = file_put_contents($path, $file);
 
@@ -313,7 +315,8 @@ class GenererPta implements ShouldQueue
         }
 
         $file = json_encode($pta);
-        $filename = "/pta/pta.json";
+        $filename = "/".$pta_path;
+        //$filename = "/pta/pta.json";
         $path = storage_path('app') . $filename;
         $bytes = file_put_contents($path, $file);
     }
