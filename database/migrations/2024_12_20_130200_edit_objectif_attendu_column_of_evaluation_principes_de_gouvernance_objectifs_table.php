@@ -30,7 +30,7 @@ class EditObjectifAttenduColumnOfEvaluationPrincipesDeGouvernanceObjectifsTable 
     {
         Schema::table('evaluation_principes_de_gouvernance_objectifs', function (Blueprint $table) {
             if(Schema::hasColumn('evaluation_principes_de_gouvernance_objectifs', 'objectif_attendu')){
-                $table->double('objectif_attendu', 8, 2)->default(0)->change();
+                $table->double('objectif_attendu', 8, 2)->change();
             }
 
         });
