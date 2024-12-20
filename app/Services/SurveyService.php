@@ -51,9 +51,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             $surveys = [];
             
             if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
-                $surveys = Auth::user()->programme->surveys;
-
-                //Auth::user()->profilable->surveys->mapWithKeys(fn($survey) => $survey->survey_reponses);
+                $surveys = Auth::user()->profilable->surveys;
             }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $surveys = Auth::user()->programme->surveys;
@@ -133,7 +131,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
                     Hash::make(strtotime(now()))
             ));
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'surveyFormId' => $surveyForm->id, 'token' => $token]);
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'surveyable_type' => get_class(auth()->user()->profilable), 'surveyable_id' => auth()->user()->profilable->id, 'surveyFormId' => $surveyForm->id, 'token' => $token]);
 
             $survey = $this->repository->create($attributs);
 

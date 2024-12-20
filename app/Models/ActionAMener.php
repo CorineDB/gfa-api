@@ -18,7 +18,7 @@ class ActionAMener extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array("action", "statut", "est_valider", "validated_at", "start_at", "end_at", "actionable_id", "actionable_type","organisationId", 'evaluationId', 'programmeId');
+    protected $fillable = array("action", "statut", "has_upload_preuves", "est_valider", "validated_at", "start_at", "end_at", "actionable_id", "actionable_type","organisationId", 'evaluationId', 'programmeId');
 
     protected $casts = [
         "start_at" => "datetime",
@@ -26,6 +26,7 @@ class ActionAMener extends Model
         "statut" => "integer",
         "est_valider" =>"boolean",
         "validated_at" => "datetime",
+        "has_upload_preuves" => "boolean"
     ];
 
     protected static function boot()

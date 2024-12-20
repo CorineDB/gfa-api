@@ -107,6 +107,16 @@ class Organisation extends Model
         return $this->morphMany(SuiviIndicateur::class, 'suivi_indicateurable');
     }
 
+    public function survey_forms()
+    {
+        return $this->morphMany(SurveyForm::class, 'created_by');
+    }
+
+    public function surveys()
+    {
+        return $this->morphMany(Survey::class, 'surveyable');
+    }
+
 
     /**
      * Get organisations by programme ID.
