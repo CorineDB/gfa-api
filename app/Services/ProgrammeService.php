@@ -34,6 +34,7 @@ use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Repositories\OrganisationRepository;
 use App\Repositories\ProgrammeRepository;
+use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\ProgrammeServiceInterface;
 use Illuminate\Http\JsonResponse;
@@ -54,6 +55,8 @@ use App\Traits\Helpers\LogActivity;
 */
 class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 {
+
+    use HelperTrait;
 
     /**
      * @var service
@@ -1380,6 +1383,10 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $rapport = TemplateRapport::create($attributs);
 
+            if(isset($attributs['document'])){
+                $this->storeFile($attributs['document'], 'rapports/preuves', $rapport, null, 'preuves');
+            }
+
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($rapport));
@@ -1412,6 +1419,11 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             $rapport = $rapport->fill($attributs);
             $rapport->save();
 
+            if(isset($attributs['document'])){
+                $rapport->preuve->delete();
+                $this->storeFile($attributs['document'], 'rapports/preuves', $rapport, null, 'preuves');
+            }
+
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($rapport));
@@ -1439,7 +1451,9 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             if(!$rapport) throw new Exception( "Ce rapport n'existe pas", 404);
 
+            $preuve = $rapport->preuve;
             $rapport->delete();
+            $preuve->delete();
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 

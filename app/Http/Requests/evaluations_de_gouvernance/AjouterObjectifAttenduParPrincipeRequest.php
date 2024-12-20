@@ -4,6 +4,7 @@ namespace App\Http\Requests\evaluations_de_gouvernance;
 
 use App\Models\EvaluationDeGouvernance;
 use App\Models\PrincipeDeGouvernance;
+use App\Rules\DistinctAttributeRule;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -45,7 +46,9 @@ class AjouterObjectifAttenduParPrincipeRequest extends FormRequest
                 }
     
             }],
-            'objectifsAttendu.*.objectif_attendu'  => 'required|numeric|min:0|max:1',
+            'objectifsAttendu.*.outils'  => 'required|array|min:3|max:3',
+            'objectifsAttendu.*.outils.*.type'  => ["required","string","in:factuel,perception,synthetique", new DistinctAttributeRule()],
+            'objectifsAttendu.*.outils.*.objectif_attendu'  => 'required|numeric|min:0|max:1',
 
         ];
     }

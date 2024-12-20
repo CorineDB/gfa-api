@@ -26,7 +26,9 @@ class RapportStoreRequest extends FormRequest
     {
         return [
             'rapport' => 'required',
-            'nom' => 'required'
+            'nom' => 'required',
+            'document' => ["sometimes", "file", 'mimes:txt,doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv', "max:20480"],
+
         ];
     }
 
