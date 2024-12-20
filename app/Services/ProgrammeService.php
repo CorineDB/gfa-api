@@ -1509,11 +1509,10 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
     public function rapports() : JsonResponse
     {
 
-
         try
         {
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => Auth::user()->rapports, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => Auth::user()->rapports->load("preuve"), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {
@@ -1526,7 +1525,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
         try
         {
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => Auth::user()->emailRapports, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => Auth::user()->emailRapports->load("preuve"), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {
