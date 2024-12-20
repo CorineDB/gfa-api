@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\SurveyReponseResource;
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use App\Repositories\SurveyReponseRepository;
 use App\Repositories\SurveyRepository;
 use Core\Services\Contracts\BaseService;
@@ -41,11 +43,15 @@ class SurveyReponseService extends BaseService implements SurveyReponseServiceIn
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
-                $surveyReponses = $this->repository->all();
+            $surveyReponses = [];
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+                $surveyReponses = Auth::user()->programme->surveys->flatMap(fn($survey) => $survey->survey_reponses ?? []);
+
+                //Auth::user()->profilable->surveys->mapWithKeys(fn($survey) => $survey->survey_reponses);
             }
-            else{
-                $surveyReponses = Auth::user()->programme->surveys;
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+                $surveyReponses = Auth::user()->programme->surveys->flatMap(fn($survey) => $survey->survey_reponses ?? []);
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SurveyReponseResource::collection($surveyReponses), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

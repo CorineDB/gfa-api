@@ -41,11 +41,9 @@ class TypeDeGouvernanceService extends BaseService implements TypeDeGouvernanceS
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
-                $types_de_gouvernance = $this->repository->all();
-            }
-            else{
-                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+            $types_de_gouvernance = collect([]);
+            
+            if(!Auth::user()->hasRole('administrateur')){
                 $types_de_gouvernance = Auth::user()->programme->types_de_gouvernance;
             }
 

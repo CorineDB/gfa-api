@@ -47,7 +47,13 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => PrincipesDeGouvernanceResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $principes_de_gouvernance = collect([]);
+            
+            if(!Auth::user()->hasRole('administrateur')){
+                $principes_de_gouvernance = Auth::user()->programme->principes_de_gouvernance;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => PrincipesDeGouvernanceResource::collection($principes_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

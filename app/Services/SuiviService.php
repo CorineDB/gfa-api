@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Events\NewNotification;
 use App\Http\Resources\suivis\SuivisResource;
 use App\Jobs\GenererPta;
+use App\Models\Organisation;
 use App\Models\Tache;
+use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Notifications\SuiviNotification;
 use App\Repositories\SuiviRepository;
@@ -55,7 +57,16 @@ class SuiviService extends BaseService implements SuiviServiceInterface
     {
         try
         {
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisResource::collection($this->repository->all()), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $suivis = [];
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+                $suivis = Auth::user()->profilable->projet->suivis();
+            } 
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+                $suivis = Auth::user()->programme->suivis;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisResource::collection($suivis), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)

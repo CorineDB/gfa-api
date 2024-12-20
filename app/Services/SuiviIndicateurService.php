@@ -8,6 +8,7 @@ use App\Http\Resources\suivi\SuivisIndicateurResource;
 use App\Models\Indicateur;
 use App\Models\Organisation;
 use App\Models\SuiviIndicateur;
+use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Notifications\CommentaireNotification;
 use App\Notifications\SuiviIndicateurNotification;
@@ -58,21 +59,14 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
         try {
 
-            $suivis_indicateurs = [];
-
-            if (Auth::user()->hasRole("organisation")) {
+            $suivis_indicateurs = [];            
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
                 $suivis_indicateurs = Auth::user()->profilable->suivis_indicateurs;
             } 
-            else if(Auth::user()->hasRole("unitee-de-gestion")){
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $suivis_indicateurs = Auth::user()->programme->suivis_indicateurs;
             }
-
-            /* $allsuivis = [];
-            foreach ($this->repository->all() as $suivi) {
-                if ($suivi->indicateur()->programmeId != Auth::user()->programmeId) continue;
-
-                array_push($allsuivis, $suivi);
-            } */
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisIndicateurResource::collection($suivis_indicateurs), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {

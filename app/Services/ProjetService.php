@@ -96,7 +96,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $projets = Auth::user()->programme->projets;
             }
             else{
-                $projets = $this->repository->all();
+                $projets = [];
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $projets instanceof Collection ? ProjetResource::collection($projets) : ($projets ? new ProjetResource($projets) : null), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

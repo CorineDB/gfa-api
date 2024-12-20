@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Http\Resources\gouvernance\SurveyFormResource;
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use App\Repositories\SurveyFormRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\SurveyFormServiceInterface;
@@ -40,10 +42,14 @@ class SurveyFormService extends BaseService implements SurveyFormServiceInterfac
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
-                $surveyForms = $this->repository->all();
+            $surveyForms = [];
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+                $surveyForms = Auth::user()->programme->survey_forms;
+
+                //Auth::user()->profilable->surveys->mapWithKeys(fn($survey) => $survey->survey_reponses);
             }
-            else{
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $surveyForms = Auth::user()->programme->survey_forms;
             }
 

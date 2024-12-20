@@ -7,6 +7,8 @@ use App\Http\Resources\gouvernance\SurveyReponseResource;
 use App\Http\Resources\gouvernance\SurveyResource;
 use App\Http\Resources\gouvernance\SurveysResource;
 use App\Mail\InfoEnquetteIndividuelleEmail;
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use App\Repositories\SurveyRepository;
 use App\Repositories\SurveyFormRepository;
 use Core\Services\Contracts\BaseService;
@@ -46,9 +48,14 @@ class SurveyService extends BaseService implements SurveyServiceInterface
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
         try {
-            if (Auth::user()->hasRole('administrateur')) {
-                $surveys = $this->repository->all();
-            } else {
+            $surveys = [];
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+                $surveys = Auth::user()->programme->surveys;
+
+                //Auth::user()->profilable->surveys->mapWithKeys(fn($survey) => $survey->survey_reponses);
+            }
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $surveys = Auth::user()->programme->surveys;
             }
 

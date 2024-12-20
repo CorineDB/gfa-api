@@ -14,8 +14,10 @@ use App\Http\Resources\suivis\SuivisResource;
 use App\Http\Resources\TacheResource;
 use App\Jobs\GenererPta;
 use App\Models\Composante;
+use App\Models\Organisation;
 use App\Models\Programme;
 use App\Models\Projet;
+use App\Models\UniteeDeGestion;
 use App\Traits\Helpers\LogActivity;
 use App\Traits\Helpers\Pta;
 use Core\Services\Contracts\BaseService;
@@ -60,7 +62,14 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
     public function all(array $attributs = ['*'], array $relations = []): JsonResponse
     {
         try {
-            $activites = Activite::all();
+            $activites = [];            
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+                $activites = Auth::user()->profilable->projet->activites;
+            } 
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+                $activites = Auth::user()->programme->activites;
+            }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ActiviteResource::collection($activites), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

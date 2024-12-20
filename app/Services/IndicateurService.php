@@ -85,7 +85,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 //});
             } elseif (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
                 $indicateurs = Auth::user()->profilable->indicateurs;
-            } else  {
+            } 
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+
                 $indicateurs = Auth::user()->programme->indicateurs;
             }
 
