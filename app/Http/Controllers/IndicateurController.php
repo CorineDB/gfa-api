@@ -24,7 +24,7 @@ class IndicateurController extends Controller
      */
     public function __construct(IndicateurServiceInterface $indicateurServiceInterface)
     {
-        //$this->middleware('role:unitee-de-mesure')->only(['store','update', 'destroy']);
+        //$this->middleware('role:unitee-de-gestion')->only(['store','update', 'destroy']);
         $this->middleware('permission:voir-un-indicateur')->only(['index', 'show', 'filtre']);
         $this->middleware('permission:modifier-un-indicateur')->only(['update']);
         $this->middleware('permission:creer-un-indicateur')->only(['store']);
