@@ -13,9 +13,9 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'PAPC'),
+    'name' => env('APP_NAME', 'GFA-Redevabilite'),
 
-    'mail' => env('MAIL_FROM_ADDRESS', 'PAPC'),
+    'mail' => env('MAIL_FROM_ADDRESS', 'GFA-Redevabilite'),
 
     /*
     |--------------------------------------------------------------------------
