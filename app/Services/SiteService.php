@@ -7,6 +7,7 @@ use App\Models\BailleurSite;
 use App\Models\EntrepriseExecutant;
 use App\Models\Organisation;
 use App\Models\Programme;
+use App\Models\UniteeDeGestion;
 use App\Repositories\SiteRepository;
 use App\Traits\Helpers\LogActivity;
 use Core\Services\Contracts\BaseService;
@@ -45,13 +46,12 @@ class SiteService extends BaseService implements SiteServiceInterface
     {
         try
         {
-            if(!Auth::user()->hasRole('administrateur')){
-                $sites = $this->repository->all();
-            }
-            else if(!Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) != Organisation::class)){
+            $sites = [];
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
                 $sites = Auth::user()->profilable->projet->sites;
-            }
-            else{
+            } 
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $sites = Auth::user()->programme->sites;
             }
 

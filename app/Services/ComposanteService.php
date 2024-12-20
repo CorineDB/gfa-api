@@ -9,6 +9,8 @@ use App\Http\Resources\ActiviteResource;
 use App\Http\Resources\ComposanteResource;
 use App\Http\Resources\suivis\SuivisResource;
 use App\Jobs\GenererPta;
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use App\Traits\Eloquents\DBStatementTrait;
 use App\Traits\Helpers\LogActivity;
 use App\Traits\Helpers\Pta;
@@ -50,7 +52,14 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
     {
         try
         {
-            $composantes = Composante::where('composanteId', 0)->get();
+            $composantes = [];            
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+                $composantes = Auth::user()->profilable->projet->composantes;
+            } 
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+                $composantes = Auth::user()->programme->composantes;
+            }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ComposanteResource::collection($composantes), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

@@ -63,11 +63,11 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             $suiviFinanciers = [];
 
             $projet = null;
-
-            if (Auth::user()->hasRole("organisation")) {
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
                 $projet = Auth::user()->profilable->projet;
             } 
-            else if(Auth::user()->hasRole("unitee-de-gestion")){
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $projet = Auth::user()->programme->projets;
             }
 
@@ -89,14 +89,14 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         try {
 
             $projet = null;
-
-            if (Auth::user()->hasRole("organisation")) {
+            
+            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
                 $projet = Auth::user()->profilable->projet;
             } 
-            else if(Auth::user()->hasRole("unitee-de-gestion")){
-
+            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+                
                 if(isset($attributs['projetId'])){
-                    $projet = Projet::where('id', $attributs['projetId'])->first();
+                    $projet = Auth::user()->programme->projets()->where('id', $attributs['projetId'])->first();
                 }
                 else {
                     $projet = Auth::user()->programme->projets;
