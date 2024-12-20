@@ -47,6 +47,14 @@ class PtaService extends BaseService implements PtaServiceInterface
     {
         try
         {
+
+            if(isset($attributs['programmeId'])){
+                if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
+            }
+            else{
+                $programme = Auth::user()->programme;
+            }
+
             /* if (file_exists(storage_path('app')."/pta/pta.json"))
             {
                 $file = Storage::disk('local')->get('pta/pta.json');
@@ -60,11 +68,20 @@ class PtaService extends BaseService implements PtaServiceInterface
                 }
             } */
 
-            if(isset($attributs['programmeId'])){
-                if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
-            }
-            else{
-                $programme = Auth::user()->programme;
+
+            $pta_path="pta/pta{$programme->secure_id}".date('Y').".json";
+
+            if (file_exists(storage_path('app')."/".$pta_path))
+            {
+                $file = Storage::disk('local')->get($pta_path);
+
+                if(strlen($file))
+                {
+
+                    $pta = json_decode($file);
+
+                    return response()->json(['statut' => 'success', 'message' => null, 'data' => $pta, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                }
             }
 
             if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))
@@ -353,6 +370,17 @@ class PtaService extends BaseService implements PtaServiceInterface
                     "composantes" => $composantestab]);
                 }
             }
+
+            if (!file_exists(storage_path('app')."/pta"))
+            {
+                //mkdir (".".Storage::url('app')."/pta", 0777);
+                File::makeDirectory(storage_path('app').'/pta',0777,true);
+            }
+
+            $file = json_encode($pta);
+            $filename = "/".$pta_path;
+            $path = storage_path('app').$filename;
+            $bytes = file_put_contents($path, $file); 
 
             /* if (!file_exists(storage_path('app')."/pta"))
             {
