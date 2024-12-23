@@ -138,7 +138,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $owner = auth()->user()->profilable;
             }
 
-            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id, 'statut' => -2]);
+            $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id, 'statut' => -1]);
 
             $projet = $organisation->projet()->create($attributs);
 
