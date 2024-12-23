@@ -60,9 +60,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (Auth::user()->hasRole('administrateur')) {
                 $evaluationsDeGouvernance = $this->repository->all();
             } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
-                $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance()->whereHas('organisations', function ($query) {
+                $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance/* ()->whereHas('organisations', function ($query) {
                     $query->where('organisationId', Auth::user()->profilable->id);
-                })->get();
+                })->get() */;
             } else {
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance;
