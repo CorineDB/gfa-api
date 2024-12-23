@@ -549,11 +549,15 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
 
-            /* if($organisationId){
-                if (!(($organisation = app(OrganisationRepository::class)->findById($organisationId)) && $programme->evaluations_de_gouvernance_organisations($organisation->id)->first())) {
+            if($organisationId){
+
+                if (!(($organisation = app(OrganisationRepository::class)->findById($organisationId)))) {
                     throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
-            } */
+                /* if (!(($organisation = app(OrganisationRepository::class)->findById($organisationId)) && $programme->evaluations_de_gouvernance_organisations($organisation->id)->first())) {
+                    throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                } */
+            }
 
             $scores = $programme->evaluations_de_gouvernance_organisations($organisation->id)
                 ->map(function ($organisation) use ($programme) {
