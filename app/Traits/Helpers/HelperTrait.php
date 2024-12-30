@@ -2,8 +2,10 @@
 
 namespace App\Traits\Helpers;
 
+use App\Models\Activite;
 use App\Models\Fichier;
 use App\Models\User;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
@@ -123,4 +125,45 @@ trait HelperTrait
         ];
     }
 
+    public function getCurrentTrimestreDates()
+    {
+        $currentDate = Carbon::now(); // Get the current date
+        $currentMonth = $currentDate->month;
+    
+        if ($currentMonth >= 1 && $currentMonth <= 3) {
+            $startDate = Carbon::create($currentDate->year, 1, 1);
+            $endDate = Carbon::create($currentDate->year, 3, 31);
+        } elseif ($currentMonth >= 4 && $currentMonth <= 6) {
+            $startDate = Carbon::create($currentDate->year, 4, 1);
+            $endDate = Carbon::create($currentDate->year, 6, 30);
+        } elseif ($currentMonth >= 7 && $currentMonth <= 9) {
+            $startDate = Carbon::create($currentDate->year, 7, 1);
+            $endDate = Carbon::create($currentDate->year, 9, 30);
+        } else {
+            $startDate = Carbon::create($currentDate->year, 10, 1);
+            $endDate = Carbon::create($currentDate->year, 12, 31);
+        }
+    
+        return [
+            $startDate->toDateString(),
+            $endDate->toDateString()
+        ];
+    }
+
+    protected function verifiePlageDuree(Activite $activite)
+    {
+        [$debutDate, $finDate] = $this->getCurrentTrimestreDates($activite);
+        
+
+        // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
+        return $activite->durees()
+            ->where(function($query) use ($debutDate, $finDate) {
+                // Check if the task's start date and end date fall within any of the ranges
+                $query->where(function ($subQuery) use ($debutDate, $finDate) {
+                    $subQuery->where('debut', '<=', $debutDate)
+                             ->where('fin', '>=', $finDate);
+                });
+            })
+            ->exists(); // Return true if such a range exists
+    }
 }
