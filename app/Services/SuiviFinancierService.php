@@ -1000,11 +1000,11 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         $suiviFinanciers = [];
         $valideActivites = [];
 
-        /* foreach ($activites as $value) {
+        foreach ($activites as $value) {
             if($this->verifiePlageDuree($value)){
                 array_push($valideActivites, $value);
             }
-        } */
+        }
 
         foreach ($valideActivites as $activite) {
             $suivi = $activite->suiviFinanciers()->when($filterData != null, function ($query) use ($filterData) {
@@ -1031,7 +1031,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             } else {
                 $planParAnnee = $activite->planDeDecaissementParAnnee();
             }
-
 
             $consommerParAnnee = $activite->suiviFinanciers()->when($filterData != null, function ($query) use ($filterData) {
                 $query->where('annee', $filterData['annee']);
