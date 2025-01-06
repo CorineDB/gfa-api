@@ -947,7 +947,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         if ($projet) {
 
             if(is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])){
-                $filterData['annee'] = Carbon::now()->year;
+                $filterData['annee'] = Carbon::now()->year-1;
             }
     
             if(is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])){
