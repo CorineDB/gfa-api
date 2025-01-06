@@ -997,7 +997,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
     protected function getSuiviFinancier($activites, array $filterData = null)
     {
-
         $suiviFinanciers = [];
         $valideActivites = [];
 
@@ -1032,7 +1031,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             } else {
                 $planParAnnee = $activite->planDeDecaissementParAnnee();
             }
-
 
             $consommerParAnnee = $activite->suiviFinanciers()->when($filterData != null, function ($query) use ($filterData) {
                 $query->where('annee', $filterData['annee']);

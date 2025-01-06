@@ -272,10 +272,13 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 }
             }
 
-            $anneeDeBase = Carbon::createFromFormat('Y', $attributs['anneeDeBase'])->format('Y');
+            if (isset($attributs["anneeDeBase"]) && !is_null($attributs["anneeDeBase"])) {
 
-            if (Carbon::parse($programme->debut)->year < $anneeDeBase && $anneeDeBase < Carbon::parse($programme->fin)->year) {
-                throw new Exception("L'année de base doit être une date postérieure ou égale à 2022.", 422);
+                $anneeDeBase = Carbon::createFromFormat('Y', $attributs['anneeDeBase'])->format('Y');
+
+                if (Carbon::parse($programme->debut)->year < $anneeDeBase && $anneeDeBase < Carbon::parse($programme->fin)->year) {
+                    throw new Exception("L'année de base doit être une date postérieure ou égale à 2022.", 422);
+                }
             }
 
             /*if ($unitee->type && !ctype_digit($attributs['valeurDeBase'])) {
@@ -283,9 +286,13 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             }*/
 
             //$indicateur = $this->repository->fill(array_merge($attributs, ["bailleurId" => $attributs['bailleurId'], "uniteeMesureId" => $attributs['uniteeMesureId'], "categorieId" => $attributs['categorieId']]));
+            $valeursDeBase = null;
+            
+            if (isset($attributs["valeurDeBase"]) && !is_null($attributs["valeurDeBase"])) {
+                $valeursDeBase = $attributs["valeurDeBase"];
+                unset($attributs["valeurDeBase"]);
+            }
 
-            $valeursDeBase = $attributs["valeurDeBase"];
-            unset($attributs["valeurDeBase"]);
             unset($attributs["bailleurId"]);
             $indicateur = $this->repository->create($attributs);
 
@@ -349,7 +356,11 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             }
 
-            $valeurDeBase = $this->setIndicateurValue($indicateur, $programme, $valeursDeBase);
+            if (!is_null($valeursDeBase)) {
+                $valeurDeBase = $this->setIndicateurValue($indicateur, $programme, $valeursDeBase);
+
+                $indicateur->valeurDeBase = $valeurDeBase;
+            }
 
             /*
                 if (is_array($valeursDeBase)) {
@@ -372,9 +383,10 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 }
             */
 
-            $indicateur->valeurDeBase = $valeurDeBase;
 
-            $this->setIndicateurValeursCible($indicateur, $programme, $attributs["anneesCible"]);
+            if (isset($attributs["anneesCible"]) && !is_null($attributs["anneesCible"])) {
+                $this->setIndicateurValeursCible($indicateur, $programme, $attributs["anneesCible"]);
+            }
 
             $this->changeState(0);
 
@@ -382,11 +394,11 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $this->changeState(1);
 
-            if(isset($attributs['responsables']['ug'])){
+            if(isset($attributs['responsables']['ug']) && !is_null($attributs['responsables']['ug'])){
                 $indicateur->ug_responsable()->attach([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $programme->id, "created_at" => now(), "updated_at" => now()]]);
             }
 
-            if(isset($attributs['responsables']['organisations'])){
+            if(isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])){
                 $responsables = [];
             
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
@@ -632,11 +644,11 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $this->changeState(1);
 
-            if(isset($attributs['responsables']['ug'])){
+            if(isset($attributs['responsables']['ug']) && !is_null($attributs['responsables']['ug'])){
                 $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $programme->id, "created_at" => now(), "updated_at" => now()]]);
             }
 
-            if(isset($attributs['responsables']['organisations'])){
+            if(isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])){
                 $responsables = [];
             
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {

@@ -31,7 +31,7 @@ class StoreTacheRequest extends FormRequest
         return [
             'nom' => 'required',
             //'statut' => 'required|integer|min:-2|max:2',
-            'poids' => ['sometimes', 'numeric', 'min:0'],
+            'poids' => ['nullable', 'numeric', 'min:0'],
             'activiteId' => ['required', new HashValidatorRule(new Activite())],
             'debut' => ["required", "date", "date_format:Y-m-d", function($attribute, $value, $fail) use ($activite) {
 

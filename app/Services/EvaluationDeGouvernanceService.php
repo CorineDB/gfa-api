@@ -807,13 +807,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 'intitule' => $evaluationDeGouvernance->intitule,
                 'description' => $evaluationDeGouvernance->description,
 
-                'objectif_attendu' => $evaluationDeGouvernance->objectifs_par_principe->count()?$evaluationDeGouvernance->objectifs_par_principe->map(function ($item) {
+                /* 'objectif_attendu' => $evaluationDeGouvernance->objectifs_par_principe->count()?$evaluationDeGouvernance->objectifs_par_principe->map(function ($item) {
                     return [
                         "id" => $item->secure_id,
                         "nom" => $item->nom,
                         "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                     ];
-                }):[],
+                }):[], */
                 
                 'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
@@ -875,13 +875,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 'id' => $evaluationDeGouvernance->secure_id,
                 'intitule' => $evaluationDeGouvernance->intitule,
                 'description' => $evaluationDeGouvernance->description,
-                'objectif_attendu' => $evaluationDeGouvernance->objectifs_par_principe->count()?$evaluationDeGouvernance->objectifs_par_principe->map(function ($item) {
+                /* 'objectif_attendu' => $evaluationDeGouvernance->objectifs_par_principe->count()?$evaluationDeGouvernance->objectifs_par_principe->map(function ($item) {
                     return [
                         "id" => $item->secure_id,
                         "nom" => $item->nom,
                         "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                     ];
-                }):[],                'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
+                }):[],    */             
+                'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
                 'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
                 'statut' => $evaluationDeGouvernance->statut,

@@ -49,7 +49,7 @@ cLass UpdateTacheRequest extends FormRequest
         return [
             'nom' => 'sometimes|required|max:255',
             'statut' => 'sometimes|required|integer|min:-1|max:-1',
-            'poids' => ['sometimes', 'numeric', 'min:0'],
+            'poids' => ['nullable', 'numeric', 'min:0'],
             'activiteId' => ['sometimes', 'required', new HashValidatorRule(new Activite())],
             'debut' => ["sometimes", "required", "date", "date_format:Y-m-d", function($attribute, $value, $fail) {
                 $activite = Activite::findByKey(request()->input('activiteId'));

@@ -30,7 +30,7 @@ class StoreActiviteRequest extends FormRequest
     {
         return [
             'nom' => 'required',
-            'poids' => ['sometimes', 'numeric', 'min:0'],
+            'poids' => ['nullable', 'numeric', 'min:0'],
             'debut' => 'required|date|date_format:Y-m-d',
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
             'type' => 'required|max:255',
