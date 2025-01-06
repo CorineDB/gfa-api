@@ -1008,7 +1008,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         foreach ($activites as $activite) {
             $suivi = $activite->suiviFinanciers()->when($filterData != null, function ($query) use ($filterData) {
-                $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
+                $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee'] ?? Carbon::now()->year);
             })->first();
 
             if (!$suivi) continue;
