@@ -146,6 +146,11 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->resultats_syntheses($id);
     }
+    
+    public function voir_resultats_syntheses_avec_classement_des_organisations($id)
+    {
+        return $this->evaluationDeGouvernanceService->classement_resultats_syntheses_des_organisation($id);
+    }
 
     public function formulaires_de_gouvernance($id)
     {

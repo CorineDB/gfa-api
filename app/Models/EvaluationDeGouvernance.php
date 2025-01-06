@@ -14,7 +14,7 @@ class EvaluationDeGouvernance extends Model
     protected $table = 'evaluations_de_gouvernance';
     public $timestamps = true;
 
-    use HasSecureIds, HasFactory ;
+    use HasSecureIds, HasFactory;
 
     protected $default = ['objectif_attendu' => 1];
 
@@ -39,7 +39,6 @@ class EvaluationDeGouvernance extends Model
                     // Prevent deletion by throwing an exception
                     throw new Exception("Cannot delete because there are associated resource.");
                 }
-                
             } catch (\Throwable $th) {
                 DB::rollBack();
 
@@ -70,10 +69,10 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissions()
     {
-        if(auth()->check()){
-            return $this->hasMany(Soumission::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+        if (auth()->check()) {
+            return $this->hasMany(Soumission::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
                 $organisationId = optional(auth()->user()->profilable)->id;
-    
+
                 // If the organisationId is null, return an empty collection
                 if (is_null($organisationId)) {
                     $query->whereRaw('1 = 0'); // Ensures no results are returned
@@ -81,16 +80,15 @@ class EvaluationDeGouvernance extends Model
                     $query->where('organisationId', $organisationId);
                 }
             });
-        }
-        else{
+        } else {
             return $this->hasMany(Soumission::class, 'evaluationId');
         }
     }
 
     public function soumissionsDePerception()
     {
-        if(auth()->check()){
-            return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+        if (auth()->check()) {
+            return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
                 $organisationId = optional(auth()->user()->profilable)->id;
 
                 // If the organisationId is null, return an empty collection
@@ -100,14 +98,14 @@ class EvaluationDeGouvernance extends Model
                     $query->where('organisationId', $organisationId);
                 }
             });
-        }else{
+        } else {
             return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception');
         }
     }
 
     public function soumissionsFactuel()
     {
-        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+        return $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'factuel')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
             $organisationId = optional(auth()->user()->profilable)->id;
 
             // If the organisationId is null, return an empty collection
@@ -121,7 +119,7 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissionFactuel(?int $organisationId = null, ?string $token = null)
     {
-        $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+        $soumissionFactuel = $this->hasOne(Soumission::class, 'evaluationId')->where("type", 'factuel')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
             $query->where('organisationId', optional(auth()->user()->profilable)->id);
         })/* ->where('organisationId', $organisationId)->orWhere(function($query) use($token){
             $query->whereHas('organisation', function($query) use($token){
@@ -146,7 +144,7 @@ class EvaluationDeGouvernance extends Model
     public function soumissionDePerception(?string $identifier_of_participant = null, ?int $organisationId = null, ?string $token = null)
     {
         $soumissionDePerception = $this->hasMany(Soumission::class, 'evaluationId')->where("type", 'perception');
-        
+
         if ($identifier_of_participant) {
             $soumissionDePerception = $soumissionDePerception->where("identifier_of_participant", $identifier_of_participant);
         }
@@ -170,7 +168,7 @@ class EvaluationDeGouvernance extends Model
     public function organisations(int $organisationId = null, string $token = null)
     {
         // Start with the base relationship
-        $organisations = $this->belongsToMany(Organisation::class,'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants', 'participants', 'token'])->whereHas('user.profilable');
+        $organisations = $this->belongsToMany(Organisation::class, 'evaluation_organisations', 'evaluationDeGouvernanceId', 'organisationId')->wherePivotNull('deleted_at')->withPivot(['id', 'nbreParticipants', 'participants', 'token'])->whereHas('user.profilable');
 
         if ($organisationId) {
             $organisations = $organisations->wherePivot("organisationId", $organisationId);
@@ -179,7 +177,7 @@ class EvaluationDeGouvernance extends Model
         if ($token) {
             $organisations = $organisations->wherePivot("token", $token);
         }
-        
+
         return $organisations;
     }
 
@@ -187,7 +185,8 @@ class EvaluationDeGouvernance extends Model
     /**
      * Get the users associated with the organisations of the evaluation.
      */
-    public function organisations_user(){
+    public function organisations_user()
+    {
         return User::whereHas('profilable', function ($query) {
             $query->whereIn('profilable_id', $this->organisations->pluck('id'))->where('profilable_type', Organisation::class);
         })->get();
@@ -195,17 +194,17 @@ class EvaluationDeGouvernance extends Model
 
     public function formulaires_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at');
+        return $this->belongsToMany(FormulaireDeGouvernance::class, 'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at');
     }
 
     public function formulaire_factuel_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'factuel')->first();
+        return $this->belongsToMany(FormulaireDeGouvernance::class, 'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'factuel')->first();
     }
 
     public function formulaire_de_perception_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class,'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
+        return $this->belongsToMany(FormulaireDeGouvernance::class, 'evaluation_formulaires_de_gouvernance', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->where("type", 'perception')->first();
     }
 
     public function principes_de_gouvernance()
@@ -215,7 +214,7 @@ class EvaluationDeGouvernance extends Model
 
     public function objectifs_par_principe()
     {
-        return $this->belongsToMany(PrincipeDeGouvernance::class,'evaluation_principes_de_gouvernance_objectifs', 'evaluationId', 'principeId')->wherePivotNull('deleted_at')->withPivot(['objectif_attendu', 'programmeId']);
+        return $this->belongsToMany(PrincipeDeGouvernance::class, 'evaluation_principes_de_gouvernance_objectifs', 'evaluationId', 'principeId')->wherePivotNull('deleted_at')->withPivot(['objectif_attendu', 'programmeId']);
     }
 
     public function recommandations()
@@ -281,7 +280,7 @@ class EvaluationDeGouvernance extends Model
     public function fiches_de_synthese_factuel(?int $organisationId = null): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         // Start with the base relationship
-        $fiches_de_synthese = $this->hasMany(FicheDeSynthese::class, 'evaluationDeGouvernanceId')->where("type","factuel");
+        $fiches_de_synthese = $this->hasMany(FicheDeSynthese::class, 'evaluationDeGouvernanceId')->where("type", "factuel");
 
         if ($organisationId) {
             $fiches_de_synthese = $fiches_de_synthese->where("organisationId", $organisationId);
@@ -324,8 +323,9 @@ class EvaluationDeGouvernance extends Model
         return $profiles;
     }
 
-    public function failedProfilesDeGouvernance(?int $organisationId = null, ?int $evaluationOrganisationId = null, ?float $threshold  = 0.5){
-       
+    public function failedProfilesDeGouvernance(?int $organisationId = null, ?int $evaluationOrganisationId = null, ?float $threshold  = 0.5)
+    {
+
         // Start the query by calling the profiles method
         $profile = $this->profiles();
 
@@ -333,6 +333,158 @@ class EvaluationDeGouvernance extends Model
 
         // Apply filtering for 'indice_synthetique' under the dynamic threshold using MySQL JSON functions
         return $profile->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS UNSIGNED) < ?', [$threshold]);
+    }
+
+    public function organisationsClassement()
+    {
+        $profiles = $this->profiles();
+
+        // Calculate averages for all indices in one query
+        $averages = $profiles
+            ->selectRaw('
+            AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2))) AS avg_indice_factuel,
+            AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2))) AS avg_indice_de_perception,
+            AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2))) AS avg_indice_synthetique
+        ')->first();
+
+        // Extract averages
+        $avgIndiceFactuel = $averages->avg_indice_factuel;
+        $avgIndiceDePerception = $averages->avg_indice_de_perception;
+        $avgIndiceSynthetique = $averages->avg_indice_synthetique;
+
+        // Fetch profiles with organization information and values
+        $profilesData = $profiles
+
+            // Join the users table to access the organisation information via polymorphic relation
+            ->join('users', 'profiles_de_gouvernance.organisationId', '=', 'users.profilable_id') // Join users table using the polymorphic relation
+            ->join('organisations', function ($join) {
+                // Join organisations table using polymorphic relation
+                $join->on('organisations.id', '=', 'users.profilable_id')
+                     ->where('users.profilable_type', '=', 'App\\Models\\Organisation');
+            })
+            // Select necessary fields
+            ->select('profiles_de_gouvernance.id', 
+                     'profiles_de_gouvernance.organisationId', 
+                     DB::raw('CONCAT(users.nom, " - ", organisations.sigle) as organisationName') // Combine `users.nom` and `organisations.sigle`
+                    )
+            ->selectRaw('
+                CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2)) AS indice_factuel,
+                CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2)) AS indice_de_perception,
+                CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2)) AS indice_synthetique
+            ')->get();
+
+        // Group profiles into greater than and lower than for each index
+        $groupedData = [
+            'indice_factuel_avg' => [
+                'greater_than_avg' => [],
+                'lower_than_avg' => []
+            ],
+            'indice_de_perception_avg' => [
+                'greater_than_avg' => [],
+                'lower_than_avg' => []
+            ],
+            'indice_synthetique_avg' => [
+                'greater_than_avg' => [],
+                'lower_than_avg' => []
+            ],
+        ];
+
+        foreach ($profilesData as $profile) {
+            // Factuel
+            $groupedData['indice_factuel_avg'][$profile->indice_factuel >= $avgIndiceFactuel ? 'greater_than_avg' : 'lower_than_avg'][] = [
+                'organisationId' => $profile->organisationId,
+                'organisationName' => $profile->organisationName,
+                'indice_factuel' => $profile->indice_factuel,
+            ];
+
+            // Perception
+            $groupedData['indice_de_perception_avg'][$profile->indice_de_perception >= $avgIndiceDePerception ? 'greater_than_avg' : 'lower_than_avg'][] = [
+                'organisationId' => $profile->organisationId,
+                'organisationName' => $profile->organisationName,
+                'indice_de_perception' => $profile->indice_de_perception,
+            ];
+
+            // Synthetique
+            $groupedData['indice_synthetique_avg'][$profile->indice_synthetique >= $avgIndiceSynthetique ? 'greater_than_avg' : 'lower_than_avg'][] = [
+                'organisationId' => $profile->organisationId,
+                'organisationName' => $profile->organisationName,
+                'indice_synthetique' => $profile->indice_synthetique,
+            ];
+        }
+
+        return $groupedData;
+
+        // Start the query by calling the profiles method
+        $profiles = $this->profiles();
+
+        // Calculate the average of `indice_factuel` across all profiles
+        $avgIndiceFactuel = $profiles
+            ->selectRaw('AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2))) AS avg_indice_factuel')
+            ->value('avg_indice_factuel');
+
+        // Group profiles into two categories: greater than or less than the average
+        $greaterThanAvgIndiceFactuel = $profiles
+            ->select('id', 'organisationId')
+            ->selectRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2)) AS indice_factuel')
+            ->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2)) >= ?', [$avgIndiceFactuel])
+            ->get();
+
+        $lowerThanAvgIndiceFactuel = $profiles
+            ->select('id', 'organisationId')
+            ->selectRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2)) AS indice_factuel')
+            ->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2)) < ?', [$avgIndiceFactuel])
+            ->get();
+
+        // Calculate the average of `indice_de_perception` across all profiles
+        $avgIndiceDePerception = $profiles
+            ->selectRaw('AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2))) AS avg_indice_de_perception')
+            ->value('avg_indice_de_perception');
+
+        // Group profiles into two categories: greater than or less than the average
+        $greaterThanAvgIndiceDePerception = $profiles
+            ->select('id', 'organisationId')
+            ->selectRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2)) AS indice_de_perception')
+            ->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2)) >= ?', [$avgIndiceDePerception])
+            ->get();
+
+        $lowerThanAvgIndiceDePerception = $profiles
+            ->select('id', 'organisationId')
+            ->selectRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2)) AS indice_de_perception')
+            ->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2)) < ?', [$avgIndiceDePerception])
+            ->get();
+
+        // Calculate the average of `indice_synthetique` across all profiles
+        $avgIndiceSynthetique = $profiles
+            ->selectRaw('AVG(CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2))) AS avg_indice_synthetique')
+            ->value('avg_indice_synthetique');
+
+        // Group profiles into two categories: greater than or less than the average
+        $greaterThanAvgIndiceSynthetique = $profiles
+            ->select('id', 'organisationId')
+            ->selectRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2)) AS indice_synthetique')
+            ->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2)) >= ?', [$avgIndiceSynthetique])
+            ->get();
+
+        $lowerThanAvgIndiceSynthetique = $profiles
+            ->select('id', 'organisationId')
+            ->selectRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2)) AS indice_synthetique')
+            ->whereRaw('CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2)) < ?', [$avgIndiceSynthetique])
+            ->get();
+
+        return [
+            'indice_factuel_avg' => [
+                'greater_than_avg' => $greaterThanAvgIndiceFactuel,
+                'lower_than_avg' => $lowerThanAvgIndiceFactuel
+            ],
+            'indice_de_perception_avg' => [
+                'greater_than_avg' => $greaterThanAvgIndiceDePerception,
+                'lower_than_avg' => $lowerThanAvgIndiceDePerception
+            ],
+            'indice_synthetique_avg' => [
+                'greater_than_avg' => $greaterThanAvgIndiceSynthetique,
+                'lower_than_avg' => $lowerThanAvgIndiceSynthetique
+            ],
+        ];
     }
 
     public function getPourcentageEvolutionAttribute()
@@ -354,7 +506,7 @@ class EvaluationDeGouvernance extends Model
             return 0;
         }
 
-        return round((($this->total_soumissions_factuel * 100) / $this->total_participants_evaluation_factuel), 2); 
+        return round((($this->total_soumissions_factuel * 100) / $this->total_participants_evaluation_factuel), 2);
     }
 
     public function getPourcentageEvolutionDesSoumissionsDePerceptionAttribute()
@@ -392,14 +544,14 @@ class EvaluationDeGouvernance extends Model
             // Filter the organisations and sum the 'nbreParticipants' from the pivot table
             $query->where('organisations.id', $organisationId);
         })
-        ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
-            // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
-            $query->whereRaw('1 = 0'); // Ensures no results are returned
-        })->count();
-    
+            ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            })->count();
+
         // Calculate total soumissionsFactuel count
         $totalSoumissionsFactuel = $this->soumissionsFactuel()->count();
-    
+
         // Return the difference
         return $totalOrganisations - $totalSoumissionsFactuel;
     }
@@ -419,22 +571,24 @@ class EvaluationDeGouvernance extends Model
         return $this->soumissionsDePerception()->where('statut', true)->count();
     }
 
-    public function getTotalParticipantsEvaluationFactuelAttribute(){
+    public function getTotalParticipantsEvaluationFactuelAttribute()
+    {
         // Sum the 'nbreParticipants' attribute from the pivot table
-        if((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class){
-            if(auth()->user()->profilable){
+        if ((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class) {
+            if (auth()->user()->profilable) {
                 return $this->organisations(optional(auth()->user()->profilable)->id)->count() ?? 0;
+            } else {
+                return 0;
             }
-            else{ return 0; }
-        }
-        elseif((auth()->user()->type == 'unitee-de-gestion') || get_class(optional(auth()->user()->profilable)) == UniteeDeGestion::class){
+        } elseif ((auth()->user()->type == 'unitee-de-gestion') || get_class(optional(auth()->user()->profilable)) == UniteeDeGestion::class) {
             return $this->organisations()->count();
+        } else {
+            return 0;
         }
-        else{ return 0; }
-        
     }
 
-    public function getTotalParticipantsEvaluationDePerceptionAttribute(){
+    public function getTotalParticipantsEvaluationDePerceptionAttribute()
+    {
 
         return $this->organisations()
             ->when((auth()->user()->type == 'organisation' || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
@@ -459,9 +613,9 @@ class EvaluationDeGouvernance extends Model
     }
 
     public function getOrganisationsRankingAttribute()
-    {   
+    {
         // Calculate completion for each organization and rank
-        $ranking = $this->organisations->map(function($organisation){
+        $ranking = $this->organisations->map(function ($organisation) {
             return [
                 "id"                    => $organisation->secure_id,
                 'nom'                   => $organisation->user->nom ?? null,
@@ -475,16 +629,17 @@ class EvaluationDeGouvernance extends Model
                 'pourcentage_evolution' => $organisation->getPourcentageEvolutionAttribute($this->id),
             ];
         });
-    
+
         // Sort organizations by completion rate (descending)
         return $ranking->sortByDesc('pourcentage_evolution')->values();
     }
 
-    public function getOptionsDeReponseStatsAttribute(){
+    public function getOptionsDeReponseStatsAttribute()
+    {
 
         // Get all soumission IDs
         $soumissionIds = $this->soumissionsDePerception->pluck("id");
-        
+
         // Get all options (options_de_reponse) and their IDs
         $options = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse;
         $optionIds = $options->pluck('id');
@@ -528,7 +683,7 @@ class EvaluationDeGouvernance extends Model
 
         // Combine the counts with the pre-generated combinations, ensuring no missing combinations
         $query = collect($combinations)->map(function ($combination) use ($responseCounts) {
-            
+
             // Find the response count for this combination using where with multiple conditions
             $responseCount = $responseCounts->where('organisationId', $combination['organisationId'])
                 ->where('categorieDeParticipant', $combination['categorieDeParticipant'])
@@ -546,7 +701,7 @@ class EvaluationDeGouvernance extends Model
             $organisation = $organisations->firstWhere('id', $organisationId);
             return [
                 'id' => $organisation->secure_id,
-                'intitule' => $organisation->sigle." - ".$organisation->user->nom,
+                'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
                 'categories' => $dataByOrganisation->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
                     return [
                         'categorieDeParticipant' => $categorie,
@@ -602,5 +757,4 @@ class EvaluationDeGouvernance extends Model
 
         return $responseCounts;
     }
-    
 }
