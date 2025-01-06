@@ -946,6 +946,14 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         if ($projet) {
 
+            if(is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])){
+                $filterData['annee'] = Carbon::now()->year;
+            }
+    
+            if(is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])){
+                $filterData['trimestre'] = $this->getCurrentTrimestre();
+            }
+
             if ($projet instanceof \Illuminate\Database\Eloquent\Model) {
 
                 //$activites = $projet->activites();
@@ -1006,9 +1014,17 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             }
         } */
 
+        if(is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])){
+            $filterData['annee'] = Carbon::now()->year;
+        }
+
+        if(is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])){
+            $filterData['trimestre'] = $this->getCurrentTrimestre();
+        }
+
         foreach ($activites as $activite) {
             $suivi = $activite->suiviFinanciers()->when($filterData != null, function ($query) use ($filterData) {
-                $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee'] ?? Carbon::now()->year);
+                $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
             })->first();
 
             if (!$suivi) continue;
