@@ -1061,7 +1061,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             $objet = [
                 //"bailleur" => $projet->bailleur->sigle,
                 "trimestre" => isset($filterData['trimestre']) ? $filterData['trimestre'] : 1,
-                "annee" => isset($filterData['annee']) ? $filterData['annee'] : null,
+                "annee" => isset($filterData['annee']) ? $filterData['annee'] : Carbon::now()->year,
                 "activite" => new ActivitesResource($activite),
                 "periode" => $periode,
                 "exercice" => $exercice,
