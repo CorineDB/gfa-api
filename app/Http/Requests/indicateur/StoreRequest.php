@@ -41,18 +41,17 @@ class StoreRequest extends FormRequest
         return [
             'nom'                           => ['required', 'string', Rule::unique('indicateurs', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
-            'sources_de_donnee'             => 'required',
-            'frequence_de_la_collecte'      => 'required',
-            'methode_de_la_collecte'        => 'required',
-            'responsables'                  => ['required', 'array'],
+            'sources_de_donnee'             => 'nullable',
+            'frequence_de_la_collecte'      => 'nullable',
+            'methode_de_la_collecte'        => 'nullable',
+            'responsables'                  => ['nullable', 'array'],
             'responsables.ug'               => [Rule::requiredIf(!request()->input('responsables.organisations')), !empty(request()->input('responsables.organisations')) ? 'nullable' :'', 'string', new HashValidatorRule(new UniteeDeGestion())],
             'responsables.organisations'    => [Rule::requiredIf(empty(request()->input('responsables.ug')) === true), 'array', 'min:0'],
-
             'responsables.organisations.*'  => ['distinct', 'string', new HashValidatorRule(new Organisation())],
 
-            'anneeDeBase'                   => ['required', 'date_format:Y', 'after_or_equal:'.Carbon::parse($programme->debut)->year, 'before_or_equal:'.Carbon::parse($programme->fin)->year, 'before_or_equal:'.now()->format("Y")],
+            'anneeDeBase'                   => ['nullable', 'date_format:Y', 'after_or_equal:'.Carbon::parse($programme->debut)->year, 'before_or_equal:'.Carbon::parse($programme->fin)->year, 'before_or_equal:'.now()->format("Y")],
 
-            "type_de_variable"              => ["required", "in:quantitatif,qualitatif,dichotomique"],
+            "type_de_variable"              => ["sometimes", "in:quantitatif,qualitatif,dichotomique"],
 
             "agreger"                       => ["required", "boolean:false"],
 
@@ -70,7 +69,7 @@ class StoreRequest extends FormRequest
             'value_keys.*.uniteeMesureId'   => ["nullable", "string", new HashValidatorRule(new Unitee())],
 
 
-            'valeurDeBase'                  => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
+            'valeurDeBase'                  => ['nullable', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
                 if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){
                     $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
                 }
@@ -91,7 +90,7 @@ class StoreRequest extends FormRequest
             'valeurDeBase.*.value'              => ['required'],
 
 
-            'anneesCible'                    => ['required', "array", "min:1"],
+            'anneesCible'                    => ['nullable', "array", "min:1"],
 
             'anneesCible.*.valeurCible'      => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
                 if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){

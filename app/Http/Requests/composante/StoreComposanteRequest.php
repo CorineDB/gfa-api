@@ -33,7 +33,7 @@ class StoreComposanteRequest extends FormRequest
     {
         return [
             'nom' => 'required',
-            'poids' => ['sometimes', 'numeric', 'min:0'],
+            'poids' => ['nullable', 'numeric', 'min:0'],
             'projetId' => [ Rule::requiredIf(!$this->composanteId), 'bail', new HashValidatorRule(new Projet())],
             'composanteId' => [ Rule::requiredIf(!$this->projetId), 'bail', new HashValidatorRule(new Composante())],
 
