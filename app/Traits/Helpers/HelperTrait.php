@@ -125,6 +125,25 @@ trait HelperTrait
         ];
     }
 
+    public function getCurrentTrimestre()
+    {
+        $currentDate = Carbon::now(); // Get the current date
+        $currentMonth = $currentDate->month;
+        $currentTrimestre = 1;
+    
+        if ($currentMonth >= 1 && $currentMonth <= 3) {
+            $currentTrimestre;
+        } elseif ($currentMonth >= 4 && $currentMonth <= 6) {
+            $currentTrimestre = 2;
+        } elseif ($currentMonth >= 7 && $currentMonth <= 9) {
+            $currentTrimestre = 3;
+        } elseif ($currentMonth >= 10 && $currentMonth <= 12) {
+            $currentTrimestre = 4;
+        }
+    
+        return $currentTrimestre;
+    }
+
     public function getCurrentTrimestreDates()
     {
         $currentDate = Carbon::now(); // Get the current date
