@@ -43,9 +43,9 @@ class UpdateProjetRequest extends FormRequest
             'organisationId' => ['sometimes', new HashValidatorRule(new Organisation())],
             //'bailleurId' => ['sometimes','required', new HashValidatorRule(new Bailleur())],
             'nombreEmploie' => 'sometimes|integer',
-            'image' => ["nullable", "file", 'mimes:jpg,png,jpeg,webp,svg,ico', "max:20480"],
+            'image' => ["nullable", "file", 'mimes:jpg,png,jpeg,webp,svg,ico', "max:2048"],
             'fichier' => 'nullable|array',
-            'fichier.*' => ["nullable", "file", 'mimes:txt,doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv', "max:20480"],
+            'fichier.*' => ["nullable", "file", 'mimes:txt,doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv', "max:2048"],
 
 
             'pret' => ['sometimes', 'integer', 'min:0', function(){
