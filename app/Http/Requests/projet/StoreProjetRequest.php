@@ -48,7 +48,7 @@ class StoreProjetRequest extends FormRequest
             'nombreEmploie' => 'integer',
             'image' => ["nullable", "file", 'mimes:jpg,png,jpeg,webp,svg,ico', "max:20480"],
             'fichier' => 'nullable|array',
-            'fichier.*' => ["nullable", "file", 'mimes:jpg,png,jpeg,webp,svg,ico', "max:20480"],
+            'fichier.*' => ["nullable", "file", 'mimes:txt,doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv', "max:20480"],
             'budgetNational' => 'required|integer|min:0',
             'pret' => ['required', 'integer', 'min:0', function(){
                 if($this->programmeId){
