@@ -46,9 +46,9 @@ class StoreProjetRequest extends FormRequest
                 }
             }],
             'nombreEmploie' => 'integer',
-            'image' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
-            //'fichier' => 'nullable|array',
-            //'fichier.*' => 'nullable|mimes:jpg,png,jpeg,webp,svg,ico|max:2048',
+            'image' => ["nullable", "file", 'mimes:jpg,png,jpeg,webp,svg,ico', "max:20480"],
+            'fichier' => 'nullable|array',
+            'fichier.*' => ["nullable", "file", 'mimes:jpg,png,jpeg,webp,svg,ico', "max:20480"],
             'budgetNational' => 'required|integer|min:0',
             'pret' => ['required', 'integer', 'min:0', function(){
                 if($this->programmeId){

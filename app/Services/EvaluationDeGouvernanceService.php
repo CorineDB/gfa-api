@@ -1069,4 +1069,29 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function classement_resultats_syntheses_des_organisation($evaluationDeGouvernance): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $resultats_syntheses = [];
+
+            $organisationId = null;
+
+            if ((auth()->user()->type == "organisation") || get_class(auth()->user()->profilable) == Organisation::class) {
+                $organisationId = optional(auth()->user()->profilable)->id;
+
+                if(!$evaluationDeGouvernance->organisations($organisationId)->first()){
+                    return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                }
+            }
+            
+            $resultats_syntheses = $evaluationDeGouvernance->organisationsClassement; // Reset keys for a clean JSON output
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
