@@ -1087,7 +1087,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 }
             }
             
-            $resultats_syntheses = $evaluationDeGouvernance->organisationsClassement; // Reset keys for a clean JSON output
+            $resultats_syntheses = $evaluationDeGouvernance->organisationsClassement(); // Reset keys for a clean JSON output
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
