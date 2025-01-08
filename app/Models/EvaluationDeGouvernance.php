@@ -364,6 +364,7 @@ class EvaluationDeGouvernance extends Model
             // Select necessary fields
             ->select('profiles_de_gouvernance.id', 
                      'profiles_de_gouvernance.organisationId', 
+                     'organisations.secure_id', // Include secure_id
                      DB::raw('CONCAT(users.nom, " - ", organisations.sigle) as organisationName') // Combine `users.nom` and `organisations.sigle`
                     )
             ->selectRaw('
