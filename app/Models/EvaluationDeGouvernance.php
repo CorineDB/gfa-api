@@ -402,14 +402,14 @@ class EvaluationDeGouvernance extends Model
             $groupedData['indice_de_perception_avg'][$profile->indice_de_perception >= $avgIndiceDePerception ? 'greater_than_avg' : 'lower_than_avg'][] = [
                 'organisationId'       => $organisationId,
                 'organisationName'     => $profile->organisationName,
-                'indice_de_perception' => $profile->indice_de_perception,
+                'indice_de_perception' => (float) $profile->indice_de_perception,
             ];
 
             // Synthetique
             $groupedData['indice_synthetique_avg'][$profile->indice_synthetique >= $avgIndiceSynthetique ? 'greater_than_avg' : 'lower_than_avg'][] = [
                 'organisationId'     => $organisationId,
                 'organisationName'   => $profile->organisationName,
-                'indice_synthetique' => $profile->indice_synthetique,
+                'indice_synthetique' => (float) $profile->indice_synthetique,
             ];
         }
 
