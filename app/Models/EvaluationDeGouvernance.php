@@ -389,26 +389,25 @@ class EvaluationDeGouvernance extends Model
         ];
 
         foreach ($profilesData as $profile) {
-            $organisation = $profile->organisation; // Access the related Organisation model
+            $organisationId = $profile->organisation->secure_id; // Access the related Organisation model
 
             // Factuel
             $groupedData['indice_factuel_avg'][$profile->indice_factuel >= $avgIndiceFactuel ? 'greater_than_avg' : 'lower_than_avg'][] = [
-                'organisationId' => $profile->organisationId,
-                'organisation' => $organisation,
+                'organisationId' => $organisationId,
                 'organisationName' => $profile->organisationName,
                 'indice_factuel' => $profile->indice_factuel,
             ];
 
             // Perception
             $groupedData['indice_de_perception_avg'][$profile->indice_de_perception >= $avgIndiceDePerception ? 'greater_than_avg' : 'lower_than_avg'][] = [
-                'organisationId' => $profile->organisationId,
+                'organisationId' => $organisationId,
                 'organisationName' => $profile->organisationName,
                 'indice_de_perception' => $profile->indice_de_perception,
             ];
 
             // Synthetique
             $groupedData['indice_synthetique_avg'][$profile->indice_synthetique >= $avgIndiceSynthetique ? 'greater_than_avg' : 'lower_than_avg'][] = [
-                'organisationId' => $profile->organisationId,
+                'organisationId' => $organisationId,
                 'organisationName' => $profile->organisationName,
                 'indice_synthetique' => $profile->indice_synthetique,
             ];
