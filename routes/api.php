@@ -708,7 +708,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
             });
 
-            Route::apiResource('composantes', 'ComposanteController', ['except' => ['index', 'update']])->names('composantes');
+            Route::apiResource('composantes', 'ComposanteController', ['except' => ['index']])->names('composantes');
 
             Route::apiResource('composantes', 'ComposanteController', ['only' => ['index']])->names('composante')->middleware('permission:voir-un-outcome');
 
