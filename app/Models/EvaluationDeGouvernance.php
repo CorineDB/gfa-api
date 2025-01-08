@@ -364,7 +364,6 @@ class EvaluationDeGouvernance extends Model
             // Select necessary fields
             ->select('profiles_de_gouvernance.id', 
                      'profiles_de_gouvernance.organisationId', 
-                     'organisations.secure_id', // Include secure_id
                      DB::raw('CONCAT(users.nom, " - ", organisations.sigle) as organisationName') // Combine `users.nom` and `organisations.sigle`
                     )
             ->selectRaw('
@@ -390,9 +389,12 @@ class EvaluationDeGouvernance extends Model
         ];
 
         foreach ($profilesData as $profile) {
+            $organisation = $profile->organisation; // Access the related Organisation model
+
             // Factuel
             $groupedData['indice_factuel_avg'][$profile->indice_factuel >= $avgIndiceFactuel ? 'greater_than_avg' : 'lower_than_avg'][] = [
                 'organisationId' => $profile->organisationId,
+                'organisation' => $organisation,
                 'organisationName' => $profile->organisationName,
                 'indice_factuel' => $profile->indice_factuel,
             ];
