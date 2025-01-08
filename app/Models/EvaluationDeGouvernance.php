@@ -354,7 +354,6 @@ class EvaluationDeGouvernance extends Model
 
         // Fetch profiles with organization information and values
         $profilesData = $profiles
-
             // Join the users table to access the organisation information via polymorphic relation
             ->join('users', 'profiles_de_gouvernance.organisationId', '=', 'users.profilable_id') // Join users table using the polymorphic relation
             ->join('organisations', function ($join) {
