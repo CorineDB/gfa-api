@@ -166,7 +166,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             {
                 $old_image = $projet->chemin;
 
-                $this->storeFile($attributs['image'], 'projets', $projet, null, 'logo');
+                $this->storeFile($attributs['image'], 'projets/preview', $projet, null, 'logo');
 
                 if($old_image != null){
 
@@ -323,7 +323,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             {
                 $old_image = $projet->image();
 
-                $this->storeFile($attributs['image'], 'projets', $projet, null, 'logo');
+                $this->storeFile($attributs['image'], 'projets/preview', $projet, null, 'logo');
 
                 if($old_image != null){
 
