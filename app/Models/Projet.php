@@ -251,7 +251,6 @@ class Projet extends Model
         return $this->morphMany(Fichier::class, 'fichiertable')->where('description', 'logo')->orderBy('id', 'desc')->first();
     }
 
-
     public function images()
     {
         return $this->morphMany(Fichier::class, 'fichiertable');
