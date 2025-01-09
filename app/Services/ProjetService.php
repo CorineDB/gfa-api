@@ -176,31 +176,34 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
             }
 
-            foreach ($attributs['fichier'] as $key => $file) {
-                
-                $fichier = $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier');
+            if(isset($attributs['fichier']))
+            {
+                foreach ($attributs['fichier'] as $key => $file) {
+                    
+                    $fichier = $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier');
 
-                if(array_key_exists('sharedId', $attributs))
-                {
-                    foreach($attributs['sharedId'] as $id)
+                    if(array_key_exists('sharedId', $attributs))
                     {
-                        $user = User::findByKey($id);
-
-                        if($user)
+                        foreach($attributs['sharedId'] as $id)
                         {
-                            $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier', ['fichierId' => $fichier->id, 'userId' => $user->id]);
+                            $user = User::findByKey($id);
+
+                            if($user)
+                            {
+                                $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier', ['fichierId' => $fichier->id, 'userId' => $user->id]);
+                            }
+
+                            $data['texte'] = "Un fichier vient d'etre partagé avec vous dans le dossier projet";
+                            $data['id'] = $fichier->id;
+                            $data['auteurId'] = Auth::user()->id;
+                            $notification = new FichierNotification($data);
+
+                            $user->notify($notification);
+
+                            $notification = $user->notifications->last();
+
+                            event(new NewNotification($this->formatageNotification($notification, $user)));
                         }
-
-                        $data['texte'] = "Un fichier vient d'etre partagé avec vous dans le dossier projet";
-                        $data['id'] = $fichier->id;
-                        $data['auteurId'] = Auth::user()->id;
-                        $notification = new FichierNotification($data);
-
-                        $user->notify($notification);
-
-                        $notification = $user->notifications->last();
-
-                        event(new NewNotification($this->formatageNotification($notification, $user)));
                     }
                 }
             }
