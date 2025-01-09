@@ -166,7 +166,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             {
                 $old_image = $projet->chemin;
 
-                $this->storeFile($attributs['image'], 'image', $projet, null, 'logo');
+                $this->storeFile($attributs['image'], 'projets/preview', $projet, null, 'logo');
 
                 if($old_image != null){
 
@@ -176,9 +176,38 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
             }
 
+            foreach ($attributs['fichier'] as $key => $file) {
+                
+                $fichier = $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier');
+
+                if(array_key_exists('sharedId', $attributs))
+                {
+                    foreach($attributs['sharedId'] as $id)
+                    {
+                        $user = User::findByKey($id);
+
+                        if($user)
+                        {
+                            $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier', ['fichierId' => $fichier->id, 'userId' => $user->id]);
+                        }
+
+                        $data['texte'] = "Un fichier vient d'etre partagé avec vous dans le dossier projet";
+                        $data['id'] = $fichier->id;
+                        $data['auteurId'] = Auth::user()->id;
+                        $notification = new FichierNotification($data);
+
+                        $user->notify($notification);
+
+                        $notification = $user->notifications->last();
+
+                        event(new NewNotification($this->formatageNotification($notification, $user)));
+                    }
+                }
+            }
+
             $i = 0;
 
-            while(array_key_exists('fichier'.$i, $attributs))
+            /*while(array_key_exists('fichier'.$i, $attributs))
             {
                 if($attributs['fichier'.$i]->getClientOriginalExtension() != 'jpg'  &&
                    $attributs['fichier'.$i]->getClientOriginalExtension() != 'png' &&
@@ -216,7 +245,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $i++;
             }
 
-            /*if(isset($attributs['fichier']))
+            if(isset($attributs['fichier']))
             {
                 foreach($attributs['fichier'] as $fichier)
                 {
@@ -294,8 +323,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             {
                 $old_image = $projet->image();
 
-                $fichier = $this->storeFile($attributs['image'], 'image', $projet, null, 'logo');
-
+                $this->storeFile($attributs['image'], 'projets/preview', $projet, null, 'logo');
 
                 if($old_image != null){
 
@@ -318,7 +346,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     array_push($sites, $site->id);
                 }
 
-                $projet->sites()->sync($sites, ["programmeId" => auth()->user()->programmeId]);
+                $projet->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
 
             }
 
