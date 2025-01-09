@@ -146,6 +146,8 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             if(isset($attributs['sites'])){
 
+                $programme = Auth::user()->programme;
+
                 $sites = [];
                 foreach($attributs['sites'] as $id)
                 {
@@ -154,7 +156,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     array_push($sites, $site->id);
                 }
 
-                $projet->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
+                $projet->sites()->attach($sites, ["programmeId" => $programme->id]);
 
             }
 
@@ -297,6 +299,9 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 if($programme->fin < $attributs['fin']) throw new Exception( "La date de fin du projet est supérieur à celui du programme", 500);
 
             }
+            else{
+                $programme = Auth::user()->programme;
+            }
 
             if((!is_object($projetId )))
                 $projet = $this->repository->findById($projetId);
@@ -339,7 +344,55 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
             }
 
+            if(isset($attributs['fichier']))
+            {
+
+                $piecesJointes = $projet->fichiers();
+                foreach ($attributs['fichier'] as $key => $file) {
+                    
+                    $fichier = $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier');
+
+                    if(array_key_exists('sharedId', $attributs))
+                    {
+                        foreach($attributs['sharedId'] as $id)
+                        {
+                            $user = User::findByKey($id);
+
+                            if($user)
+                            {
+                                $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier', ['fichierId' => $fichier->id, 'userId' => $user->id]);
+                            }
+
+                            $data['texte'] = "Un fichier vient d'etre partagé avec vous dans le dossier projet";
+                            $data['id'] = $fichier->id;
+                            $data['auteurId'] = Auth::user()->id;
+                            $notification = new FichierNotification($data);
+
+                            $user->notify($notification);
+
+                            $notification = $user->notifications->last();
+
+                            event(new NewNotification($this->formatageNotification($notification, $user)));
+                        }
+                    }
+                }
+
+                foreach ($piecesJointes as $key => $pieceJointe) {
+                    if($pieceJointe != null){
+    
+                        if(file_exists(public_path("storage/" . $pieceJointe->chemin)))
+                        {
+                            unlink(public_path("storage/" . $pieceJointe->chemin));
+    
+                            $pieceJointe->delete();
+                        }
+                    }
+                }
+            }
+
             if(isset($attributs['sites'])){
+
+                $programme = Auth::user()->programme;
 
                 $sites = [];
                 foreach($attributs['sites'] as $id)
@@ -349,7 +402,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     array_push($sites, $site->id);
                 }
 
-                $projet->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
+                $projet->sites()->sync($sites, ["programmeId" => $programme->id]);
 
             }
 
