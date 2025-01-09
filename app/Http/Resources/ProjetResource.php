@@ -23,7 +23,7 @@ class ProjetResource extends JsonResource
             "debut" => $this->debut,
             "fin" => $this->fin,
             "couleur" => $this->couleur,
-            "nombreEmploie" => $this->nombreEmploie ?? 0,
+            "nombreEmploie" => $this->nombreEmploie,
             //"statistiqueActivite" => $this->statistiqueActivite(),
             "budgetNational" => $this->budgetNational ?? 0,
             "pret" => $this->pret ?? 0,
