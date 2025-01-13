@@ -331,9 +331,11 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $acteur = $user ? $user->nom . " ". $user->prenom : "Inconnu";
 
+            return response()->json(['statut' => 'success', 'message' => 'Vous êtes déconnecté', 'data' => $user->tokens, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
             // Si la suppression du token ne se passe pas correctement, une exception sera déclenchée
             if( !$request->user()->token()->delete() ) throw new Exception("Erreur pendant la déconnexion", 500);
-            return response()->json(['statut' => 'success', 'message' => 'Vous êtes déconnecté', 'data' => $user, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => 'Vous êtes déconnecté', 'data' => $user->tokens(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $message = Str::ucfirst($acteur) . " vient de se déconnecter.";
 
