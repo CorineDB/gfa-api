@@ -60,6 +60,15 @@ class SendInvitationJob implements ShouldQueue
                     // Extract email addresses for Mail::to()
                     $emailAddresses = array_column($emailParticipants, 'email');
 
+
+                    // Filter participants for those with "email" contact type
+                    $phoneNumberParticipants = array_filter($this->data["participants"], function ($participant) {
+                        return $participant["type_de_contact"] === "contact";
+                    });
+
+                    // Extract email addresses for https://api.e-mc.co/v3/
+                    $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
+
                     // Send the email if there are any email addresses
                     if (!empty($emailAddresses)) {
 
