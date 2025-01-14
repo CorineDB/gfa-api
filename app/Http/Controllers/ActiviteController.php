@@ -52,6 +52,11 @@ class ActiviteController extends Controller
         return $this->activiteService->filtre($request->all());
     }
 
+    public function filterActivities(FiltreActiviteRequest $request)
+    {
+        return $this->activiteService->filterActivities($request->all());
+    }
+
     public function plansDeDecaissement($id)
     {
         return $this->activiteService->plansDeDecaissement($id);

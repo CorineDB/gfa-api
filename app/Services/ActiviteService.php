@@ -115,6 +115,22 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
         }
     }
 
+    public function filterActivities(array $attributs): JsonResponse{
+
+        try {
+            $activites = [];
+            
+            if(isset($attributs['statut'])){
+                $activites = $this->repository->where("statut", $attributs['statut'])->get(); 
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ActiviteResource::collection($activites), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function plansDeDecaissement($id): JsonResponse
     {
 

@@ -639,7 +639,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('/updatePassword', 'updatePassword')->name('updatePassword');
                 });
             });
-
+app/Http/Requests/activite/FiltreActiviteRequest.php
             Route::apiResource('programmes', 'ProgrammeController')->names('programmes')->middleware(['role:administrateur,super-admin']);
             
             Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
@@ -730,11 +730,15 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
             Route::apiResource('activites', 'ActiviteController')->names('activites');
 
+            Route::post('filterActivities', 'ActiviteController@filterActivities')->name('filterActivities');
+
+
             Route::group(['prefix' =>  'activites', 'as' => 'activites.'], function () {
 
                 Route::controller('ActiviteController')->group(function () {
 
                     //Route::post('{activite}/prolonger', 'prolonger')->name('prolonger')->middleware('permission:prolonger-une-activite');
+                    
 
                     Route::get('/{id}/taches', 'taches')->name('taches')->middleware('permission:voir-une-tache');
 
