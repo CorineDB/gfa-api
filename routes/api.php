@@ -730,9 +730,6 @@ app/Http/Requests/activite/FiltreActiviteRequest.php
 
             Route::apiResource('activites', 'ActiviteController')->names('activites');
 
-            Route::post('filterActivities', 'ActiviteController@filterActivities')->name('filterActivities');
-
-
             Route::group(['prefix' =>  'activites', 'as' => 'activites.'], function () {
 
                 Route::controller('ActiviteController')->group(function () {
