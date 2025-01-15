@@ -68,7 +68,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             } else if (Auth::user()->hasRole("unitee-de-gestion") || (get_class(auth()->user()->profilable) == UniteeDeGestion::class)) {
                 $projet = Auth::user()->programme->projets;
             }
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $projet, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $suiviFinanciers = $this->filterData($projet);
 
@@ -965,6 +964,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     return $this->getSuiviFinancier($item->activites(), $filterData);
                 });
             }
+
+            return $suiviFinanciers;
 
             $programme = Auth::user()->programme;
             $projets = [];
