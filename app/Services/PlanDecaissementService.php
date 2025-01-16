@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Http\Resources\plans\PlansDecaissementResource;
 use App\Jobs\GenererPta;
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use App\Repositories\ActiviteRepository;
 use App\Repositories\PlanDecaissementRepository;
 use App\Traits\Helpers\LogActivity;
@@ -38,6 +40,25 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
         parent::__construct($planDecaissementRepository);
         $this->repository = $planDecaissementRepository;
         $this->activiteRepository = $activiteRepository;
+    }
+
+    public function all(array $attributs = ['*'], array $relations = []): JsonResponse
+    {
+        try {
+            $planDecaissement = [];
+
+            $planDecaissement = null;
+
+            if (Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)) {
+                $planDecaissement = $this->repository->all();
+            } else if (Auth::user()->hasRole("unitee-de-gestion") || (get_class(auth()->user()->profilable) == UniteeDeGestion::class)) {
+                $planDecaissement = $this->repository->all();
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => PlansDecaissementResource::collection($planDecaissement), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     public function create(array $attributs) : JsonResponse
