@@ -412,7 +412,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
         Route::apiResource('suivi-financier-mods', 'SuiviFinancierMODController', ['only' => ['index']])->names('suivi-financier-mods');
 
-
         Route::apiResource('maitrise-oeuvres', 'MaitriseOeuvreController')->names('maitrise-oeuvres');
 
         Route::apiResource('permissions', 'PermissionController', ['only' => ['index']])->names('permissions')->middleware(['permission:voir-une-permission']);
@@ -688,6 +687,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::apiResource('organisations', 'OrganisationController', ['except' => ['index']])->names('organisations')->middleware(['role:unitee-de-gestion']);
 
             Route::apiResource('organisations', 'OrganisationController', ['only' => ['index']])->names('organisation')->middleware('permission:voir-une-organisation');
+            
+            Route::apiResource('planDecaissements', 'PlanDecaissementController')->names('plan-decaissements');
 
             Route::apiResource('projets', 'ProjetController', ['except' => ['index','show', 'update']])->names('projets')->middleware(['role:unitee-de-gestion']);
 
