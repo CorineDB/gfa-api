@@ -171,9 +171,8 @@ trait HelperTrait
 
     protected function verifiePlageDuree(Activite $activite)
     {
-        [$debutDate, $finDate] = $this->getCurrentTrimestreDates($activite);
+        [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
         
-
         // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
         return $activite->durees()
             ->where(function($query) use ($debutDate, $finDate) {

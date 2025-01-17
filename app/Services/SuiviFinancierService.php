@@ -965,8 +965,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 });
             }
 
-            return $suiviFinanciers;
-
             $programme = Auth::user()->programme;
             $projets = [];
 
