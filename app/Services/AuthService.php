@@ -9,6 +9,7 @@ use App\Jobs\GenererPta;
 use App\Jobs\SendEmailJob;
 use App\Models\Organisation;
 use App\Models\Password;
+use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use App\Traits\Helpers\ConfigueTrait;
@@ -77,14 +78,9 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-            if($utilisateur->profilable_id > 0 && $utilisateur->profilable_type){
-
-                if($utilisateur->profilable && get_class($utilisateur->profilable) === Organisation::class){
-                    return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
-                }
+            if($utilisateur->type === 'administrateur' || get_class($utilisateur->profilable) !== UniteeDeGestion::class){
+                return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
-
-            dd($utilisateur);
 
             // Vérifier si le mot de passe renseigner correspond au mot de passe du compte uitisateur trouver
             if (!Hash::check($identifiants['password'], $utilisateur->password)){
@@ -204,7 +200,130 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-            if(get_class($utilisateur->profilable) !== Organisation::class){
+            if($utilisateur->type === 'administrateur' || get_class($utilisateur->profilable) !== Organisation::class){
+                return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+            }
+
+            // Vérifier si le mot de passe renseigner correspond au mot de passe du compte uitisateur trouver
+            if (!Hash::check($identifiants['password'], $utilisateur->password)){
+
+                RateLimiter::hit($this->throttleKey(), $seconds = 60);
+                throw new Exception("Mot de passe incorrect", 401);
+            }
+
+            // Vérifier si le compte de l'utilisateur est activé ou pas
+            if (!$utilisateur->emailVerifiedAt)
+            {
+
+                throw new Exception("Veuillez confimer votre compte", 403);
+
+                // Enrégistrement de la date et l'heure de vérification du compte
+                // $utilisateur->emailVerifiedAt = now();
+
+                // Sauvegarder les informations
+                // $utilisateur->save();
+            }
+
+            if ($utilisateur->statut !== 1)
+            {
+                if ($utilisateur->first_connexion !== 1)
+                {
+                    throw new Exception("Veuillez réinitialiser votre mot de passe", 403);
+                }
+                else if ($utilisateur->statut === -1){
+                    throw new Exception("Votre compte à été bloquer temporairement. Veuillez contacté votre administrateur. ", 403);
+                }
+                else{
+                    throw new Exception("Votre compte n'est pas activé. Veuillez activer votre compte. ", 403);
+                }
+            }
+
+            if($utilisateur->lastRequest)
+            {
+                if((strtotime(date('Y-m-d h:i:s')) - strtotime($utilisateur->lastRequest))/3600 >= 4)
+                {
+                    $utilisateur->tokens()->delete();
+                }
+            }
+
+            // Connexion...
+            if (!Auth::attempt(['email' => $identifiants["email"], 'password' => $identifiants['password']])){
+
+                RateLimiter::hit($this->throttleKey(), $seconds = 60);
+
+                return response()->json([
+                    'status_code' => 401,
+                    'message' => 'Unauthorized',
+                ]);
+
+                throw new Exception("Erreur de connexion", 500);
+            }
+
+            $user = Auth::user();
+            //if($user) $userModel = User::find($user->id);
+
+            /*if($user->tokens()->count()){
+                throw new Exception("Une session est déjà active pour ce compte. Veuillez vous déconnectez de tous les autres appareils.", 1);
+            }*/
+
+            $data = ["access_token" => $user->createToken($this->hashID(8))->plainTextToken, 'expired_at' => now()->addHours(3), 'user' => $user];
+
+            $utilisateur->lastRequest = date('Y-m-d H:i:s');
+            $utilisateur->save();
+
+            RateLimiter::clear($this->throttleKey());
+
+            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+
+            $message = Str::ucfirst($acteur) . " s'est connecté.";
+
+            LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
+
+            //GenererPta::dispatch(Auth::user()->programme)->delay(now()->addSeconds(15));
+
+            if((file_exists(storage_path('app')."/pta/pta.json") && Storage::disk('local')->get('pta/pta.json') == "") || !file_exists(storage_path('app')."/pta/pta.json"))
+            {
+                if(Auth::user()->programme) dispatch(new GenererPta(Auth::user()->programme))->delay(now()->addSeconds(3));
+            }
+
+            //event(new Login(Auth::user()->programme));
+
+            // Retourner le token
+            return response()->json(['statut' => 'success', 'message' => 'Authentification réussi', 'data' => new LoginResource($data), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK)/*->withCookie('XSRF-TOKEN', $data['access_token'], 60*3)*/;
+
+        } catch (\Throwable $th) {
+
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Vérification de compte et permission d'accéder au système grâce au token
+     *
+     * @param array $identifiants
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function adminAuthentification($identifiants): JsonResponse
+    {
+        $this->checkTooManyFailedAttempts();
+
+        try {
+
+            // Rechercher l'utilisateur grâce à son email.
+
+
+            // Si la variable utilisateur est null alors une exception sera déclenché notifiant que l'email renseigner ne correspond à aucun enregistrement de la table users
+            if ( !($utilisateur = $this->repository->findByAttribute('email', $identifiants['email'])) ){
+
+                RateLimiter::hit($this->throttleKey(), $seconds = 60);
+                throw new Exception("Identifiant incorrect", 401);
+
+            }
+
+
+            if($utilisateur->type !== 'administrateur'){
                 return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
