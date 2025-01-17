@@ -77,10 +77,11 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-            dd($utilisateur->profilable);
+            if($utilisateur->profilable_id > 0 && $utilisateur->profilable_type){
 
-            if($utilisateur->profilable && get_class($utilisateur->profilable) === Organisation::class){
-                return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+                if($utilisateur->profilable && get_class($utilisateur->profilable) === Organisation::class){
+                    return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+                }
             }
 
             dd($utilisateur);
