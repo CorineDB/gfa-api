@@ -27,8 +27,6 @@ class AuthResource extends JsonResource
             "email" => $this->email,
             "contact" => $this->contact,
             "type" => $this->type,
-            //"profil" => $this->hasRole("ong", "agence", "institution", "mission-de-controle", "unitee-de-gestion", "mod" ) ? $this->profilable : ($this->type === 'bailleur' ? array_merge($this->profilable->toArray(), ["code" => $this->code, "projet" => new ProjetResource($this->profilable->projets(Auth::user()->programme->id))]) : null),
-            //"profil" => $this->type !== 'administrateur' ? $this->profilable : null,
             "profil" => $this->when($this->type != 'administrateur', function(){
                 return $this->profilable;
             }),
@@ -37,10 +35,7 @@ class AuthResource extends JsonResource
             "photo" => new FichiersResource($this->photo),
             "projet" => $this->when((($this->type == 'organisation') || $this->profilable_type == Organisation::class), function(){
                 return $this->profilable;
-            }),
-           /*  "projet" => $this->when((($this->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
-                return $this->profilable->projet;
-            }), */
+            })
         ];
     }
 }
