@@ -961,14 +961,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $suiviFinanciers = $this->getSuiviFinancier($projet->activites(), $filterData);
             } else if (($projet instanceof \Illuminate\Database\Eloquent\Collection) || (is_array($projet))) {
                 $suiviFinanciers = $projet->flatMap(function ($item) use ($filterData) {
-                    $inter = [];
-                    foreach ($item->activites() as $value) {
-                        if($this->verifiePlageDuree($value)){
-                            array_push($inter, $value);
-                        }
-                    }
-                    return $inter;
-                    return $item->activites();
                     return $this->getSuiviFinancier($item->activites(), $filterData);
                 });
             }
@@ -1024,6 +1016,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             }
         } */
 
+        return $activites;
         if(is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])){
             $filterData['annee'] = Carbon::now()->year;
         }
