@@ -29,10 +29,10 @@ class AuthResource extends JsonResource
             "type" => $this->type,
             //"profil" => $this->hasRole("ong", "agence", "institution", "mission-de-controle", "unitee-de-gestion", "mod" ) ? $this->profilable : ($this->type === 'bailleur' ? array_merge($this->profilable->toArray(), ["code" => $this->code, "projet" => new ProjetResource($this->profilable->projets(Auth::user()->programme->id))]) : null),
             //"profil" => $this->type !== 'administrateur' ? $this->profilable : null,
-            "profil" => $this->when($this->type != 'administrateur', function(){
+            "profil" => $this->when($this->type != 'administrateur',  $this->profilable/* function(){
                 return $this->profilable;//$this->profilable_id > 0 && $this->profilable_type ? $this->profilable : null;
-            }),
-            "programme" => $this->when($this->type != 'administrateur', $this->programme),
+            } */),
+            "programme" => $this->when($this->type !== 'administrateur', $this->programme),
             "role" => RoleResource::collection($this->roles->load('permissions')),
             "photo" => new FichiersResource($this->photo),
            /*  "projet" => $this->when((($this->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
