@@ -411,7 +411,7 @@ class GenerateEvaluationResultats extends Command
                     $question_de_gouvernance->options_de_reponse[$key] = $option;
                 }
 
-                if (array_sum($counts->toArray()) !== $nbre_r) {
+                if (array_sum($counts->toArray()) != $nbre_r) {
                     Log::info('Counts:', $counts->toArray());
                 }                
 

@@ -39,7 +39,7 @@ class UpdateRequest extends FormRequest
             'start_at'          => ["sometimes","date","date_format:Y-m-d",
                 function ($attribute, $value, $fail) {
                     // Check if the value is different from the current start_at
-                    if (isset($this->action_a_mener->start_at) && $value !== $this->action_a_mener->start_at) {
+                    if (isset($this->action_a_mener->start_at) && $value != $this->action_a_mener->start_at) {
                         // Apply the after_or_equal:today validation
                         if (strtotime($value) < strtotime(date('Y-m-d'))) {
                             $fail(__('The :attribute must be a date after or equal to today.', ['attribute' => $attribute]));

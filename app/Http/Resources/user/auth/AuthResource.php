@@ -32,7 +32,7 @@ class AuthResource extends JsonResource
             "profil" => $this->when($this->type != 'administrateur', function(){
                 return $this->profilable;//$this->profilable_id > 0 && $this->profilable_type ? $this->profilable : null;
             }),
-            "programme" => $this->when($this->type !== 'administrateur', $this->programme),
+            "programme" => $this->when($this->type != 'administrateur', $this->programme),
             "role" => RoleResource::collection($this->roles->load('permissions')),
             "photo" => new FichiersResource($this->photo),
            /*  "projet" => $this->when((($this->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
