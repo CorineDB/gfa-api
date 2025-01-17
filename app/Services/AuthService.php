@@ -382,8 +382,6 @@ class AuthService extends BaseService implements AuthServiceInterface
             }
 
             $user = Auth::user();
-
-            dd($user);
             
             //if($user) $userModel = User::find($user->id);
 
@@ -405,6 +403,8 @@ class AuthService extends BaseService implements AuthServiceInterface
             LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
 
             //event(new Login(Auth::user()->programme));
+
+            dd($data);
 
             // Retourner le token
             return response()->json(['statut' => 'success', 'message' => 'Authentification réussi', 'data' => new LoginResource($data), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK)/*->withCookie('XSRF-TOKEN', $data['access_token'], 60*3)*/;
