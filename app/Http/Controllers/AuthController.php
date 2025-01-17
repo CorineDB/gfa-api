@@ -54,6 +54,17 @@ class AuthController extends Controller
     }
 
     /**
+     * Authentfication et permission d'accès au système
+     *
+     * @param  App\Http\Requests\auth\LoginRequest  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function adminAuthentification(LoginRequest $request)
+    {
+        return $this->authService->adminAuthentification($request->all());
+    }
+
+    /**
      * Récupérer l'information de l'utilisateur connecter
      *
      * @param  \Illuminate\Http\Request  $request
