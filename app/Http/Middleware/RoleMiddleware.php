@@ -20,11 +20,11 @@ class RoleMiddleware
 
         $roles = explode("|", $role);
         
-        if($role !== null && ( !$request->user()->hasRole(array_values($roles)) && !in_array($request->user()->type, $roles) ) ) {
+        if($role != null && ( !$request->user()->hasRole(array_values($roles)) && !in_array($request->user()->type, $roles) ) ) {
             return response()->json(['statut' => 'error', 'message' => "Vous n'avez pas les droits d'accès à cette resource", 'errors' => [], 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
         }
 
-        if($permission !== null && !$request->user()->can($permission)) {
+        if($permission != null && !$request->user()->can($permission)) {
             return response()->json(['statut' => 'error', 'message' => "Vous n'avez pas la permission d'accès à cette resource", 'errors' => [], 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
         }
 
