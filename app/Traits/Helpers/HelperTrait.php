@@ -178,7 +178,7 @@ trait HelperTrait
         return $activite->durees()
             ->where(function($query) use ($debutDate, $finDate) {
                 $query->where('debut', '>=', $debutDate)
-                ->where('fin', '<=', $finDate);
+                ->where('fin', '>=', $finDate);
                 // Check if the task's start date and end date fall within any of the ranges
                 /* $query->where(function ($subQuery) use ($debutDate, $finDate) {
                     $subQuery->where('debut', '<=', $debutDate)
