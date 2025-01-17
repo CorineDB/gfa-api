@@ -1024,7 +1024,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             $filterData['trimestre'] = $this->getCurrentTrimestre();
         }
 
-        foreach ($activites as $activite) {
+        foreach ($valideActivites as $activite) {
             $suivi = $activite->suiviFinanciers()->when($filterData != null, function ($query) use ($filterData) {
                 $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
             })->first();
@@ -1091,7 +1091,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                         "budget" => ($plan['budgetNational'] + $plan['pret']),
                         "consommer" => 0,
                         "disponible" => ($plan['budgetNational'] + $plan['pret']) - 0,
-                        "pourcentage" => "0%"
+                        "pourcentage" => "0 %"
                     ],
                     "exercice" => $exercice,
                     "cumul" => $cumul
