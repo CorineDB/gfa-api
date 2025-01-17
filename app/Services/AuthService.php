@@ -322,7 +322,6 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-
             if($utilisateur->type !== 'administrateur'){
                 return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
@@ -383,6 +382,9 @@ class AuthService extends BaseService implements AuthServiceInterface
             }
 
             $user = Auth::user();
+
+            dd($user);
+            
             //if($user) $userModel = User::find($user->id);
 
             /*if($user->tokens()->count()){
