@@ -402,13 +402,6 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
 
-            //GenererPta::dispatch(Auth::user()->programme)->delay(now()->addSeconds(15));
-
-            if((file_exists(storage_path('app')."/pta/pta.json") && Storage::disk('local')->get('pta/pta.json') == "") || !file_exists(storage_path('app')."/pta/pta.json"))
-            {
-                if(Auth::user()->programme) dispatch(new GenererPta(Auth::user()->programme))->delay(now()->addSeconds(3));
-            }
-
             //event(new Login(Auth::user()->programme));
 
             // Retourner le token
