@@ -35,9 +35,9 @@ class AuthResource extends JsonResource
             "programme" => $this->when($this->type !== 'administrateur', $this->programme),
             "role" => RoleResource::collection($this->roles->load('permissions')),
             "photo" => new FichiersResource($this->photo),
-            /* "projet" => $this->when((($this->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
-                return $this->profilable->projet;
-            }), */
+            "projet" => $this->when((($this->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
+                return $this->profilable;
+            }),
            /*  "projet" => $this->when((($this->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
                 return $this->profilable->projet;
             }), */
