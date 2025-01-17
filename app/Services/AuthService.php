@@ -77,7 +77,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-            if(get_class($utilisateur->profilable) === Organisation::class){
+            if($utilisateur->profilable && get_class($utilisateur->profilable) === Organisation::class){
                 return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
