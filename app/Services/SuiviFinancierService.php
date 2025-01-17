@@ -946,11 +946,11 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         if ($projet) {
 
-            if(is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])){
+            if (is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])) {
                 $filterData['annee'] = Carbon::now()->year;
             }
-    
-            if(is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])){
+
+            if (is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])) {
                 $filterData['trimestre'] = $this->getCurrentTrimestre();
             }
 
@@ -1011,16 +1011,16 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         $valideActivites = [];
 
         foreach ($activites as $value) {
-            if($this->verifiePlageDuree($value)){
+            if ($this->verifiePlageDuree($value)) {
                 array_push($valideActivites, $value);
             }
         }
 
-        if(is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])){
+        if (is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])) {
             $filterData['annee'] = Carbon::now()->year;
         }
 
-        if(is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])){
+        if (is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])) {
             $filterData['trimestre'] = $this->getCurrentTrimestre();
         }
 
@@ -1029,26 +1029,12 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 $query->where('trimestre', $filterData['trimestre'])->where('annee', $filterData['annee']);
             })->first();
 
-            dd($suivi);
-
-            if (!$suivi) continue;
-
             if ($filterData) {
                 $plan = $activite->planDeDecaissement(isset($filterData['trimestre']) ? $filterData['trimestre'] : null, isset($filterData['annee']) ? $filterData['annee'] : null);
+                $planParAnnee = $activite->planDeDecaissementParAnnee(isset($filterData['annee']) ? $filterData['annee'] : null);
+
             } else {
                 $plan = $activite->planDeDecaissement();
-            }
-
-            $periode = [
-                "budget" => ($plan['budgetNational'] + $plan['pret']),
-                "consommer" => $suivi->consommer,
-                "disponible" => ($plan['budgetNational'] + $plan['pret']) - $suivi->consommer,
-                "pourcentage" => ($plan['budgetNational'] != 0 || $plan['pret'] != 0) ? round(($suivi->consommer * 100) / ($plan['budgetNational'] + $plan['pret']), 2) : 0 . " %"
-            ];
-
-            if ($filterData) {
-                $planParAnnee = $activite->planDeDecaissementParAnnee(isset($filterData['annee']) ? $filterData['annee'] : null);
-            } else {
                 $planParAnnee = $activite->planDeDecaissementParAnnee();
             }
 
@@ -1077,16 +1063,40 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 "pourcentage" => $planCumul != 0 ? round(($consommerCumul * 100) / $planCumul, 2) : 0 . " %"
             ];
 
+            if ($suivi) {
 
-            $objet = [
-                //"bailleur" => $projet->bailleur->sigle,
-                "trimestre" => isset($filterData['trimestre']) ? $filterData['trimestre'] : 1,
-                "annee" => isset($filterData['annee']) ? $filterData['annee'] : Carbon::now()->year,
-                "activite" => new ActivitesResource($activite),
-                "periode" => $periode,
-                "exercice" => $exercice,
-                "cumul" => $cumul
-            ];
+                $periode = [
+                    "budget" => ($plan['budgetNational'] + $plan['pret']),
+                    "consommer" => $suivi->consommer,
+                    "disponible" => ($plan['budgetNational'] + $plan['pret']) - $suivi->consommer,
+                    "pourcentage" => ($plan['budgetNational'] != 0 || $plan['pret'] != 0) ? round(($suivi->consommer * 100) / ($plan['budgetNational'] + $plan['pret']), 2) : 0 . " %"
+                ];
+
+                $objet = [
+                    //"bailleur" => $projet->bailleur->sigle,
+                    "trimestre" => isset($filterData['trimestre']) ? $filterData['trimestre'] : 1,
+                    "annee" => isset($filterData['annee']) ? $filterData['annee'] : Carbon::now()->year,
+                    "activite" => new ActivitesResource($activite),
+                    "periode" => $periode,
+                    "exercice" => $exercice,
+                    "cumul" => $cumul
+                ];
+            } else {
+                $objet = [
+                    //"bailleur" => $projet->bailleur->sigle,
+                    "trimestre" => isset($filterData['trimestre']) ? $filterData['trimestre'] : 1,
+                    "annee" => isset($filterData['annee']) ? $filterData['annee'] : Carbon::now()->year,
+                    "activite" => new ActivitesResource($activite),
+                    "periode" => [
+                        "budget" => ($plan['budgetNational'] + $plan['pret']),
+                        "consommer" => 0,
+                        "disponible" => ($plan['budgetNational'] + $plan['pret']) - 0,
+                        "pourcentage" => "0%"
+                    ],
+                    "exercice" => $exercice,
+                    "cumul" => $cumul
+                ];
+            }
 
             array_push($suiviFinanciers, $objet);
         }
