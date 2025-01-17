@@ -77,8 +77,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         }
     }
 
-
-
     public function filtre(array $attributs): JsonResponse
     {
         try {
@@ -88,7 +86,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             if (Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)) {
                 $projet = Auth::user()->profilable->projet;
             } else if (Auth::user()->hasRole("unitee-de-gestion") || (get_class(auth()->user()->profilable) == UniteeDeGestion::class)) {
-
+                
                 if (isset($attributs['projetId'])) {
                     $projet = Auth::user()->programme->projets()->where('id', $attributs['projetId'])->first();
                 } else {
@@ -96,10 +94,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 }
             }
 
-            $data = $this->filterData($projet);
+            $suiviFinanciers = $this->filterData($projet);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $data, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $suiviFinanciers, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
             $suiviFinanciers = [];
 
