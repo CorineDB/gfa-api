@@ -150,8 +150,9 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
     public function suivis($activiteId, array $attributs = ['*'], array $relations = []): JsonResponse
     {
         try {
-            if (!($activite = $this->repository->findById($activiteId)))
+            if (!($activite = $this->repository->findById($activiteId))){
                 throw new Exception("Cette activite n'existe pas", 500);
+            }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisResource::collection($activite->suivis->sortByDesc("created_at")), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -323,6 +324,19 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
                 $taches = $this->triPta($activite->taches);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => TacheResource::collection($taches), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function stats($activiteId): JsonResponse
+    {
+        try {
+            if (!($activite = $this->repository->findById($activiteId))){
+                throw new Exception("Cette activite n'existe pas", 500);
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisResource::collection($activite->suivis->sortByDesc("created_at")), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

@@ -22,7 +22,7 @@ class AlertUnderPerformance extends Notification
      *
      * @return void
      */
-    public function __construct($data, $channels = ['database', 'broadcast'])
+    public function __construct($data, $channels = ['database'])
     {
         $this->data = $data;
         $this->channels = $channels;
