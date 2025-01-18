@@ -24,7 +24,7 @@ class EvaluationNotification extends Notification implements ShouldBroadcast
      *
      * @return void
      */
-    public function __construct($data, $channels = ['database', 'broadcast'])
+    public function __construct($data, $channels = ['database'])
     {
         $this->data = $data;
         $this->channels = $channels;
