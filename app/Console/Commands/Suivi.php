@@ -49,7 +49,9 @@ class Suivi extends Command
 
         if(date('Y-m-d') >= $financierConfig->debutSuivi)
         {
-            if(($financierConfig->debutSuivi - date('Y-m-d')) && $financierConfig->frequence == 0)
+
+            if(($financierConfig->debutSuivi - date('Y-m-d'))%$financierConfig->frequence == 0)
+            //if(($financierConfig->debutSuivi - date('Y-m-d')) && $financierConfig->frequence == 0)
             {
                 $allUsers = User::all();
                 foreach($allUsers as $user)
