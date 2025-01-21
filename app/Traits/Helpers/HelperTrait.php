@@ -148,6 +148,8 @@ trait HelperTrait
     {
         $currentDate = $annee ?? Carbon::now(); // Get the current date
         $currentMonth = $currentDate->month;
+
+        dd($currentDate);
     
         if ($trimestre == 1 || ($currentMonth >= 1 && $currentMonth <= 3)) {
             $startDate = Carbon::create($currentDate->year, 1, 1);
