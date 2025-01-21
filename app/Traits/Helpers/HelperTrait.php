@@ -155,7 +155,6 @@ trait HelperTrait
         } elseif ($trimestre == 2/*  || ($currentMonth >= 4 && $currentMonth <= 6) */) {
             $startDate = Carbon::create($currentDate->year, 4, 1);
             $endDate = Carbon::create($currentDate->year, 6, 30);
-            dd($trimestre,$annee);
         } elseif ($trimestre == 3/*  || ($currentMonth >= 7 && $currentMonth <= 9) */) {
             $startDate = Carbon::create($currentDate->year, 7, 1);
             $endDate = Carbon::create($currentDate->year, 9, 30);
