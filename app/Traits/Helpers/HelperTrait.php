@@ -144,20 +144,23 @@ trait HelperTrait
         return $currentTrimestre;
     }
 
-    public function getCurrentTrimestreDates()
+    public function getCurrentTrimestreDates(int $trimestre = 1, $annee = null)
     {
-        $currentDate = Carbon::now(); // Get the current date
+        $currentDate = $annee ?? Carbon::now(); // Get the current date
         $currentMonth = $currentDate->month;
     
-        if ($currentMonth >= 1 && $currentMonth <= 3) {
+        if ($trimestre == 1 || ($currentMonth >= 1 && $currentMonth <= 3)) {
             $startDate = Carbon::create($currentDate->year, 1, 1);
             $endDate = Carbon::create($currentDate->year, 3, 31);
-        } elseif ($currentMonth >= 4 && $currentMonth <= 6) {
+        } elseif ($trimestre == 2 || ($currentMonth >= 4 && $currentMonth <= 6)) {
             $startDate = Carbon::create($currentDate->year, 4, 1);
             $endDate = Carbon::create($currentDate->year, 6, 30);
-        } elseif ($currentMonth >= 7 && $currentMonth <= 9) {
+        } elseif ($trimestre == 3 || ($currentMonth >= 7 && $currentMonth <= 9)) {
             $startDate = Carbon::create($currentDate->year, 7, 1);
             $endDate = Carbon::create($currentDate->year, 9, 30);
+        } elseif ($trimestre == 4){
+            $startDate = Carbon::create($currentDate->year, 10, 1);
+            $endDate = Carbon::create($currentDate->year, 12, 31);
         } else {
             $startDate = Carbon::create($currentDate->year, 10, 1);
             $endDate = Carbon::create($currentDate->year, 12, 31);
@@ -169,9 +172,16 @@ trait HelperTrait
         ];
     }
 
-    protected function verifiePlageDuree(Activite $activite)
+    protected function verifiePlageDuree(Activite $activite, array $period = null )
     {
-        [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
+        if($period){
+            $trimestre = (isset($period['trimestre']) && (!is_null($period['trimestre']) && !empty($period['trimestre']))) ? $period['trimestre'] : 1;
+            $year = (isset($period['year'])  && (!is_null($period['year']) && !empty($period['year']))) ? $period['year'] : Carbon::now();
+            [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
+        }
+        else {
+            [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
+        }
 
         dd([$debutDate, $finDate]);
         
