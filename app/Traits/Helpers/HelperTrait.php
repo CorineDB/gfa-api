@@ -148,17 +148,15 @@ trait HelperTrait
     {
         $currentDate = Carbon::parse("$annee-01-01") ?? Carbon::now(); // Get the current date
         $currentMonth = $currentDate->month;
-
-        dd($trimestre == 2 || ($currentMonth >= 4 && $currentMonth <= 6));
     
-        if ($trimestre == 1 || ($currentMonth >= 1 && $currentMonth <= 3)) {
+        if ($trimestre == 1/*  || ($currentMonth >= 1 && $currentMonth <= 3) */) {
             $startDate = Carbon::create($currentDate->year, 1, 1);
             $endDate = Carbon::create($currentDate->year, 3, 31);
-        } elseif ($trimestre == 2 || ($currentMonth >= 4 && $currentMonth <= 6)) {
+        } elseif ($trimestre == 2/*  || ($currentMonth >= 4 && $currentMonth <= 6) */) {
             $startDate = Carbon::create($currentDate->year, 4, 1);
             $endDate = Carbon::create($currentDate->year, 6, 30);
             dd($trimestre,$annee);
-        } elseif ($trimestre == 3 || ($currentMonth >= 7 && $currentMonth <= 9)) {
+        } elseif ($trimestre == 3/*  || ($currentMonth >= 7 && $currentMonth <= 9) */) {
             $startDate = Carbon::create($currentDate->year, 7, 1);
             $endDate = Carbon::create($currentDate->year, 9, 30);
         } elseif ($trimestre == 4){
