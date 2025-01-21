@@ -174,6 +174,7 @@ trait HelperTrait
 
     protected function verifiePlageDuree(Activite $activite, array $period = null )
     {
+        dd($period);
         if($period){
             $trimestre = (isset($period['trimestre']) && (!is_null($period['trimestre']) && !empty($period['trimestre']))) ? $period['trimestre'] : 1;
             $year = (isset($period['year'])  && (!is_null($period['year']) && !empty($period['year']))) ? $period['year'] : Carbon::now();
