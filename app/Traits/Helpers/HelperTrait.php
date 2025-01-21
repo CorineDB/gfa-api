@@ -146,8 +146,7 @@ trait HelperTrait
 
     public function getCurrentTrimestreDates(int $trimestre = 1, $annee = null)
     {
-        dd($trimestre,$annee);
-        $currentDate = $annee ?? Carbon::now(); // Get the current date
+        $currentDate = Carbon::parse($annee) ?? Carbon::now(); // Get the current date
         $currentMonth = $currentDate->month;
 
         dd($currentDate);
