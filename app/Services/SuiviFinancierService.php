@@ -1006,7 +1006,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         $valideActivites = [];
 
         foreach ($activites as $value) {
-            if ($this->verifiePlageDuree($value)) {
+            if ($this->verifiePlageDuree($value, $filterData)) {
                 array_push($valideActivites, $value);
             }
         }
