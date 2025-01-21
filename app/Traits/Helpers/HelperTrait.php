@@ -162,8 +162,8 @@ trait HelperTrait
             $startDate = Carbon::create($currentDate->year, 10, 1);
             $endDate = Carbon::create($currentDate->year, 12, 31);
         } else {
-            $startDate = Carbon::create($currentDate->year, 10, 1);
-            $endDate = Carbon::create($currentDate->year, 12, 31);
+            $startDate = Carbon::create($currentDate->year, 1, 1);
+            $endDate = Carbon::create($currentDate->year, 3, 31);
         }
     
         return [
@@ -179,15 +179,11 @@ trait HelperTrait
             $trimestre = ((isset($period['trimestre']) && (!is_null($period['trimestre']) && !empty($period['trimestre'])))) ? $period['trimestre'] : 1;
             $year = ((isset($period['annee']) && (!is_null($period['annee']) && !empty($period['annee'])))) ? $period['annee'] : Carbon::now()->year;
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
-
-            dd([$debutDate, $finDate]);
         }
         else {
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
         }
 
-        dd([$debutDate, $finDate]);
-        
         // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
         return $activite->durees()
             ->where(function($query) use ($debutDate, $finDate) {
