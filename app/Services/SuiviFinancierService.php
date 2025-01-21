@@ -94,8 +94,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 }
             }
 
-            dd($attributs);
-
             $suiviFinanciers = $this->filterData($projet, $attributs);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $suiviFinanciers, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -945,6 +943,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
         if ($projet) {
 
+            dump($filterData);
+
             if (is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])) {
                 $filterData['annee'] = Carbon::now()->year;
             }
@@ -952,6 +952,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             if (is_null($filterData) || !isset($filterData['trimestre']) || is_null($filterData['trimestre']) || empty($filterData['trimestre'])) {
                 $filterData['trimestre'] = $this->getCurrentTrimestre();
             }
+
+            dd($filterData);
 
             if ($projet instanceof \Illuminate\Database\Eloquent\Model) {
 
