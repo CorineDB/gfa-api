@@ -180,8 +180,8 @@ trait HelperTrait
         if($period){
 
             $trimestre = ((isset($period['trimestre']) && (!is_null($period['trimestre']) && !empty($period['trimestre'])))) ? $period['trimestre'] : 1;
-            $year = ((isset($period['year']) && (!is_null($period['year']) && !empty($period['year'])))) ? $period['year'] : Carbon::now()->year;
-            dd(((isset($period['year']) && (!is_null($period['year']) && !empty($period['year'])))));
+            $year = ((isset($period['annee']) && (!is_null($period['annee']) && !empty($period['annee'])))) ? $period['annee'] : Carbon::now()->year;
+            dd(((isset($period['annee']) && (!is_null($period['annee']) && !empty($period['annee'])))));
             dd([$trimestre, $year, $period]);
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
 
