@@ -181,7 +181,7 @@ trait HelperTrait
 
             $trimestre = ((isset($period['trimestre']) && (!is_null($period['trimestre']) && !empty($period['trimestre'])))) ? $period['trimestre'] : 1;
             $year = ((isset($period['year']) && (!is_null($period['year']) && !empty($period['year'])))) ? $period['year'] : Carbon::now()->year;
-            dd(((isset($period['trimestre']) && (!is_null($period['trimestre']) && !empty($period['trimestre'])))));
+            dd(((isset($period['year']) && (!is_null($period['year']) && !empty($period['year'])))));
             dd([$trimestre, $year, $period]);
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
 
