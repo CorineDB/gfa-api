@@ -31,6 +31,8 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+
 
 /**
  * Interface EvaluationDeGouvernanceServiceInterface
@@ -950,6 +952,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             } else {
                 return response()->json(['statut' => 'error', 'message' => "Pas le droit", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
+
+            Log::error('API request successful.', [
+                'status' => 500,
+                'response' => $attributs,
+            ]);
 
             SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
