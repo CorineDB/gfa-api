@@ -120,7 +120,7 @@ class SendInvitationJob implements ShouldQueue
                             'messages' => [
                                 [
                                     'to' => $phoneNumbers,
-                                    'content' => "Salut, Monsieur/Madame!\n\n Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme"
+                                    'content' => "Salut, Monsieur/Madame!\n\n Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n"
                                 ],
                             ],
                         ];
