@@ -107,6 +107,8 @@ class SendInvitationJob implements ShouldQueue
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
                         
+                        dump([$phoneNumbers, !empty($phoneNumbers)]);
+                        
                         $response = Http::/*withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->*/ withHeaders([
                             'Authorization' => 'Bearer ' . $this->sms_api_key,
                         ])->post($this->sms_api_url . '/sendbatch', [
