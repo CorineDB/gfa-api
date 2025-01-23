@@ -127,11 +127,6 @@ class SendInvitationJob implements ShouldQueue
                             ],
                         ]);
 
-                        Log::error('API request successful.', [
-                            'status' => $response->status(),
-                            'response' => $response->json(),
-                        ]);
-
                         // Handle the response
                         if ($response->successful()) {
 
