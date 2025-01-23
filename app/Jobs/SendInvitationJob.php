@@ -113,7 +113,18 @@ class SendInvitationJob implements ShouldQueue
                             'Authorization' => 'Basic ' . $this->sms_api_key
                         ];
 
-                        dd($headers);
+                        $request_body = [
+                            'globals' => [
+                                'from' => 'GFA',
+                            ],
+                            'messages' => [
+                                [
+                                    'to' => $phoneNumbers
+                                ],
+                            ],
+                        ];
+
+                        dd($headers,$request_body);
 
                         $request_body = [
                             'globals' => [
@@ -132,8 +143,6 @@ class SendInvitationJob implements ShouldQueue
                                 ],
                             ],
                         ];
-
-                        dd($headers,$request_body);
 
                         $response = Http::dd()->withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
 
