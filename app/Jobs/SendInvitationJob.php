@@ -104,7 +104,7 @@ class SendInvitationJob implements ShouldQueue
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
                     }
 
-                    dd($phoneNumbers);
+                    dd([$phoneNumbers, !empty($phoneNumbers)]);
 
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
