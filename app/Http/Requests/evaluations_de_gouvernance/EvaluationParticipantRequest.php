@@ -24,7 +24,7 @@ class EvaluationParticipantRequest extends FormRequest
         }
         else if(request()->input('participants') !== null){
 
-            return (request()->user()->hasPermissionTo("envoyer-une-invitation") || request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation")) && $this->evaluation_de_gouvernance->statut == 0;
+            return (request()->user()->hasPermissionTo("envoyer-une-invitation") || request()->user()->hasRole("unitee-de-gestion") || request()->user()->hasRole("organisation"))/*  && $this->evaluation_de_gouvernance->statut == 0 */;
         }
 
         return false;
