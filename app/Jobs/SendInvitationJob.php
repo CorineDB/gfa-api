@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Mail\InvitationEnqueteDeCollecteEmail;
 use App\Models\EvaluationDeGouvernance;
+use App\Traits\Helpers\ConfigueTrait;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,10 +12,14 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Http;
+
 
 class SendInvitationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    use ConfigueTrait;
 
     private $type;
     private $data;
@@ -66,7 +71,7 @@ class SendInvitationJob implements ShouldQueue
                         return $participant["type_de_contact"] === "contact";
                     });
 
-                    // Extract email addresses for https://api.e-mc.co/v3/
+                    // Extract phone numbers for https://api.e-mc.co/v3/
                     $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
 
                     // Send the email if there are any email addresses
@@ -96,6 +101,35 @@ class SendInvitationJob implements ShouldQueue
 
                         // Remove duplicates based on the "email" field (use email as the unique key)
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
+                    }
+
+                    // Send the sms if there are any phone numbers
+                    if (!empty($phoneNumbers)) {
+                        
+                        $response = Http::dd()->withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->withUrlParameters([
+                            'endpoint' => $this->sms_api_url
+                        ])->post('{+endpoint}/sendbatch', [
+                            'globals' => [
+                                'from' => 'GFA',
+                            ],
+                            'messages' => [
+                                [
+                                    'to' => $phoneNumbers,
+                                    'content' => 'Hello World!',
+                                ],
+                            ],
+                        ]);
+
+                        // Handle the response
+                        if ($response->successful()) {
+
+                            // Remove duplicates based on the "email" field (use email as the unique key)
+                            $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
+                            return $response->json(); // or handle as needed
+                        } else {
+                            return $response->body(); // Debug or log error
+                            throw new Exception("Error Processing Request", 1);
+                        }
                     }
 
                     // Update the pivot table with the merged participants
