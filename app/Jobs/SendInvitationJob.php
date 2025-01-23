@@ -109,9 +109,11 @@ class SendInvitationJob implements ShouldQueue
                         
                         dump([$phoneNumbers, !empty($phoneNumbers)]);
 
-                        $response = Http::dd()->withHeaders([
+                        $headers = [
                             'Authorization' => 'Basic ' . $this->sms_api_key,
-                        ])->post($this->sms_api_url . '/sendbatch', [
+                        ];
+
+                        $request_body = [
                             'globals' => [
                                 'from' => 'GFA',
                             ],
@@ -127,7 +129,11 @@ class SendInvitationJob implements ShouldQueue
                                     "Merci de l'attention!",
                                 ],
                             ],
-                        ]);
+                        ];
+
+                        dd($headers,$request_body);
+
+                        $response = Http::dd()->withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                         dd([$phoneNumbers, !empty($phoneNumbers), $response]);
 
