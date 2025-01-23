@@ -110,8 +110,10 @@ class SendInvitationJob implements ShouldQueue
                         dump([$phoneNumbers, !empty($phoneNumbers)]);
 
                         $headers = [
-                            'Authorization' => 'Basic ' . $this->sms_api_key,
+                            'Authorization' => 'Basic ' . $this->sms_api_key
                         ];
+
+                        dd($headers);
 
                         $request_body = [
                             'globals' => [
