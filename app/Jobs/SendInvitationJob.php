@@ -119,7 +119,8 @@ class SendInvitationJob implements ShouldQueue
                             ],
                             'messages' => [
                                 [
-                                    'to' => $phoneNumbers
+                                    'to' => $phoneNumbers,
+                                    'content' => "Salut, Monsieur/Madame!\n\n"
                                 ],
                             ],
                         ];
