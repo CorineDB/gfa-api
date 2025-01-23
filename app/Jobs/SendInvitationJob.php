@@ -75,8 +75,6 @@ class SendInvitationJob implements ShouldQueue
                     // Extract phone numbers for https://api.e-mc.co/v3/
                     $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
 
-
-                    dd([$this->data,$phoneNumbers]);
                     // Send the email if there are any email addresses
                     if (!empty($emailAddresses)) {
 
@@ -129,6 +127,7 @@ class SendInvitationJob implements ShouldQueue
                             ],
                         ]);
 
+                        dd([$response,$phoneNumbers]);
                         // Handle the response
                         if ($response->successful()) {
 
