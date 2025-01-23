@@ -13,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 
 class SendInvitationJob implements ShouldQueue
@@ -106,7 +107,9 @@ class SendInvitationJob implements ShouldQueue
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
                         
-                        $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', [
+                        $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)/* ->withHeaders([
+                            'Authorization' => 'Basic ' . $this->sms_api_key,
+                        ]) */->post($this->sms_api_url . '/sendbatch', [
                             'globals' => [
                                 'from' => 'GFA',
                             ],
@@ -121,6 +124,11 @@ class SendInvitationJob implements ShouldQueue
                                     "Thank you for your attention!",
                                 ],
                             ],
+                        ]);
+
+                        Log::info('API request successful.', [
+                            'status' => $response->status(),
+                            'response' => $response->json(),
                         ]);
 
                         // Handle the response
