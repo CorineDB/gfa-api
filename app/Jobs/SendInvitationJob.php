@@ -50,8 +50,6 @@ class SendInvitationJob implements ShouldQueue
 
             $details = [];
 
-            dd([$this->data]);
-
             if ($this->type == "invitation-enquete-de-collecte") {
                 $participants = [];
 
