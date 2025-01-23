@@ -36,7 +36,7 @@ class EvaluationDeGouvernanceController extends Controller
         $this->middleware('permission:voir-formulaire-factuel')->only(['formulaire_factuel', 'formulaire_factuel_de_gouvernance']);
   
         $this->middleware('permission:envoyer-un-rappel-soumission')->only(['rappel_soumission']);
-        $this->middleware('permission:envoyer-une-invitation')->only(['envoi_mail_au_participants']);
+        //$this->middleware('permission:envoyer-une-invitation')->only(['envoi_mail_au_participants']);
         
         $this->evaluationDeGouvernanceService = $evaluationDeGouvernanceServiceInterface;
     }
