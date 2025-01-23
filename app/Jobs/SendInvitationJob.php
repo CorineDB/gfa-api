@@ -106,8 +106,6 @@ class SendInvitationJob implements ShouldQueue
 
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
-                        
-                        dump([$phoneNumbers, !empty($phoneNumbers)]);
 
                         $headers = [
                             'Authorization' => 'Basic ' . $this->sms_api_key
@@ -115,14 +113,14 @@ class SendInvitationJob implements ShouldQueue
 
                         $request_body = [
                             'globals' => [
-                                'from' => 'GFA',
+                                'from' => 'GFA'
                             ],
                             'messages' => [
                                 [
                                     'to' => $phoneNumbers,
-                                    'content' => "Salut, Monsieur/Madame!\n\n Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n"
-                                ],
-                            ],
+                                    'content' => "Salut, Monsieur/Madame!\n\n Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n PARTICIPEZ DES MAINTENANT A L'ENQUETE: {{$url}}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n"
+                                ]
+                            ]
                         ];
 
                         dd($headers, $request_body);
