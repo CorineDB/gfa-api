@@ -113,24 +113,6 @@ class SendInvitationJob implements ShouldQueue
 
                         $request_body = [
                             'globals' => [
-                                'from' => 'GFA'
-                            ],
-                            'messages' => [
-                                [
-                                    'to' => $phoneNumbers,
-                                    'content' => "Salut, Monsieur/Madame!\n\n".
-                                                "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n".
-                                                "Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n".
-                                                "PARTICIPEZ DES MAINTENANT A L'ENQUETE: \n\n".
-                                                "{{$url}}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n"
-                                ]
-                            ]
-                        ];
-
-                        dd($headers, $request_body);
-
-                        $request_body = [
-                            'globals' => [
                                 'from' => 'GFA',
                             ],
                             'messages' => [
@@ -141,7 +123,7 @@ class SendInvitationJob implements ShouldQueue
                                     "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n" .
                                     "Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n" .
                                     "PARTICIPEZ DES MAINTENANT A L'ENQUETE:" .
-                                    "{{$url}}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n" .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n" .
                                     "Merci de l'attention!",
                                 ],
                             ],
