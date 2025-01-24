@@ -108,7 +108,7 @@ class SendInvitationJob implements ShouldQueue
                     if (!empty($phoneNumbers)) {
 
                         $headers = [
-                            'Authorization' => 'Basic ' . $this->sms_api_key
+                            'Authorization' => 'Basic ' . $this->sms_api_key. ' df. '
                         ];
 
                         $request_body = [
@@ -131,17 +131,18 @@ class SendInvitationJob implements ShouldQueue
 
                         $response = Http::withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
 
-                        dd([$response->status(), $response->json()]);
+                        dd([$response->status(), json_encode($response->json())]);
 
                         // Handle the response
                         if ($response->successful()) {
 
                             // Remove duplicates based on the "email" field (use email as the unique key)
                             $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
-                            return $response->json(); // or handle as needed
+                            //return $response->json(); // or handle as needed
                         } else {
-                            return $response->body(); // Debug or log error
-                            throw new Exception("Error Processing Request", 1);
+                            $response->throw();
+                            //return $response->body(); // Debug or log error
+                            //throw new Exception("Error Processing Request", 1);
                         }
                     }
 
