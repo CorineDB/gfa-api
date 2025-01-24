@@ -108,7 +108,7 @@ class SendInvitationJob implements ShouldQueue
                     if (!empty($phoneNumbers)) {
 
                         $headers = [
-                            'Authorization' => 'Basic ' . $this->sms_api_key. ' df. '
+                            'Authorization' => 'Basic ' . $this->sms_api_key
                         ];
 
                         $request_body = [
@@ -129,7 +129,7 @@ class SendInvitationJob implements ShouldQueue
                             ],
                         ];
 
-                        $response = Http::withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
+                        $response = Http::/* withHeaders($headers) */withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                         dd([$response->status(), json_encode($response->json())]);
 
