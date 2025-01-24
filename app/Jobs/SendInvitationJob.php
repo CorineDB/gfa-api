@@ -75,15 +75,15 @@ class SendInvitationJob implements ShouldQueue
                     // Extract phone numbers for https://api.e-mc.co/v3/
                     $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
 
+                    $url = config("app.url");
+
+                    // If the URL is localhost, append the appropriate IP address and port
+                    if (strpos($url, 'localhost') !== false) {
+                        $url = 'http://192.168.1.16:3000';
+                    }
+
                     // Send the email if there are any email addresses
                     if (!empty($emailAddresses)) {
-
-                        $url = config("app.url");
-
-                        // If the URL is localhost, append the appropriate IP address and port
-                        if (strpos($url, 'localhost') !== false) {
-                            $url = 'http://192.168.1.16:3000';
-                        }
 
                         $details['view'] = "emails.auto-evaluation.invitation_enquete_de_collecte";
                         $details['subject'] = "Invitation à participer à notre enquête d'auto-évaluation de gouvernance";
@@ -107,7 +107,6 @@ class SendInvitationJob implements ShouldQueue
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
 
-                        dd($url);
                         $headers = [
                             'Authorization' => 'Basic ' . $this->sms_api_key
                         ];
