@@ -131,7 +131,7 @@ class SendInvitationJob implements ShouldQueue
 
                         $response = Http::/* withHeaders($headers) */withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
-                        dd([$response->status(), json_encode($response->body())]);
+                        dd([$response->status(), $response->body()]);
 
                         // Handle the response
                         if ($response->successful()) {
