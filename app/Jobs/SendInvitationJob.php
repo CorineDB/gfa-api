@@ -107,6 +107,7 @@ class SendInvitationJob implements ShouldQueue
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
 
+                        dd($url);
                         $headers = [
                             'Authorization' => 'Basic ' . $this->sms_api_key
                         ];
@@ -122,7 +123,7 @@ class SendInvitationJob implements ShouldQueue
                                                 "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n".
                                                 "Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n".
                                                 "PARTICIPEZ DES MAINTENANT A L'ENQUETE: \n\n".
-                                                "dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n"
+                                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n"
                                 ]
                             ]
                         ];
