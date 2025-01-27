@@ -204,6 +204,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                                                       "pret" => $activite->pret,
                                                       "depenses" => round($activite->consommer,2),
                                                       "tep" => round($activite->tep,2),
+                                                      "tef" => round($activite->tef,2),
                                                       "trimestre1" => $activite->planDeDecaissement(1, date('Y')),
                                                       "trimestre2" => $activite->planDeDecaissement(2, date('Y')),
                                                       "trimestre3" => $activite->planDeDecaissement(3, date('Y')),
@@ -223,6 +224,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                                                   "pret" => $sousComposante->pret,
                                                   "depenses" => round($sousComposante->consommer,2),
                                                   "tep" => round($sousComposante->tep,2),
+                                                  "tef" => round($sousComposante->tef,2),
                                                       "trimestre1" => $sousComposante->planDeDecaissement(1, date('Y')),
                                                       "trimestre2" => $sousComposante->planDeDecaissement(2, date('Y')),
                                                       "trimestre3" => $sousComposante->planDeDecaissement(3, date('Y')),
@@ -310,6 +312,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                                                   "pret" => $activite->pret,
                                                   "depenses" => round($activite->consommer,2),
                                                   "tep" => round($activite->tep,2),
+                                                  "tef" => round($activite->tef,2),
                                                   "trimestre1" => $activite->planDeDecaissement(1, date('Y')),
                                                   "trimestre2" => $activite->planDeDecaissement(2, date('Y')),
                                                   "trimestre3" => $activite->planDeDecaissement(3, date('Y')),
@@ -330,6 +333,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                                             "pret" => 0,
                                             "depenses" => 0,
                                             "tep" => 0,
+                                            "tef" => 0,
                                             "trimestre1" => 0,
                                             "trimestre2" => 0,
                                             "trimestre3" => 0,
@@ -347,6 +351,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                                                       "pret" => $composante->pret,
                                                       "depenses" => round($composante->consommer,2),
                                                       "tep" => round($composante->tep,2),
+                                                      "tef" => round($composante->tef,2),
                                                       "trimestre1" => $composante->planDeDecaissement(1, date('Y')),
                                                       "trimestre2" => $composante->planDeDecaissement(2, date('Y')),
                                                       "trimestre3" => $composante->planDeDecaissement(3, date('Y')),
@@ -367,6 +372,7 @@ class PtaService extends BaseService implements PtaServiceInterface
                     "pret" => $projet->pret,
                     "depenses" => round($projet->consommer,2),
                     "tep" => round($projet->tep,2),
+                    "tef" => round($projet->tef,2),
                     "composantes" => $composantestab]);
                 }
             }
