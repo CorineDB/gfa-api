@@ -68,7 +68,7 @@ class EvaluationParticipantRequest extends FormRequest
                 $index = $matches[1] ?? null; // Get the index if it exists
 
                 $type = request()->input('participants.*.type_de_contact')[$index];
-                $contact = request()->input('participants.*.contact')[$index];
+                //$contact = request()->input('participants.*.contact')[$index];
                 
                 // Ensure each keyId in valeurDeBase is one of the value_keys.id
                /*  if ($type == 'contact' && (empty($contact) || is_null($contact))) {
