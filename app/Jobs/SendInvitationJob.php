@@ -107,7 +107,7 @@ class SendInvitationJob implements ShouldQueue
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
 
-                        /* $headers = [
+                        $headers = [
                             'Authorization' => 'Basic ' . $this->sms_api_key
                         ];
 
@@ -141,7 +141,7 @@ class SendInvitationJob implements ShouldQueue
                             $response->throw();
                             //return $response->body(); // Debug or log error
                             //throw new Exception("Error Processing Request", 1);
-                        } */
+                        }
                     }
 
                     // Update the pivot table with the merged participants
