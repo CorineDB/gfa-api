@@ -119,11 +119,11 @@ class SendInvitationJob implements ShouldQueue
                                 [
                                     'to' => $phoneNumbers,
                                     'content' => 
-                                        "Bonjour,\n\n" .
+                                        "Bonjour,\n\n"/*  .
                                         "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
                                         "Participez des maintenant : " .
                                         "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                        "Merci !"
+                                        "Merci !" */
                                 ],
                             ],
                         ];
