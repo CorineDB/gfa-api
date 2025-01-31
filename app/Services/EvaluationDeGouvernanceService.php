@@ -32,7 +32,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 
 /**
@@ -1049,17 +1049,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             [
                                 'to' => $phoneNumbers,
                                 'content' => 
-                                "Salut, Monsieur/Madame!\n\n" .
-                                "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n" .
-                                "Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n" .
-                                "PARTICIPEZ DES MAINTENANT A L'ENQUETE:" .
-                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n" .
-                                "Merci de l'attention!",
+                                "Bonjour,\n\n" .
+                                "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                "Repondez des maintenant :\n" .
+                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                "Merci pour votre participation !"
                             ],
                         ],
                     ];
 
-                    $response = Http::/* withHeaders($headers) */withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
+                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                     // Handle the response
                     if ($response->successful()) {
@@ -1144,5 +1143,21 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Remove duplicate participants based on the 'email' field (or any unique field).
+     */
+    private function removeDuplicateParticipants($participants)
+    {
+        $uniqueParticipants = [];
+    
+        foreach ($participants as $participant) {
+            // If participant doesn't exist in uniqueParticipants array, add them
+            $uniqueParticipants[$participant['email']] = $participant;
+        }
+    
+        // Return the unique participants as a re-indexed array
+        return array_values($uniqueParticipants);
     }
 }
