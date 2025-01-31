@@ -107,7 +107,6 @@ class SendInvitationJob implements ShouldQueue
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
 
-                        dd($phoneNumbers);
                         $headers = [
                             'Authorization' => 'Basic ' . $this->sms_api_key
                         ];
@@ -131,6 +130,7 @@ class SendInvitationJob implements ShouldQueue
 
                         $response = Http::/* withHeaders($headers) */withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
+                        dd($response->status());
                         // Handle the response
                         if ($response->successful()) {
 
