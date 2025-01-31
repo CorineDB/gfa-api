@@ -83,7 +83,7 @@ class SendInvitationJob implements ShouldQueue
                     }
 
                     // Send the email if there are any email addresses
-                    if (!empty($emailAddresses)) {
+                    /* if (!empty($emailAddresses)) {
 
                         $details['view'] = "emails.auto-evaluation.invitation_enquete_de_collecte";
                         $details['subject'] = "Invitation à participer à notre enquête d'auto-évaluation de gouvernance";
@@ -102,7 +102,7 @@ class SendInvitationJob implements ShouldQueue
 
                         // Remove duplicates based on the "email" field (use email as the unique key)
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
-                    }
+                    } */
 
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
