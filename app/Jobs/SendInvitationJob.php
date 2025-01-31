@@ -134,7 +134,7 @@ class SendInvitationJob implements ShouldQueue
                         if ($response->successful()) {
 
                             // Remove duplicates based on the "email" field (use email as the unique key)
-                            $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
+                            $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
                             //return $response->json(); // or handle as needed
                         } /*else {
                             dd($response->body());
@@ -163,13 +163,18 @@ class SendInvitationJob implements ShouldQueue
     /**
      * Remove duplicate participants based on the 'email' field (or any unique field).
      */
-    private function removeDuplicateParticipants($participants)
+    private function removeDuplicateParticipants($participants, string $type='email')
     {
         $uniqueParticipants = [];
     
         foreach ($participants as $participant) {
-            // If participant doesn't exist in uniqueParticipants array, add them
-            $uniqueParticipants[$participant['email']] = $participant;
+            if($type == 'email'){
+                // If participant doesn't exist in uniqueParticipants array, add them
+                $uniqueParticipants[$participant['email']] = $participant;
+            }
+            elseif($type == 'phone'){
+                $uniqueParticipants[$participant['phone']] = $participant;
+            }
         }
     
         // Return the unique participants as a re-indexed array
