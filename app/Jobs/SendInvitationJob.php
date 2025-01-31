@@ -79,7 +79,7 @@ class SendInvitationJob implements ShouldQueue
 
                     // If the URL is localhost, append the appropriate IP address and port
                     if (strpos($url, 'localhost') !== false) {
-                        $url = 'http://192.168.1.16:3000';
+                        $url = env("ORG_APP_URL");
                     }
 
                     // Send the email if there are any email addresses
@@ -118,13 +118,21 @@ class SendInvitationJob implements ShouldQueue
                             'messages' => [
                                 [
                                     'to' => $phoneNumbers,
-                                    'content' => 
+
+                                'content' => 
+                                    "Bonjour,\n\n" .
+                                    "Vous êtes invité(e) à participer à l’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                    "Participez dès maintenant :\n" .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                    "Merci !"
+
+                                    /* 'content' => 
                                     "Salut, Monsieur/Madame!\n\n" .
                                     "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n" .
                                     "Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n" .
                                     "PARTICIPEZ DES MAINTENANT A L'ENQUETE:" .
                                     "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n" .
-                                    "Merci de l'attention!",
+                                    "Merci de l'attention!", */
                                 ],
                             ],
                         ];

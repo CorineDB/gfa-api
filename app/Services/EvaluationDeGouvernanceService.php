@@ -19,6 +19,7 @@ use App\Models\Organisation;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\OrganisationRepository;
 use App\Repositories\PrincipeDeGouvernanceRepository;
+use App\Traits\Helpers\ConfigueTrait;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
 use Exception;
@@ -40,7 +41,7 @@ use Illuminate\Support\Facades\Log;
  */
 class EvaluationDeGouvernanceService extends BaseService implements EvaluationDeGouvernanceServiceInterface
 {
-
+    use ConfigueTrait;
     /**
      * @var service
      */
@@ -199,12 +200,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-
             $url = config("app.url");
 
             // If the URL is localhost, append the appropriate IP address and port
             if (strpos($url, 'localhost') !== false) {
-                $url = 'http://192.168.1.16:3000';
+                $url = env("ORG_APP_URL");
             }
 
             if (Auth::user()->hasRole('administrateur')) {
@@ -991,6 +991,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Extract email addresses for Mail::to()
                 $emailAddresses = array_column($emailParticipants, 'email');
 
+                // Filter participants for those with "email" contact type
+                $phoneNumberParticipants = array_filter($participants, function ($participant) {
+                    return $participant["type_de_contact"] === "contact";
+                });
+
+                // Extract phone numbers for https://api.e-mc.co/v3/
+                $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
+
                 // Send the email if there are any email addresses
                 if (!empty($emailAddresses)) {
 
@@ -998,7 +1006,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     // If the URL is localhost, append the appropriate IP address and port
                     if (strpos($url, 'localhost') !== false) {
-                        $url = 'http://192.168.1.16:3000';
+                        $url = env("ORG_APP_URL");
                     }
 
                     $details['view'] = "emails.auto-evaluation.rappel_soumission_participant";
@@ -1025,6 +1033,47 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $when = now()->addSeconds(5);
                     Mail::to($emailAddresses)->later($when, $mailer);
                 }
+
+                // Send the sms if there are any phone numbers
+                if (!empty($phoneNumbers)) {
+
+                    $headers = [
+                        'Authorization' => 'Basic ' . $this->sms_api_key
+                    ];
+
+                    $request_body = [
+                        'globals' => [
+                            'from' => 'GFA',
+                        ],
+                        'messages' => [
+                            [
+                                'to' => $phoneNumbers,
+                                'content' => 
+                                "Salut, Monsieur/Madame!\n\n" .
+                                "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.\n\n" .
+                                "Cliquez des maintenant sur le lien ci-dessous pour acceder a l’enquete et partager votre precieuse opinion:\n" .
+                                "PARTICIPEZ DES MAINTENANT A L'ENQUETE:" .
+                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token},\n\n" .
+                                "Merci de l'attention!",
+                            ],
+                        ],
+                    ];
+
+                    $response = Http::/* withHeaders($headers) */withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
+
+                    // Handle the response
+                    if ($response->successful()) {
+
+                        // Remove duplicates based on the "email" field (use email as the unique key)
+                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
+                        //return $response->json(); // or handle as needed
+                    } else {
+                        $response->throw();
+                        //return $response->body(); // Debug or log error
+                        //throw new Exception("Error Processing Request", 1);
+                    }
+                }
+
             }
 
             return response()->json(['statut' => 'success', 'message' => "Rappel envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
