@@ -64,8 +64,8 @@ class EvaluationParticipantRequest extends FormRequest
             'participants.*.contact'            => ['nullable', 'distinct', 'numeric', 'digits_between:8,24', function ($attribute, $value, $fail) {
 
                 // Get the index from the attribute name
-                /*  preg_match('/participants\.(\d+)\.type_de_contact/', $attribute, $matches);
-                $index = $matches[1] ?? null; // Get the index if it exists
+                preg_match('/participants\.(\d+)\.type_de_contact/', $attribute, $matches);
+                /*  $index = $matches[1] ?? null; // Get the index if it exists
 
                 $type = request()->input('participants.*.type_de_contact')[$index];
                 $contact = request()->input('participants.*.contact')[$index];
