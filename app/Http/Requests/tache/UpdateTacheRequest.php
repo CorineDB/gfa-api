@@ -54,7 +54,7 @@ cLass UpdateTacheRequest extends FormRequest
             'debut' => ["sometimes", "required", "date", "date_format:Y-m-d", function($attribute, $value, $fail) {
                 $activite = Activite::findByKey(request()->input('activiteId'));
 
-                if($activite->duree->debut > $value){
+                if($activite->dureeActivite->debut >= $value){
                     $fail("La date de debut de la tache est anterieur à celui de l'activite");
                 }
                 
@@ -62,7 +62,7 @@ cLass UpdateTacheRequest extends FormRequest
             'fin' => ["sometimes", "required", "date", "date_format:Y-m-d", "after_or_equal:debut", function($attribute, $value, $fail) {
                 $activite = Activite::findByKey(request()->input('activiteId'));
 
-                if($activite->duree->fin > $value){
+                if($activite->dureeActivite->fin >= $value){
                     $fail("La date de fin de la tache est superieur à celui de l'activite");
                 }
                 
