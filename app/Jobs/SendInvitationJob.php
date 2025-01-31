@@ -145,13 +145,13 @@ class SendInvitationJob implements ShouldQueue
                     }
 
                     // Update the pivot table with the merged participants
-                    $evaluationOrganisation->pivot->participants = $participants;
+                    /* $evaluationOrganisation->pivot->participants = $participants;
                     if(isset($this->data['nbreParticipants']) && $this->data['nbreParticipants'] > 0){
                         if(($this->data['nbreParticipants'] > $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)){
                             $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
                             $evaluationOrganisation->pivot->save();
                         }
-                    }
+                    } */
                 }
             }
         } catch (\Throwable $th) {
