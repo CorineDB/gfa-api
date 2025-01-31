@@ -133,7 +133,6 @@ class SendInvitationJob implements ShouldQueue
                             $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
                             //return $response->json(); // or handle as needed
                         } else {
-                            dd($response->body());
                             $response->throw();
                             //return $response->body(); // Debug or log error
                             //throw new Exception("Error Processing Request", 1);
