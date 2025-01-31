@@ -107,7 +107,6 @@ class SendInvitationJob implements ShouldQueue
                     // Send the sms if there are any phone numbers
                     if (!empty($phoneNumbers)) {
 
-                        dd($phoneNumbers);
                         $request_body = [
                             'globals' => [
                                 'from' => 'GFA',
