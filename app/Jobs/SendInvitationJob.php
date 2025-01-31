@@ -131,12 +131,12 @@ class SendInvitationJob implements ShouldQueue
                         $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                         // Handle the response
-                        /* if ($response->successful()) {
+                        if ($response->successful()) {
 
                             // Remove duplicates based on the "email" field (use email as the unique key)
                             $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
                             //return $response->json(); // or handle as needed
-                        } else {
+                        } /*else {
                             dd($response->body());
                             $response->throw();
                             //return $response->body(); // Debug or log error
