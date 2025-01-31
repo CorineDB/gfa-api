@@ -61,17 +61,17 @@ class EvaluationParticipantRequest extends FormRequest
                     $fail("Veillez l'adresse email du participant.");
                 }
             }],
-            'participants.*.contact'            => ['nullable', 'distinct', 'numeric', 'digits_between:8,24', function ($attribute, $value, $fail) {
+            'participants.*.phone'            => ['nullable', 'distinct', 'numeric', 'digits_between:8,24', function ($attribute, $value, $fail) {
 
                 // Get the index from the attribute name
-                preg_match('/participants\.(\d+)\.contact/', $attribute, $matches);
+                preg_match('/participants\.(\d+)\.phone/', $attribute, $matches);
                 $index = $matches[1] ?? null; // Get the index if it exists
 
                 $type = request()->input('participants.*.type_de_contact')[$index];
-                $contact = request()->input('participants.*.contact')[$index];
+                $phone = request()->input('participants.*.phone')[$index];
                 
                 // Ensure each keyId in valeurDeBase is one of the value_keys.id
-                if ($type == 'contact' && (empty($contact) || is_null($contact))) {
+                if ($type == 'contact' && (empty($phone) || is_null($phone))) {
                     $fail("Veillez le contact du participant.");
                 }
             }],

@@ -73,7 +73,7 @@ class SendInvitationJob implements ShouldQueue
                     });
 
                     // Extract phone numbers for https://api.e-mc.co/v3/
-                    $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
+                    $phoneNumbers = array_column($phoneNumberParticipants, 'phone');
 
                     $url = config("app.url");
 
