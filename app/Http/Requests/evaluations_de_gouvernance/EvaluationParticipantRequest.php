@@ -50,7 +50,7 @@ class EvaluationParticipantRequest extends FormRequest
             'participants.*.email'              => ['nullable', 'distinct', 'email','max:255', function ($attribute, $value, $fail) {
 
                 // Get the index from the attribute name
-                preg_match('/participants\.(\d+)\.type_de_contact/', $attribute, $matches);
+                preg_match('/participants\.(\d+)\.email/', $attribute, $matches);
                 $index = $matches[1] ?? null; // Get the index if it exists
 
                 $type = request()->input('participants.*.type_de_contact')[$index];
@@ -64,7 +64,7 @@ class EvaluationParticipantRequest extends FormRequest
             'participants.*.contact'            => ['nullable', 'distinct', 'numeric', 'digits_between:8,24', function ($attribute, $value, $fail) {
 
                 // Get the index from the attribute name
-                preg_match('/participants\.(\d+)\.type_de_contact/', $attribute, $matches);
+                preg_match('/participants\.(\d+)\.contact/', $attribute, $matches);
                 $index = $matches[1] ?? null; // Get the index if it exists
                 $fail("Veillez le contact du ".json_encode($attribute)." Match : ".json_encode($matches)."");
 
