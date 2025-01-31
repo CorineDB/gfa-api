@@ -163,7 +163,7 @@ class SendInvitationJob implements ShouldQueue
     /**
      * Remove duplicate participants based on the 'email' field (or any unique field).
      */
-    private function removeDuplicateParticipants($participants, string $type='email')
+    private function removeDuplicateParticipants($participants, string $type = 'email')
     {
         $uniqueParticipants = [];
     
