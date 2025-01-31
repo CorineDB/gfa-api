@@ -66,15 +66,14 @@ class EvaluationParticipantRequest extends FormRequest
                 // Get the index from the attribute name
                 preg_match('/participants\.(\d+)\.contact/', $attribute, $matches);
                 $index = $matches[1] ?? null; // Get the index if it exists
-                $fail("Veillez le contact du ".json_encode($attribute)." Match : ".json_encode($matches)."");
 
-                /*  $type = request()->input('participants.*.type_de_contact')[$index];
+                $type = request()->input('participants.*.type_de_contact')[$index];
                 $contact = request()->input('participants.*.contact')[$index];
                 
                 // Ensure each keyId in valeurDeBase is one of the value_keys.id
-               if ($type == 'contact' && (empty($contact) || is_null($contact))) {
+                if ($type == 'contact' && (empty($contact) || is_null($contact))) {
                     $fail("Veillez le contact du participant.");
-                }     */
+                }
             }],
         ];
     }
