@@ -21,6 +21,8 @@ trait SmsTrait{
         $endpoint = $this->apiUrl . '/sendbatch'; // Define URL in .env
         //$endpoint = $this->apiUrl . '/sms'; // Define URL in .env
 
+        dd($this->apiKey);
+
         $headers = [
             'Authorization' => "Basic {$this->apiKey}",
             'Content-Type' => 'application/json',
