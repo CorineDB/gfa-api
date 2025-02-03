@@ -1082,10 +1082,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ]; */
                     $url = config("app.url");
                     $message = "Bonjour,\n\n" .
-                                    "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
-                                    "Repondez des maintenant :\n" .
-                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                    "Merci pour votre participation !";
+                                "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                "Repondez des maintenant :\n" .
+                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                "Merci pour votre participation !";
                     $this->sendSms($message, $phoneNumbers);
 
                     /* $request_body = [
