@@ -977,11 +977,25 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 'content' => "Bonjour, Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance."
                             ],
                         ],
-                    ];
-                          
+                    ];                
 
                     // Convert array to JSON
                     //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
+
+                    
+                    $request_body = [
+                        "from" => "GFA",
+                                "to" => 22962004867, // Ensure it's an array
+                                "content" => "Hello World!",
+                                'content' => "Bonjour, Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance."
+                    ];    
+
+                    $response = Http::withHeaders([
+                        'Authorization' => "Basic {$this->sms_api_key}",
+                        'Content-Type' => 'application/json',
+                    ])->post($this->sms_api_url . '/sms', $request_body);
+
+                    dd($response->body());
 
                     // Convert the request body to JSON
                     $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
