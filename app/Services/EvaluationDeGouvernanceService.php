@@ -985,9 +985,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     
                     $request_body = [
                         "from" => "GFA",
-                                "to" => 22962004867, // Ensure it's an array
-                                "content" => "Hello World!",
-                                'content' => "Bonjour, Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance."
+                                "to" => $phoneNumbers[0], // Ensure it's an array
+                                'content' => "Bonjour,\n\n" . "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance."
                     ];    
 
                     $response = Http::withHeaders([
