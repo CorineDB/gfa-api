@@ -952,48 +952,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 return response()->json(['statut' => 'error', 'message' => "Pas le droit", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
-            if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($attributs["organisationId"])->first())) {
-
-                // Filter participants for those with "email" contact type
-                $phoneNumberParticipants = array_filter($attributs["participants"], function ($participant) {
-                    return $participant["type_de_contact"] === "contact";
-                });
-
-                // Extract phone numbers for https://api.e-mc.co/v3/
-                $phoneNumbers = array_column($phoneNumberParticipants, 'phone');
-                $url = config("app.url");
-                $message = "Bonjour,\n" .
-                            "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
-                            "Participez des maintenant : " .
-                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}";
-
-                $this->sendSms($message, $phoneNumbers);
-
-                // Send the sms if there are any phone numbers
-                /* if (!empty($phoneNumbers)) {
-
-                    $request_body = [
-                        "globals" => [
-                            "from"=>  "GFA"
-                        ],
-                        "messages" => [
-                            [
-                                "to" => $phoneNumbers,
-                                "content" => "Bonjour,\n" .
-                                            "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
-                                            "Participez des maintenant : " .
-                                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"
-                            ]
-                        ]
-                    ];
-
-                    $response = Http::withHeaders([
-                        'Authorization' => "Basic {$this->sms_api_key}",
-                        'Content-Type' => 'application/json',
-                    ])->post($this->sms_api_url . '/sendbatch', $request_body);
-                } */
-            }
-
             SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1024,6 +982,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Decode and merge participants from the organisation's pivot data
                 $participants = array_merge($participants, $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : []);
 
+                dump($participants);
+
                 // Filter participants for those with "email" contact type
                 $emailParticipants = array_filter($participants, function ($participant) {
                     return $participant["type_de_contact"] === "email";
@@ -1039,6 +999,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Extract phone numbers for https://api.e-mc.co/v3/
                 $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
+                dump($phoneNumbers);
 
                 // Send the email if there are any email addresses
                 if (!empty($emailAddresses)) {
@@ -1078,6 +1039,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
 
+                    dump($phoneNumbers);
                     /* $headers = [
                         'Authorization' => 'Basic ' . $this->sms_api_key
                     ]; */
