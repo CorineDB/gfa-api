@@ -989,7 +989,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 'content' => "Bonjour,\n" .
                                             "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
                                             "Participez des maintenant : " .
-                                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
                                             "Merci !"
                     ];    
 
