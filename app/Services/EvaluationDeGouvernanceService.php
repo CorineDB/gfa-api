@@ -1056,36 +1056,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     } catch (\Throwable $th) {
                         Log::error('Error sending SMS : ' . $th->getMessage());
                     }
-                    /* $request_body = [
-                        'globals' => [
-                            'from' => 'GFA',
-                        ],
-                        'messages' => [
-                            [
-                                'to' => $phoneNumbers,
-                                'content' =>
-                                "Bonjour,\n\n" .
-                                    "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
-                                    "Repondez des maintenant :\n" .
-                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                    "Merci pour votre participation !"
-                            ],
-                        ],
-                    ];
-
-                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
-
-                    // Handle the response
-                    if ($response->successful()) {
-
-                        // Remove duplicates based on the "email" field (use email as the unique key)
-                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
-                        //return $response->json(); // or handle as needed
-                    } else {
-                        $response->throw();
-                        //return $response->body(); // Debug or log error
-                        //throw new Exception("Error Processing Request", 1);
-                    } */
                 }
             }
 
