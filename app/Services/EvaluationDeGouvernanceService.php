@@ -978,16 +978,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 "Bonjour,\n\n" .
                                     "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n\n" .
                                     "Participez des maintenant : " .
-                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                    //"{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
                                     "Merci !"
                             ],
                         ],
                     ];
 
                     // Convert array to JSON
-                    $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                     
-                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', json_decode($json_payload,true));
+                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                     dd($response->body());
 
