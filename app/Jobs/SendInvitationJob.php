@@ -105,10 +105,8 @@ class SendInvitationJob implements ShouldQueue
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
                     }
 
-                    dump($participants);
-
                     try {
-                        
+
                         $message = "Bonjour,\n" .
                                     "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
                                     "Participez des maintenant : " .
@@ -119,8 +117,6 @@ class SendInvitationJob implements ShouldQueue
 
                         // Remove duplicates based on the "email" field (use email as the unique key)
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
-
-                        dump($participants);
 
                     } catch (\Throwable $th) {
                         Log::error('Error checking SMS balance: ' . $th->getMessage());
@@ -164,6 +160,7 @@ class SendInvitationJob implements ShouldQueue
 
                     // Update the pivot table with the merged participants
                     $evaluationOrganisation->pivot->participants = $participants;
+                    $evaluationOrganisation->pivot->save();
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
                             if(($this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)){
