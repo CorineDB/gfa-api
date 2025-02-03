@@ -964,7 +964,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $url = config("app.url");
 
-
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
 
@@ -977,7 +976,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 'to' => $phoneNumbers,
                                 'content' =>
                                 "Bonjour,\n\n" .
-                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n\n" .
                                     "Participez des maintenant : " .
                                     "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
                                     "Merci !"
