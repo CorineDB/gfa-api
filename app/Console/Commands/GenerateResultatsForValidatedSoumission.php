@@ -43,7 +43,7 @@ class GenerateResultatsForValidatedSoumission extends Command
     {
         EvaluationDeGouvernance::/* where("statut", 0)->where("debut",">=", now())->where("fin","<=", now())->get */all()->map(function ($evaluationDeGouvernance) {
             $this->evaluationDeGouvernance = $evaluationDeGouvernance;
-            $this->generateResultForEvaluation($evaluationDeGouvernance);
+            //$this->generateResultForEvaluation($evaluationDeGouvernance);
         });
 
         $this->info("Generated result for soumissions");
@@ -334,25 +334,6 @@ class GenerateResultatsForValidatedSoumission extends Command
         return round($geometricMean, 2);
     }
 
-    private function geomean(array $numbers)
-    {
-        // Remove any non-positive numbers since geometric mean is undefined for those
-        $numbers = array_filter($numbers, fn($number) => $number > 0);
-
-        $count = count($numbers);
-
-        // If there are no valid numbers left, return null or handle as needed
-        if ($count === 0) {
-            return 0; // or 0, depending on how you want to handle it
-        }
-
-        // Calculate the product of all numbers
-        $product = array_product($numbers);
-
-        // Calculate the nth root (geometric mean)
-        return pow($product, 1 / $count);
-    }
-
     /**
      * 
      */
@@ -422,9 +403,6 @@ class GenerateResultatsForValidatedSoumission extends Command
         return [$indice_de_perception, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
     }
 
-    /**
-     * 
-     */
     public function generateSyntheseForFactuelTool(FormulaireDeGouvernance $formulaireDeGouvernance, $organisationId)
     {
 
@@ -567,7 +545,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
         return collect($reponses);
     }
-
 
     public function getIndicateurs($categorie_de_gouvernance, $organisationId)
     {
