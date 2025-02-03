@@ -966,7 +966,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
                             "Participez des maintenant : " .
                             "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}";
-                            
+
                 $this->sendSms($message, $phoneNumbers);
 
                 // Send the sms if there are any phone numbers
@@ -994,7 +994,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 } */
             }
 
-            //SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
+            SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
