@@ -974,10 +974,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'messages' => [
                             [
                                 'to' => $phoneNumbers,
-                                'content' => "Bonjour,\n\n Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n\n Merci !" .
+                                'content' => "Bonjour,\n\n Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n\n Merci !"
                                     //"Participez des maintenant : " .
                                     //"{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                    "Merci !"
+                                    //"Merci !"
                             ],
                         ],
                     ];
