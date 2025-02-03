@@ -984,9 +984,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         ],
                     ];
 
-                    dd($request_body);
-
                     $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $json_payload);
+
+                    dd($response->body());
 
                     // Handle the response
                     /* if ($response->successful()) {
