@@ -971,7 +971,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $request_body = [
                         'globals' => [
-                            'from' => 'GFA'
+                            "from"=>  "GFA"
                         ],
                         'messages' => [ // ✅ Now 'messages' is an array of properly structured objects
                             [
