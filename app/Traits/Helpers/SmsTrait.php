@@ -21,8 +21,6 @@ trait SmsTrait{
         $endpoint = $this->apiUrl . '/sendbatch'; // Define URL in .env
         //$endpoint = $this->apiUrl . '/sms'; // Define URL in .env
 
-        dd([$this->apiKey]);
-
         $headers = [
             'Authorization' => "Basic {$this->apiKey}",
             'Content-Type' => 'application/json',
@@ -63,7 +61,6 @@ trait SmsTrait{
 
             // Log or handle the response if needed
             $responseBody = $response->json();
-            Log::info("SMS Response: " . $responseBody);
 
             // Handle the response
             if ($response->successful()) {
