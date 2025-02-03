@@ -161,7 +161,7 @@ class SendInvitationJob implements ShouldQueue
                     $evaluationOrganisation->pivot->participants = $participants;
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
-                            if(($this->data['nbreParticipants'] > $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)){
+                            if(($this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)){
                                 $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
                                 $evaluationOrganisation->pivot->save();
                             }
