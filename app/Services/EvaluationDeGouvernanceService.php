@@ -978,6 +978,18 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             ],
                         ],
                     ];
+                    
+                    $request_body = [
+                        "globals" => [
+                            "from" => "GFA"
+                        ],
+                        "messages" => [
+                            [
+                                "to" => [22962004867], // Ensure it's an array
+                                "content" => "Hello World!"
+                            ]
+                        ]
+                    ];                    
 
                     // Convert array to JSON
                     $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
