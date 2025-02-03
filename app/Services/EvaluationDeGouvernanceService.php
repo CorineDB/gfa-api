@@ -980,15 +980,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ];
                     
                     $request_body = [
-                        "globals" => [
-                            "from" => "GFA"
-                        ],
-                        "messages" => [
-                            [
-                                "to" => [22962004867], // Ensure it's an array
+                        "from" => "GFA",
+                                "to" => 22962004867, // Ensure it's an array
                                 "content" => "Hello World!"
-                            ]
-                        ]
                     ];                    
 
                     // Convert array to JSON
