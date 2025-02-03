@@ -1194,15 +1194,20 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     /**
      * Remove duplicate participants based on the 'email' field (or any unique field).
      */
-    private function removeDuplicateParticipants($participants)
+    private function removeDuplicateParticipants($participants, string $type = 'email')
     {
         $uniqueParticipants = [];
-
+    
         foreach ($participants as $participant) {
-            // If participant doesn't exist in uniqueParticipants array, add them
-            $uniqueParticipants[$participant['email']] = $participant;
+            if($type == 'email'){
+                // If participant doesn't exist in uniqueParticipants array, add them
+                $uniqueParticipants[$participant['email']] = $participant;
+            }
+            elseif($type == 'phone'){
+                $uniqueParticipants[$participant['phone']] = $participant;
+            }
         }
-
+    
         // Return the unique participants as a re-indexed array
         return array_values($uniqueParticipants);
     }
