@@ -974,34 +974,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'globals' => [
                             'from' => 'GFA'
                         ],
-                        'messages' => [
-                            [
-                                "to" => $phoneNumbers, // Ensure it's an array
-                                'content' => "Bonjour,\n" .
-                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n" .
-                                    "Participez des maintenant : " .
-                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
-                                    "Merci !"
-                            ]
-                        ]
-                    ];
-
-                    $request_body = [
-                        'globals' => [
-                            'from' => 'GFA'
-                        ],
                         'messages' => [ // ✅ Now 'messages' is an array of properly structured objects
                             [
                                 "to" => $phoneNumbers, // ✅ Ensure $phoneNumbers is an array
-                                "content" => "Bonjour,\n\n" .
-                                            "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n\n".
+                                "content" => "Bonjour,\n" .
+                                            "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
                                             "Participez des maintenant : " .
-                                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                            "Merci !"
+                                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"
                             ]
                         ]
                     ];
-                    
 
                     $response = Http::withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
