@@ -986,8 +986,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
+                    dd($response->body());
                     // Handle the response
-                    if ($response->successful()) {
+                    /* if ($response->successful()) {
 
                         // Remove duplicates based on the "email" field (use email as the unique key)
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $attributs["participants"]), 'phone');
@@ -996,7 +997,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $response->throw();
                         //return $response->body(); // Debug or log error
                         //throw new Exception("Error Processing Request", 1);
-                    }
+                    } */
                 }
             }
             
