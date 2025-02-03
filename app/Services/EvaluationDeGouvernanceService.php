@@ -499,7 +499,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     } elseif ($moyenne_ponderee > 0.75 && $moyenne_ponderee <= 1) {
                         $questionScoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => $fiche->organisation->user->nom, 'sigle' => $fiche->organisation->sigle, 'moyenne_ponderee' => $moyenne_ponderee];
                     }
-
                 }
             }
 
@@ -612,7 +611,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ["factuel" => $formulaire_factuel_de_gouvernance, "perception" => $formulaire_de_perception_de_gouvernance], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -816,7 +814,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                     ];
                 }):[], */
-                
+
                 'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
                 'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
@@ -883,7 +881,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         "nom" => $item->nom,
                         "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                     ];
-                }):[],    */             
+                }):[],    */
                 'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
                 'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
                 'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
@@ -909,14 +907,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $principes = $evaluationDeGouvernance->principes_de_gouvernance();
 
-            if(isset($attributs['objectifsAttendu'])){
-                $objectifsAttendu=[];
-            
+            if (isset($attributs['objectifsAttendu'])) {
+                $objectifsAttendu = [];
+
                 foreach ($attributs['objectifsAttendu'] as $key => $objectifAttendu) {
 
-                    if(!($principe = app(PrincipeDeGouvernanceRepository::class)->findById($objectifAttendu['principeId']))) throw new Exception("Principe inconnu", 1);
+                    if (!($principe = app(PrincipeDeGouvernanceRepository::class)->findById($objectifAttendu['principeId']))) throw new Exception("Principe inconnu", 1);
 
-                    if(!($principes->whereIn('id', $principe->id)->count())) throw new Exception("Principe n'est pas de cette evaluation", 1);
+                    if (!($principes->whereIn('id', $principe->id)->count())) throw new Exception("Principe n'est pas de cette evaluation", 1);
 
                     // Add directly to the array with the expected format
                     $objectifsAttendu[$principe->id] = [
@@ -953,6 +951,55 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 return response()->json(['statut' => 'error', 'message' => "Pas le droit", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
+            if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($attributs["organisationId"])->first())) {
+
+                $participants = [];
+                // Filter participants for those with "email" contact type
+                $phoneNumberParticipants = array_filter($attributs["participants"], function ($participant) {
+                    return $participant["type_de_contact"] === "contact";
+                });
+
+                // Extract phone numbers for https://api.e-mc.co/v3/
+                $phoneNumbers = array_column($phoneNumberParticipants, 'phone');
+
+                $url = config("app.url");
+
+
+                // Send the sms if there are any phone numbers
+                if (!empty($phoneNumbers)) {
+
+                    $request_body = [
+                        'globals' => [
+                            'from' => 'GFA',
+                        ],
+                        'messages' => [
+                            [
+                                'to' => $phoneNumbers,
+                                'content' =>
+                                "Bonjour,\n\n" .
+                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                    "Participez des maintenant : " .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                    "Merci !"
+                            ],
+                        ],
+                    ];
+
+                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
+
+                    // Handle the response
+                    if ($response->successful()) {
+
+                        // Remove duplicates based on the "email" field (use email as the unique key)
+                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $attributs["participants"]), 'phone');
+                        //return $response->json(); // or handle as needed
+                    } else {
+                        $response->throw();
+                        //return $response->body(); // Debug or log error
+                        //throw new Exception("Error Processing Request", 1);
+                    }
+                }
+            }
             SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1048,12 +1095,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'messages' => [
                             [
                                 'to' => $phoneNumbers,
-                                'content' => 
+                                'content' =>
                                 "Bonjour,\n\n" .
-                                "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
-                                "Repondez des maintenant :\n" .
-                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                "Merci pour votre participation !"
+                                    "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                    "Repondez des maintenant :\n" .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                    "Merci pour votre participation !"
                             ],
                         ],
                     ];
@@ -1072,7 +1119,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         //throw new Exception("Error Processing Request", 1);
                     }
                 }
-
             }
 
             return response()->json(['statut' => 'success', 'message' => "Rappel envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1132,11 +1178,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if ((auth()->user()->type == "organisation") || get_class(auth()->user()->profilable) == Organisation::class) {
                 $organisationId = optional(auth()->user()->profilable)->id;
 
-                if(!$evaluationDeGouvernance->organisations($organisationId)->first()){
+                if (!$evaluationDeGouvernance->organisations($organisationId)->first()) {
                     return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 }
             }
-            
+
             $resultats_syntheses = $evaluationDeGouvernance->organisationsClassement(); // Reset keys for a clean JSON output
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1151,12 +1197,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     private function removeDuplicateParticipants($participants)
     {
         $uniqueParticipants = [];
-    
+
         foreach ($participants as $participant) {
             // If participant doesn't exist in uniqueParticipants array, add them
             $uniqueParticipants[$participant['email']] = $participant;
         }
-    
+
         // Return the unique participants as a re-indexed array
         return array_values($uniqueParticipants);
     }

@@ -8,6 +8,7 @@ use App\Models\AlerteConfig;
 use App\Models\User;
 use App\Notifications\SuiviNotification;
 use App\Traits\Helpers\HelperTrait;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 
 class Suivi extends Command
@@ -50,8 +51,14 @@ class Suivi extends Command
         if(date('Y-m-d') >= $financierConfig->debutSuivi)
         {
 
-            if(($financierConfig->debutSuivi - date('Y-m-d'))%$financierConfig->frequence == 0)
-            //if(($financierConfig->debutSuivi - date('Y-m-d')) && $financierConfig->frequence == 0)
+            $debutSuivi = Carbon::parse($financierConfig->debutSuivi); // Convert start date to Carbon instance
+            $today = Carbon::today(); // Get today's date
+
+            $daysDifference = $debutSuivi->diffInDays($today); // Calculate the difference in days
+
+            if ($daysDifference % $financierConfig->frequence == 0)
+
+            //if(($financierConfig->debutSuivi - date('Y-m-d'))%$financierConfig->frequence == 0)
             {
                 $allUsers = User::all();
                 foreach($allUsers as $user)
@@ -78,7 +85,14 @@ class Suivi extends Command
 
         if(date('Y-m-d') >= $indicateurConfig->debutSuivi)
         {
-            if(($indicateurConfig->debutSuivi - date('Y-m-d')) && $indicateurConfig->frequence == 0)
+            $debutSuivi = Carbon::parse($indicateurConfig->debutSuivi); // Convert start date to Carbon instance
+            $today = Carbon::today(); // Get today's date
+
+            $daysDifference = $debutSuivi->diffInDays($today); // Calculate the difference in days
+
+            if ($daysDifference % $indicateurConfig->frequence == 0)
+
+            //if(($indicateurConfig->debutSuivi - date('Y-m-d')) % $indicateurConfig->frequence == 0)
             {
                 $allUsers = User::all();
                 foreach($allUsers as $user)
