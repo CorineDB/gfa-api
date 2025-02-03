@@ -966,35 +966,21 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
+
                     $request_body = [
                         'globals' => [
-                            'from' => 'GFA', // Ensure the colon is properly placed
+                            'from' => 'GFA',
                         ],
                         'messages' => [
                             [
-                                'to' => [$phoneNumbers], // Ensure this is an array
-                                'content' => "Bonjour,\n\n" .
-                                    "Vous êtes invité(e) à participer à l'enquête d'auto-évaluation de gouvernance de " . 
-                                    "{$evaluationOrganisation->user->nom} dans le cadre du programme " . 
-                                    "{$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n\n" .
-                                    "Participez dès maintenant : " .
-                                    "{$url}/dashboard/tools-perception/" . urlencode($evaluationOrganisation->pivot->token) . "\n\n" .
-                                    "Merci !"
+                                'to' => $phoneNumbers,
+                                'content' => "Bonjour,\n\n Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n\n Merci !"
+                                    //"Participez des maintenant : " .
+                                    //"{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                    //"Merci !"
                             ],
                         ],
                     ];
-                                        
-                    // Convert array to JSON safely
-                    $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-                    if ($json_payload === false) {
-                        throw new Exception('JSON encoding error: ' . json_last_error_msg());
-                    }
-                    
-                    // Send HTTP request
-                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)
-                        ->post($this->sms_api_url . '/sendbatch', json_decode($json_payload, true)); // Ensures array format
-                    
 
                     // Convert array to JSON
                     
