@@ -970,10 +970,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
 
                     $request_body = [
-                        'globals' => [
+                        "globals" => [
                             "from"=>  "GFA"
                         ],
-                        'messages' => [ // ✅ Now 'messages' is an array of properly structured objects
+                        "messages" => [ // ✅ Now 'messages' is an array of properly structured objects
                             [
                                 "to" => $phoneNumbers, // ✅ Ensure $phoneNumbers is an array
                                 "content" => "Bonjour,\n" .
@@ -983,6 +983,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             ]
                         ]
                     ];
+                    dd(json_encode($request_body, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
                     $response = Http::withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
