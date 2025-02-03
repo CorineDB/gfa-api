@@ -1039,11 +1039,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     try {
 
                         $url = config("app.url");
+
+                        dump($url);
     
                         // If the URL is localhost, append the appropriate IP address and port
                         if (strpos($url, 'localhost') !== false) {
                             $url = env("ORG_APP_URL");
                         }
+
+                        dd($url);
 
                         $message = "Bonjour,\n\n" .
                                     "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$evaluationDeGouvernance->programme->nom}, {$evaluationDeGouvernance->annee_exercice}).\n\n" .
