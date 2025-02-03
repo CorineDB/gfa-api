@@ -1003,7 +1003,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ];
                     
 
-                    $response = Http::withHeaders([
+                    $response = Http::dd()->withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
                         'Content-Type' => 'application/json',
                     ])->post($this->sms_api_url . '/sendbatch', $request_body);
