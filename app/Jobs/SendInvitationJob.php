@@ -112,19 +112,22 @@ class SendInvitationJob implements ShouldQueue
                                 'from' => 'GFA',
                             ],
                             'messages' => [
-                                [
-                                    'to' => $phoneNumbers,
-                                    'content' => 
-                                        "Bonjour,\n" .
-                                        "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
-                                        "Participez des maintenant : " .
-                                        "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
-                                        "Merci !"
-                                ],
-                            ],
+                                "to" => $phoneNumbers, // Ensure it's an array
+                                'content' => "Bonjour,\n" .
+                                            "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
+                                            "Participez des maintenant : " .
+                                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
+                                            "Merci !"
+                            ]
                         ];
 
-                        $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
+
+                        $response = Http::withHeaders([
+                            'Authorization' => "Basic {$this->sms_api_key}",
+                            'Content-Type' => 'application/json',
+                        ])->post($this->sms_api_url . '/sendbatch', $request_body);
+                        
+                        //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                         // Handle the response
                         if ($response->successful()) {
@@ -134,8 +137,6 @@ class SendInvitationJob implements ShouldQueue
                             //return $response->json(); // or handle as needed
                         } else {
                             $response->throw();
-                            //return $response->body(); // Debug or log error
-                            //throw new Exception("Error Processing Request", 1);
                         }
                     }
 
