@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
         Commands\GenerateResultatsForValidatedSoumission::class,
         Commands\RappelEmissionMesureAPrendre::class,
         Commands\ChangeStatutActionAMener::class,
+        Commands\CheckSmsProviderAccountBalance::class,
         Commands\Demarrage::class,
         Commands\RappelCron::class,
         Commands\Rapport::class,
@@ -46,6 +47,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:suivi')->everyMinute();
 
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
+
+        $schedule->command('check-sms-provider:account-balance')->everySixHours();
 
         $schedule->command('change-statut:action-a-mener')->everyMinute('00:00');
 
