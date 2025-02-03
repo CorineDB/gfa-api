@@ -997,7 +997,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     // Set cURL options
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                        "Authorization: Basic YOUR_API_KEY",
+                        "Authorization: Basic {$this->sms_api_key}",
                         "Content-Type: application/json"
                     ]);
                     curl_setopt($ch, CURLOPT_POST, true);
