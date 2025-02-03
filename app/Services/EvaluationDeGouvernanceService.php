@@ -966,7 +966,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
-
+                    
                     $request_body = [
                         'globals' => [
                             'from' => 'GFA',
@@ -974,32 +974,21 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'messages' => [
                             "to" => $phoneNumbers, // Ensure it's an array
                             'content' => "Bonjour,\n" .
-                                "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n" .
-                                "Participez des maintenant : " .
-                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
-                                "Merci !"
+                                        "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
+                                        "Participez des maintenant : " .
+                                        "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
+                                        "Merci !"
                         ]
-                    ];
+                    ];    
 
-                    $headers = [
+                    Http::withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
                         'Content-Type' => 'application/json',
-                    ];
+                    ])->post($this->sms_api_url . '/sendbatch', $request_body);
 
-                    $response = Http::withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
-
-                    // Handle the response
-                    if ($response->successful()) {
-
-                        // Remove duplicates based on the "email" field (use email as the unique key)
-                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $attributs["participants"]), 'phone');
-                        //return $response->json(); // or handle as needed
-                    } else {
-                        $response->throw();
-                    }
                 }
             }
-
+            
             //SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1106,7 +1095,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         ]
                     ];
 
-                    Http::withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
+                    $response = Http::withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
                     //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                 }
@@ -1188,16 +1177,17 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     private function removeDuplicateParticipants($participants, string $type = 'email')
     {
         $uniqueParticipants = [];
-
+    
         foreach ($participants as $participant) {
-            if ($type == 'email') {
+            if($type == 'email'){
                 // If participant doesn't exist in uniqueParticipants array, add them
                 $uniqueParticipants[$participant['email']] = $participant;
-            } elseif ($type == 'phone') {
+            }
+            elseif($type == 'phone'){
                 $uniqueParticipants[$participant['phone']] = $participant;
             }
         }
-
+    
         // Return the unique participants as a re-indexed array
         return array_values($uniqueParticipants);
     }
