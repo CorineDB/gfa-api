@@ -974,7 +974,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'messages' => [
                             [
                                 'to' => $phoneNumbers,
-                                'content' => "Bonjour,'/\n/\n' Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice})."
+                                'content' => "Bonjour, Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice})."
                                     //"Participez des maintenant : " .
                                     //"{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
                                     //"Merci !"
@@ -983,7 +983,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ];
 
                     // Convert array to JSON
-                    
                     $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
                     dd($response->body());
