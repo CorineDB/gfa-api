@@ -1041,6 +1041,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $url = config("app.url");
 
                         dump($url);
+
+                        dump((strpos($url, 'localhost') ));
     
                         // If the URL is localhost, append the appropriate IP address and port
                         if (strpos($url, 'localhost') !== false) {
