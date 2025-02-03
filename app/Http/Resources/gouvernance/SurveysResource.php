@@ -19,7 +19,7 @@ class SurveysResource extends JsonResource
         $url = config("app.url");
 
         // If the URL is localhost, append the appropriate IP address and port
-        if (strpos($url, 'localhost') !== false) {
+        if (strpos($url, 'localhost') == false) {
             $url = 'http://192.168.1.16:3000';
         }
 

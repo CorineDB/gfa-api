@@ -79,7 +79,7 @@ class SendInvitationJob implements ShouldQueue
                     $url = config("app.url");
 
                     // If the URL is localhost, append the appropriate IP address and port
-                    if (strpos($url, 'localhost') !== false) {
+                    if (strpos($url, 'localhost') == false) {
                         $url = env("ORG_APP_URL");
                     }
 
