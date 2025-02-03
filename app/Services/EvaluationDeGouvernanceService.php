@@ -966,52 +966,29 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
 
-                    // Convert array to JSON
-                    //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
-
                     $request_body = [
                         "globals" => [
                             "from"=>  "GFA"
                         ],
-                        "messages" => [ // ✅ Now 'messages' is an array of properly structured objects
+                        "messages" => [
                             [
-                                "to" => $phoneNumbers, // ✅ Ensure $phoneNumbers is an array
+                                "to" => $phoneNumbers,
                                 "content" => "Bonjour,\n" .
                                             "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
                                             "Participez des maintenant : " .
                                             "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"
                             ]
-                        ]/*,
-                        "from"=>  "GFA",
-                        "to" => $phoneNumbers, // ✅ Ensure $phoneNumbers is an array
-                        "content" => "Bonjour,\n" .
-                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
-                                    "Participez des maintenant : " .
-                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"*/
+                        ]
                     ];
 
                     $response = Http::withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
                         'Content-Type' => 'application/json',
                     ])->post($this->sms_api_url . '/sendbatch', $request_body);
-
-                    dd($response->json());
-
-                    // Handle the response
-                    /* if ($response->successful()) {
-
-                        // Remove duplicates based on the "email" field (use email as the unique key)
-                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $attributs["participants"]), 'phone');
-                        //return $response->json(); // or handle as needed
-                    } else {
-                        $response->throw();
-                        //return $response->body(); // Debug or log error
-                        //throw new Exception("Error Processing Request", 1);
-                    } */
                 }
             }
 
-            //SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
+            SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
