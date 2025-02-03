@@ -993,7 +993,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 } */
             }
 
-            SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
+            //SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -1086,7 +1086,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 "Repondez des maintenant :\n" .
                                 "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
                                 "Merci pour votre participation !";
-                                
+
                     $this->sendSms($message, $phoneNumbers);
 
                     /* $request_body = [
