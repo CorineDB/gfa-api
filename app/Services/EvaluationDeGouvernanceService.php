@@ -1008,7 +1008,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'Content-Type' => 'application/json',
                     ])->post($this->sms_api_url . '/sendbatch', $request_body);
 
-                    dd($response->body());
+                    dd($response->json());
 
                     // Convert the request body to JSON
                     $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
