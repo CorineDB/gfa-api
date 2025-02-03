@@ -966,6 +966,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
+
+                    // Convert array to JSON
+                    //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
+
                     
                     $request_body = [
                         'globals' => [
@@ -981,15 +985,57 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         ]
                     ];    
 
-                    Http::withHeaders([
+                    $response = Http::withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
                         'Content-Type' => 'application/json',
                     ])->post($this->sms_api_url . '/sendbatch', $request_body);
 
+                    dd($response->body());
+
+                    // Convert the request body to JSON
+                    $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+
+                    // Initialize cURL
+                    $ch = curl_init($this->sms_api_url . '/sendbatch');
+
+                    // Set cURL options
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        "Authorization: Basic {$this->sms_api_key}",
+                        "Content-Type: application/json"
+                    ]);
+                    curl_setopt($ch, CURLOPT_POST, true);
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_payload);
+
+                    // Execute request
+                    $response = curl_exec($ch);
+                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                    curl_close($ch);
+                    dd($response);
+
+                    // Check for errors
+                    if ($response === false) {
+                        echo "cURL Error: " . curl_error($ch);
+                    } else {
+                        echo "HTTP Code: $httpCode \n";
+                        echo "Response: $response";
+                    }
+
+                    // Handle the response
+                    /* if ($response->successful()) {
+
+                        // Remove duplicates based on the "email" field (use email as the unique key)
+                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $attributs["participants"]), 'phone');
+                        //return $response->json(); // or handle as needed
+                    } else {
+                        $response->throw();
+                        //return $response->body(); // Debug or log error
+                        //throw new Exception("Error Processing Request", 1);
+                    } */
                 }
             }
             
-            SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
+            //SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -1074,8 +1120,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 if (!empty($phoneNumbers)) {
 
                     $headers = [
-                        'Authorization' => "Basic {$this->sms_api_key}",
-                        'Content-Type' => 'application/json',
+                        'Authorization' => 'Basic ' . $this->sms_api_key
                     ];
 
                     $request_body = [
@@ -1087,17 +1132,27 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 'to' => $phoneNumbers,
                                 'content' =>
                                 "Bonjour,\n\n" .
-                                    "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$evaluationDeGouvernance->programme->nom}, {$evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                    "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
                                     "Repondez des maintenant :\n" .
                                     "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
                                     "Merci pour votre participation !"
-                            ]
-                        ]
+                            ],
+                        ],
                     ];
 
-                    $response = Http::withHeaders($headers)->post($this->sms_api_url . '/sendbatch', $request_body);
-                    //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
+                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
 
+                    // Handle the response
+                    if ($response->successful()) {
+
+                        // Remove duplicates based on the "email" field (use email as the unique key)
+                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
+                        //return $response->json(); // or handle as needed
+                    } else {
+                        $response->throw();
+                        //return $response->body(); // Debug or log error
+                        //throw new Exception("Error Processing Request", 1);
+                    }
                 }
             }
 
