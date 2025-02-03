@@ -34,7 +34,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Log;
 
 /**
  * Interface EvaluationDeGouvernanceServiceInterface
@@ -982,8 +982,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Decode and merge participants from the organisation's pivot data
                 $participants = array_merge($participants, $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : []);
 
-                dump($participants);
-
                 // Filter participants for those with "email" contact type
                 $emailParticipants = array_filter($participants, function ($participant) {
                     return $participant["type_de_contact"] === "email";
@@ -1038,19 +1036,26 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
 
-                    dump($phoneNumbers);
-                    /* $headers = [
-                        'Authorization' => 'Basic ' . $this->sms_api_key
-                    ]; */
-                    $url = config("app.url");
-                    $message = "Bonjour,\n\n" .
-                                "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
-                                "Repondez des maintenant :\n" .
-                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                "Merci pour votre participation !";
+                    try {
 
-                    $this->sendSms($message, $phoneNumbers);
+                        $url = config("app.url");
+    
+                        // If the URL is localhost, append the appropriate IP address and port
+                        if (strpos($url, 'localhost') !== false) {
+                            $url = env("ORG_APP_URL");
+                        }
 
+                        $message = "Bonjour,\n\n" .
+                                    "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$evaluationDeGouvernance->programme->nom}, {$evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                    "Repondez des maintenant :\n" .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                    "Merci pour votre participation !";
+
+                        $this->sendSms($message, $phoneNumbers);
+
+                    } catch (\Throwable $th) {
+                        Log::error('Error sending SMS : ' . $th->getMessage());
+                    }
                     /* $request_body = [
                         'globals' => [
                             'from' => 'GFA',
