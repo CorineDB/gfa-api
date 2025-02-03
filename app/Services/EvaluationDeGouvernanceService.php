@@ -969,7 +969,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     // Convert array to JSON
                     //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
 
-                    $request_body = [/* 
+                    $request_body = [
                         "globals" => [
                             "from"=>  "GFA"
                         ],
@@ -981,13 +981,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                             "Participez des maintenant : " .
                                             "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"
                             ]
-                        ], */
+                        ]/*,
                         "from"=>  "GFA",
                         "to" => $phoneNumbers, // ✅ Ensure $phoneNumbers is an array
                         "content" => "Bonjour,\n" .
                                     "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
                                     "Participez des maintenant : " .
-                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"*/
                     ];
 
                     $response = Http::withHeaders([
