@@ -100,6 +100,6 @@ class CheckSmsProviderAccountBalance extends Command
         Log::notice("Alert sms sent to ".json_encode($phoneNumbers));
         // Send the bulk notification to all users
         //Notification::route('sms', $phoneNumbers)->notify(new SmsProviderAlertAccountBalanceNotification(message:$message, phoneNumbers:$phoneNumbers));
-        $this->sendSms($message, $phoneNumbers);
+        //$this->sendSms($message, $phoneNumbers);
     }
 }

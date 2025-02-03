@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Mail\InvitationEnqueteDeCollecteEmail;
 use App\Models\EvaluationDeGouvernance;
 use App\Traits\Helpers\ConfigueTrait;
+use App\Traits\Helpers\SmsTrait;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,7 +21,7 @@ class SendInvitationJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    use ConfigueTrait;
+    use ConfigueTrait,SmsTrait;
 
     private $type;
     private $data;
@@ -104,8 +105,24 @@ class SendInvitationJob implements ShouldQueue
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
                     }
 
+                    try {
+                        $message = "Bonjour,\n" .
+                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
+                                    "Participez des maintenant : " .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
+                                    "Merci !";
+    
+                        $this->sendSms($message, $phoneNumbers);
+
+                        // Remove duplicates based on the "email" field (use email as the unique key)
+                        $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
+
+                    } catch (\Throwable $th) {
+                        Log::error('Error checking SMS balance: ' . $th->getMessage());
+                    }
+
                     // Send the sms if there are any phone numbers
-                    if (!empty($phoneNumbers)) {
+                    /* if (!empty($phoneNumbers)) {
 
                         $request_body = [
                             'globals' => [
@@ -138,7 +155,7 @@ class SendInvitationJob implements ShouldQueue
                         } else {
                             $response->throw();
                         }
-                    }
+                    } */
 
                     // Update the pivot table with the merged participants
                     /* $evaluationOrganisation->pivot->participants = $participants;

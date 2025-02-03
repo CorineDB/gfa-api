@@ -24,6 +24,7 @@ use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
+use App\Traits\Helpers\SmsTrait;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
@@ -41,7 +42,7 @@ use Illuminate\Support\Facades\Http;
  */
 class EvaluationDeGouvernanceService extends BaseService implements EvaluationDeGouvernanceServiceInterface
 {
-    use ConfigueTrait;
+    use ConfigueTrait,SmsTrait;
     /**
      * @var service
      */
@@ -960,11 +961,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Extract phone numbers for https://api.e-mc.co/v3/
                 $phoneNumbers = array_column($phoneNumberParticipants, 'phone');
-
                 $url = config("app.url");
+                $message = "Bonjour,\n" .
+                            "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
+                            "Participez des maintenant : " .
+                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}";
+                $this->sendSms($message, $phoneNumbers);
 
                 // Send the sms if there are any phone numbers
-                if (!empty($phoneNumbers)) {
+                /* if (!empty($phoneNumbers)) {
 
                     $request_body = [
                         "globals" => [
@@ -985,7 +990,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'Authorization' => "Basic {$this->sms_api_key}",
                         'Content-Type' => 'application/json',
                     ])->post($this->sms_api_url . '/sendbatch', $request_body);
-                }
+                } */
             }
 
             SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
@@ -1072,11 +1077,19 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Send the sms if there are any phone numbers
                 if (!empty($phoneNumbers)) {
 
-                    $headers = [
+                    /* $headers = [
                         'Authorization' => 'Basic ' . $this->sms_api_key
-                    ];
+                    ]; */
+                    $url = config("app.url");
+                    $message = "Bonjour,\n\n" .
+                                "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$this->evaluationDeGouvernance->programme->nom}, {$this->evaluationDeGouvernance->annee_exercice}).\n\n" .
+                                "Repondez des maintenant :\n" .
+                                "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                                "Merci pour votre participation !";
+                                
+                    $this->sendSms($message, $phoneNumbers);
 
-                    $request_body = [
+                    /* $request_body = [
                         'globals' => [
                             'from' => 'GFA',
                         ],
@@ -1105,7 +1118,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $response->throw();
                         //return $response->body(); // Debug or log error
                         //throw new Exception("Error Processing Request", 1);
-                    }
+                    } */
                 }
             }
 
