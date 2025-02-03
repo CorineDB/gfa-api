@@ -982,7 +982,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                         "Participez des maintenant : " .
                                         "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
                                         "Merci !"
-                        ]
+                        ],
+                        "from" => "GFA",
+                                "to" => $phoneNumbers[0], // Ensure it's an array
+                                'content' => "Bonjour,\n" .
+                                            "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
+                                            "Participez des maintenant : " .
+                                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
+                                            "Merci !"
                     ];    
 
                     $response = Http::withHeaders([
