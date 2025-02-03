@@ -972,16 +972,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     
                     $request_body = [
                         'globals' => [
-                            'from' => 'GFA',
+                            'from' => 'GFA'
                         ],
-                        'messages' => [
+                        'messages' => [[
                             "to" => $phoneNumbers, // Ensure it's an array
                             'content' => "Bonjour,\n" .
                                         "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
                                         "Participez des maintenant : " .
                                         "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
                                         "Merci !"
-                        ]
+                        ]]
                     ];    
 
                     $response = Http::withHeaders([
