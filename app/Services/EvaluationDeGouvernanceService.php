@@ -953,7 +953,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($attributs["organisationId"])->first())) {
 
-                $participants = [];
                 // Filter participants for those with "email" contact type
                 $phoneNumberParticipants = array_filter($attributs["participants"], function ($participant) {
                     return $participant["type_de_contact"] === "contact";
@@ -990,7 +989,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'Content-Type' => 'application/json',
                     ])->post($this->sms_api_url . '/sendbatch', $request_body);
 
-                    dd($response->successful());
+                    dd($response->body());
 
                     // Convert the request body to JSON
                     $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
