@@ -969,20 +969,22 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     // Convert array to JSON
                     //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
-                    
+
                     $request_body = [
                         'globals' => [
                             'from' => 'GFA'
                         ],
-                        'messages' => [[
-                            "to" => $phoneNumbers, // Ensure it's an array
-                            'content' => "Bonjour,\n" .
-                                        "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
-                                        "Participez des maintenant : " .
-                                        "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
-                                        "Merci !"
-                        ]]
-                    ];    
+                        'messages' => [
+                            [
+                                "to" => $phoneNumbers, // Ensure it's an array
+                                'content' => "Bonjour,\n" .
+                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n" .
+                                    "Participez des maintenant : " .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
+                                    "Merci !"
+                            ]
+                        ]
+                    ];
 
                     $response = Http::withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
@@ -1033,7 +1035,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     } */
                 }
             }
-            
+
             //SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1231,17 +1233,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     private function removeDuplicateParticipants($participants, string $type = 'email')
     {
         $uniqueParticipants = [];
-    
+
         foreach ($participants as $participant) {
-            if($type == 'email'){
+            if ($type == 'email') {
                 // If participant doesn't exist in uniqueParticipants array, add them
                 $uniqueParticipants[$participant['email']] = $participant;
-            }
-            elseif($type == 'phone'){
+            } elseif ($type == 'phone') {
                 $uniqueParticipants[$participant['phone']] = $participant;
             }
         }
-    
+
         // Return the unique participants as a re-indexed array
         return array_values($uniqueParticipants);
     }
