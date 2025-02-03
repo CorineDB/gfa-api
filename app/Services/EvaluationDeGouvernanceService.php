@@ -981,14 +981,19 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                             "Participez des maintenant : " .
                                             "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"
                             ]
-                        ]
+                        ],
+                        "from"=>  "GFA",
+                        "to" => $phoneNumbers, // ✅ Ensure $phoneNumbers is an array
+                        "content" => "Bonjour,\n" .
+                                    "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$evaluationDeGouvernance->programme->nom} ({$evaluationDeGouvernance->annee_exercice}).\n".
+                                    "Participez des maintenant : " .
+                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}"
                     ];
-                    dd(json_encode($request_body, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
                     $response = Http::withHeaders([
                         'Authorization' => "Basic {$this->sms_api_key}",
                         'Content-Type' => 'application/json',
-                    ])->post($this->sms_api_url . '/sendbatch', $request_body);
+                    ])->post($this->sms_api_url . '/sms', $request_body);
 
                     dd($response->body());
 
