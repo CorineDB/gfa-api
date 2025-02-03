@@ -997,35 +997,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     dd($response->body());
 
-                    // Convert the request body to JSON
-                    $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
-
-                    // Initialize cURL
-                    $ch = curl_init($this->sms_api_url . '/sendbatch');
-
-                    // Set cURL options
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                        "Authorization: Basic {$this->sms_api_key}",
-                        "Content-Type: application/json"
-                    ]);
-                    curl_setopt($ch, CURLOPT_POST, true);
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, $json_payload);
-
-                    // Execute request
-                    $response = curl_exec($ch);
-                    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                    curl_close($ch);
-                    dd($response);
-
-                    // Check for errors
-                    if ($response === false) {
-                        echo "cURL Error: " . curl_error($ch);
-                    } else {
-                        echo "HTTP Code: $httpCode \n";
-                        echo "Response: $response";
-                    }
-
                     // Handle the response
                     /* if ($response->successful()) {
 
