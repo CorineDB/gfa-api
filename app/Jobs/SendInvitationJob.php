@@ -105,6 +105,8 @@ class SendInvitationJob implements ShouldQueue
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
                     }
 
+                    dump($participants);
+
                     try {
                         $message = "Bonjour,\n" .
                                     "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
@@ -116,6 +118,8 @@ class SendInvitationJob implements ShouldQueue
 
                         // Remove duplicates based on the "email" field (use email as the unique key)
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
+
+                        dump($participants);
 
                     } catch (\Throwable $th) {
                         Log::error('Error checking SMS balance: ' . $th->getMessage());
