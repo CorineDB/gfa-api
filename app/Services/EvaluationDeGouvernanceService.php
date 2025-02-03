@@ -995,11 +995,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)
                         ->post($this->sms_api_url . '/sendbatch', json_decode($json_payload, true)); // Ensures array format
                     
-
-                    // Convert array to JSON
-                    
-                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sendbatch', $request_body);
-
                     dd($response->body());
 
                     // Handle the response
