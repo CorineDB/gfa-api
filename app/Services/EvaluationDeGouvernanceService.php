@@ -1086,6 +1086,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                 "Repondez des maintenant :\n" .
                                 "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
                                 "Merci pour votre participation !";
+                                
                     $this->sendSms($message, $phoneNumbers);
 
                     /* $request_body = [
