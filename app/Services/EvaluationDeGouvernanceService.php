@@ -998,8 +998,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 });
 
                 // Extract phone numbers for https://api.e-mc.co/v3/
-                $phoneNumbers = array_column($phoneNumberParticipants, 'contact');
-                dump($phoneNumbers);
+                $phoneNumbers = array_column($phoneNumberParticipants, 'phone');
 
                 // Send the email if there are any email addresses
                 if (!empty($emailAddresses)) {
