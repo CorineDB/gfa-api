@@ -978,21 +978,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             ],
                         ],
                     ];
-                    
-                    $request_body = [
-                        "from" => "GFA",
-                                "to" => 22962004867, // Ensure it's an array
-                                "content" => "Hello World!"
-                    ];                    
+                          
 
                     // Convert array to JSON
-                    $response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
+                    //$response = Http::withBasicAuth($this->sms_api_account_id, $this->sms_api_account_password)->post($this->sms_api_url . '/sms', $request_body);
 
                     // Convert the request body to JSON
                     $json_payload = json_encode($request_body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
                     // Initialize cURL
-                    $ch = curl_init($this->sms_api_url . '/sms');
+                    $ch = curl_init($this->sms_api_url . '/sendbatch');
 
                     // Set cURL options
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
