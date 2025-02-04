@@ -696,8 +696,6 @@ class AuthService extends BaseService implements AuthServiceInterface
 
         try {
 
-            dd($email);
-
             // Rechercher l'utilisateur grâce à l'identifiant.
             $utilisateur = $this->repository->findByAttribute('email', $email);
 
