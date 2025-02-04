@@ -40,11 +40,13 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:demarrage')->everyMinute();
 
-        $schedule->command('command:rapport')->everyMinute();
+       // $schedule->command('command:rapport')->everyMinute();
+       $schedule->command('command:rapport')->everyFifteenMinutes();
 
         $schedule->command('command:rappel')->everyMinute();
+       // $schedule->command('command:suivi')->everyFiveMinutes();
 
-        $schedule->command('command:suivi')->everyMinute();
+        // $schedule->command('command:suivi')->everyMinute();
 
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
 
