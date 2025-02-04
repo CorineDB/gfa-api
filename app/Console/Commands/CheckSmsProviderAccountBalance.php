@@ -50,7 +50,7 @@ class CheckSmsProviderAccountBalance extends Command
 
         $balance = $this->getSmsBalance();  // Assume this function fetches the current SMS balance
 
-        if ($balance != 500) {
+        if ($balance <= 500) {
             // Send both Email and SMS for Critical Alert
             $this->sendCriticalAlert($balance, "Critical Alert: Your SMS balance is critically low. Please top-up ASAP!");
         } elseif ($balance <= 1000) {
