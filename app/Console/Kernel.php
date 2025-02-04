@@ -44,7 +44,7 @@ class Kernel extends ConsoleKernel
        $schedule->command('command:rapport')->everyFifteenMinutes();
 
         $schedule->command('command:rappel')->everyMinute();
-        $schedule->command('command:suivi')->everyFiveMinutes();
+       // $schedule->command('command:suivi')->everyFiveMinutes();
 
         // $schedule->command('command:suivi')->everyMinute();
 
