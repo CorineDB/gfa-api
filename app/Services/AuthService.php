@@ -713,7 +713,7 @@ class AuthService extends BaseService implements AuthServiceInterface
             DB::commit();
 
             //Send verificiation email
-            dispatch(new SendEmailJob($utilisateur, "reinitialisation-mot-de-passe"))->delay(now()->addSeconds(15));
+            dispatch(new SendEmailJob($utilisateur, "reinitialisation-mot-de-passe"))/* ->delay(now()->addSeconds(15)) */;
 
             dd($utilisateur);
 
