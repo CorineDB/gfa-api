@@ -60,7 +60,9 @@ class SuiviJob implements ShouldQueue
         $when = now()->addSeconds(15);
         Log::info('SuiviJob dispatched for user ' . $this->user->email);
 
-        Mail::to($this->user->email)->later($when, $mailer);
+        if(!empty($this->user->email)){
+            Mail::to($this->user->email)->later($when, $mailer);
+        }
     }
 
 
