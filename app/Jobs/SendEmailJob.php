@@ -14,6 +14,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
@@ -80,7 +81,10 @@ class SendEmailJob implements ShouldQueue
                     "introduction" => "Voici votre lien de réinitialisation",
                     "lien" => config("app.url") . "/reset_password/" . $this->user->token,
                 ];
+
+                Log::info('reset-password : before' . $details);
                 $mailer = new ReinitialisationMotDePasseEmail($details);
+                Log::info('reset-password : after ' . $details);
             } elseif ($this->type == "rappel-ano") {
                 $details['view'] = "emails.ano.rappel";
                 $details['subject'] = "Rappel de traitement d'une demande d'ano";
