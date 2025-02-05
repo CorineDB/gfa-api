@@ -222,7 +222,7 @@ class IndicateurModService extends BaseService implements IndicateurModServiceIn
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($indicateurMod));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($indicateurMod), $indicateurMod->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($indicateurMod), $indicateurMod->id);
 
             DB::commit();
 
@@ -305,7 +305,7 @@ class IndicateurModService extends BaseService implements IndicateurModServiceIn
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($indicateurMod));
 
-            LogActivity::addToLog("Modification", $message, get_class($indicateurMod), $indicateurMod->id);
+            //LogActivity::addToLog("Modification", $message, get_class($indicateurMod), $indicateurMod->id);
 
             DB::commit();
 

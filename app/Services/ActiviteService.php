@@ -202,7 +202,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a enregistré un " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($activite), $activite->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($activite), $activite->id);
 
             DB::commit();
 
@@ -296,7 +296,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Suppression", $message, get_class($activite), $activite->id);
+            //LogActivity::addToLog("Suppression", $message, get_class($activite), $activite->id);
 
             DB::commit();
 
@@ -367,7 +367,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a enregistré un " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($duree), $duree->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($duree), $duree->id);
 
             DB::commit();
 
@@ -436,7 +436,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié une " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Modification", $message, get_class($duree), $duree->id);
+            //LogActivity::addToLog("Modification", $message, get_class($duree), $duree->id);
 
             DB::commit();
 
@@ -506,7 +506,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " deplacé une " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Suppression", $message, get_class($activite), $activite->id);
+            //LogActivity::addToLog("Suppression", $message, get_class($activite), $activite->id);
 
             DB::commit();
 

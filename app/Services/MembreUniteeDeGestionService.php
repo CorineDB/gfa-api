@@ -105,7 +105,7 @@ class MembreUniteeDeGestionService extends BaseService implements MembreUniteeDe
 
             $message = "L'administrateur de l'unité de gestion \"{Str::ucfirst($acteur)}\" a créé un compte pour un nouveau membre de l'unitée : \"{$utilisateur->nom} {$utilisateur->prenom}\".";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($utilisateur), $utilisateur->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($utilisateur), $utilisateur->id);
 
             return response()->json(['statut' => 'success', 'message' => "Le compte a été créé", 'data' => new UtilisateurResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -147,7 +147,7 @@ class MembreUniteeDeGestionService extends BaseService implements MembreUniteeDe
 
             $message = "L'administrateur de l'unité de gestion \"{Str::ucfirst($acteur)}\" a modifié les informations du membre {$uniteeDeGestion->nom} {$uniteeDeGestion->prenom} de l'unitée.";
 
-            LogActivity::addToLog("Modification", $message, get_class($uniteeDeGestion), $uniteeDeGestion->id);
+            //LogActivity::addToLog("Modification", $message, get_class($uniteeDeGestion), $uniteeDeGestion->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => $uniteeDeGestion, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

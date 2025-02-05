@@ -105,7 +105,7 @@ class GouvernementService extends BaseService implements GouvernementServiceInte
 
             $message = Str::ucfirst($acteur) . " a créé le compte du gouvernement {$gouvernement->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($gouvernement), $gouvernement->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($gouvernement), $gouvernement->id);
 
             return response()->json(['statut' => 'success', 'message' => "Création du compte gouvernement réussir", 'data' => $gouvernement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -140,7 +140,7 @@ class GouvernementService extends BaseService implements GouvernementServiceInte
 
             $message = Str::ucfirst($acteur) . " a modifié le compte du gouvernement {$gouvernement->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($gouvernement), $gouvernement->id);
+            //LogActivity::addToLog("Modification", $message, get_class($gouvernement), $gouvernement->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte gouvernement modifié", 'data' => $gouvernement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

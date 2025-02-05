@@ -51,7 +51,7 @@ class RappelService extends BaseService implements RappelServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($rappel));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($rappel), $rappel->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($rappel), $rappel->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $rappel, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -80,7 +80,7 @@ class RappelService extends BaseService implements RappelServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($rappel));
 
-            LogActivity::addToLog("Modification", $message, get_class($rappel), $rappel->id);
+            //LogActivity::addToLog("Modification", $message, get_class($rappel), $rappel->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $rappel, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

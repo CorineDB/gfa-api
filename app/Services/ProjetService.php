@@ -264,7 +264,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($projet));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($projet), $projet->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($projet), $projet->id);
 
             DB::commit();
 
@@ -414,7 +414,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($projet));
 
-            LogActivity::addToLog("Modification", $message, get_class($projet), $projet->id);
+            //LogActivity::addToLog("Modification", $message, get_class($projet), $projet->id);
 
             DB::commit();
 
@@ -681,7 +681,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a prolonger la date de fin du projet " . $projet->nom;
 
-            LogActivity::addToLog("Prolongement de date", $message, get_class($projet), $projet->id);
+            //LogActivity::addToLog("Prolongement de date", $message, get_class($projet), $projet->id);
 
             DB::commit();
 

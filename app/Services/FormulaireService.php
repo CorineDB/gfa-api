@@ -186,7 +186,7 @@ class FormulaireService extends BaseService implements FormulaireServiceInterfac
 
                 $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($formulaire));
 
-                LogActivity::addToLog("Modification", $message, get_class($formulaire), $formulaire->id);
+                //LogActivity::addToLog("Modification", $message, get_class($formulaire), $formulaire->id);
 
                 DB::commit();
 

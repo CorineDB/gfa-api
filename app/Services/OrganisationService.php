@@ -135,7 +135,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             $message = Str::ucfirst($acteur) . " a créé un compte pour l'organisation {$organisation->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($organisation), $organisation->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($organisation), $organisation->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte créé", 'data' => new OrganisationResource($organisation), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -180,7 +180,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             $message = Str::ucfirst($acteur) . " a modifié le compte de l'organisation {$organisation->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($organisation), $organisation->id);
+            //LogActivity::addToLog("Modification", $message, get_class($organisation), $organisation->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => new OrganisationResource($organisation), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

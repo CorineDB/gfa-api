@@ -92,7 +92,7 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($principeDeGouvernance));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($principeDeGouvernance), $principeDeGouvernance->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($principeDeGouvernance), $principeDeGouvernance->id);
 
             DB::commit();
 
@@ -123,7 +123,7 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($principeDeGouvernance));
 
-            LogActivity::addToLog("Modification", $message, get_class($principeDeGouvernance), $principeDeGouvernance->id);
+            //LogActivity::addToLog("Modification", $message, get_class($principeDeGouvernance), $principeDeGouvernance->id);
 
             DB::commit();
 

@@ -87,7 +87,7 @@ class FondService extends BaseService implements FondServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($fond));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($fond), $fond->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($fond), $fond->id);
 
             DB::commit();
 
@@ -118,7 +118,7 @@ class FondService extends BaseService implements FondServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($fond));
 
-            LogActivity::addToLog("Modification", $message, get_class($fond), $fond->id);
+            //LogActivity::addToLog("Modification", $message, get_class($fond), $fond->id);
 
             DB::commit();
 

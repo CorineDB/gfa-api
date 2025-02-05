@@ -90,7 +90,7 @@ class SinistreService extends BaseService implements SinistreServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($sinistre));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($sinistre), $sinistre->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($sinistre), $sinistre->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new PapResource($sinistre), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -130,7 +130,7 @@ class SinistreService extends BaseService implements SinistreServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($sinistre));
 
-            LogActivity::addToLog("Modification", $message, get_class($sinistre), $sinistre->id);
+            //LogActivity::addToLog("Modification", $message, get_class($sinistre), $sinistre->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new PapResource($sinistre), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -410,7 +410,7 @@ class SinistreService extends BaseService implements SinistreServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a importer un fichier pour les sinistres ";
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($sinistre), $sinistre->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($sinistre), $sinistre->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => 'importation effectué', 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

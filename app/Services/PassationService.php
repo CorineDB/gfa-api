@@ -94,7 +94,7 @@ class PassationService extends BaseService implements PassationServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($passation));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($passation), $passation->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($passation), $passation->id);
 
             DB::commit();
 
@@ -144,7 +144,7 @@ class PassationService extends BaseService implements PassationServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($passation));
 
-            LogActivity::addToLog("Modification", $message, get_class($passation), $passation->id);
+            //LogActivity::addToLog("Modification", $message, get_class($passation), $passation->id);
 
             DB::commit();
 

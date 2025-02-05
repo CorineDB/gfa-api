@@ -79,7 +79,7 @@ class CategorieService extends BaseService implements CategorieServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($categorie));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($categorie), $categorie->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($categorie), $categorie->id);
 
             DB::commit();
 
@@ -127,7 +127,7 @@ class CategorieService extends BaseService implements CategorieServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($categorie));
 
-            LogActivity::addToLog("Modification", $message, get_class($categorie), $categorie->id);
+            //LogActivity::addToLog("Modification", $message, get_class($categorie), $categorie->id);
 
             DB::commit();
 

@@ -155,7 +155,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " s'est connecté.";
 
-            LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
+            //LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
 
             //GenererPta::dispatch(Auth::user()->programme)->delay(now()->addSeconds(15));
 
@@ -277,7 +277,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " s'est connecté.";
 
-            LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
+            //LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
 
             //GenererPta::dispatch(Auth::user()->programme)->delay(now()->addSeconds(15));
 
@@ -400,7 +400,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " s'est connecté.";
 
-            LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
+            //LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
 
             //event(new Login(Auth::user()->programme));
 
@@ -452,7 +452,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " vient de se déconnecter.";
 
-            LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
+            //LogActivity::addToLog("Connexion", $message, get_class($user), $user->id);
 
             return response()->json(['statut' => 'success', 'message' => 'Vous êtes déconnecté', 'data' => [], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -530,7 +530,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " vient d'activer son compte.";
 
-            LogActivity::addToLog("Connexion", $message, get_class($utilisateur), $utilisateur->id);
+            //LogActivity::addToLog("Connexion", $message, get_class($utilisateur), $utilisateur->id);
 
             return response()->json(['statut' => 'success', 'message' => 'Compte utilisateur activé', 'data' => [], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -633,7 +633,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " vient de confirmer son compte pour la réinitialisation de mot de passe.";
 
-            LogActivity::addToLog("Confirmation de compte", $message, get_class($utilisateur), $utilisateur->id);
+            //LogActivity::addToLog("Confirmation de compte", $message, get_class($utilisateur), $utilisateur->id);
 
             return response()->json(['statut' => 'success', 'message' => 'Compte identifier', 'data' => [
                'email' => $utilisateur->email
@@ -670,7 +670,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " vient de debloquer " . $utilisateur->nom;
 
-            LogActivity::addToLog("Deblocage de compte", $message, get_class($utilisateur), $utilisateur->id);
+            //LogActivity::addToLog("Deblocage de compte", $message, get_class($utilisateur), $utilisateur->id);
 
             return response()->json(['statut' => 'success', 'message' => 'Compte debloquer', 'data' => [
                'email' => $utilisateur->email
@@ -808,7 +808,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             $message = Str::ucfirst($acteur) . " vient de réinitiliser son mot de passe.";
 
-            LogActivity::addToLog("Connexion", $message, get_class($utilisateur), $utilisateur->id);
+            //LogActivity::addToLog("Connexion", $message, get_class($utilisateur), $utilisateur->id);
 
             return response()->json(['statut' => 'success', 'message' => 'Mot de passe réinitialisé', 'data' => [], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

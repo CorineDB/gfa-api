@@ -189,7 +189,7 @@ class DecaissementService extends BaseService implements DecaissementServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($decaissement));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($decaissement), $decaissement->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($decaissement), $decaissement->id);
 
             $data['texte'] = "Un décaissement vient d'etre effectué";
             $data['id'] = $decaissement->id;

@@ -106,7 +106,7 @@ class ModService extends BaseService implements ModServiceInterface
 
             $message = Str::ucfirst($acteur) . " a créé un mod {$mod->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($mod), $mod->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($mod), $mod->id);
 
             return response()->json(['statut' => 'success', 'message' => "Création du mod réussir", 'data' => new ModsResource($mod), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -142,7 +142,7 @@ class ModService extends BaseService implements ModServiceInterface
 
             $message = Str::ucfirst($acteur) . " a modifié le compte du mod {$mod->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($mod), $mod->id);
+            //LogActivity::addToLog("Modification", $message, get_class($mod), $mod->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte mod modifié", 'data' => $mod, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

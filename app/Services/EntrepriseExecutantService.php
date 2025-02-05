@@ -114,7 +114,7 @@ class EntrepriseExecutantService extends BaseService implements EntrepriseExecut
 
             $message = Str::ucfirst($acteur) . " a créé un compte pour l'entreprise {$entrepriseExecutant->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($entrepriseExecutant), $entrepriseExecutant->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($entrepriseExecutant), $entrepriseExecutant->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte créé", 'data' => $entrepriseExecutant, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -155,7 +155,7 @@ class EntrepriseExecutantService extends BaseService implements EntrepriseExecut
 
             $message = Str::ucfirst($acteur) . " a modifié le compte de l'entreprise {$entrepriseExecutant->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($entrepriseExecutant), $entrepriseExecutant->id);
+            //LogActivity::addToLog("Modification", $message, get_class($entrepriseExecutant), $entrepriseExecutant->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => $entrepriseExecutant, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

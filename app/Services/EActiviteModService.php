@@ -77,7 +77,7 @@ class EActiviteModService extends BaseService implements EActiviteModServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un  " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($activite), $activite->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($activite), $activite->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $activite, 'statut de l\'activité' => $statuts->etat, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -122,7 +122,7 @@ class EActiviteModService extends BaseService implements EActiviteModServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Modification", $message, get_class($activite), $activite->id);
+            //LogActivity::addToLog("Modification", $message, get_class($activite), $activite->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $activite, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);        }

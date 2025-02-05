@@ -63,7 +63,7 @@ class CheckListService extends BaseService implements CheckListServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($checkList));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($checkList), $checkList->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($checkList), $checkList->id);
 
             DB::commit();
 
@@ -111,7 +111,7 @@ class CheckListService extends BaseService implements CheckListServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($checkList));
 
-            LogActivity::addToLog("Modification", $message, get_class($checkList), $checkList->id);
+            //LogActivity::addToLog("Modification", $message, get_class($checkList), $checkList->id);
 
             DB::commit();
 

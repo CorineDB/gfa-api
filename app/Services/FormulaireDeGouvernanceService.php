@@ -239,7 +239,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($formulaireDeGouvernance));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($formulaireDeGouvernance), $formulaireDeGouvernance->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($formulaireDeGouvernance), $formulaireDeGouvernance->id);
 
             DB::commit();
 
@@ -360,7 +360,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($formulaireDeGouvernance));
 
-            LogActivity::addToLog("Modification", $message, get_class($formulaireDeGouvernance), $formulaireDeGouvernance->id);
+            //LogActivity::addToLog("Modification", $message, get_class($formulaireDeGouvernance), $formulaireDeGouvernance->id);
 
             DB::commit();
 

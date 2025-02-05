@@ -74,7 +74,7 @@ class ReponseService extends BaseService implements ReponseServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($reponse));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($reponse), $reponse->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($reponse), $reponse->id);
 
             DB::commit();
 

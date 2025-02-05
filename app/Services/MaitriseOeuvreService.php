@@ -80,7 +80,7 @@ class MaitriseOeuvreService extends BaseService implements MaitriseOeuvreService
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($maitriseOeuvre));
 
-            LogActivity::addToLog("Modification", $message, get_class($maitriseOeuvre), $maitriseOeuvre->id);
+            //LogActivity::addToLog("Modification", $message, get_class($maitriseOeuvre), $maitriseOeuvre->id);
 
             DB::commit();
 
@@ -122,7 +122,7 @@ class MaitriseOeuvreService extends BaseService implements MaitriseOeuvreService
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($maitriseOeuvre));
 
-            LogActivity::addToLog("Modification", $message, get_class($maitriseOeuvre), $maitriseOeuvre->id);
+            //LogActivity::addToLog("Modification", $message, get_class($maitriseOeuvre), $maitriseOeuvre->id);
 
             DB::commit();
 

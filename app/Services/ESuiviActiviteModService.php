@@ -56,7 +56,7 @@ class ESuiviActiviteModService extends BaseService implements ESuiviActiviteModS
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($suivi));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($suivi), $suivi->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($suivi), $suivi->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $suivi, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -85,7 +85,7 @@ class ESuiviActiviteModService extends BaseService implements ESuiviActiviteModS
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($suivi));
 
-            LogActivity::addToLog("Modification", $message, get_class($suivi), $suivi->id);
+            //LogActivity::addToLog("Modification", $message, get_class($suivi), $suivi->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $suivi, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);        }

@@ -83,7 +83,7 @@ class IndicateurValueKeyService extends BaseService implements IndicateurValueKe
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($indicateurValueKey));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($indicateurValueKey), $indicateurValueKey->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($indicateurValueKey), $indicateurValueKey->id);
 
             DB::commit();
 
@@ -114,7 +114,7 @@ class IndicateurValueKeyService extends BaseService implements IndicateurValueKe
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($indicateurValueKey));
 
-            LogActivity::addToLog("Modification", $message, get_class($indicateurValueKey), $indicateurValueKey->id);
+            //LogActivity::addToLog("Modification", $message, get_class($indicateurValueKey), $indicateurValueKey->id);
 
             DB::commit();
 

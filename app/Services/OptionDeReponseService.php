@@ -87,7 +87,7 @@ class OptionDeReponseService extends BaseService implements OptionDeReponseServi
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($optionDeReponse));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($optionDeReponse), $optionDeReponse->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($optionDeReponse), $optionDeReponse->id);
 
             DB::commit();
 
@@ -118,7 +118,7 @@ class OptionDeReponseService extends BaseService implements OptionDeReponseServi
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($optionDeReponse));
 
-            LogActivity::addToLog("Modification", $message, get_class($optionDeReponse), $optionDeReponse->id);
+            //LogActivity::addToLog("Modification", $message, get_class($optionDeReponse), $optionDeReponse->id);
 
             DB::commit();
 
