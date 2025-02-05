@@ -47,7 +47,6 @@ class SuiviJob implements ShouldQueue
         if($this->type == "indicateur"){
             $details['subject'] = "ALERTE RAPPEL SUIVI INDICATEUR";
             $details['type'] = $this->type;
-            Log::info('SuiviEmail ' . $this->type);
             $mailer = new SuiviEmail($details);
         }
 
@@ -55,11 +54,10 @@ class SuiviJob implements ShouldQueue
         {
             $details['subject'] = "ALERTE RAPPEL SUIVI FINANCIER";
             $details['type'] = $this->type;
-            Log::info('SuiviEmail ' . $this->type);
             $mailer = new SuiviEmail($details);
         }
 
-        $when = now()->addSeconds(15);
+        $when = now();//->addSeconds(15);
         Log::info('SuiviJob dispatched for user ' . $this->type ." ". $this->user->email);
 
         if(!empty($this->user->email)){
