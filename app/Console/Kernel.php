@@ -35,8 +35,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
 
         $schedule->command('command:change-statut')->everyMinute();
-        $schedule->command('change-statut:evaluations')->everyMinute();
-        $schedule->command('generate:report-for-validated-soumissions')->everyMinute();
+        $schedule->command('change-statut:evaluations')->daily();
+        $schedule->command('generate:report-for-validated-soumissions')->daily();
 
         $schedule->command('command:demarrage')->everyMinute();
 
@@ -52,7 +52,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('check-sms-provider:account-balance')->everySixHours();
 
-        $schedule->command('change-statut:action-a-mener')->everyMinute('00:00');
+        $schedule->command('change-statut:action-a-mener')->dailyAt('00:00');
 
         $backupConfig = AlerteConfig::where('module', 'backup')->first();
 
