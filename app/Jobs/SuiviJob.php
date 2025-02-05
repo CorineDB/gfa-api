@@ -61,6 +61,7 @@ class SuiviJob implements ShouldQueue
         Log::info('SuiviJob dispatched for user ' . $this->type ." ". $this->user->email);
 
         if(!empty($this->user->email)){
+            Log::info('Mail::to ' . $this->user->email);
             Mail::to($this->user->email)->later($when, $mailer);
         }
     }
