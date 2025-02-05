@@ -7,7 +7,6 @@ use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
 class SuiviEmail extends Mailable
 {
@@ -33,7 +32,6 @@ class SuiviEmail extends Mailable
     public function build()
     {
         $details = $this->details;
-        Log::info('SuiviEmail issued for user ');
         return $this->from(config("mail.mailers.smtp.username"), config("app.name"))->subject(Str::ucfirst($this->details['subject']))->view('emails.pta.suivi', compact('details'));
     }
 }
