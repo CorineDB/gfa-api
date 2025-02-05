@@ -78,7 +78,7 @@ class Suivi extends Command
                         event(new NewNotification($this->formatageNotification($notification, $user)));
 
                         SuiviJob::dispatch($user, 'financier')->delay(10);
-                        Log::info('command:suivi : SuiviJob dispatched for user ' . $user);
+                        Log::info('command:suivi : SuiviJob dispatched for user ' . $user->email);
                     }
                 }
 
