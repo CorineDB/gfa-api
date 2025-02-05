@@ -133,7 +133,7 @@ class OngCommService extends BaseService implements OngCommServiceInterface
 
             $message = $attributs["message"] . $ong->user->nom;
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($ong), $ong->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($ong), $ong->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte crée", 'data' => new UtilisateurResource($ong), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -170,7 +170,7 @@ class OngCommService extends BaseService implements OngCommServiceInterface
 
             $message = $attributs["message"] . $ong->user->nom;
 
-            LogActivity::addToLog("Modification", $message, get_class($ong), $ong->id);
+            //LogActivity::addToLog("Modification", $message, get_class($ong), $ong->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => $ong, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

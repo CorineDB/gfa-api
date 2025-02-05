@@ -266,7 +266,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($soumission));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($soumission), $soumission->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($soumission), $soumission->id);
 
             DB::commit();
 
@@ -296,7 +296,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($soumission));
 
-            LogActivity::addToLog("Modification", $message, get_class($soumission), $soumission->id);
+            //LogActivity::addToLog("Modification", $message, get_class($soumission), $soumission->id);
 
             DB::commit();
 

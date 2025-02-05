@@ -457,7 +457,7 @@ class BaseRepository implements EloquentRepositoryInterface {
 
             $message = $message ?? Str::ucfirst($acteur) . " a supprimé définitivement un " . strtolower(class_basename($model));
 
-            LogActivity::addToLog("Suppression", $message, get_class($model), $model->id);
+            //LogActivity::addToLog("Suppression", $message, get_class($model), $model->id);
 
             return true;
 

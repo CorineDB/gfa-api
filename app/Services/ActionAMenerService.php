@@ -156,7 +156,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($action_a_mener));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($action_a_mener), $action_a_mener->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($action_a_mener), $action_a_mener->id);
 
             DB::commit();
 
@@ -203,7 +203,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($action_a_mener));
 
-            LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
+            //LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
 
             DB::commit();
 
@@ -269,7 +269,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
     
                 $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($action_a_mener));
     
-                LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
+                //LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
     
                 DB::commit();
     
@@ -338,7 +338,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
     
                 $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($action_a_mener));
     
-                LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
+                //LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
     
                 DB::commit();
     

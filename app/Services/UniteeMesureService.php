@@ -69,7 +69,7 @@ class UniteeMesureService extends BaseService implements UniteeMesureServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($unitee_de_mesure));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($unitee_de_mesure), $unitee_de_mesure->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($unitee_de_mesure), $unitee_de_mesure->id);
 
             DB::commit();
 
@@ -110,7 +110,7 @@ class UniteeMesureService extends BaseService implements UniteeMesureServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($unitee_de_mesure));
 
-            LogActivity::addToLog("Modification", $message, get_class($unitee_de_mesure), $unitee_de_mesure->id);
+            //LogActivity::addToLog("Modification", $message, get_class($unitee_de_mesure), $unitee_de_mesure->id);
 
             DB::commit();
 

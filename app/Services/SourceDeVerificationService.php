@@ -88,7 +88,7 @@ class SourceDeVerificationService extends BaseService implements SourceDeVerific
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($sourceDeVerification));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($sourceDeVerification), $sourceDeVerification->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($sourceDeVerification), $sourceDeVerification->id);
 
             DB::commit();
 
@@ -119,7 +119,7 @@ class SourceDeVerificationService extends BaseService implements SourceDeVerific
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($sourceDeVerification));
 
-            LogActivity::addToLog("Modification", $message, get_class($sourceDeVerification), $sourceDeVerification->id);
+            //LogActivity::addToLog("Modification", $message, get_class($sourceDeVerification), $sourceDeVerification->id);
 
             DB::commit();
 

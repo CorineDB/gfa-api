@@ -152,7 +152,7 @@ class ReponseAnoService extends BaseService implements ReponseAnoServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a répondu à la demande de l'ano " . $reponseAno->ano->dossier;
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($reponseAno), $reponseAno->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($reponseAno), $reponseAno->id);
 
             DB::commit();
 
@@ -251,7 +251,7 @@ class ReponseAnoService extends BaseService implements ReponseAnoServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifier sa réponse en rapport avec la demande d'ano " . $reponseAno->ano->dossier;
 
-            LogActivity::addToLog("Modification", $message, get_class($reponseAno), $reponseAno->id);
+            //LogActivity::addToLog("Modification", $message, get_class($reponseAno), $reponseAno->id);
 
             DB::commit();
 

@@ -146,7 +146,7 @@ class BailleurService extends BaseService implements BailleurServiceInterface
 
             $message = Str::ucfirst($acteur) . " a créé le compte admin du bailleur {$bailleur->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($bailleur), $bailleur->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($bailleur), $bailleur->id);
 
             return response()->json(['statut' => 'success', 'message' => "Création du compte bailleur réussir", 'data' => new BailleursResource($bailleur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -227,7 +227,7 @@ class BailleurService extends BaseService implements BailleurServiceInterface
 
             $message = Str::ucfirst($acteur) . " a modifié le compte du bailleur {$bailleur->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($bailleur), $bailleur->id);
+            //LogActivity::addToLog("Modification", $message, get_class($bailleur), $bailleur->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte bailleur modifié", 'data' => new BailleursResource($bailleur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

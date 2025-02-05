@@ -1395,7 +1395,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($rapport));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($rapport), $rapport->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($rapport), $rapport->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $rapport, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1432,7 +1432,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($rapport));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($rapport), $rapport->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($rapport), $rapport->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $rapport, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1463,7 +1463,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a supprimé un " . strtolower(class_basename($rapport));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($rapport), $rapport->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($rapport), $rapport->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -1498,7 +1498,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a envoyé un rapport par mail";
 
-            LogActivity::addToLog("Enregistrement", $message, get_class(Auth::user()), Auth::user()->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class(Auth::user()), Auth::user()->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => Auth::user()->emailRapports, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

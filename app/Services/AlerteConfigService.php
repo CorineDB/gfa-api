@@ -54,7 +54,7 @@ class AlerteConfigService extends BaseService implements AlerteConfigServiceInte
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($alerteConfig));
 
-            LogActivity::addToLog("Modification", $message, get_class($alerteConfig), $alerteConfig->id);
+            //LogActivity::addToLog("Modification", $message, get_class($alerteConfig), $alerteConfig->id);
 
             DB::commit();
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $alerteConfig, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

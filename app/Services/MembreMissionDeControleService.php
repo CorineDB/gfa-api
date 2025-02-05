@@ -102,7 +102,7 @@ class MembreMissionDeControleService extends BaseService implements MembreMissio
 
             $message = "L'administrateur de la mission de controle \"{Str::ucfirst($acteur)}\" a créé un compte pour un nouveau membre de controle : \"{$utilisateur->nom} {$utilisateur->prenom}\".";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($utilisateur), $utilisateur->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($utilisateur), $utilisateur->id);
 
             return response()->json(['statut' => 'success', 'message' => "Le compte a été créé", 'data' => new UserResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -145,7 +145,7 @@ class MembreMissionDeControleService extends BaseService implements MembreMissio
 
             $message = "L'administrateur de la mission de controle \"{Str::ucfirst($acteur)}\" a modifié les informations du membre {$missionDeControle->nom} {$missionDeControle->prenom} de l'unitée.";
 
-            LogActivity::addToLog("Modification", $message, get_class($missionDeControle), $missionDeControle->id);
+            //LogActivity::addToLog("Modification", $message, get_class($missionDeControle), $missionDeControle->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => new UserResource($missionDeControle), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

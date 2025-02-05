@@ -101,7 +101,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($enqueteDeCollecte));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
 
             DB::commit();
 
@@ -133,7 +133,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($enqueteDeCollecte));
 
-            LogActivity::addToLog("Modification", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
+            //LogActivity::addToLog("Modification", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
 
             DB::commit();
 
@@ -229,7 +229,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             $message = Str::ucfirst($acteur) . " a collecter des donnees pour le compte de l'enquete {$enqueteDeCollecte->nom}.";
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($enqueteDeCollecte), $enqueteDeCollecte->id);
 
             return response()->json(['statut' => 'success', 'message' => "Les données collectée on ete enregistrer avec succes", 'data' =>  $collected, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -516,7 +516,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
 
             $message = Str::ucfirst($acteur) . " a collecter des donnees pour le compte de l'enquete {$note->nom}.";
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($note), $note->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($note), $note->id);
 
             return response()->json(['statut' => 'success', 'message' => "Les données collectée on ete enregistrer avec succes", 'data' => new AppreciationResource($note), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

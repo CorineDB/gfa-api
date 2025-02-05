@@ -134,7 +134,7 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($composante));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($composante), $composante->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($composante), $composante->id);
 
             DB::commit();
 
@@ -273,7 +273,7 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($composante));
 
-            LogActivity::addToLog("Modification", $message, get_class($composante), $composante->id);
+            //LogActivity::addToLog("Modification", $message, get_class($composante), $composante->id);
 
             DB::commit();
 

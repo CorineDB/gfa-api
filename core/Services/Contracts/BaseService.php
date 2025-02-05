@@ -284,7 +284,7 @@ class BaseService implements AbstractServiceInterface{
 
             $message = $message ?? Str::ucfirst($acteur) . " a crée un " . strtolower(class_basename($model));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($model), $model->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($model), $model->id);
 
             return response()->json(['statut' => 'success','message'=> null, 'data' => $model, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -316,7 +316,7 @@ class BaseService implements AbstractServiceInterface{
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($model));
 
-            LogActivity::addToLog("Modification", $message, get_class($model), $model->id);
+            //LogActivity::addToLog("Modification", $message, get_class($model), $model->id);
 
 
             return response()->json(['statut' => 'success','message'=> null, 'data' => $model, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -365,7 +365,7 @@ class BaseService implements AbstractServiceInterface{
 
             $message = $message ?? Str::ucfirst($acteur) . " a prolonger la date de fin du module " . strtolower(class_basename($model)) . ' : ' . $model->nom;
 
-            LogActivity::addToLog("Prolongement de date", $message, get_class($model), $model->id);
+            //LogActivity::addToLog("Prolongement de date", $message, get_class($model), $model->id);
 
             return response()->json(['statut' => 'success','message'=> null, 'data' => $model, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
@@ -394,7 +394,7 @@ class BaseService implements AbstractServiceInterface{
 
             $message = $message ?? Str::ucfirst($acteur) . " a supprimé un " . strtolower(class_basename($model));
 
-            LogActivity::addToLog("Suppression", $message, get_class($model), $model->id);
+            //LogActivity::addToLog("Suppression", $message, get_class($model), $model->id);
 
             return response()->json(['statut' => 'success','message'=> null, 'data' => $model , 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

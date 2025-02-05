@@ -109,7 +109,7 @@ class UniteeDeGestionService extends BaseService implements UniteeDeGestionServi
 
             $message = Str::ucfirst($acteur) . " a créé le compte admin de l'unitée de gestion {$uniteeDeGestion->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($uniteeDeGestion), $uniteeDeGestion->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($uniteeDeGestion), $uniteeDeGestion->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte unitee de gestion créé", 'data' => $uniteeDeGestion, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -150,7 +150,7 @@ class UniteeDeGestionService extends BaseService implements UniteeDeGestionServi
 
             $message = Str::ucfirst($acteur) . " a modifié le compte de unitée de gestion {$uniteeDeGestion->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($uniteeDeGestion), $uniteeDeGestion->id);
+            //LogActivity::addToLog("Modification", $message, get_class($uniteeDeGestion), $uniteeDeGestion->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte unitee de gestion modifié", 'data' => $uniteeDeGestion, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

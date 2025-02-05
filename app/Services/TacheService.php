@@ -121,7 +121,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($tache));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($tache), $tache->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($tache), $tache->id);
 
             DB::commit();
 
@@ -198,7 +198,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($tache));
 
-            LogActivity::addToLog("Modification", $message, get_class($tache), $tache->id);
+            //LogActivity::addToLog("Modification", $message, get_class($tache), $tache->id);
 
             DB::commit();
 

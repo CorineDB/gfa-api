@@ -115,7 +115,7 @@ class SiteService extends BaseService implements SiteServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($site));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($site), $site->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($site), $site->id);
 
             DB::commit();
 
@@ -163,7 +163,7 @@ class SiteService extends BaseService implements SiteServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($site));
 
-            LogActivity::addToLog("Modification", $message, get_class($site), $site->id);
+            //LogActivity::addToLog("Modification", $message, get_class($site), $site->id);
 
             DB::commit();
 

@@ -548,7 +548,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($activite));
 
-            LogActivity::addToLog("Modification", $message, get_class($activite), $activite->id);
+            //LogActivity::addToLogog("Modification", $message, get_class($activite), $activite->id);
 
             DB::commit();
 

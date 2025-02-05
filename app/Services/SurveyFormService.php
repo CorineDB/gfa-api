@@ -93,7 +93,7 @@ class SurveyFormService extends BaseService implements SurveyFormServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($surveyForm));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($surveyForm), $surveyForm->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($surveyForm), $surveyForm->id);
 
             DB::commit();
 
@@ -124,7 +124,7 @@ class SurveyFormService extends BaseService implements SurveyFormServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($surveyForm));
 
-            LogActivity::addToLog("Modification", $message, get_class($surveyForm), $surveyForm->id);
+            //LogActivity::addToLog("Modification", $message, get_class($surveyForm), $surveyForm->id);
 
             DB::commit();
 

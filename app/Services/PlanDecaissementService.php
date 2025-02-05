@@ -126,7 +126,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($planDecaissement));
 
-            LogActivity::addToLog("Modification", $message, get_class($planDecaissement), $planDecaissement->id);
+            //LogActivity::addToLog("Modification", $message, get_class($planDecaissement), $planDecaissement->id);
 
             DB::commit();
 
@@ -192,7 +192,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($planDecaissement));
 
-            LogActivity::addToLog("Modification", $message, get_class($planDecaissement), $planDecaissement->id);
+            //LogActivity::addToLog("Modification", $message, get_class($planDecaissement), $planDecaissement->id);
 
             DB::commit();
 

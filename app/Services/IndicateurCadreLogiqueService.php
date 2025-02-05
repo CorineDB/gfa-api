@@ -150,7 +150,7 @@ class IndicateurCadreLogiqueService extends BaseService implements IndicateurCad
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($indicateurCadreLogique));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($indicateurCadreLogique), $indicateurCadreLogique->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($indicateurCadreLogique), $indicateurCadreLogique->id);
 
             DB::commit();
 
@@ -186,7 +186,7 @@ class IndicateurCadreLogiqueService extends BaseService implements IndicateurCad
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($indicateurCadreLogique));
 
-            LogActivity::addToLog("Modification", $message, get_class($indicateurCadreLogique), $indicateurCadreLogique->id);
+            //LogActivity::addToLog("Modification", $message, get_class($indicateurCadreLogique), $indicateurCadreLogique->id);
 
             DB::commit();
 

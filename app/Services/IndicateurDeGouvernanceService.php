@@ -138,7 +138,7 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
 
             $message = Str::ucfirst($acteur) . " a créé l'indicateur de gouvernance {$indicateur->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($indicateur), $indicateur->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($indicateur), $indicateur->id);
 
             return response()->json(['statut' => 'success', 'message' => "Création du mod réussir", 'data' => new IndicateursDeGouvernanceResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -223,7 +223,7 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
 
             $message = Str::ucfirst($acteur) . " a modifié l'indicateur de gouvernance {$indicateur->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($indicateur), $indicateur->id);
+            //LogActivity::addToLog("Modification", $message, get_class($indicateur), $indicateur->id);
 
             return response()->json(['statut' => 'success', 'message' => "Indicateur modifié", 'data' => new IndicateursDeGouvernanceResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

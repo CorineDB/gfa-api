@@ -98,7 +98,7 @@ class InstitutionService extends BaseService implements InstitutionServiceInterf
 
             $message = Str::ucfirst($acteur) . " a créé un compte {$institution->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($institution), $institution->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($institution), $institution->id);
 
             return response()->json(['statut' => 'success', 'message' => "Création du compte réussir", 'data' => $institution, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -135,7 +135,7 @@ class InstitutionService extends BaseService implements InstitutionServiceInterf
 
             $message = Str::ucfirst($acteur) . " a modifié le compte {$institution->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($institution), $institution->id);
+            //LogActivity::addToLog("Modification", $message, get_class($institution), $institution->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte modifié", 'data' => $institution, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

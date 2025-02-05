@@ -437,7 +437,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($indicateur));
 
-            LogActivity::addToLog("Modification", $message, get_class($indicateur), $indicateur->id);
+            //LogActivity::addToLog("Modification", $message, get_class($indicateur), $indicateur->id);
 
             DB::commit();
 
@@ -687,7 +687,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($indicateur));
 
-            LogActivity::addToLog("Modification", $message, get_class($indicateur), $indicateur->id);
+            //LogActivity::addToLog("Modification", $message, get_class($indicateur), $indicateur->id);
 
             DB::commit();
 
@@ -809,7 +809,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($indicateurId));
 
-            LogActivity::addToLog("Ajout de cle d'indicateur", $message, get_class($indicateurId), $indicateurId->id);
+            //LogActivity::addToLog("Ajout de cle d'indicateur", $message, get_class($indicateurId), $indicateurId->id);
 
             DB::commit();
 
@@ -866,7 +866,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($indicateurId));
 
-            LogActivity::addToLog("Ajout de cle d'indicateur", $message, get_class($indicateurId), $indicateurId->id);
+            //LogActivity::addToLog("Ajout de cle d'indicateur", $message, get_class($indicateurId), $indicateurId->id);
 
             DB::commit();
 

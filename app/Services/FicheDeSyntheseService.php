@@ -89,7 +89,7 @@ class FicheDeSyntheseService extends BaseService implements FicheDeSyntheseServi
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($fiche_de_synthese));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($fiche_de_synthese), $fiche_de_synthese->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($fiche_de_synthese), $fiche_de_synthese->id);
 
             DB::commit();
 
@@ -120,7 +120,7 @@ class FicheDeSyntheseService extends BaseService implements FicheDeSyntheseServi
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($fiche_de_synthese));
 
-            LogActivity::addToLog("Modification", $message, get_class($fiche_de_synthese), $fiche_de_synthese->id);
+            //LogActivity::addToLog("Modification", $message, get_class($fiche_de_synthese), $fiche_de_synthese->id);
 
             DB::commit();
 

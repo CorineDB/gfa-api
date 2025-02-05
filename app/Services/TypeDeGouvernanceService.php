@@ -87,7 +87,7 @@ class TypeDeGouvernanceService extends BaseService implements TypeDeGouvernanceS
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($type));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($type), $type->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($type), $type->id);
 
             DB::commit();
 
@@ -120,7 +120,7 @@ class TypeDeGouvernanceService extends BaseService implements TypeDeGouvernanceS
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($typeDeGouvernance));
 
-            LogActivity::addToLog("Modification", $message, get_class($typeDeGouvernance), $typeDeGouvernance->id);
+            //LogActivity::addToLog("Modification", $message, get_class($typeDeGouvernance), $typeDeGouvernance->id);
 
             DB::commit();
 

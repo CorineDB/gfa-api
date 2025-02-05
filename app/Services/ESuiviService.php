@@ -88,7 +88,7 @@ class ESuiviService extends BaseService implements ESuiviServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($eSuivi));
 
-            LogActivity::addToLog("Enregistrement", $message, get_class($eSuivi), $eSuivi->id);
+            //LogActivity::addToLog("Enregistrement", $message, get_class($eSuivi), $eSuivi->id);
 
             DB::commit();
 
@@ -141,7 +141,7 @@ class ESuiviService extends BaseService implements ESuiviServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($eSuivi));
 
-            LogActivity::addToLog("Modification", $message, get_class($eSuivi), $eSuivi->id);
+            //LogActivity::addToLog("Modification", $message, get_class($eSuivi), $eSuivi->id);
 
             DB::commit();
 

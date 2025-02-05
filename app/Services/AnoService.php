@@ -211,7 +211,7 @@ class AnoService extends BaseService implements AnoServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($ano));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($ano), $ano->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($ano), $ano->id);
 
             DB::commit();
 
@@ -306,7 +306,7 @@ class AnoService extends BaseService implements AnoServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($ano));
 
-            LogActivity::addToLog("Modification", $message, get_class($ano), $ano->id);
+            //LogActivity::addToLog("Modification", $message, get_class($ano), $ano->id);
 
             DB::commit();
 
@@ -337,7 +337,7 @@ class AnoService extends BaseService implements AnoServiceInterface
 
             $message = $message ?? Str::ucfirst($acteur) . " a un eemail de rappel au bailleur pour le demande d'ano " . $ano->dossier;
 
-            LogActivity::addToLog("Rappel pour la demande d'ano", $message, get_class($ano), $ano->id);
+            //LogActivity::addToLog("Rappel pour la demande d'ano", $message, get_class($ano), $ano->id);
 
             DB::commit();
 

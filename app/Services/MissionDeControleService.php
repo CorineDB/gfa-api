@@ -128,7 +128,7 @@ class MissionDeControleService extends BaseService implements MissionDeControleS
 
             $message = Str::ucfirst($acteur) . " a créé le compte admin de la mission de controle {$missionDeControle->nom}.";
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($missionDeControle), $missionDeControle->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($missionDeControle), $missionDeControle->id);
 
             return response()->json(['statut' => 'success', 'message' => "Création du compte unitee de gestion réussir", 'data' => $missionDeControle, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
@@ -166,7 +166,7 @@ class MissionDeControleService extends BaseService implements MissionDeControleS
 
             $message = Str::ucfirst($acteur) . " a modifié le compte de la mission de controle {$missionDeControle->nom}.";
 
-            LogActivity::addToLog("Modification", $message, get_class($missionDeControle), $missionDeControle->id);
+            //LogActivity::addToLog("Modification", $message, get_class($missionDeControle), $missionDeControle->id);
 
             return response()->json(['statut' => 'success', 'message' => "Compte de la mission de controle modifié", 'data' => $missionDeControle, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 

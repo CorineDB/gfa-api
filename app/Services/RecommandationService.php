@@ -100,7 +100,7 @@ class RecommandationService extends BaseService implements RecommandationService
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($recommandation));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($recommandation), $recommandation->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($recommandation), $recommandation->id);
 
             DB::commit();
 
@@ -137,7 +137,7 @@ class RecommandationService extends BaseService implements RecommandationService
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($recommandation));
 
-            LogActivity::addToLog("Modification", $message, get_class($recommandation), $recommandation->id);
+            //LogActivity::addToLog("Modification", $message, get_class($recommandation), $recommandation->id);
 
             DB::commit();
 

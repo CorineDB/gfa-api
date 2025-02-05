@@ -86,7 +86,7 @@ class CritereDeGouvernanceService extends BaseService implements CritereDeGouver
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($critereDeGouvernance));
 
-            LogActivity::addToLog("Enrégistrement", $message, get_class($critereDeGouvernance), $critereDeGouvernance->id);
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($critereDeGouvernance), $critereDeGouvernance->id);
 
             DB::commit();
 
@@ -117,7 +117,7 @@ class CritereDeGouvernanceService extends BaseService implements CritereDeGouver
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($critereDeGouvernance));
 
-            LogActivity::addToLog("Modification", $message, get_class($critereDeGouvernance), $critereDeGouvernance->id);
+            //LogActivity::addToLog("Modification", $message, get_class($critereDeGouvernance), $critereDeGouvernance->id);
 
             DB::commit();
 
