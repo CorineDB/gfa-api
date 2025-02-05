@@ -10,6 +10,7 @@ use App\Notifications\SuiviNotification;
 use App\Traits\Helpers\HelperTrait;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
 
 class Suivi extends Command
 {
@@ -77,6 +78,7 @@ class Suivi extends Command
                         event(new NewNotification($this->formatageNotification($notification, $user)));
 
                         SuiviJob::dispatch($user, 'financier')->delay(10);
+                        Log::info('command:suivi : SuiviJob dispatched for user ' . $user);
                     }
                 }
 

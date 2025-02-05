@@ -9,6 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
@@ -20,7 +21,7 @@ class SuiviJob implements ShouldQueue
 
     protected $type;
 
-    public $timeout = 0;
+    public $timeout = 300;
 
     /**
      * Create a new job instance.
@@ -57,6 +58,7 @@ class SuiviJob implements ShouldQueue
         }
 
         $when = now()->addSeconds(15);
+        Log::info('SuiviJob dispatched for user ' . $this->user);
 
         Mail::to($this->user->email)->later($when, $mailer);
     }
