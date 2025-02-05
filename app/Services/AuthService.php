@@ -702,6 +702,8 @@ class AuthService extends BaseService implements AuthServiceInterface
             // Si l'utilisateur n'existe pas envoyé une reponse avec comme status code 404
             if(!$utilisateur) throw new Exception("Utilisateur inconnu", 500);
 
+            dd($utilisateur);
+
             $utilisateur->account_verification_request_sent_at = Carbon::now();
 
             $utilisateur->token = str_replace(['/', '\\', '.'], '', Hash::make( $utilisateur->secure_id . Hash::make($utilisateur->email) . Hash::make(Hash::make(strtotime($utilisateur->account_verification_request_sent_at)))));
