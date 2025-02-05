@@ -3,15 +3,12 @@
 namespace App\Jobs;
 
 use App\Mail\SuiviEmail;
-use App\Notifications\SuiviNotification;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Notification;
 
 class SuiviJob implements ShouldQueue
 {
@@ -57,11 +54,9 @@ class SuiviJob implements ShouldQueue
             $mailer = new SuiviEmail($details);
         }
 
-        $when = now();//->addSeconds(15);
-        Log::info('SuiviJob dispatched for user ' . $this->type ." ". $this->user->email);
+        $when = now()->addSeconds(15);
 
         if(!empty($this->user->email)){
-            Log::info('Mail::to ' . $this->user->email);
             Mail::to($this->user->email)->later($when, $mailer);
         }
     }
