@@ -21,7 +21,6 @@ class Kernel extends ConsoleKernel
         Commands\Demarrage::class,
         Commands\RappelCron::class,
         Commands\Rapport::class,
-        //Commands\Suivi::class,
     ];
     /**
      * Define the application's command schedule.
@@ -44,9 +43,6 @@ class Kernel extends ConsoleKernel
        $schedule->command('command:rapport')->everyFifteenMinutes();
 
         $schedule->command('command:rappel')->everyMinute();
-       // $schedule->command('command:suivi')->everyFiveMinutes();
-
-        // $schedule->command('command:suivi')->everyMinute();
 
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
 
