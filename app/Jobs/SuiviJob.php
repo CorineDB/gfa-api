@@ -1,6 +1,6 @@
 <?php
 
-//namespace App\Jobs;
+namespace App\Jobs;
 
 use App\Mail\SuiviEmail;
 use Illuminate\Bus\Queueable;
