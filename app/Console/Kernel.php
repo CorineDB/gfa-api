@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
 
-        $schedule->command('check-sms-provider:account-balance')->everySixHours();
+        //$schedule->command('check-sms-provider:account-balance')->everySixHours();
 
         $schedule->command('change-statut:action-a-mener')->dailyAt('00:00');
 
