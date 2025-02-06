@@ -11,6 +11,7 @@ use App\Models\Organisation;
 use App\Models\UniteeDeGestion;
 use App\Repositories\SurveyRepository;
 use App\Repositories\SurveyFormRepository;
+use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\SurveyServiceInterface;
 use Exception;
@@ -29,6 +30,7 @@ use Illuminate\Support\Facades\Mail;
  */
 class SurveyService extends BaseService implements SurveyServiceInterface
 {
+    use HelperTrait;
 
     /**
      * @var service
@@ -144,13 +146,15 @@ class SurveyService extends BaseService implements SurveyServiceInterface
             //LogActivity::addToLog("Enrégistrement", $message, get_class($survey), $survey->id);
 
             DB::commit();
+            $url = $this->getUserTypeAppUrl($survey->surveyable->user);
 
-            $url = config("app.url");
+            /* $url = config("app.url");
 
             // If the URL is localhost, append the appropriate IP address and port
             if (strpos($url, 'localhost') == false) {
                 $url = 'http://192.168.1.16:3000';
-            }
+                $url = $this->getUserTypeAppUrl($survey->user);
+            } */
 
             $details['view'] = "emails.mail_template";
 

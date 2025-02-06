@@ -4,6 +4,8 @@ namespace App\Traits\Helpers;
 
 use App\Models\Activite;
 use App\Models\Fichier;
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -196,5 +198,33 @@ trait HelperTrait
                 }); */
             })
             ->exists(); // Return true if such a range exists
+    }
+
+    /**
+     * Get user app url
+     * 
+     * @param User $user
+     * 
+     * @return string user app url
+     */
+    public function getUserTypeAppUrl(User $user):string{
+
+        $user_app_url = config("app.url");
+
+        // If the URL is localhost, append the appropriate IP address and port
+        if (strpos($user_app_url, 'localhost') == false) {
+
+            if($user->profilable_type == Organisation::class){
+                $user_app_url = config("app.organisation_url");    
+            }
+            elseif($user->profilable_type == UniteeDeGestion::class){
+                $user_app_url = config("app.ug_url");
+            }
+            elseif(strpos($user->type, 'admin') == true) {
+                $user_app_url = config("app.admin_url");                    
+            }
+        }
+
+        return $user_app_url;
     }
 }

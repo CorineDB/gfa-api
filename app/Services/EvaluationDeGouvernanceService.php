@@ -205,7 +205,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             // If the URL is localhost, append the appropriate IP address and port
             if (strpos($url, 'localhost') == false) {
-                $url = env("ORG_APP_URL");
+                $url = config("app.organisation_url");
             }
 
             if (Auth::user()->hasRole('administrateur')) {
@@ -1005,7 +1005,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     // If the URL is localhost, append the appropriate IP address and port
                     if (strpos($url, 'localhost') == false) {
-                        $url = env("ORG_APP_URL");
+                        $url = config("app.organisation_url");
                     }
 
                     $details['view'] = "emails.auto-evaluation.rappel_soumission_participant";
@@ -1042,7 +1042,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     
                         // If the URL is localhost, append the appropriate IP address and port
                         if (strpos($url, 'localhost') == false) {
-                            $url = env("ORG_APP_URL");
+                            $url = config("app.organisation_url");
                         }
 
                         $message = "Bonjour,\n\n" .

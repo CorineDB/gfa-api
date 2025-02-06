@@ -2,11 +2,13 @@
 
 namespace App\Http\Resources\gouvernance;
 
+use App\Traits\Helpers\HelperTrait;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SurveyResource extends JsonResource
 {
+    use HelperTrait;
     /**
      * Transform the resource into an array.
      *
@@ -20,7 +22,7 @@ class SurveyResource extends JsonResource
 
         // If the URL is localhost, append the appropriate IP address and port
         if (strpos($url, 'localhost') == false) {
-            $url = 'http://192.168.1.16:3000';
+            $url = $this->getUserTypeAppUrl($this->surveyable->user);
         }
 
         return [

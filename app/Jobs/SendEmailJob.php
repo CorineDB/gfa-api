@@ -5,8 +5,11 @@ namespace App\Jobs;
 use App\Mail\AnoEmail;
 use App\Mail\ConfirmationDeCompteEmail;
 use App\Mail\ReinitialisationMotDePasseEmail;
+use App\Models\Organisation;
+use App\Models\UniteeDeGestion;
 use App\Models\User;
 use App\Notifications\AnoNotification;
+use App\Traits\Helpers\HelperTrait;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -21,6 +24,8 @@ use Illuminate\Support\Facades\Notification;
 class SendEmailJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    use HelperTrait;
 
     private $user;
     private $type;
@@ -47,9 +52,10 @@ class SendEmailJob implements ShouldQueue
     {
         try {
 
-
             $details = [];
             $data = [];
+
+            $lien = $this->getUserTypeAppUrl($this->user);
 
             if ($this->type == "confirmation-compte") {
                 $details['view'] = "emails.auth.confirmation_compte";
@@ -59,7 +65,7 @@ class SendEmailJob implements ShouldQueue
                     "introduction" => "Voici vos identifiant de connexion",
                     "identifiant" => $this->user->email,
                     "password" => $this->password,
-                    "lien" => config("app.url"),
+                    "lien" => $lien,
                 ];
                 $mailer = new ConfirmationDeCompteEmail($details);
             } elseif ($this->type == "confirmation-de-compte") {
@@ -69,7 +75,7 @@ class SendEmailJob implements ShouldQueue
                 $details['content'] = [
                     "greeting" => "Bienvenu Mr/Mme " . $this->user->nom,
                     "introduction" => "Voici votre lien d'activation de votre compte",
-                    "lien" => config("app.url") . "/activation/" . $this->user->token,
+                    "lien" => $lien . "/activation/" . $this->user->token,
                 ];
                 $mailer = new ConfirmationDeCompteEmail($details);
             } elseif ($this->type == "reinitialisation-mot-de-passe") {
@@ -79,12 +85,10 @@ class SendEmailJob implements ShouldQueue
                 $details['content'] = [
                     "greeting" => "Bienvenu Mr/Mme " . $this->user->nom,
                     "introduction" => "Voici votre lien de réinitialisation",
-                    "lien" => config("app.url") . "/reset_password/" . $this->user->token,
+                    "lien" => $lien . "/reset_password/" . $this->user->token,
                 ];
 
-                Log::info('reset-password : before' . $details);
                 $mailer = new ReinitialisationMotDePasseEmail($details);
-                Log::info('reset-password : after ' . $details);
             } elseif ($this->type == "rappel-ano") {
                 $details['view'] = "emails.ano.rappel";
                 $details['subject'] = "Rappel de traitement d'une demande d'ano";
@@ -113,11 +117,12 @@ class SendEmailJob implements ShouldQueue
             }
 
             $when = now()->addSeconds(5);
-
+            
             Mail::to($this->user)->later($when, $mailer);
         } catch (\Throwable $th) {
-            
-            throw new Exception("Error Processing Request : ". $details['subject'], 1);
+            Log::error($details['subject'] . ' : ' . $th->getMessage());
+            throw new Exception("Error Processing Request : ". json_encode($details['subject']. " : ". $th->getMessage()), 1);
+            //throw new Exception("Error Processing Request : ". $details['subject'], 1);
         }
     }
 }
