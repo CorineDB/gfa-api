@@ -58,7 +58,7 @@ class ChangeStatutEvaluations extends Command
 
         // If the URL is localhost, append the appropriate IP address and port
         if (strpos($url, 'localhost') == false) {
-            $url = env("ORG_APP_URL");
+            $url = config("app.organisation_url");
         }
 
         // Fetch up to $maxUpdates evaluations that should start today and update their status to '0' (demarrage)
