@@ -52,7 +52,7 @@ class CheckSmsProviderAccountBalance extends Command
 
         if ($balance <= 500) {
             // Send both Email and SMS for Critical Alert
-            $this->sendCriticalAlert($balance, "Critical Alert: Your SMS balance is critically low. Please top-up ASAP!");
+            $this->sendCriticalAlert($balance, "Critical Alert: Your SMS balance is critically low : $balance. Please top-up ASAP!");
         } elseif ($balance <= 1000) {
             $this->sendLowBalanceAlert("Warning: Your SMS balance is getting low. Please consider topping up soon.", 'warning');
         } elseif ($balance <= 2500) {
