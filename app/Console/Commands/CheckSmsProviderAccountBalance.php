@@ -50,14 +50,14 @@ class CheckSmsProviderAccountBalance extends Command
 
         $balance = $this->getSmsBalance();  // Assume this function fetches the current SMS balance
 
-       /*  if ($balance <= 500) {
+        if ($balance <= 500) {
             // Send both Email and SMS for Critical Alert
             $this->sendCriticalAlert($balance, "Critical Alert: Your SMS balance is critically low : $balance. Please top-up ASAP!");
         } elseif ($balance <= 1000) {
             $this->sendLowBalanceAlert("Warning: Your SMS balance is getting low. Please consider topping up soon.", 'warning');
         } elseif ($balance <= 2500) {
             $this->sendLowBalanceAlert("Warning: Your SMS balance is getting low. Please consider topping up soon.", 'warning');
-        } */
+        }
 
         return 0;
     }
@@ -86,7 +86,7 @@ class CheckSmsProviderAccountBalance extends Command
         // Send SMS Alert (Assuming $this->sendSms is the function to send an SMS)
         $phoneNumbers = explode(',', env('ALERT_SMS', '2290196970603,2290162004867')); // Add phone numbers here
 
-        //SmsProviderAlertAccountBalanceJob::dispatch($message,'','',$phoneNumbers)->delay(30);
+        SmsProviderAlertAccountBalanceJob::dispatch($message,'','',$phoneNumbers)->delay(30);
 
         Log::notice("Alert sms sent to ".json_encode($phoneNumbers));
     }
