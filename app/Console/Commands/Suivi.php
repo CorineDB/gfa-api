@@ -60,7 +60,7 @@ class Suivi extends Command
 
             //if(($financierConfig->debutSuivi - date('Y-m-d'))%$financierConfig->frequence == 0)
             {
-                /* $allUsers = User::all();
+                $allUsers = User::all();
                 foreach($allUsers as $user)
                 {
                     if($user->hasPermissionTo('alerte-suivi-financier'))
@@ -78,7 +78,7 @@ class Suivi extends Command
 
                         SuiviJob::dispatch($user, 'financier')->delay(10);
                     }
-                } */
+                }
             }
         }
 
@@ -93,7 +93,7 @@ class Suivi extends Command
 
             //if(($indicateurConfig->debutSuivi - date('Y-m-d')) % $indicateurConfig->frequence == 0)
             {
-                /* $allUsers = User::all();
+                $allUsers = User::all();
                 foreach($allUsers as $user)
                 {
                     if($user->hasPermissionTo('alerte-suivi-indicateur'))
@@ -111,7 +111,7 @@ class Suivi extends Command
 
                         SuiviJob::dispatch($user, 'indicateur')->delay(10);
                     }
-                } */
+                }
             }
         }
     }
