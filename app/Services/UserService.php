@@ -92,7 +92,7 @@ class UserService extends BaseService implements UserServiceInterface
                 $users = User::where('programmeId', $programme->id)->
                            where('profilable_type', "App\\Models\\Administrateur")->
                            where('profilable_id', 0)->
-                           where('id', '!=', $user->id)->
+                           //where('id', '!=', $user->id)->
                            /*w/here('statut', '>', 0)->
                            where('emailVerifiedAt', '!=', null)->*/
                            orderBy('nom', 'asc')->
@@ -157,6 +157,7 @@ class UserService extends BaseService implements UserServiceInterface
             }
             else{
                 $attributs = array_merge($attributs, ['profilable_type' => "App\\Models\\Administrateur"]);
+                dd($attributs);
                 $utilisateur->teamMembers()->create($attributs);
             }
 
