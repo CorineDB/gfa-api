@@ -147,6 +147,7 @@ class UserService extends BaseService implements UserServiceInterface
             }
             else{
                 $attributs = array_merge($attributs, ['programmeId' => auth()->user()->programmeId, 'profilable_type' => "App\\Models\\Administrateur"]);
+                dd($attributs);
                 $utilisateur->teamMembers()->create($attributs);
             }
 
