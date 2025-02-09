@@ -218,7 +218,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             if(!$utilisateur) throw new Exception("Compte utilisateur introuvable", 400);
 
-            if(User::where('contact', $attributs['contact'],)->where('id', '!=', $utilisateur->id)->count()) throw new Exception("Ce contact est déja utilisé", 400);
+            if(User::where('contact', $attributs['contact'])->where('id', '!=', $utilisateur->id)->count()) throw new Exception("Ce contact est déja utilisé", 400);
 
             $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programmeId]);
 
