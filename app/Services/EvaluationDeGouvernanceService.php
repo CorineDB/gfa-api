@@ -69,7 +69,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $query->where('organisationId', Auth::user()->profilable->id);
                 })->get();
             } else {
-                dd(Auth::user()->programme);
+                dd(Auth::user()->programme->evaluations_de_gouvernance);
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance;
             }
