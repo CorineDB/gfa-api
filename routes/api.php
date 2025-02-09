@@ -1033,6 +1033,5 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             });
         });
     });
-
     
 });
