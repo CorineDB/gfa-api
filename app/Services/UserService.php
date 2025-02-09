@@ -144,7 +144,7 @@ class UserService extends BaseService implements UserServiceInterface
                 $utilisateur->team()->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
             }
             else{
-                $utilisateur->team()->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
+                $utilisateur->team()->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId, 'profilable_type' => NULL]));
             }
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
