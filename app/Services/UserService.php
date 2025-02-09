@@ -100,7 +100,7 @@ class UserService extends BaseService implements UserServiceInterface
                             get(); */
                 $users = User::whereHas("team", function($query){
                     $query->where('profilable_id', 0)->where('profilable_type', "App\\Models\\Administrateur");
-                })->orderBy('nom', 'asc')->get();
+                })->where('programmeId', $programme->id)->orderBy('nom', 'asc')->get();
             }
 
             else
@@ -109,10 +109,19 @@ class UserService extends BaseService implements UserServiceInterface
                            where('profilable_type', $user->profilable_type)->
                            where('profilable_id', $user->profilable_id)->
                            where('id', '!=', $user->id)->
-                           /*w/here('statut', '>', 0)->
-                           where('emailVerifiedAt', '!=', null)->*/
+                           ///*where('statut', '>', 0)->
+                           //where('emailVerifiedAt', '!=', null)->*/
                            orderBy('nom', 'asc')->
                            get();
+                $users = User::whereHas("team", function($query) use ($user){
+                    $query->where('profilable_type', $user->profilable_type)->
+                    where('profilable_id', $user->profilable_id);
+                })->where('programmeId', $programme->id)
+                    ->where('profilable_type', $user->profilable_type)
+                    ->where('profilable_id', $user->profilable_id)
+                    ->where('id', '!=', $user->id)
+                    ->where('programmeId', $programme->id)
+                    ->orderBy('nom', 'asc')->get();
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => TeamMemberResource::collection($users), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
