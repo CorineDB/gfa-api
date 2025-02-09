@@ -51,7 +51,7 @@ class TeamMember extends Model
     protected static function boot() {
         parent::boot();
 
-        static::saving(function($teamMember) {
+        static::saved(function($teamMember) {
 
             dd($teamMember);
 
