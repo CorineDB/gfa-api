@@ -49,7 +49,7 @@ class PrincipeDeGouvernanceService extends BaseService implements PrincipeDeGouv
         {
             $principes_de_gouvernance = collect([]);
             
-            if(!Auth::user()->hasRole('administrateur')){
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $principes_de_gouvernance = Auth::user()->programme->principes_de_gouvernance;
             }
 

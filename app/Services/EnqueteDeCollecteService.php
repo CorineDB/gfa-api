@@ -53,7 +53,7 @@ class EnqueteDeCollecteService extends BaseService implements EnqueteDeCollecteS
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
+            if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $enquetesDeCollecte = $this->repository->all();
             }
             else{

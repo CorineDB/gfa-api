@@ -43,7 +43,7 @@ class TypeDeGouvernanceService extends BaseService implements TypeDeGouvernanceS
         {
             $types_de_gouvernance = collect([]);
             
-            if(!Auth::user()->hasRole('administrateur')){
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $types_de_gouvernance = Auth::user()->programme->types_de_gouvernance;
             }
 

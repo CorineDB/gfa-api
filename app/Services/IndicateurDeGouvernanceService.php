@@ -45,7 +45,7 @@ class IndicateurDeGouvernanceService extends BaseService implements IndicateurDe
 
             $indicateurs_de_gouvernance = collect([]);
             
-            if(!Auth::user()->hasRole('administrateur')){
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $indicateurs_de_gouvernance = Auth::user()->programme->indicateurs_de_gouvernance;
             }
 

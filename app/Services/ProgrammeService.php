@@ -1452,7 +1452,6 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
         try
         {
-
             $rapport = TemplateRapport::findByKey($id);
 
             if(!$rapport) throw new Exception( "Ce rapport n'existe pas", 404);

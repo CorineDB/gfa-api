@@ -61,7 +61,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
         try {
-            if (Auth::user()->hasRole('administrateur')) {
+            if (Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur") {
                 $evaluationsDeGouvernance = $this->repository->all();
             } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance()->whereHas('organisations', function ($query) {
@@ -71,6 +71,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance;
             }
+
+
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => EvaluationsDeGouvernanceResource::collection($evaluationsDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -208,7 +210,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $url = config("app.organisation_url");
             }
 
-            if (Auth::user()->hasRole('administrateur')) {
+            if ((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")) {
                 $group_soumissions = [];
             } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
 
@@ -307,7 +309,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            if (Auth::user()->hasRole('administrateur')) {
+            if ((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")) {
                 $fiches_de_synthese = [];
             } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
 

@@ -57,7 +57,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $soumissions = collect([]);
 
-            if (!Auth::user()->hasRole('administrateur')) {
+            if (!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")) {
                 $soumissions = Auth::user()->programme->soumissions;
             }
 

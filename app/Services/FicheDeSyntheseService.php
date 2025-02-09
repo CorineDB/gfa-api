@@ -40,7 +40,7 @@ class FicheDeSyntheseService extends BaseService implements FicheDeSyntheseServi
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
+            if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $fiches_de_synthese = $this->repository->all();
             }
             else{

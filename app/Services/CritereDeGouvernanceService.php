@@ -43,7 +43,7 @@ class CritereDeGouvernanceService extends BaseService implements CritereDeGouver
         {
             $criteres_de_gouvernance = collect([]);
             
-            if(!Auth::user()->hasRole('administrateur')){
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $criteres_de_gouvernance = Auth::user()->programme->criteres_de_gouvernance;
             }
 

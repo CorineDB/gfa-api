@@ -78,7 +78,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-            if($utilisateur->type === 'administrateur' || get_class($utilisateur->profilable) !== UniteeDeGestion::class){
+            if($utilisateur->type === 'administrateur' || ($utilisateur->hasRole('administrateur') || $utilisateur->profilable_type == "App\\Models\\Administrateur") || get_class($utilisateur->profilable) !== UniteeDeGestion::class){
                 return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
@@ -200,7 +200,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-            if($utilisateur->type === 'administrateur' || get_class($utilisateur->profilable) !== Organisation::class){
+            if($utilisateur->type === 'administrateur' || ($utilisateur->hasRole('administrateur') || $utilisateur->profilable_type == "App\\Models\\Administrateur") || get_class($utilisateur->profilable) !== Organisation::class){
                 return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
@@ -322,7 +322,7 @@ class AuthService extends BaseService implements AuthServiceInterface
 
             }
 
-            if($utilisateur->type !== 'administrateur'){
+            if($utilisateur->type !== 'administrateur' && !($utilisateur->hasRole('administrateur') || $utilisateur->profilable_type == "App\\Models\\Administrateur")){
                 return response()->json(['statut' => 'success', 'message' => 'Action Forbidden', 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
@@ -336,7 +336,6 @@ class AuthService extends BaseService implements AuthServiceInterface
             // Vérifier si le compte de l'utilisateur est activé ou pas
             if (!$utilisateur->emailVerifiedAt)
             {
-
                 throw new Exception("Veuillez confimer votre compte", 403);
 
                 // Enrégistrement de la date et l'heure de vérification du compte
