@@ -39,7 +39,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution' => $this->pourcentage_evolution,
             'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
 
-            $this->mergeWhen(((Auth::user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class), function(){
+            /* $this->mergeWhen(((Auth::user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class), function(){
                 return [
                     'pourcentage_evolution_des_soumissions_de_perception' => $this->pourcentage_evolution_des_soumissions_de_perception,
                 ];
@@ -69,7 +69,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
             'formulaire_perception_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'perception')->first()->secure_id,
-            'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance),
+            'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance), */
+
             /*
                 $this->formulaires_de_gouvernance->map(function($formulaire_de_gouvernance){
                     return [
@@ -82,7 +83,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     ];
                 }),
             */
-            'organisations' => $this->organisations->map(function($organisation){
+            
+            /* 'organisations' => $this->organisations->map(function($organisation){
                 return [
                     "id"                    => $organisation->secure_id,
                     'nom'                   => optional($organisation->user)->nom ?? null,
@@ -92,7 +94,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal
                 ];
-            })
+            }) */
         ];
     }
 }
