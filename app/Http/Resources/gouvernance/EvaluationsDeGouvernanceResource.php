@@ -85,7 +85,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                 }),
             */
 
-            /* 'organisations' => $this->organisations->map(function($organisation){
+            'organisations' => $this->organisations->map(function($organisation){
                 return [
                     "id"                    => $organisation->secure_id,
                     'nom'                   => optional($organisation->user)->nom ?? null,
@@ -95,7 +95,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal
                 ];
-            }) */
+            }) 
         ];
     }
 }
