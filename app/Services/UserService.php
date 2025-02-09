@@ -157,8 +157,7 @@ class UserService extends BaseService implements UserServiceInterface
             }
             else{
                 $attributs = array_merge($attributs, ['profilable_type' => "App\\Models\\Administrateur"]);
-                $team_member = $utilisateur->teamMembers()->fill($attributs);
-                dd($team_member);
+                $utilisateur->teamMembers()->create($attributs);
             }
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
@@ -179,7 +178,6 @@ class UserService extends BaseService implements UserServiceInterface
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new TeamMemberResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
-
             DB::rollBack();
 
             //throw $th;
@@ -227,7 +225,7 @@ class UserService extends BaseService implements UserServiceInterface
                 $team = $utilisateur->team->fill($attributs);
             }
             else{
-                $team = TeamMember::where('profilable_type', NULL)->where('profilable_id', $utilisateur->id)->first();
+                $team = TeamMember::where('profilable_type', "App\\Models\\Administrateur")->where('profilable_id', 0)->first();
                 $team = $team->fill($attributs);
             }
 
