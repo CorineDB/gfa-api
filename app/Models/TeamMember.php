@@ -50,12 +50,6 @@ class TeamMember extends Model
 
     protected static function boot() {
         parent::boot();
-
-        static::saving(function($teamMember) {
-
-            dd($teamMember);
-
-        });
     }
 
     public function profilable()
