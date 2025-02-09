@@ -114,6 +114,7 @@ class UserService extends BaseService implements UserServiceInterface
 
     public function create(array $attributs) : JsonResponse
     {
+        DB::beginTransaction();
         try {
 
             $programmeId = Auth::user()->programme->id;
@@ -159,9 +160,16 @@ class UserService extends BaseService implements UserServiceInterface
             //Envoyer les identifiants de connexion à l'utilisateur via son email
             dispatch(new SendEmailJob($utilisateur, "confirmation-de-compte", $password))->delay(now()->addSeconds(15));
 
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($type), $type->id);
+
+            DB::commit();
+
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new TeamMemberResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
+
+            DB::rollBack();
+
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -170,6 +178,8 @@ class UserService extends BaseService implements UserServiceInterface
 
     public function update($utilisateur, array $attributs): JsonResponse
     {
+        DB::beginTransaction();
+
         try {
 
             $roles = [];
@@ -211,9 +221,16 @@ class UserService extends BaseService implements UserServiceInterface
 
             $team->save();
 
+            //LogActivity::addToLog("Mis a jour", $message, get_class($utilisateur), $utilisateur->id);
+
+            DB::commit();
+
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new TeamMemberResource($utilisateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         } catch (\Throwable $th) {
+
+            DB::rollBack();
+
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -222,6 +239,8 @@ class UserService extends BaseService implements UserServiceInterface
 
     public function createLogo(array $attributs) : JsonResponse
     {
+        DB::beginTransaction();
+
         try {
 
             $user = Auth::user();
@@ -237,6 +256,8 @@ class UserService extends BaseService implements UserServiceInterface
                 $old_logo->delete();
             }
 
+            //LogActivity::addToLog("Enregistrement", $message, get_class($old_logo), $old_logo->id);
+
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $user, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -250,6 +271,8 @@ class UserService extends BaseService implements UserServiceInterface
 
     public function createPhoto(array $attributs) : JsonResponse
     {
+        DB::beginTransaction();
+        
         try {
 
             $user = Auth::user();
@@ -264,6 +287,8 @@ class UserService extends BaseService implements UserServiceInterface
 
                 $old_photo->delete();
             }
+
+            //LogActivity::addToLog("Enregistrement", $message, get_class($user), $user->id);
 
             DB::commit();
 
@@ -330,6 +355,8 @@ class UserService extends BaseService implements UserServiceInterface
             if($notification == null) throw new Exception("Notification introuvable", 400);
 
             $notification->delete();
+
+            //LogActivity::addToLog("Suppression", $message, get_class($notification), $notification->id);
 
             DB::commit();
 
