@@ -87,7 +87,7 @@ class UserService extends BaseService implements UserServiceInterface
             $user = Auth::user();
             $programme = $user->programme;
 
-            if($user->type == 'administrateur') //$users = User::all();
+            if($user->type == 'administrateur' || ($user->hasRole('administrateur') || $user->profilable_type == "App\\Models\\Administrateur")) //$users = User::all();
             {
                 /* $users = User::where('programmeId', $programme->id)->
                             where('profilable_id', 0)->
@@ -159,7 +159,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             $attributs = array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'roleId' => $role->id, 'profilable_type' => Auth::user()->profilable_type, 'profilable_id' => Auth::user()->profilable_id]);
 
-            if((auth()->user()->type == 'admin') || (auth()->user()->type == 'administrateur')){
+            if((auth()->user()->type == 'admin') || (auth()->user()->type == 'administrateur') || (Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $attributs = array_merge($attributs, ['profilable_type' => "App\\Models\\Administrateur"]);
             }
 

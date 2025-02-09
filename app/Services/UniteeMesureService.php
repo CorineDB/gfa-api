@@ -42,7 +42,7 @@ class UniteeMesureService extends BaseService implements UniteeMesureServiceInte
         {
             $unitees_de_mesure = collect([]);
 
-            if(!Auth::user()->hasRole('administrateur')){
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $unitees_de_mesure = Auth::user()->programme->unitees_de_mesure;
             }

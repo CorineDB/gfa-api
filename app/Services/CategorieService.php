@@ -44,7 +44,7 @@ class CategorieService extends BaseService implements CategorieServiceInterface
         {
             $categories = collect([]);
             
-            if(!Auth::user()->hasRole('administrateur')){
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $categories = Auth::user()->programme->categories;
             }
 

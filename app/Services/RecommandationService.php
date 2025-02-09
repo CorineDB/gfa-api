@@ -42,7 +42,7 @@ class RecommandationService extends BaseService implements RecommandationService
     {
         try
         {
-            if(Auth::user()->hasRole('administrateur')){
+            if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 $recommandations = $this->repository->all();
             } 
             else if ((Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class))) {
