@@ -90,13 +90,14 @@ class UserService extends BaseService implements UserServiceInterface
             if($user->type == 'administrateur') //$users = User::all();
             {
                 $users = User::where('programmeId', $programme->id)->
-                           where('profilable_type', "App\\Models\\Administrateur")->
-                           where('profilable_id', 0)->
-                           //where('id', '!=', $user->id)->
-                           /*w/here('statut', '>', 0)->
-                           where('emailVerifiedAt', '!=', null)->*/
-                           orderBy('nom', 'asc')->
-                           get();
+                            where('profilable_id', 0)->
+                            where('profilable_type', "App\\Models\\Administrateur")->
+                            orWhere('profilable_type', 0)->
+                            //where('id', '!=', $user->id)->
+                            /*w/here('statut', '>', 0)->
+                            where('emailVerifiedAt', '!=', null)->*/
+                            orderBy('nom', 'asc')->
+                            get();
             }
 
             else
@@ -146,19 +147,16 @@ class UserService extends BaseService implements UserServiceInterface
 
             $attributs = array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'roleId' => $role->id, 'profilable_type' => Auth::user()->profilable_type, 'profilable_id' => Auth::user()->profilable_id]);
 
+            if((auth()->user()->type == 'admin') || (auth()->user()->type == 'administrateur')){
+                $attributs = array_merge($attributs, ['profilable_type' => "App\\Models\\Administrateur"]);
+            }
+
             $utilisateur = $this->repository->fill($attributs);
 
             $utilisateur->save();
 
             $utilisateur->roles()->attach($roles);
-
-            if((auth()->user()->type != 'admin') && (auth()->user()->type != 'administrateur')){
-                $utilisateur->teamMembers()->create($attributs);
-            }
-            else{
-                $attributs = array_merge($attributs, ['profilable_type' => "App\\Models\\Administrateur"]);
-                $utilisateur->teamMembers()->create($attributs);
-            }
+            $utilisateur->teamMembers()->create($attributs);
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
 
