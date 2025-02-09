@@ -232,6 +232,8 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->roles()->attach($roles);
 
+            dd($utilisateur->team);
+
             if(($utilisateur->type != 'admin') || ($utilisateur->type != 'administrateur')){
                 $team = $utilisateur->team->fill($attributs);
             }
