@@ -23,6 +23,7 @@ class TeamMemberResource extends JsonResource
             "contact" => $this->contact,
             "email" => $this->email,
             "type" => $this->type,
+            "team" => $this->team,
             "programmeId" => $this->programme->secure_id,
             "poste" => $this->poste,
             "roles" => RoleResource::collection($this->roles->load('permissions')),
