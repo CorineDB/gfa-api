@@ -24,7 +24,7 @@ class EvaluationDeGouvernance extends Model
 
     protected $casts = ['statut'  => 'integer', 'debut'  => 'datetime', 'fin'  => 'datetime', 'annee_exercice' => 'integer', 'objectif_attendu' => 'double'];
 
-    protected $appends = ['pourcentage_evolution', 'pourcentage_evolution_des_soumissions_factuel', 'pourcentage_evolution_des_soumissions_de_perception', 'total_soumissions_factuel', 'total_soumissions_de_perception', 'total_soumissions_factuel_non_demarrer', 'total_soumissions_de_perception_non_demarrer', 'total_soumissions_factuel_terminer', 'total_soumissions_de_perception_terminer', 'total_participants_evaluation_factuel', 'total_participants_evaluation_de_perception', 'options_de_reponse_stats', 'organisations_ranking'];
+    //protected $appends = ['pourcentage_evolution', 'pourcentage_evolution_des_soumissions_factuel', 'pourcentage_evolution_des_soumissions_de_perception', 'total_soumissions_factuel', 'total_soumissions_de_perception', 'total_soumissions_factuel_non_demarrer', 'total_soumissions_de_perception_non_demarrer', 'total_soumissions_factuel_terminer', 'total_soumissions_de_perception_terminer', 'total_participants_evaluation_factuel', 'total_participants_evaluation_de_perception', 'options_de_reponse_stats', 'organisations_ranking'];
 
     protected static function boot()
     {
