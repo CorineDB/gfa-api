@@ -13,6 +13,7 @@ use App\Models\Ano;
 use App\Models\Password;
 use App\Models\Projet;
 use App\Models\ReponseAno;
+use App\Models\TeamMember;
 use App\Models\User;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
@@ -140,7 +141,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->roles()->attach($roles);
 
-            if(($utilisateur->type != 'admin') && ($utilisateur->type === 'administrateur')){
+            if(($utilisateur->type != 'admin') || ($utilisateur->type != 'administrateur')){
                 $utilisateur->team()->create(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
             }
             else{
@@ -200,7 +201,13 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->roles()->attach($roles);
 
-            $team = $utilisateur->team->fill($attributs);
+            if(($utilisateur->type != 'admin') || ($utilisateur->type != 'administrateur')){
+                $team = $utilisateur->team->fill($attributs);
+            }
+            else{
+                $team = TeamMember::where('profilable_type', NULL)->where('profilable_id', $utilisateur->id)->first();
+                $team = $team->fill($attributs);
+            }
 
             $team->save();
 
