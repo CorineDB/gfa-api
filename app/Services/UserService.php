@@ -270,7 +270,9 @@ class UserService extends BaseService implements UserServiceInterface
 
                 unlink(public_path("storage/" . $old_logo->chemin));
 
-                $old_logo->delete();
+                if($old_logo){
+                    $old_logo->delete();
+                }
             }
 
             //LogActivity::addToLog("Enregistrement", $message, get_class($old_logo), $old_logo->id);
@@ -302,7 +304,9 @@ class UserService extends BaseService implements UserServiceInterface
 
                 unlink(public_path("storage/" . $old_photo->chemin));
 
-                $old_photo->delete();
+                if($old_photo){
+                    $old_photo->delete();
+                }
             }
 
             //LogActivity::addToLog("Enregistrement", $message, get_class($user), $user->id);

@@ -174,7 +174,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                     unlink(public_path("storage/" . $old_image));
 
-                    $old_image->delete();
+                    //$old_image->delete();
                 }
             }
 
@@ -339,7 +339,9 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     {
                         unlink(public_path("storage/" . $old_image->chemin));
 
-                        $old_image->delete();
+                        if($old_image){
+                            $old_image->delete();
+                        }
                     }
                 }
             }
@@ -384,7 +386,9 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                         {
                             unlink(public_path("storage/" . $pieceJointe->chemin));
     
-                            $pieceJointe->delete();
+                            if($pieceJointe){
+                                $pieceJointe->delete();
+                            }
                         }
                     }
                 }

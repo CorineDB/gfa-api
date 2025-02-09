@@ -235,8 +235,10 @@ class ReponseAnoService extends BaseService implements ReponseAnoServiceInterfac
                 if($old_document != null){
 
                     Storage::disk('public')->delete($old_document->chemin);
-
-                    $old_document->delete();
+ 
+                    if($old_document){
+                        $old_document->delete();
+                    }
                 }
             }
 

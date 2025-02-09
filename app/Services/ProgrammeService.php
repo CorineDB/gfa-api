@@ -1424,7 +1424,9 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             $rapport->save();
 
             if(isset($attributs['document'])){
-                $rapport->preuve->delete();
+                if($rapport->preuve){
+                    $rapport->preuve->delete();
+                }
                 $this->storeFile($attributs['document'], 'rapports/preuves', $rapport, null, 'preuves');
             }
 
@@ -1457,7 +1459,9 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
             $preuve = $rapport->preuve;
             $rapport->delete();
-            $preuve->delete();
+            if($preuve){
+                $preuve->delete();
+            }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
