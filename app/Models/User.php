@@ -168,19 +168,9 @@ class User extends Authenticatable
         return $this->belongsToMany(MissionDeControle::class, 'mission_de_controle_users', 'userId', 'missionDeControleId');
     }
 
-    /* public function team()
-    {
-        return $this->hasOne(TeamMember::class, 'userId');
-    } */
-
     public function team()
     {
-        return $this->morphOne(TeamMember::class, 'profilable');
-    }
-
-    public function teamMembers()
-    {
-        return $this->hasMany(TeamMember::class, 'userId');
+        return $this->hasOne(TeamMember::class, 'userId');
     }
 
     public function scopeInstitutions($query)

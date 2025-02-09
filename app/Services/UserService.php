@@ -98,9 +98,9 @@ class UserService extends BaseService implements UserServiceInterface
                             where('emailVerifiedAt', '!=', null)->*/
                             /* orderBy('nom', 'asc')->
                             get(); */
-                $users = User::with("team")/* whereHas("team", function($query){
+                $users = TeamMember::whereHas("team", function($query){
                     $query->where('profilable_id', 0)->where('profilable_type', "App\\Models\\Administrateur");
-                }) */->orderBy('nom', 'asc')->get();
+                })->orderBy('nom', 'asc')->get();
             }
 
             else
@@ -159,7 +159,8 @@ class UserService extends BaseService implements UserServiceInterface
             $utilisateur->save();
 
             $utilisateur->roles()->attach($roles);
-            $utilisateur->teamMembers()->create($attributs);
+
+            $utilisateur->team()->create($attributs);
 
             $utilisateur->account_verification_request_sent_at = Carbon::now();
 
