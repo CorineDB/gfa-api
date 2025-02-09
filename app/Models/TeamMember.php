@@ -48,6 +48,16 @@ class TeamMember extends Model
         "deleted_at" => "datetime:Y-m-d"
     ];
 
+    protected static function boot() {
+        parent::boot();
+
+        static::saving(function($teamMember) {
+
+            dd($teamMember);
+
+        });
+    }
+
     public function profilable()
     {
         return $this->morphTo('profilable');
