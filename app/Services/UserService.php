@@ -89,15 +89,15 @@ class UserService extends BaseService implements UserServiceInterface
 
             if($user->type == 'administrateur') //$users = User::all();
             {
-                $users = User::where('programmeId', $programme->id)->
+                /* $users = User::where('programmeId', $programme->id)->
                             where('profilable_id', 0)->
                             where('profilable_type', "App\\Models\\Administrateur")->
                             orWhere('profilable_type', 0)->
-                            //where('id', '!=', $user->id)->
+                            //where('id', '!=', $user->id)-> */
                             /*w/here('statut', '>', 0)->
                             where('emailVerifiedAt', '!=', null)->*/
-                            orderBy('nom', 'asc')->
-                            get();
+                            /* orderBy('nom', 'asc')->
+                            get(); */
                 $users = User::whereHas("team", function($query){
                     $query->where('profilable_id', 0)->where('profilable_type', "App\\Models\\Administrateur");
                 })->orderBy('nom', 'asc')->get();
