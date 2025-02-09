@@ -61,6 +61,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
         try {
+            dd(Auth::user());
             if (Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur") {
                 $evaluationsDeGouvernance = $this->repository->all();
             } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
