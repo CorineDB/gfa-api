@@ -61,7 +61,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
         try {
-            dd(Auth::user()->hasRole('administrateur'));
+            dump((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur"));
             if (Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur") {
                 $evaluationsDeGouvernance = $this->repository->all();
             } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
@@ -69,6 +69,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $query->where('organisationId', Auth::user()->profilable->id);
                 })->get();
             } else {
+                dd(Auth::user()->programme);
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
                 $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance;
             }
