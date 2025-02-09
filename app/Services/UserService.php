@@ -232,14 +232,8 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->roles()->attach($roles);
 
-            dd($utilisateur->team);
-
-            if(($utilisateur->type != 'admin') || ($utilisateur->type != 'administrateur')){
+            if($utilisateur->team){
                 $team = $utilisateur->team->fill($attributs);
-            }
-            else{
-                $team = TeamMember::where('profilable_type', "App\\Models\\Administrateur")->where('profilable_id', 0)->first();
-                $team = $team->fill($attributs);
             }
 
             $team->save();
