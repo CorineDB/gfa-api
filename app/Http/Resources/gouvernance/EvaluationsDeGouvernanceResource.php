@@ -32,7 +32,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                 ];
             }):[], */
             
-            'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
+            /* 'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
             'fin' => Carbon::parse($this->fin)->format("Y-m-d"),
             'annee_exercice' => $this->annee_exercice,
             'statut' => $this->statut,
@@ -70,6 +70,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
             'formulaire_perception_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'perception')->first()->secure_id,
             'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance),
+             */
+
             /*
                 $this->formulaires_de_gouvernance->map(function($formulaire_de_gouvernance){
                     return [
@@ -82,7 +84,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     ];
                 }),
             */
-            'organisations' => $this->organisations->map(function($organisation){
+
+            /* 'organisations' => $this->organisations->map(function($organisation){
                 return [
                     "id"                    => $organisation->secure_id,
                     'nom'                   => optional($organisation->user)->nom ?? null,
@@ -92,7 +95,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal
                 ];
-            })
+            }) */
         ];
     }
 }
