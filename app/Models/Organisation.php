@@ -19,7 +19,7 @@ class Organisation extends Model
 
     public $timestamps = true;
     
-    protected $fillable = ["sigle", "code", "nom_point_focal", "prenom_point_focal", "contact_point_focal", 'type', 'pays', 'departement', 'commune', 'arrondissement', 'programmeId', 'quartier', 'secteurActivite', 'longitude', 'latitude'];
+    protected $fillable = ["sigle", "code", "nom_point_focal", "prenom_point_focal", "contact_point_focal", 'type', 'pays', 'departement', 'commune', 'arrondissement', 'programmeId', 'addresse', 'quartier', 'secteurActivite', 'longitude', 'latitude'];
 
     protected $dates = ['deleted_at'];
 
