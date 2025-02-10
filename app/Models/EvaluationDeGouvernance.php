@@ -53,7 +53,7 @@ class EvaluationDeGouvernance extends Model
             }
         });
 
-        static::deleted(function ($evaluation_de_gouvernance) {
+        /* static::deleted(function ($evaluation_de_gouvernance) {
 
             DB::beginTransaction();
             try {
@@ -69,7 +69,7 @@ class EvaluationDeGouvernance extends Model
 
                 throw new Exception($th->getMessage(), 1);
             }
-        });
+        }); */
     }
 
     public function soumissions()
