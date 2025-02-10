@@ -97,11 +97,20 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
         try {
 
+            if (!isset($attributs["formulaires_de_gouvernance"])) {
+                throw new Exception("Veuillez soumettre le formulaire de gouvernance", 400);
+            }
+
+            if (!isset($attributs["organisations"])) {
+                throw new Exception("Veuillez precisez les organisations pouvant participer a l'evaluation de gouvernance", 400);
+            }
+
             $programme = Auth::user()->programme;
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             $evaluationDeGouvernance = $this->repository->create($attributs);
+            
             $evaluationDeGouvernance->formulaires_de_gouvernance()->attach($attributs['formulaires_de_gouvernance']);
 
             $organisationsId = [];
