@@ -50,8 +50,6 @@ class StoreRequest extends FormRequest
                 }
             ],
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
-            //'debut'             => 'required|date|date_format:Y-m-d',
-            //'fin'               => 'required|date|date_format:Y-m-d|after_or_equal:debut',
             'formulaires_de_gouvernance'     => ['required', 'array', 'min:2'],
             'formulaires_de_gouvernance.*'   => ['required', 'distinct', new HashValidatorRule(new FormulaireDeGouvernance())],
             'organisations'     => ['required', 'array', 'min:1'],
@@ -90,99 +88,101 @@ class StoreRequest extends FormRequest
 
     private function validatePrincipesCount($validator)
     {
-        if (count($this->input("formulaires_de_gouvernance")) < 2) {
-            $validator->errors()->add(
-                'formulaires_de_gouvernance',
-                "Two form IDs are required in 'formulaires_de_gouvernance'."
-            );
-            return;
-        }
+        if($this->input("formulaires_de_gouvernance")){
+            if (count($this->input("formulaires_de_gouvernance")) < 2) {
+                $validator->errors()->add(
+                    'formulaires_de_gouvernance',
+                    "Veuillez soumettre le formulaire factuel de gouvernance ainsi que le formulaire de perception de gouvernance."
+                );
+                return;
+            }
 
-        [$formulaireDeGouvernanceId, $perceptionFormulaire] = $this->input("formulaires_de_gouvernance");
+            [$formulaireDeGouvernanceId, $perceptionFormulaire] = $this->input("formulaires_de_gouvernance");
 
-        $formulaire1 = FormulaireDeGouvernance::find($formulaireDeGouvernanceId);
-        $formulaire2 = FormulaireDeGouvernance::find($perceptionFormulaire);
+            $formulaire1 = FormulaireDeGouvernance::find($formulaireDeGouvernanceId);
+            $formulaire2 = FormulaireDeGouvernance::find($perceptionFormulaire);
 
-        //dd($formulaire1->categories_de_gouvernance->first()->sousCategoriesDeGouvernance);
-        
-        if (!$formulaire1 || !$formulaire2) {
-            $validator->errors()->add(
-                'formulaires_de_gouvernance',
-                "Invalid 'formulaires_de_gouvernance' IDs provided."
-            );
-            return;
-            //$fail("Invalid 'formulaires_de_gouvernance' IDs provided.");
-        }
-
-        if(!(($formulaire1->type === 'factuel' || $formulaire1->type === 'perception') && ($formulaire2->type === 'factuel' || $formulaire2->type === 'perception') && ($formulaire1->type !== $formulaire2->type))){
-            throw ValidationException::withMessages(['formulaires_de_gouvernance.*' => "The selected form types must be either 'factuel' or 'perception' and cannot be the same."]);
-        }
-        else if($formulaire1->type === 'perception' && $formulaire2->type === 'factuel'){
-            $factuelFormulaire = $formulaire2;
-            $perceptionFormulaire = $formulaire1;
-        }
-        else if(($formulaire1->type === 'factuel' && $formulaire2->type === 'perception')){
-            $factuelFormulaire = $formulaire1;
-            $perceptionFormulaire = $formulaire2;
-        }
-        
-        // Step 1: Retrieve Perception IDs from the 'perception' form
-        $perceptionIds = DB::table('categories_de_gouvernance')
-            ->where('formulaireDeGouvernanceId', $perceptionFormulaire->id)
-            ->whereNull('categorieDeGouvernanceId')
-            ->pluck('categorieable_id')
-            ->toArray();
-        
-        // Step 2: Retrieve unique Perception IDs from the 'factuel' form
-        $form2TypesWithPerceptionIds = DB::table('categories_de_gouvernance as types')
-            ->join('categories_de_gouvernance as perceptions', 'types.id', '=', 'perceptions.categorieDeGouvernanceId')
-            ->where('types.formulaireDeGouvernanceId', $factuelFormulaire->id)
-            ->whereNull('types.categorieDeGouvernanceId')
-            ->where('types.categorieable_type', get_class(new TypeDeGouvernance))
-            ->where('perceptions.categorieable_type', get_class(new PrincipeDeGouvernance))
-            ->select('perceptions.categorieable_id as perception_id')
-            ->distinct() // Ignore duplicates by selecting only unique perception IDs
-            ->pluck('perception_id')
-            ->toArray();
-
-        // Step 3: Compare perception IDs across forms
-        if (array_diff($perceptionIds, $form2TypesWithPerceptionIds) || array_diff($form2TypesWithPerceptionIds, $perceptionIds)) {
-            throw ValidationException::withMessages([
-                'formulaires_de_gouvernance' => "Mismatch in perception IDs between 'perception' and 'factuel' forms."
-            ]);
-        }
-
-        // Get perception IDs from Form 1 (perception form)
-        // Step 1: Retrieve Perception IDs from the 'perception' form
-        /* $perceptionIds = DB::table('categories_de_gouvernance')
-            ->where('formulaireDeGouvernanceId', $perceptionFormulaire->id)
-            ->where('categorieDeGouvernanceId', null)
-            ->pluck('categorieable_id')
-            ->toArray(); */
-
-        // Get each 'type de gouvernance' in Form 2 and its perception IDs (subcategories)
-        /* $form2TypesWithPerceptionIds = DB::table('categories_de_gouvernance as types')
-            ->join('categories_de_gouvernance as perceptions', 'types.id', '=', 'perceptions.categorieDeGouvernanceId')
-            ->where('types.categorieable_type', get_class(new TypeDeGouvernance))
-            ->where('types.categorieDeGouvernanceId', NULL)
-            ->where('types.formulaireDeGouvernanceId', $factuelFormulaire->id)
-            ->where('perceptions.formulaireDeGouvernanceId', $factuelFormulaire->id)
-            ->where('perceptions.categorieable_type', get_class(new PrincipeDeGouvernance))
-            ->select('types.id as type_id', 'perceptions.categorieable_id as perception_id')
-            ->get()
-            ->groupBy('type_id'); */
-        
-        // Validate that each type de gouvernance's perception IDs in Form 2 match perception IDs in Form 1
-        /* foreach ($form2TypesWithPerceptionIds as $typeId => $perceptions) {
+            //dd($formulaire1->categories_de_gouvernance->first()->sousCategoriesDeGouvernance);
             
-            $typePerceptionIds = $perceptions->pluck('perception_id')->toArray();
+            if (!$formulaire1 || !$formulaire2) {
+                $validator->errors()->add(
+                    'formulaires_de_gouvernance',
+                    "Formulaire de gouvernance inconnu"
+                );
+                return;
+                //$fail("Invalid 'formulaires_de_gouvernance' IDs provided.");
+            }
 
-            // Check if Form 1 perception IDs match the perception IDs under each type de gouvernance in Form 2
-            if (array_diff($perceptionIds, $typePerceptionIds) || array_diff($typePerceptionIds, $perceptionIds)) {
+            if(!(($formulaire1->type === 'factuel' || $formulaire1->type === 'perception') && ($formulaire2->type === 'factuel' || $formulaire2->type === 'perception') && ($formulaire1->type !== $formulaire2->type))){
+                throw ValidationException::withMessages(['formulaires_de_gouvernance.*' => "Les formulaires doivent etre factuel et de perception."]);
+            }
+            else if($formulaire1->type === 'perception' && $formulaire2->type === 'factuel'){
+                $factuelFormulaire = $formulaire2;
+                $perceptionFormulaire = $formulaire1;
+            }
+            else if(($formulaire1->type === 'factuel' && $formulaire2->type === 'perception')){
+                $factuelFormulaire = $formulaire1;
+                $perceptionFormulaire = $formulaire2;
+            }
+            
+            // Step 1: Retrieve Perception IDs from the 'perception' form
+            $perceptionIds = DB::table('categories_de_gouvernance')
+                ->where('formulaireDeGouvernanceId', $perceptionFormulaire->id)
+                ->whereNull('categorieDeGouvernanceId')
+                ->pluck('categorieable_id')
+                ->toArray();
+            
+            // Step 2: Retrieve unique Perception IDs from the 'factuel' form
+            $form2TypesWithPerceptionIds = DB::table('categories_de_gouvernance as types')
+                ->join('categories_de_gouvernance as perceptions', 'types.id', '=', 'perceptions.categorieDeGouvernanceId')
+                ->where('types.formulaireDeGouvernanceId', $factuelFormulaire->id)
+                ->whereNull('types.categorieDeGouvernanceId')
+                ->where('types.categorieable_type', get_class(new TypeDeGouvernance))
+                ->where('perceptions.categorieable_type', get_class(new PrincipeDeGouvernance))
+                ->select('perceptions.categorieable_id as perception_id')
+                ->distinct() // Ignore duplicates by selecting only unique perception IDs
+                ->pluck('perception_id')
+                ->toArray();
+
+            // Step 3: Compare perception IDs across forms
+            if (array_diff($perceptionIds, $form2TypesWithPerceptionIds) || array_diff($form2TypesWithPerceptionIds, $perceptionIds)) {
                 throw ValidationException::withMessages([
-                    'formulaires_de_gouvernance' => "Perceptions in Form 1 do not match perceptions in each type de gouvernance in Form 2."
+                    'formulaires_de_gouvernance' => "Les principes de gouvernance du formulaire de perception doivent etre les memes dans le formulaire factuel."
                 ]);
             }
-        } */
+
+            // Get perception IDs from Form 1 (perception form)
+            // Step 1: Retrieve Perception IDs from the 'perception' form
+            /* $perceptionIds = DB::table('categories_de_gouvernance')
+                ->where('formulaireDeGouvernanceId', $perceptionFormulaire->id)
+                ->where('categorieDeGouvernanceId', null)
+                ->pluck('categorieable_id')
+                ->toArray(); */
+
+            // Get each 'type de gouvernance' in Form 2 and its perception IDs (subcategories)
+            /* $form2TypesWithPerceptionIds = DB::table('categories_de_gouvernance as types')
+                ->join('categories_de_gouvernance as perceptions', 'types.id', '=', 'perceptions.categorieDeGouvernanceId')
+                ->where('types.categorieable_type', get_class(new TypeDeGouvernance))
+                ->where('types.categorieDeGouvernanceId', NULL)
+                ->where('types.formulaireDeGouvernanceId', $factuelFormulaire->id)
+                ->where('perceptions.formulaireDeGouvernanceId', $factuelFormulaire->id)
+                ->where('perceptions.categorieable_type', get_class(new PrincipeDeGouvernance))
+                ->select('types.id as type_id', 'perceptions.categorieable_id as perception_id')
+                ->get()
+                ->groupBy('type_id'); */
+            
+            // Validate that each type de gouvernance's perception IDs in Form 2 match perception IDs in Form 1
+            /* foreach ($form2TypesWithPerceptionIds as $typeId => $perceptions) {
+                
+                $typePerceptionIds = $perceptions->pluck('perception_id')->toArray();
+
+                // Check if Form 1 perception IDs match the perception IDs under each type de gouvernance in Form 2
+                if (array_diff($perceptionIds, $typePerceptionIds) || array_diff($typePerceptionIds, $perceptionIds)) {
+                    throw ValidationException::withMessages([
+                        'formulaires_de_gouvernance' => "Perceptions in Form 1 do not match perceptions in each type de gouvernance in Form 2."
+                    ]);
+                }
+            } */
+       }
     }
 }
