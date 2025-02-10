@@ -37,8 +37,8 @@ class IndicateursResource extends JsonResource
                 "id" => $this->unitee_mesure->secure_id,
                 "nom" => $this->unitee_mesure->nom
             ]),
-            "anneeDeBase" => $this->anneeDeBase,
-            "valeurDeBase" => $this->valeurDeBase,
+            "anneeDeBase" => $this->anneeDeBase ?? "ND",
+            "valeurDeBase" => $this->valeurDeBase ?? "ND",
             "valeursCible" => $this->valeursCible ? $this->valeursCible->map(function($valeurCible){
                 return [
                     "id" => $valeurCible->secure_id,
