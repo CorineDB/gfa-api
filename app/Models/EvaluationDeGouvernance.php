@@ -39,6 +39,7 @@ class EvaluationDeGouvernance extends Model
                     // Prevent deletion by throwing an exception
                     throw new Exception("Cannot delete because there are associated resource.");
                 }
+
                 $evaluation_de_gouvernance->actions_a_mener()->delete();
                 $evaluation_de_gouvernance->recommandations()->delete();
                 $evaluation_de_gouvernance->fiches_de_synthese()->delete();
@@ -58,12 +59,14 @@ class EvaluationDeGouvernance extends Model
             DB::beginTransaction();
             try {
 
-                $evaluation_de_gouvernance->update([
-                    'intitule' => time() . '::' . $evaluation_de_gouvernance->intitule
-                ]);
+                $evaluation_de_gouvernance->actions_a_mener()->delete();
+                $evaluation_de_gouvernance->recommandations()->delete();
+                $evaluation_de_gouvernance->fiches_de_synthese()->delete();
+                $evaluation_de_gouvernance->soumissions()->delete();
+                $evaluation_de_gouvernance->organisations()->detach();
+                $evaluation_de_gouvernance->formulaires_de_gouvernance()->detach();
 
                 DB::commit();
-
             } catch (\Throwable $th) {
                 DB::rollBack();
 
