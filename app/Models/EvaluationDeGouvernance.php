@@ -51,8 +51,8 @@ class EvaluationDeGouvernance extends Model
             DB::beginTransaction();
             try {
 
-                $evaluation_de_gouvernance->recommandations()->delete();
                 $evaluation_de_gouvernance->actions_a_mener()->delete();
+                $evaluation_de_gouvernance->recommandations()->delete();
                 $evaluation_de_gouvernance->fiches_de_synthese()->delete();
                 $evaluation_de_gouvernance->soumissions()->delete();
                 $evaluation_de_gouvernance->formulaires_de_gouvernance()->detach();
