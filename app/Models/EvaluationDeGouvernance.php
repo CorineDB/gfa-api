@@ -55,8 +55,8 @@ class EvaluationDeGouvernance extends Model
                 $evaluation_de_gouvernance->actions_a_mener()->delete();
                 $evaluation_de_gouvernance->fiches_de_synthese()->delete();
                 $evaluation_de_gouvernance->soumissions()->delete();
-                $evaluation_de_gouvernance->formulaires_de_gouvernance()->delete();
-                $evaluation_de_gouvernance->organisations()->delete();
+                $evaluation_de_gouvernance->formulaires_de_gouvernance()->detach();
+                $evaluation_de_gouvernance->organisations()->detach();
 
                 DB::commit();
             } catch (\Throwable $th) {
