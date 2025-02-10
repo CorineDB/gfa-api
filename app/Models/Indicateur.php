@@ -40,8 +40,8 @@ class Indicateur extends Model
             $indicateur->ug_responsable()->detach();
             $indicateur->organisations_responsable()->detach();
             $indicateur->sites()->detach();
-            $indicateur->valeursDeBase()->detach();
-            $indicateur->valeursCible()->detach();
+            $indicateur->valeursDeBase()->delete();
+            $indicateur->valeursCible()->delete();
             $indicateur->valueKeys()->detach();
         });
 
