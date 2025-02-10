@@ -30,7 +30,7 @@ class EvaluationDeGouvernance extends Model
     {
         parent::boot();
 
-        static::deleting(function ($evaluaintituletion_de_gouvernance) {
+        static::deleting(function ($evaluation_de_gouvernance) {
 
             DB::beginTransaction();
             try {
