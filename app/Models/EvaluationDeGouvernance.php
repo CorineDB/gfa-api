@@ -33,19 +33,22 @@ class EvaluationDeGouvernance extends Model
         static::deleting(function ($evaluation_de_gouvernance) {
 
             DB::beginTransaction();
+            
             try {
 
                 if (($evaluation_de_gouvernance->soumissions->count() > 0) || ($evaluation_de_gouvernance->statut > -1)) {
                     // Prevent deletion by throwing an exception
                     throw new Exception("Cannot delete because there are associated resource.");
                 }
-                dd($evaluation_de_gouvernance);
+
                 $evaluation_de_gouvernance->actions_a_mener()->delete();
                 $evaluation_de_gouvernance->recommandations()->delete();
                 $evaluation_de_gouvernance->fiches_de_synthese()->delete();
                 $evaluation_de_gouvernance->soumissions()->delete();
                 $evaluation_de_gouvernance->organisations()->detach();
                 $evaluation_de_gouvernance->formulaires_de_gouvernance()->detach();
+
+                DB::commit();
 
             } catch (\Throwable $th) {
                 DB::rollBack();

@@ -27,22 +27,32 @@ class Indicateur extends Model
         parent::boot();
 
         static::deleting(function ($indicateur) {
+            DB::beginTransaction();
+            try {
 
-            if (($indicateur->suivis->pluck('suivisIndicateur')->count() > 0)) {
-                // Prevent deletion by throwing an exception
-                throw new Exception("Cannot delete");
+                if (($indicateur->suivis->pluck('suivisIndicateur')->count() > 0)) {
+                    // Prevent deletion by throwing an exception
+                    throw new Exception("Cannot delete");
+                }
+                /* if (($indicateur->ug_responsable->count() > 0) || ($indicateur->organisations_responsable->count() > 0) || ($indicateur->valeursCible->count() > 0) || ($indicateur->valeursDeBase->count() > 0) || ($indicateur->sites->count() > 0)) {
+                    // Prevent deletion by throwing an exception
+                    throw new Exception("Cannot delete");
+                } */
+
+                $indicateur->ug_responsable()->detach();
+                $indicateur->organisations_responsable()->detach();
+                $indicateur->sites()->detach();
+                $indicateur->valeursDeBase()->delete();
+                $indicateur->valeursCible()->delete();
+                $indicateur->valueKeys()->detach();
+
+                DB::commit();
+
+            } catch (\Throwable $th) {
+                DB::rollBack();
+
+                throw new Exception($th->getMessage(), 1);
             }
-            /* if (($indicateur->ug_responsable->count() > 0) || ($indicateur->organisations_responsable->count() > 0) || ($indicateur->valeursCible->count() > 0) || ($indicateur->valeursDeBase->count() > 0) || ($indicateur->sites->count() > 0)) {
-                // Prevent deletion by throwing an exception
-                throw new Exception("Cannot delete");
-            } */
-
-            $indicateur->ug_responsable()->detach();
-            $indicateur->organisations_responsable()->detach();
-            $indicateur->sites()->detach();
-            $indicateur->valeursDeBase()->delete();
-            $indicateur->valeursCible()->delete();
-            $indicateur->valueKeys()->detach();
         });
 
         static::deleted(function($indicateur) {
