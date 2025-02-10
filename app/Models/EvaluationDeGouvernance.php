@@ -39,7 +39,7 @@ class EvaluationDeGouvernance extends Model
                     // Prevent deletion by throwing an exception
                     throw new Exception("Cannot delete because there are associated resource.");
                 }
-
+                dd($evaluation_de_gouvernance);
                 $evaluation_de_gouvernance->actions_a_mener()->delete();
                 $evaluation_de_gouvernance->recommandations()->delete();
                 $evaluation_de_gouvernance->fiches_de_synthese()->delete();
