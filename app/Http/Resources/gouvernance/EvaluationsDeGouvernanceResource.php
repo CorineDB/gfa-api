@@ -37,7 +37,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'annee_exercice' => $this->annee_exercice,
             'statut' => $this->statut,
             'pourcentage_evolution' => $this->pourcentage_evolution,
-            /* 'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
+            'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
 
             $this->mergeWhen(((Auth::user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class), function(){
                 return [
@@ -70,7 +70,6 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
             'formulaire_perception_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'perception')->first()->secure_id,
             'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance),
-             */
 
             /*
                 $this->formulaires_de_gouvernance->map(function($formulaire_de_gouvernance){
@@ -85,7 +84,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                 }),
             */
 
-            /* 'organisations' => $this->organisations->map(function($organisation){
+            'organisations' => $this->organisations->map(function($organisation){
                 return [
                     "id"                    => $organisation->secure_id,
                     'nom'                   => optional($organisation->user)->nom ?? null,
@@ -95,7 +94,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal
                 ];
-            }) */
+            })
         ];
     }
 }
