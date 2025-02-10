@@ -30,7 +30,7 @@ class EvaluationDeGouvernance extends Model
     {
         parent::boot();
 
-        /* static::deleting(function ($evaluation_de_gouvernance) {
+        static::deleting(function ($evaluation_de_gouvernance) {
 
             DB::beginTransaction();
             try {
@@ -51,7 +51,7 @@ class EvaluationDeGouvernance extends Model
 
                 throw new Exception($th->getMessage(), 1);
             }
-        }); */
+        });
 
         /* static::deleted(function ($evaluation_de_gouvernance) {
 
