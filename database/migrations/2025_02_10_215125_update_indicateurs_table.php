@@ -16,7 +16,7 @@ class UpdateIndicateursTable extends Migration
         if(Schema::hasTable('indicateurs')){
             Schema::table('indicateurs', function (Blueprint $table) {
 
-                if(!Schema::hasColumn('indicateurs', 'responsable')){
+                if(Schema::hasColumn('indicateurs', 'anneeDeBase')){
                     $table->string('anneeDeBase')->nullable()->change();
                 }
 
