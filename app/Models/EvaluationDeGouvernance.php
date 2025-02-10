@@ -574,7 +574,6 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalParticipantsEvaluationFactuelAttribute()
     {
-        return 0;
         // Sum the 'nbreParticipants' attribute from the pivot table
         if ((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class) {
             if (auth()->user()->profilable) {
