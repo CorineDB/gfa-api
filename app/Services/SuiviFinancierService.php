@@ -980,7 +980,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             $programme = Auth::user()->programme;
             $projets = [];
 
-            /* foreach ($programme->suiviFinanciers as $suiviFinancier) {
+            foreach ($programme->suiviFinanciers as $suiviFinancier) {
                 $controle = 1;
 
                 // Check if activite exists
@@ -1019,7 +1019,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                         'total' => $suiviFinancier->consommer
                     ]);
                 }
-            } */
+            }
 
             $data = [
                 'suiviFinanciers' => $suiviFinanciers,
