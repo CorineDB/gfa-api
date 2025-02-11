@@ -2,6 +2,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Mail\ConfirmationDeCompteEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -27,6 +28,17 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
     Route::get('test-email/{email}', function ($email) {
         try {
             Log::info("Test email sent to: {$email}");
+
+            Mail::to($email)->send(new ConfirmationDeCompteEmail([
+                'view' => "emails.auth.confirmation_de_compte",
+                'subject' => "Confirmation de compte",
+                'content' => [
+                    "greeting" => "Bienvenu Mr/Mme " . $this->user->nom,
+                    "introduction" => "Voici votre lien d'activation de votre compte",
+                    "lien" => "https://example.com/activation"
+                ]
+            ]));
+
             Mail::raw("Bonjour TESTER, voici votre lien d'activation : https://example.com/activation", function ($message) use ($email) {
                 $message->to($email)
                         ->subject('Activation de votre compte');
