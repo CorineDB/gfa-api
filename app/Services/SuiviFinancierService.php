@@ -955,8 +955,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 $activites = $projet->activites();
 
-                dd($activites);
-
                 if (isset($filterData['activiteId'])) {
                     $activites = array_filter($activites, function($activite) use($filterData) {
                         return $activite['id'] == $filterData['activiteId'];
@@ -981,7 +979,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             $programme = Auth::user()->programme;
             $projets = [];
 
-            foreach ($programme->suiviFinanciers as $suiviFinancier) {
+            /* foreach ($programme->suiviFinanciers as $suiviFinancier) {
                 $controle = 1;
                 $projet = $suiviFinancier->activite->composante->projet;
 
@@ -1000,7 +998,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                         'total' => $suiviFinancier->consommer
                     ]);
                 }
-            }
+            } */
 
             $data = [
                 'suiviFinanciers' => $suiviFinanciers,
