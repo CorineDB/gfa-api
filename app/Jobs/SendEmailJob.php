@@ -117,6 +117,7 @@ class SendEmailJob implements ShouldQueue
             }
 
             $when = now()->addSeconds(5);
+            Log::notice($mailer);
             
             Mail::to($this->user)->later($when, $mailer);
         } catch (\Throwable $th) {

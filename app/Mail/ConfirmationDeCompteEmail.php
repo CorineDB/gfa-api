@@ -6,6 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ConfirmationDeCompteEmail extends Mailable
@@ -32,7 +33,7 @@ class ConfirmationDeCompteEmail extends Mailable
     public function build()
     {
         $details = $this->details;
-        dd($details);
+        Log::notice($details);
         return $this->from(config("mail.mailers.smtp.username"), config("app.name"))->subject(Str::ucfirst($this->details['subject']))->view($this->details['view'], compact('details'));
     }
 }
