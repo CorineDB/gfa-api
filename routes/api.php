@@ -741,7 +741,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('/{id}/taches', 'taches')->name('taches')->middleware('permission:voir-une-tache');
 
                     Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
-                    Route::get('/{id}/suivis-financier', 'suivis_financier')->name('suivis_financier')->middleware('permission:voir-un-suivi-financier');
+                    Route::post('/{id}/suivis-financier', 'suivis_financier')->name('suivis_financier')->middleware('permission:voir-un-suivi-financier');
 
                     
                     Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-activite');
