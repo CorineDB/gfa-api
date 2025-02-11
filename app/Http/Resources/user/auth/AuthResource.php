@@ -34,7 +34,7 @@ class AuthResource extends JsonResource
             "role" => RoleResource::collection($this->roles->load('permissions')),
             "photo" => new FichiersResource($this->photo),
             "projet" => $this->when((($this->type == 'organisation') || $this->profilable_type == Organisation::class), function(){
-                return $this->profilable;
+                return $this->profilable->projet;
             })
         ];
     }
