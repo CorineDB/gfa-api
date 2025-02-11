@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\DB;
 use Exception;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -981,6 +982,26 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
             foreach ($programme->suiviFinanciers as $suiviFinancier) {
                 $controle = 1;
+
+                // Check if activite exists
+                if (!$suiviFinancier->activite) {
+                    Log::warning("Activite not found for suiviFinancier ID: {$suiviFinancier->id}");
+                    continue; // Skip this iteration
+                }
+
+                // Check if composante exists
+                if (!$suiviFinancier->activite->composante) {
+                    Log::warning("Composante not found for activite ID: {$suiviFinancier->activite->id}");
+                    continue; // Skip this iteration
+                }
+
+                // Check if projet exists
+                if (!$suiviFinancier->activite->composante->projet) {
+                    Log::warning("Projet not found for composante ID: {$suiviFinancier->activite->composante->id}");
+                    continue; // Skip this iteration
+                }
+
+                // Now it's safe to access projet
                 $projet = $suiviFinancier->activite->composante->projet;
 
                 foreach ($projets as $key => $p) {
