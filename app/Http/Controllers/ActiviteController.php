@@ -32,6 +32,8 @@ class ActiviteController extends Controller
 
         $this->middleware('permission:voir-une-tache')->only(['taches']);
         $this->middleware('permission:voir-un-suivi')->only(['suivis']);
+        $this->middleware('permission:voir-un-suivi-financier')->only(['suivis_financier']);
+        
         $this->middleware('permission:voir-un-plan-de-decaissement')->only(['plansDeDecaissement']);
 
         $this->activiteService = $activiteServiceInterface;
@@ -70,6 +72,16 @@ class ActiviteController extends Controller
     public function suivis($id)
     {
         return $this->activiteService->suivis($id);
+    }
+
+    /**
+     * Liste des suivis financier d'une activite
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function suivis_financier($id)
+    {
+        return $this->activiteService->suivisFinancier($id);
     }
 
     /**
