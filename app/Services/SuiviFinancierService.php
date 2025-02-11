@@ -980,6 +980,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             $programme = Auth::user()->programme;
             $projets = [];
 
+            dd($programme->suiviFinanciers);
+
             foreach ($programme->suiviFinanciers as $suiviFinancier) {
                 $controle = 1;
 
