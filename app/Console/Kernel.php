@@ -19,8 +19,7 @@ class Kernel extends ConsoleKernel
         Commands\ChangeStatutActionAMener::class,
         Commands\Demarrage::class,
         Commands\RappelCron::class,
-        Commands\Rapport::class,
-        Commands\Suivi::class,
+        Commands\Rapport::class
     ];
     /**
      * Define the application's command schedule.
@@ -36,13 +35,11 @@ class Kernel extends ConsoleKernel
         $schedule->command('command:change-statut')->everyMinute();
         $schedule->command('change-statut:evaluations')->daily();
         $schedule->command('generate:report-for-validated-soumissions')->daily();
-        $schedule->command('check-sms-provider:account-balance')->everySixHours();
 
         $schedule->command('command:demarrage')->everyMinute();
 
-       // $schedule->command('command:rapport')->everyMinute();
        $schedule->command('command:rapport')->everyFifteenMinutes();
-       $schedule->command('command:suivi')->everyFifteenMinutes();
+       //$schedule->command('command:suivi')->everyFifteenMinutes();
 
         $schedule->command('command:rappel')->everyMinute();
 
