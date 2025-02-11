@@ -27,7 +27,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
     Route::get('test-email/{email}', function ($email) {
         try {
-            Log::info("Test email sent to: {$email}");
+            Log::info("Test email sent to: {$email}");/* 
 
             Mail::to($email)->send(new ConfirmationDeCompteEmail([
                 'view' => "emails.auth.confirmation_de_compte",
@@ -37,7 +37,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     "introduction" => "Voici votre lien d'activation de votre compte",
                     "lien" => "https://example.com/activation"
                 ]
-            ]));
+            ])); */
 
             Mail::raw("Bonjour TESTER, voici votre lien d'activation : https://example.com/activation", function ($message) use ($email) {
                 $message->to($email)
