@@ -1024,7 +1024,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
             $data = [
                 'suiviFinanciers' => $suiviFinanciers,
                 //'total' => $programme->suiviFinanciers->sum('consommer'),
-                'projets' => $projets,
+                //'projets' => $projets,
                 'annee' => isset($filterData['annee']) ? $filterData['annee'] : null,
                 //'bailleur' => $bailleur->sigle
             ];
