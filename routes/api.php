@@ -2,10 +2,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\ModController;
-use App\Http\Controllers\UniteeDeGestionController;
-use App\Models\UniteeDeGestion;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 /*
 |--------------------------------------------------------------------------
@@ -25,7 +23,15 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'namespace' => 'App\Http\Controllers' */], function () {
 
+    Route::get('test-email/{email}',function($email){
 
+        Mail::raw("Bonjour TESTER, voici votre lien d'activation : fdfg/activation", function ($message) use($email) {
+            $message->to($email)
+                    ->subject('Activation de votre compte');
+        });
+    });
+
+    
     Route::get('confirmation-de-compte/{email}', [AuthController::class, 'confirmationDeCompte'])->name('confirmationDeCompte');
 
     Route::get('activation-de-compte/{token}', [AuthController::class, 'activationDeCompte'])->name('activationDeCompte');
