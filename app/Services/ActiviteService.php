@@ -161,14 +161,20 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
         }
     }
 
-    public function suivisFinancier($activiteId, array $attributs = ['*'], array $relations = []): JsonResponse
+    public function suivisFinancier($activiteId, array $attributs): JsonResponse
     {
         try {
             if (!($activite = $this->repository->findById($activiteId))){
                 throw new Exception("Cette activite n'existe pas", 500);
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuiviFinancierResource::collection($activite->suiviFinanciers->sortByDesc("created_at")), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $suiviFinanciers = $activite->suiviFinanciers($attributs["annee"] ?? null)
+                ->when($attributs["annee"], function($query) use ($attributs) {
+                    return $query->where("trimestre", $attributs['trimestre']);
+                })
+                ->sortByDesc("created_at");
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuiviFinancierResource::collection($suiviFinanciers), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

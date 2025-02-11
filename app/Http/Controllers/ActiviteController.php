@@ -9,6 +9,7 @@ use App\Http\Requests\activite\DeplacerRequest;
 use App\Http\Requests\activite\PpmRequest;
 use App\Http\Requests\duree\StoreDureeRequest;
 use App\Http\Requests\duree\UpdateDureeRequest;
+use App\Http\Requests\suiviFinancier\FiltreRequest;
 use Core\Services\Interfaces\ActiviteServiceInterface;
 
 class ActiviteController extends Controller
@@ -79,9 +80,9 @@ class ActiviteController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function suivis_financier($id)
+    public function suivis_financier(FiltreRequest $request, $id)
     {
-        return $this->activiteService->suivisFinancier($id);
+        return $this->activiteService->suivisFinancier($id, $request->all());
     }
 
     /**
