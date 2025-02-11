@@ -33,7 +33,7 @@ class ConfirmationDeCompteEmail extends Mailable
     public function build()
     {
         $details = $this->details;
-        Log::notice($details);
+        Log::notice(json_encode($details));
         return $this->from(config("mail.mailers.smtp.username"), config("app.name"))->subject(Str::ucfirst($this->details['subject']))->view($this->details['view'], compact('details'));
     }
 }
