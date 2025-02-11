@@ -989,6 +989,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     continue; // Skip this iteration
                 }
 
+                dd($suiviFinancier);
+
                 // Check if composante exists
                 if (!$suiviFinancier->activite->composante) {
                     Log::warning("Composante not found for activite ID: {$suiviFinancier->activite->id}");
@@ -1000,8 +1002,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     Log::warning("Projet not found for composante ID: {$suiviFinancier->activite->composante->id}");
                     continue; // Skip this iteration
                 }
-
-                dd($suiviFinancier);
 
                 // Now it's safe to access projet
                 $projet = $suiviFinancier->activite->composante->projet;
