@@ -3,6 +3,7 @@
 
 use App\Http\Controllers\AuthController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
 /*
@@ -23,12 +24,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'namespace' => 'App\Http\Controllers' */], function () {
 
-    Route::get('test-email/{email}',function($email){
-
-        Mail::raw("Bonjour TESTER, voici votre lien d'activation : fdfg/activation", function ($message) use($email) {
-            $message->to($email)
-                    ->subject('Activation de votre compte');
-        });
+    Route::get('test-email/{email}', function ($email) {
+        try {
+            Mail::raw("Bonjour TESTER, voici votre lien d'activation : https://example.com/activation", function ($message) use ($email) {
+                $message->to($email)
+                        ->subject('Activation de votre compte');
+            });
+    
+            Log::info("Test email sent to: {$email}");
+            return response()->json(['message' => 'Email sent successfully to ' . $email]);
+        } catch (\Exception $e) {
+            Log::error("Email sending failed: " . $e->getMessage());
+            return response()->json(['error' => 'Failed to send email.'], 500);
+        }
     });
 
     
