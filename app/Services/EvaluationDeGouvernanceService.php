@@ -730,12 +730,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         try {
 
-            /* if ((!Auth::user()->hasRole('organisation') && (get_class(auth()->user()->profilable) != Organisation::class))) {
+            if ((!Auth::user()->hasRole('organisation') && (get_class(auth()->user()->profilable) != Organisation::class))) {
 
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             } else if (Auth::user()->profilable === null) {
                 return response()->json(['statut' => 'error', 'message' => "Unknown", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-            } */
+            }
 
 
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
@@ -965,9 +965,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            if (!(Auth::user()->hasRole('organisation')) && (get_class(auth()->user()->profilable) != Organisation::class)) {
+            /* if (!(Auth::user()->hasRole('organisation')) && (get_class(auth()->user()->profilable) != Organisation::class)) {
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
-            }
+            } */
 
             $organisationId = Auth::user()->profilable->id;
 
