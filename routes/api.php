@@ -26,6 +26,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
     Route::get('test-email/{email}', function ($email) {
         try {
+            Log::info("Test email sent to: {$email}");
             Mail::raw("Bonjour TESTER, voici votre lien d'activation : https://example.com/activation", function ($message) use ($email) {
                 $message->to($email)
                         ->subject('Activation de votre compte');
@@ -34,7 +35,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Log::info("Test email sent to: {$email}");
             return response()->json(['message' => 'Email sent successfully to ' . $email]);
         } catch (\Exception $e) {
-            Log::error("Email sending failed: " . $e->getMessage());
+            Log::error("Email sending failed: $email" . $e->getMessage());
             return response()->json(['error' => 'Failed to send email.'], 500);
         }
     });
