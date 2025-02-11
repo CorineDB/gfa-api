@@ -10,6 +10,7 @@ use App\Models\Tache;
 use App\Models\Activite;
 use App\Http\Resources\ActiviteResource;
 use App\Http\Resources\plans\PlansDecaissementResource;
+use App\Http\Resources\SuiviFinancierResource;
 use App\Http\Resources\suivis\SuivisResource;
 use App\Http\Resources\TacheResource;
 use App\Jobs\GenererPta;
@@ -155,6 +156,19 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisResource::collection($activite->suivis->sortByDesc("created_at")), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function suivisFinancier($activiteId, array $attributs = ['*'], array $relations = []): JsonResponse
+    {
+        try {
+            if (!($activite = $this->repository->findById($activiteId))){
+                throw new Exception("Cette activite n'existe pas", 500);
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuiviFinancierResource::collection($activite->suiviFinanciers->sortByDesc("created_at")), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

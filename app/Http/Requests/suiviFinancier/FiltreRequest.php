@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\suiviFinancier;
 
+use App\Models\Activite;
 use App\Models\Projet;
 use App\Models\Bailleur;
 use App\Rules\HashValidatorRule;
@@ -31,6 +32,7 @@ class FiltreRequest extends FormRequest
         return [
             'bailleurId'   => ['sometimes', new HashValidatorRule(new Bailleur())],
             'projetId'   => ['sometimes', new HashValidatorRule(new Projet())],
+            'activiteId'   => ['sometimes', new HashValidatorRule(new Activite())],
             'trimestre' => 'required|min:1|max:4',
             'annee' => 'required'
         ];
