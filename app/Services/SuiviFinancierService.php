@@ -1001,6 +1001,8 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                     continue; // Skip this iteration
                 }
 
+                dd($suiviFinancier);
+
                 // Now it's safe to access projet
                 $projet = $suiviFinancier->activite->composante->projet;
 
