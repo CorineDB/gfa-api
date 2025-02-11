@@ -118,7 +118,7 @@ class SendEmailJob implements ShouldQueue
 
             $when = now()->addSeconds(5);
             
-            Mail::to($this->user->email)->later($when, $mailer);
+            Mail::to($this->user->email)->send($mailer);
         } catch (\Throwable $th) {
             Log::error($details['subject'] . ' : ' . $th->getMessage());
             throw new Exception("Error Processing Request : ". json_encode($details['subject']. " : ". $th->getMessage()), 1);
