@@ -955,8 +955,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
 
                 $activites = $projet->activites();
 
-                dd($activites);
-
                 if (isset($filterData['activiteId'])) {
                     $activites = array_filter($activites, function($activite) use($filterData) {
                         return $activite['id'] == $filterData['activiteId'];
