@@ -54,9 +54,15 @@ class Suivi extends Model
                     $activite->suivis()->create(["poidsActuel" => $poidsActuel]);
 
                     $activite = $activite->fresh();
-
+                    /* 
                     if ($activite->poids === $activite->poidsActuel)
                         $activite->statuts()->create(['etat' => 2]);
+                    */
+
+
+                    if ($activite->poidsActuel === 100){
+                        $activite->statuts()->create(['etat' => 2]);
+                    }
                 //}
 
             } elseif ($morphisme instanceof Activite) {
@@ -85,7 +91,6 @@ class Suivi extends Model
                                     }
                                     return 0;
                                 })->sum(); */
-
 
                                 $totalPoidsActuel += $activite->taches->each(function($tache){
                                     return $tache->suivi();
