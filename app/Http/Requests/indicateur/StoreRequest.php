@@ -55,7 +55,7 @@ class StoreRequest extends FormRequest
 
             "agreger"                       => ["required", "boolean:false"],
 
-            'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
+            'uniteeMesureId'                => ['nullable', Rule::requiredIf(!request()->input('agreger') || request()->input('valeurDeBase') || request()->input('anneesCible')), new HashValidatorRule(new Unitee())],
 
             "indice"                        => ["required", "integer", "min:0"],
             'categorieId'                   => ['required', new HashValidatorRule(new Categorie())],
@@ -89,8 +89,7 @@ class StoreRequest extends FormRequest
             }],
             'valeurDeBase.*.value'              => ['required'],
 
-
-            'anneesCible'                    => ['nullable', "array", "min:1"],
+            'anneesCible'                    => ['nullable', "array", request()->input('anneesCible') ? "min:1" : ""],
 
             'anneesCible.*.valeurCible'      => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
                 if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){

@@ -68,7 +68,7 @@ class UpdateRequest extends FormRequest
                 }
             }],
 
-            'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger')), new HashValidatorRule(new Unitee())],
+            'uniteeMesureId'                => ['sometimes', Rule::requiredIf(!request()->input('agreger') || request()->input('valeurDeBase') || request()->input('anneesCible')), new HashValidatorRule(new Unitee())],
 
             "indice"                        => ["sometimes", "integer", "min:0"],
             'categorieId'                   => ['sometimes', new HashValidatorRule(new Categorie())],
@@ -103,9 +103,7 @@ class UpdateRequest extends FormRequest
             }],
             'valeurDeBase.*.value'          => ['required'],
 
-
-
-            'anneesCible'                    => ['sometimes', "array", "min:1"],
+            'anneesCible'                    => ['sometimes', "array", request()->input('anneesCible') ? "min:1" : ""],
 
             'anneesCible.*.valeurCible'      => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
                 if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){
