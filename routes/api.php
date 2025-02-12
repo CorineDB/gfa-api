@@ -805,6 +805,19 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
             });
 
+            Route::apiResource('suivis', 'SuiviController')->names('suivis');
+
+            Route::group(['prefix' =>  'suivis', 'as' => 'suivis.'], function () {
+                Route::controller('SuiviController')->group(function () {
+
+                    Route::post('filterByModule', 'getSuivis')->name('getSuivis')->middleware('permission:voir-un-suivi');
+
+                    Route::post('suivisV2', 'suivisV2')->name('suivisV2')->middleware('permission:voir-un-suivi');
+                });
+            });
+
+            Route::post('suivisV2', 'SuiviController@suivisV2');
+            
             Route::apiResource('suiviFinanciers', 'SuiviFinancierController')->names('suivi-financiers');
 
             Route::group(['prefix' =>  'suiviFinanciers', 'as' => 'suiviFinanciers'], function () {
