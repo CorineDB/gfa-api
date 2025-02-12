@@ -42,9 +42,6 @@ class UpdatePasswordColumnOfPasswordsTable extends Migration
                             // Log a warning if the unique constraint couldn't be dropped
                             \Log::warning("Unique constraint '{$uniqueConstraintName}' could not be dropped: " . $e->getMessage());
                         }
-                    } else {
-                        // Fallback: Drop unique constraint using column name
-                        $table->dropUnique(['password']);
                     }
 
                     // Add the new composite unique constraint on 'password' and 'userId'
