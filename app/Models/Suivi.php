@@ -33,7 +33,7 @@ class Suivi extends Model
 
                 //if (in_array([0, 1], $activite->statut)) {
 
-                    $totalPoids = $activite->taches->sum("poids");
+                    /* $totalPoids = $activite->taches->sum("poids");
 
                     $totalPoidsActuel = $activite->taches->load('suivis')->pluck('suivis')->map(function ($suivi) {
                         $lastPoid = $suivi->last();
@@ -43,7 +43,13 @@ class Suivi extends Model
                         return 0;
                     })->sum();
 
-                    $poidsActuel = ($activite->poids * $totalPoidsActuel) / $totalPoids;
+                    $poidsActuel = ($activite->poids * $totalPoidsActuel) / $totalPoids; */
+
+                    $totalPoidsActuel = $activite->taches->each(function($tache){
+                        return $tache->suivi();
+                    })->sum();
+
+                    $poidsActuel = $totalPoidsActuel / $activite->taches->count();
 
                     $activite->suivis()->create(["poidsActuel" => $poidsActuel]);
 
@@ -63,12 +69,14 @@ class Suivi extends Model
 
                     $totalPoidsActuel = 0;
 
+                    $tacheCount = 0;
+
                     if ($composante->composanteId !== null) {
 
                         foreach ($composante->sousComposantes as $sousComposante) {
                             foreach ($sousComposante->activites as $activite) {
 
-                                $totalPoids += $activite->taches->sum("poids");
+                                /* $totalPoids += $activite->taches->sum("poids");
 
                                 $totalPoidsActuel += $activite->taches->load('suivis')->pluck('suivis')->map(function ($suivi) {
                                     $lastPoid = $suivi->last();
@@ -76,15 +84,21 @@ class Suivi extends Model
                                         return $lastPoid->poidsActuel;
                                     }
                                     return 0;
+                                })->sum(); */
+
+
+                                $totalPoidsActuel += $activite->taches->each(function($tache){
+                                    return $tache->suivi();
                                 })->sum();
+
+                                $tacheCount += $activite->taches->count();
                             }
                         }
                     }
 
                     foreach ($composante->activites as $activite) {
 
-                        $totalPoids += $activite->taches->sum("poids");
-
+                        /*$totalPoids += $activite->taches->sum("poids");
 
                         $totalPoidsActuel += $activite->taches->load('suivis')->pluck('suivis')->map(function ($suivi) {
                             $lastPoid = $suivi->last();
@@ -92,17 +106,31 @@ class Suivi extends Model
                                 return $lastPoid->poidsActuel;
                             }
                             return 0;
+                        })->sum();*/
+
+                        $totalPoidsActuel += $activite->taches->each(function($tache){
+                            return $tache->suivi();
                         })->sum();
+
+                        $tacheCount += $activite->taches->count();
+
                     }
 
-                    $poidsActuel = ($composante->poids * $totalPoidsActuel) / $totalPoids;
+                    //$poidsActuel = ($composante->poids * $totalPoidsActuel) / $totalPoids;
+
+                    $poidsActuel = $totalPoidsActuel / $tacheCount;
 
                     $suivi = $composante->suivis()->create(["poidsActuel" => $poidsActuel]);
 
                     $composante = $composante->fresh();
 
-                    if ($composante->poids === $composante->poidsActuel)
+                    /* if ($composante->poids === $composante->poidsActuel){
                         $composante->statuts()->create(['etat' => 2]);
+                    } */
+
+                    if ($composante->poidsActuel === 100){
+                        $composante->statuts()->create(['etat' => 2]);
+                    }
                 //}
 
             }
