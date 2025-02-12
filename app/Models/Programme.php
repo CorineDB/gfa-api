@@ -268,7 +268,7 @@ class Programme extends Model
         return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
             $query->orderBy('indice','asc')->with(['categories' => function($query){
                 $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
-                    $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
+                    $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
                         ->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
@@ -278,7 +278,7 @@ class Programme extends Model
                         });
                 }]);
             }, 'indicateurs' => function($query){
-                    $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
+                    $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
                         ->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
@@ -288,7 +288,7 @@ class Programme extends Model
                         });
                 }]);
         }, 'indicateurs' => function($query){
-                    $query->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
+                    $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
                         ->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
