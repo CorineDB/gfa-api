@@ -62,7 +62,7 @@ class UpdateComposanteRequest extends FormRequest
                     $projet = Projet::find($this->projetId);
                     if($projet){
                         $pret = $projet->pret;
-                        $totalpret = $projet->composantes->sum('pret');
+                        $totalpret = $projet->composantes->where('id', '!=', $this->composante->id)->sum('pret');
 
                         if(($totalpret + $this->pret) > $pret)
                         {
@@ -75,7 +75,7 @@ class UpdateComposanteRequest extends FormRequest
                     $composante = Composante::find($this->composanteId);
                     if($composante){
                         $pret = $composante->pret;
-                        $totalpret = $composante->sousComposantes->sum('pret');
+                        $totalpret = $composante->sousComposantes->where('id', '!=', $this->composante->id)->sum('pret');
 
                         if(($totalpret + $this->pret) > $pret)
                         {
@@ -90,7 +90,7 @@ class UpdateComposanteRequest extends FormRequest
                     $projet = Projet::find($this->projetId);
                     if($projet){
                         $budgetNational = $projet->budgetNational;
-                        $totalBudgetNational = $projet->composantes->sum('budgetNational');
+                        $totalBudgetNational = $projet->composantes->where('id', '!=', $this->composante->id)->sum('budgetNational');
 
                         if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                         {
@@ -103,7 +103,7 @@ class UpdateComposanteRequest extends FormRequest
                     $composante = Composante::find($this->composanteId);
                     if($composante){
                         $budgetNational = $composante->budgetNational;
-                        $totalBudgetNational = $composante->sousComposantes->sum('budgetNational');
+                        $totalBudgetNational = $composante->sousComposantes->where('id', '!=', $this->composante->id)->sum('budgetNational');
 
                         if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                         {

@@ -3,6 +3,7 @@
 namespace App\Http\Requests\user;
 
 use App\Models\Role;
+use Illuminate\Validation\Rule;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -26,9 +27,12 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            /*'nom' => 'required|string|max:255',
-            'prenom' => 'required|string|max:255',
-            'contact' => 'required|string|max:12',*/
+            'nom' => 'sometimes|string|max:255',
+            'prenom' => 'sometimes|string|max:255',
+            'contact'               => ['sometimes', 'string','max:12', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'email'               => ['sometimes', 'email', 'string', Rule::unique('users', 'email')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'roles'  => 'sometimes|array|min:1',
+            'roles.*'     => ['distinct', new HashValidatorRule(new Role())]
         ];
     }
 }
