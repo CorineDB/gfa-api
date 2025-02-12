@@ -48,9 +48,11 @@ class UpdatePasswordColumnOfPasswordsTable extends Migration
                     }
 
                     // Add the new composite unique constraint on 'password' and 'userId'
-                    Schema::table('passwords', function (Blueprint $table) {
+
+                    // Check if the composite unique constraint exists
+                    if (!isset(\DB::getDoctrineSchemaManager()->listTableIndexes('passwords')['passwords_password_userid_unique'])) {
                         $table->unique(['password', 'userId']);
-                    });
+                    }
                 }
             });
         }
