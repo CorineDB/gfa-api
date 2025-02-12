@@ -24,7 +24,7 @@ class Suivi extends Model
     {
         parent::boot();
 
-        static::creating(function ($suivi) {
+        static::created(function ($suivi) {
             DB::beginTransaction();
             try {
 
