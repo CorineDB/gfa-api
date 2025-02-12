@@ -26,6 +26,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
+        dd(!empty(request()->input('valeurDeBase')) || !count(request()->input('anneesCible')));
         return request()->user()->hasPermissionTo("creer-un-indicateur") || request()->user()->hasRole("unitee-de-gestion");
     }
 
@@ -55,7 +56,7 @@ class StoreRequest extends FormRequest
 
             "agreger"                       => ["required", "boolean:false"],
 
-            'uniteeMesureId'                => ['nullable', Rule::requiredIf(!empty(request()->input('valeurDeBase')) || !empty(request()->input('anneesCible'))), new HashValidatorRule(new Unitee())],
+            'uniteeMesureId'                => ['nullable', Rule::requiredIf(!empty(request()->input('valeurDeBase')) || !count(request()->input('anneesCible'))), new HashValidatorRule(new Unitee())],
 
             "indice"                        => ["required", "integer", "min:0"],
             'categorieId'                   => ['required', new HashValidatorRule(new Categorie())],
