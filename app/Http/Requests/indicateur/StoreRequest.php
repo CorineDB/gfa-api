@@ -26,6 +26,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
+        return [!request()->input('agreger'), !empty(request()->input('valeurDeBase')), !empty(request()->input('anneesCible'))];
         return request()->user()->hasPermissionTo("creer-un-indicateur") || request()->user()->hasRole("unitee-de-gestion");
     }
 
