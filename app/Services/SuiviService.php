@@ -59,7 +59,7 @@ class SuiviService extends BaseService implements SuiviServiceInterface
         {
             $suivis = [];
             
-            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+            if(Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)){
                 $suivis = Auth::user()->profilable->projet->suivis();
             } 
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
