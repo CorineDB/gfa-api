@@ -276,8 +276,11 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                 $anneeDeBase = Carbon::createFromFormat('Y', $attributs['anneeDeBase'])->format('Y');
 
-                if (Carbon::parse($programme->debut)->year < $anneeDeBase && $anneeDeBase < Carbon::parse($programme->fin)->year) {
-                    throw new Exception("L'année de base doit être une date postérieure ou égale à 2022.", 422);
+                /* if (Carbon::parse($programme->debut)->year < $anneeDeBase && $anneeDeBase < Carbon::parse($programme->fin)->year) {
+                    throw new Exception("L'année de base doit être une date postérieure ou égale à ".$attributs['anneeDeBase'].".", 422);
+                } */
+                if (Carbon::parse($programme->debut)->year > $anneeDeBase && $anneeDeBase < Carbon::parse($programme->fin)->year) {
+                    throw new Exception("L'année de base doit être une date postérieure ou égale à ".$attributs['anneeDeBase'].".", 422);
                 }
             }
 
