@@ -35,9 +35,10 @@ class UpdateRequest extends FormRequest
         return [
             'libelle'                       => ['sometimes', 'string', Rule::unique('indicateur_value_keys', 'libelle')->ignore($this->indicateur_value_key)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
-            'key'       => ['sometimes','max:255', Rule::unique('indicateur_value_keys', 'key')->ignore($this->indicateur_value_key)->whereNull('deleted_at')],
-            'description' => 'nullable|max:255',
-            'uniteeMesureId'    => ['sometimes', new HashValidatorRule(new Unitee())],
+            "key"                           => ["sometimes", "max:255", Rule::unique('indicateur_value_keys', 'key')->where("programmeId", auth()->user()->programmeId)->ignore($this->indicateur_value_key)->whereNull('deleted_at')],
+
+            'description'                   => 'nullable|max:255',
+            'uniteeMesureId'                => ['sometimes', new HashValidatorRule(new Unitee())],
         ];
     }
 

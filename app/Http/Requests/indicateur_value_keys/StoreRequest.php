@@ -29,7 +29,7 @@ class StoreRequest extends FormRequest
         return [
             'libelle'                       => ['required', 'string', Rule::unique('indicateur_value_keys', 'libelle')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
-            "key" => ["required", "max:255", "unique:indicateur_value_keys,key"],
+            "key" => ["required", "max:255", Rule::unique('indicateur_value_keys', 'key')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             "description" => "nullable", "max:255",
             "uniteeMesureId"   => ["required", new HashValidatorRule(new Unitee())]
         ];
