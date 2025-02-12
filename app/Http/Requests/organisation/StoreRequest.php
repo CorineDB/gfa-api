@@ -46,7 +46,7 @@ class StoreRequest extends FormRequest
             'code'              => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at') ],
             'type'              => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
 
-            'fondId'            => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), new HashValidatorRule(new Fond())],
+            'fondId'            => ['nullable',((request()->input('type') === 'osc_fosir')), new HashValidatorRule(new Fond())],
 
             'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
             'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
