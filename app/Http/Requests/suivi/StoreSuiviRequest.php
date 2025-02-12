@@ -37,7 +37,9 @@ class StoreSuiviRequest extends FormRequest
                 /* if( $tache->statut && !($tache->statut >= 0 &&  $tache->statut < 2) ){
                     throw ValidationException::withMessages(["tacheId" =>  "Le suivi ne peut qu'etre effectuer, que pour les tâches en cours ou en retard d'execution."]);
                 } */
-            }]
+            }],
+
+            'poidsActuel'       => ["required", "integer", "in:0,50,100"]
         ];
     }
 
