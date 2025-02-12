@@ -113,7 +113,7 @@ class StoreRequest extends FormRequest
 
             'anneesCible.*.annee'            => ['required', 'distinct', 'date_format:Y', 'after_or_equal:anneeDeBase'],
 
-            'sites'                         => ['sometimes', 'array', 'min:1'],
+            'sites'                         => ['nullable', "array", request()->input('sites') ? "min:1" : ""],
             'sites.*'                       => ['distinct', new HashValidatorRule(new Site())],
             
             //'bailleurId'    => [Rule::requiredIf(request()->user()->hasRole(['unitee-de-gestion'])), new HashValidatorRule(new Bailleur())]
