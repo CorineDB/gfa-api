@@ -3,6 +3,7 @@
 namespace App\Http\Requests\user;
 
 use App\Models\Role;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -26,10 +27,11 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->indicateur))
+        if(is_string($this->utilisateur))
         {
-            $this->indicateur = Indicateur::findByKey($this->user);
+            $this->utilisateur = User::findByKey($this->utilisateur);
         }
+        
         return [
             'nom' => 'sometimes|string|max:255',
             'prenom' => 'sometimes|string|max:255',
