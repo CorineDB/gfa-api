@@ -121,8 +121,6 @@ class SuiviService extends BaseService implements SuiviServiceInterface
 
             $suivi = $tache->suivis()->create(array_merge($attributs, ['poidsActuel'=> $attributs['poidsActuel'], 'programmeId' => auth()->user()->programmeId, "commentaire" => "Etat actuel"]));
 
-            dd($attributs);
-            
             //$tache->statuts()->create(['etat' => 2]);
 
             if($attributs["poidsActuel"] == 100){
