@@ -132,7 +132,7 @@ class SuiviService extends BaseService implements SuiviServiceInterface
 
             $tache =  $tache->fresh();
 
-            $suivi =  $suivi->fresh();
+            /* $suivi =  $suivi->fresh();
 
             $data['texte'] = "Le suivi de la tache ".$tache->codePta." : ".$tache->nom." vient d'etre fait";
             $data['id'] = $suivi->id;
@@ -151,7 +151,7 @@ class SuiviService extends BaseService implements SuiviServiceInterface
                     event(new NewNotification($this->formatageNotification($notification, $user)));
 
                 }
-            }
+            } */
 
             DB::commit();
 
