@@ -123,7 +123,10 @@ class SuiviService extends BaseService implements SuiviServiceInterface
 
             //$tache->statuts()->create(['etat' => 2]);
 
-            $tache->statut = 2;
+            if($attributs["poidsActuel"]==100){
+
+                $tache->statut = 2;
+            }
 
             $tache->save();
 
