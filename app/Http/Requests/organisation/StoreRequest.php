@@ -43,10 +43,10 @@ class StoreRequest extends FormRequest
             'contact_point_focal'   => ['required', 'numeric','digits_between:8,24', Rule::unique('organisations', 'contact_point_focal')->whereNull('deleted_at')],
 
             'sigle'             => ['required','string','max:15', Rule::unique('organisations', 'sigle')->whereNull('deleted_at')],
-            'code'              => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->whereNull('deleted_at') ],
+            'code'              => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at') ],
             'type'              => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
 
-            'fondId'            => ['sometimes', Rule::requiredIf((request()->input('type') === 'osc_fosir')), new HashValidatorRule(new Fond())],
+            'fondId'            => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), new HashValidatorRule(new Fond())],
 
             'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
             'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
