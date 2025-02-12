@@ -16,7 +16,8 @@ class SuiviFinancier extends Model
     public $timestamps = true;
 
     protected $dates = ['deleted_at'];
-    protected $fillable = array('consommer', 'trimestre', 'activiteId', 'programmeId', 'commentaire', 'annee', 'suivi_financierable_type', 'suivi_financierable_id', 'dateDeSuivi');
+    protected $default = ['type' => 'fond-propre'];
+    protected $fillable = array('consommer', 'trimestre', 'activiteId', 'programmeId', 'commentaire', 'annee', 'type', 'suivi_financierable_type', 'suivi_financierable_id', 'dateDeSuivi');
 
     public function activite()
     {
