@@ -52,7 +52,6 @@ class SuiviController extends Controller
      */
     public function store(StoreSuiviRequest $request)
     {
-        dd($request->all());
         return $this->suiviService->create($request->all());
     }
 
