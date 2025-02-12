@@ -62,7 +62,7 @@ class UpdateComposanteRequest extends FormRequest
                     $projet = Projet::find($this->projetId);
                     if($projet){
                         $pret = $projet->pret;
-                        $totalpret = $projet->composantes->sum('pret');
+                        $totalpret = $projet->composantes->where('id', '!=', $this->composante)->sum('pret');
 
                         if(($totalpret + $this->pret) > $pret)
                         {
@@ -75,11 +75,25 @@ class UpdateComposanteRequest extends FormRequest
                     $composante = Composante::find($this->composanteId);
                     if($composante){
                         $pret = $composante->pret;
-                        $totalpret = $composante->sousComposantes->sum('pret');
+                        $totalpret = $composante->sousComposantes->where('id', '!=', $this->composante)->sum('pret');
 
                         if(($totalpret + $this->pret) > $pret)
                         {
                             throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux outputs de cet outcome ne peuvent pas dépasser le montant du budget alloue a l'outcome"], 1);
+                        }
+                    }
+                }
+
+
+                if($this->composante){
+                    $c = Composante::find($this->composante);
+                    if($c){
+                        $pret = $c->pret;
+                        $totalpretA = $c->activites->sum('pret');
+
+                        if($totalpretA > $this->pret)
+                        {
+                            throw ValidationException::withMessages(["pret" => "Le montant du budget alloue a l'output/outcome ne peuvent pas dépasser le total des budgets alloues aux activites de l'output/outcone."], 1);
                         }
                     }
                 }
@@ -90,7 +104,7 @@ class UpdateComposanteRequest extends FormRequest
                     $projet = Projet::find($this->projetId);
                     if($projet){
                         $budgetNational = $projet->budgetNational;
-                        $totalBudgetNational = $projet->composantes->sum('budgetNational');
+                        $totalBudgetNational = $projet->composantes->where('id', '!=', $this->composante)->sum('budgetNational');
 
                         if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                         {
@@ -103,11 +117,25 @@ class UpdateComposanteRequest extends FormRequest
                     $composante = Composante::find($this->composanteId);
                     if($composante){
                         $budgetNational = $composante->budgetNational;
-                        $totalBudgetNational = $composante->sousComposantes->sum('budgetNational');
+                        $totalBudgetNational = $composante->sousComposantes->where('id', '!=', $this->composante)->sum('budgetNational');
 
                         if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                         {
                             throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres des outputs de cet outcome ne peuvent pas dépasser le montant du fond propre de l'outcome"], 1);
+                        }
+                    }
+                }
+
+
+                if($this->composante){
+                    $c = Composante::find($this->composante);
+                    if($c){
+                        $budgetNational = $c->budgetNational;
+                        $totalBudgetNational = $c->activites->sum('budgetNational');
+
+                        if($totalBudgetNational > $this->budgetNational)
+                        {
+                            throw ValidationException::withMessages(["budgetNational" => "Le montant du budget alloue a l'output/outcome ne peuvent pas dépasser le total des budgets alloues aux activites de l'output/outcone."], 1);
                         }
                     }
                 }

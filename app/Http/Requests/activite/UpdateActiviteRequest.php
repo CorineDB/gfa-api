@@ -62,7 +62,7 @@ class UpdateActiviteRequest extends FormRequest
                     $composante = Composante::find($this->composanteId);
                     if($composante){
                         $pret = $composante->pret;
-                        $totalpret = $composante->activites->sum('pret');
+                        $totalpret = $composante->activites->where('id', '!=', $this->activite)->sum('pret');
 
                         if(($totalpret + $this->pret) > $pret)
                         {
@@ -77,7 +77,7 @@ class UpdateActiviteRequest extends FormRequest
                     $composante = Composante::find($this->composanteId);
                     if($composante){
                         $budgetNational = $composante->budgetNational;
-                        $totalBudgetNational = $composante->activites->sum('budgetNational');
+                        $totalBudgetNational = $composante->activites->where('id', '!=', $this->activite)->sum('budgetNational');
 
                         if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                         {
