@@ -34,7 +34,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'nom'           => ['required','max:50', Rule::unique('users', 'nom')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
+            'nom'           => ['required','max:255', Rule::unique('users', 'nom')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             'contact'       => ['required', 'numeric','digits_between:8,24', Rule::unique('users', 'contact')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             'email'         => ['required','email','max:50', Rule::unique('users', 'email')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
 

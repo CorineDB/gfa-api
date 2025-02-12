@@ -42,7 +42,7 @@ class UpdateRequest extends FormRequest
         $rules = [
             'nom'           => ['sometimes','max:255', Rule::unique('users', 'nom')->ignore($this->organisation->user)->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             'contact'       => ['sometimes','max:8', Rule::unique('users', 'contact')->ignore($this->organisation->user)->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
-            'email'         => ['sometimes','email','max:255', Rule::unique('users', 'email')->ignore($this->organisation->user)->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
+            'email'         => ['sometimes','email','max:50', Rule::unique('users', 'email')->ignore($this->organisation->user)->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
 
             'nom_point_focal'       => ['sometimes','max:50', Rule::unique('organisations', 'nom_point_focal')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at')],
             'prenom_point_focal'    => ['sometimes','max:50', Rule::unique('organisations', 'prenom_point_focal')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at')],
