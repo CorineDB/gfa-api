@@ -34,8 +34,12 @@ class UpdatePasswordColumnOfPasswordsTable extends Migration
 
                         // Use try-catch to handle potential errors gracefully
                         try {
-                            // Drop the unique constraint
-                            $table->dropUnique("$uniqueConstraintName");
+
+                            // Check if the unique constraint exists
+                            if (isset(\DB::getDoctrineSchemaManager()->listTableIndexes('passwords')[$uniqueConstraintName])) {
+                                // Drop the unique constraint
+                                $table->dropUnique("$uniqueConstraintName");
+                            }
                             //$table->dropUnique("passwords_password_unique");
                             //$table->dropUnique(['password']);
                         } catch (\Illuminate\Database\QueryException $e) {
