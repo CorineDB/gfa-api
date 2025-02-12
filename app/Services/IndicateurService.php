@@ -279,7 +279,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 /* if (Carbon::parse($programme->debut)->year < $anneeDeBase && $anneeDeBase < Carbon::parse($programme->fin)->year) {
                     throw new Exception("L'année de base doit être une date postérieure ou égale à ".$attributs['anneeDeBase'].".", 422);
                 } */
-                if (Carbon::parse($programme->debut)->year > $anneeDeBase && $anneeDeBase < Carbon::parse($programme->fin)->year) {
+                if (Carbon::parse($programme->debut)->year > $anneeDeBase && $anneeDeBase > Carbon::parse($programme->fin)->year) {
                     throw new Exception("L'année de base doit être une date postérieure ou égale à ".$attributs['anneeDeBase'].".", 422);
                 }
             }
