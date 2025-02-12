@@ -45,7 +45,7 @@ class UpdatePasswordColumnOfPasswordsTable extends Migration
                     } else {
                         // Fallback: Drop unique constraint using column name
                         $table->dropUnique(['password']);
-                    }      
+                    }
 
                     // Add the new composite unique constraint on 'password' and 'userId'
                     Schema::table('passwords', function (Blueprint $table) {
@@ -69,7 +69,19 @@ class UpdatePasswordColumnOfPasswordsTable extends Migration
                 if (Schema::hasColumn('passwords', 'password')) {
                     $table->string('password')->nullable(false)->change();
                     // Re-add the unique constraint on the 'intitule' column if needed
-                    $table->unique('password');
+
+                    // Query to fetch the unique constraint name for the 'password' column
+                    $uniqueKey = \DB::select(\DB::raw("
+                            SELECT CONSTRAINT_NAME 
+                            FROM information_schema.KEY_COLUMN_USAGE 
+                            WHERE TABLE_NAME = 'passwords' 
+                            AND COLUMN_NAME = 'password'
+                        "));
+                    // If a unique constraint exists, drop it
+                    if (empty($uniqueKey)) {
+
+                        $table->unique('password');
+                    }
                 }
 
                 // Check if the composite unique constraint exists
