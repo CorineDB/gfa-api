@@ -17,7 +17,7 @@ class AddTypeColumnToSuiviFinanciersTable extends Migration
             Schema::table('suivi_financiers', function (Blueprint $table) {
 
                 if(!Schema::hasColumn('suivi_financiers', 'type')){
-                    $table->string('type')->nullable();
+                    $table->string('type')->default('fond-propre')->nullable();
                 }
 
             });
