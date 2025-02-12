@@ -33,7 +33,7 @@ class Suivi extends Model
 
                 //if (in_array([0, 1], $activite->statut)) {
 
-                    $totalPoids = $activite->taches->sum("poids");
+                    /* $totalPoids = $activite->taches->sum("poids");
 
                     $totalPoidsActuel = $activite->taches->load('suivis')->pluck('suivis')->map(function ($suivi) {
                         $lastPoid = $suivi->last();
@@ -43,7 +43,13 @@ class Suivi extends Model
                         return 0;
                     })->sum();
 
-                    $poidsActuel = ($activite->poids * $totalPoidsActuel) / $totalPoids;
+                    $poidsActuel = ($activite->poids * $totalPoidsActuel) / $totalPoids; */
+
+                    $totalPoidsActuel = $activite->taches->each(function($tache){
+                        return $tache->suivi();
+                    })->sum();
+
+                    $poidsActuel = $totalPoidsActuel /$activite->taches->count();
 
                     $activite->suivis()->create(["poidsActuel" => $poidsActuel]);
 
