@@ -27,18 +27,16 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->utilisateur))
+        if(is_string($this->id))
         {
-            $this->utilisateur = User::findByKey($this->utilisateur);
+            $this->id = User::findByKey($this->id);
         }
-
-        dd([$this->id]);
         
         return [
             'nom' => 'sometimes|string|max:255',
             'prenom' => 'sometimes|string|max:255',
-            'contact'               => ['sometimes', 'string','max:12', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->ignore($this->utilisateur)->whereNull('deleted_at')],
-            'email'               => ['sometimes', 'email', 'string', Rule::unique('users', 'email')->where("programmeId", auth()->user()->programmeId)->ignore($this->utilisateur)->whereNull('deleted_at')],
+            'contact'               => ['sometimes', 'string','max:12', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->ignore($this->id)->whereNull('deleted_at')],
+            'email'               => ['sometimes', 'email', 'string', Rule::unique('users', 'email')->where("programmeId", auth()->user()->programmeId)->ignore($this->id)->whereNull('deleted_at')],
             'roles'  => 'sometimes|array|min:1',
             'roles.*'     => ['distinct', new HashValidatorRule(new Role())]
         ];
