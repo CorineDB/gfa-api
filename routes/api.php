@@ -198,9 +198,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
         });
 
 
-        Route::apiResource('utilisateurs', 'UserController')->parameters([
-            'utilisateurs' => 'utilisateur',
-        ])->names('utilisateurs');
+        Route::apiResource('utilisateurs', 'UserController')->names('utilisateurs');
 
         Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function () {
             Route::controller('UserController')->group(function () {
