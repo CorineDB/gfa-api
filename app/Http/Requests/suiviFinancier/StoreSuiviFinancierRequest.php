@@ -43,7 +43,7 @@ class StoreSuiviFinancierRequest extends FormRequest
             'annee'         => [Rule::requiredIf(!request('dateDeSuivi')), "integer", "digits:4", "date_format:Y", /* 'between:1900,' . now()->year, */ "gte:1940"],
             'trimestre'     =>  [Rule::requiredIf(!request('dateDeSuivi')), "integer", "min:1", "max:4"],
 
-            'type' => 'sometimes|integer|min:0|max:1',
+            'type' => 'sometimes|integer|in:fond-propre,budget-alloue',
             'commentaire'          => 'sometimes',
         ];
     }
