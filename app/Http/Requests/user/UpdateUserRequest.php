@@ -32,7 +32,7 @@ class UpdateUserRequest extends FormRequest
             $this->utilisateur = User::findByKey($this->utilisateur);
         }
 
-        dd(request()->all());
+        dd(request());
         
         return [
             'nom' => 'sometimes|string|max:255',
