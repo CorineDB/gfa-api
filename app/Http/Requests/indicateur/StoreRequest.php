@@ -55,7 +55,7 @@ class StoreRequest extends FormRequest
 
             "agreger"                       => ["required", "boolean:false"],
 
-            'uniteeMesureId'                => ['nullable', Rule::requiredIf(!request()->input('agreger') || request()->input('valeurDeBase') || request()->input('anneesCible')), new HashValidatorRule(new Unitee())],
+            'uniteeMesureId'                => ['nullable', Rule::requiredIf(!request()->input('agreger') || !empty(request()->input('valeurDeBase')) || !empty(request()->input('anneesCible'))), new HashValidatorRule(new Unitee())],
 
             "indice"                        => ["required", "integer", "min:0"],
             'categorieId'                   => ['required', new HashValidatorRule(new Categorie())],
