@@ -15,7 +15,7 @@ class UpdateNomColumnOfIndicateursDeGouvernanceTable extends Migration
     {
         if(Schema::hasTable('indicateurs_de_gouvernance')){
             Schema::table('indicateurs_de_gouvernance', function (Blueprint $table) {
-                if(!Schema::hasColumn('indicateurs_de_gouvernance', 'nom')){
+                if(Schema::hasColumn('indicateurs_de_gouvernance', 'nom')){
                     $table->longText('nom')->nullable(false)->change();
                 }
             });
@@ -31,7 +31,7 @@ class UpdateNomColumnOfIndicateursDeGouvernanceTable extends Migration
     {
         if(Schema::hasTable('indicateurs_de_gouvernance')){
             Schema::table('indicateurs_de_gouvernance', function (Blueprint $table) {
-                if(!Schema::hasColumn('indicateurs_de_gouvernance', 'nom')){
+                if(Schema::hasColumn('indicateurs_de_gouvernance', 'nom')){
                     $table->string('nom')->nullable(false)->change();
                 }
             });
