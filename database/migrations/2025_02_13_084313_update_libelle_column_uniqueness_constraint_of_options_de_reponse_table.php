@@ -47,13 +47,45 @@ class UpdateLibelleColumnUniquenessConstraintOfOptionsDeReponseTable extends Mig
                             \Log::warning("Unique constraint '{$uniqueConstraintName}' could not be dropped: " . $e->getMessage());
                         }
                     }
+                }
 
-                    // Add the new composite unique constraint on 'libelle' and 'programmeId'
+                // Check if the column exists
+                if (Schema::hasColumn('options_de_reponse', 'slug')) {
+                    
+                    // Query to fetch the unique constraint name for the 'slug' column
+                    $uniqueKey = \DB::select(\DB::raw("
+                            SELECT CONSTRAINT_NAME 
+                            FROM information_schema.KEY_COLUMN_USAGE 
+                            WHERE TABLE_NAME = 'options_de_reponse' 
+                            AND COLUMN_NAME = 'slug'
+                        "));
 
-                    // Check if the composite unique constraint exists
-                    if (!isset(\DB::getDoctrineSchemaManager()->listTableIndexes('options_de_reponse')['options_de_reponse_libelle_programmeid_unique'])) {
-                        $table->unique(['libelle', 'programmeId']);
+                    // If a unique constraint exists, drop it
+                    if (!empty($uniqueKey)) {
+
+                        $uniqueConstraintName = $uniqueKey[0]->CONSTRAINT_NAME;
+
+                        // Use try-catch to handle potential errors gracefully
+                        try {
+
+                            // Check if the unique constraint exists
+                            if (isset(\DB::getDoctrineSchemaManager()->listTableIndexes('options_de_reponse')[$uniqueConstraintName])) {
+                                // Drop the unique constraint
+                                $table->dropUnique("$uniqueConstraintName");
+                            }
+                            //$table->dropUnique("options_de_reponse_slug_unique");
+                            //$table->dropUnique(['slug']);
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            // Log a warning if the unique constraint couldn't be dropped
+                            \Log::warning("Unique constraint '{$uniqueConstraintName}' could not be dropped: " . $e->getMessage());
+                        }
                     }
+                }
+
+                // Check if the composite unique constraint exists
+                if (!isset(\DB::getDoctrineSchemaManager()->listTableIndexes('options_de_reponse')['options_de_reponse_libelle_slug_programmeid_unique'])) {
+                    // Add the new composite unique constraint on 'libelle', 'slug' and 'programmeId'
+                    $table->unique(['libelle','slug', 'programmeId']);
                 }
             });
         }
@@ -87,9 +119,27 @@ class UpdateLibelleColumnUniquenessConstraintOfOptionsDeReponseTable extends Mig
                     }
                 }
 
+                if (Schema::hasColumn('options_de_reponse', 'slug')) {
+                    $table->string('slug')->nullable(false)->change();
+                    // Re-add the unique constraint on the 'intitule' column if needed
+
+                    // Query to fetch the unique constraint name for the 'slug' column
+                    $uniqueKey = \DB::select(\DB::raw("
+                            SELECT CONSTRAINT_NAME 
+                            FROM information_schema.KEY_COLUMN_USAGE 
+                            WHERE TABLE_NAME = 'options_de_reponse' 
+                            AND COLUMN_NAME = 'slug'
+                        "));
+                    // If a unique constraint exists, drop it
+                    if (empty($uniqueKey)) {
+
+                        $table->unique('slug');
+                    }
+                }
+
                 // Check if the composite unique constraint exists
-                if (isset(\DB::getDoctrineSchemaManager()->listTableIndexes('options_de_reponse')['options_de_reponse_libelle_programmeid_unique'])) {
-                    $table->dropUnique(['libelle', 'programmeId']);
+                if (isset(\DB::getDoctrineSchemaManager()->listTableIndexes('options_de_reponse')['options_de_reponse_libelle_slug_programmeid_unique'])) {
+                    $table->dropUnique(['libelle', 'slug', 'programmeId']);
                 }
             });
         }

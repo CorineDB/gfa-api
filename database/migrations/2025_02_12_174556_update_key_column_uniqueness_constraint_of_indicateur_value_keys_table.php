@@ -70,7 +70,6 @@ class UpdateKeyColumnUniquenessConstraintOfIndicateurValueKeysTable extends Migr
             Schema::table('indicateur_value_keys', function (Blueprint $table) {
 
                 if (Schema::hasColumn('indicateur_value_keys', 'key')) {
-                    $table->string('key')->nullable(false)->change();
                     // Re-add the unique constraint on the 'intitule' column if needed
 
                     // Query to fetch the unique constraint name for the 'key' column

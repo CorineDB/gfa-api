@@ -18,7 +18,6 @@ class UpdateEmailColumnConstraintOfUsersTable extends Migration
 
                 // Check if the column exists
                 if (Schema::hasColumn('users', 'email')) {
-                    $table->string('email')->nullable()->change();
                     // Query to fetch the unique constraint name for the 'email' column
                     $uniqueKey = \DB::select(\DB::raw("
                             SELECT CONSTRAINT_NAME 
@@ -70,7 +69,6 @@ class UpdateEmailColumnConstraintOfUsersTable extends Migration
             Schema::table('users', function (Blueprint $table) {
 
                 if (Schema::hasColumn('users', 'email')) {
-                    $table->string('email')->nullable(false)->change();
                     // Re-add the unique constraint on the 'intitule' column if needed
 
                     // Query to fetch the unique constraint name for the 'email' column
