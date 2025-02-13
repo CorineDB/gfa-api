@@ -65,6 +65,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
     {
         try
         {
+            $filtres = array_merge($filtres, ['programmeId__eq'=>auth()->user()->programmeId ]);
+            dd($filtres);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($this->repository->filterBy($filtres, $columns, $relations)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
