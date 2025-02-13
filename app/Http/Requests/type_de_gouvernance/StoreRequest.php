@@ -2,8 +2,7 @@
 
 namespace App\Http\Requests\type_de_gouvernance;
 
-use App\Models\Programme;
-use App\Rules\HashValidatorRule;
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreRequest extends FormRequest
@@ -26,7 +25,8 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom' => 'required|max:255|unique:types_de_gouvernance,nom',
+            'nom'           => ['required', 'string', Rule::unique('types_de_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+
             'description' => 'nullable|max:255'
         ];
     }

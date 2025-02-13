@@ -85,7 +85,7 @@ class UpdateLibelleColumnUniquenessConstraintOfOptionsDeReponseTable extends Mig
                 // Check if the composite unique constraint exists
                 if (!isset(\DB::getDoctrineSchemaManager()->listTableIndexes('options_de_reponse')['options_de_reponse_libelle_slug_programmeid_unique'])) {
                     // Add the new composite unique constraint on 'libelle', 'slug' and 'programmeId'
-                    $table->unique(['libelle','slug', 'programmeId']);
+                    $table->unique(['libelle', 'slug', 'programmeId']);
                 }
             });
         }
