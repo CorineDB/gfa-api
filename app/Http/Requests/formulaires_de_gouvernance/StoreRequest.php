@@ -37,7 +37,7 @@ class StoreRequest extends FormRequest
             'annee_exercice'   => ['required', 'integer', Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
                 ->where(function ($query) {
                     return $query->where('type', request()->input('type'));
-                })
+                })->where("programmeId", auth()->user()->programmeId)
             ],
             'description'       => 'nullable|max:255',
             'type'             => 'required|string|in:factuel,perception',
