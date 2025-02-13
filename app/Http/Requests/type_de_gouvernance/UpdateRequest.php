@@ -33,7 +33,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('types_de_gouvernance', 'nom')->ignore($this->type_de_gouvernance)->whereNull('deleted_at')],
+            'nom'  => ['sometimes','max:255', Rule::unique('types_de_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->type_de_gouvernance)->whereNull('deleted_at')],
             'description' => 'sometimes|nullable|max:255'
         ];
     }
