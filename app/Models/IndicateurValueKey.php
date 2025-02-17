@@ -37,7 +37,7 @@ class IndicateurValueKey extends Model
                     'key'       => time() . '::' . $indicateur_value_key->key
                 ]);
 
-                $indicateur_value_key->indicateurs()->detach();
+                //$indicateur_value_key->indicateurs()->detach();
 
                 DB::commit();
             } catch (\Throwable $th) {
