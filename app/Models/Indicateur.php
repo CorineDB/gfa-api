@@ -40,7 +40,7 @@ class Indicateur extends Model
                 $indicateur->sites()->detach();
                 $indicateur->valeursDeBase()->delete();
                 $indicateur->valeursCible()->delete();
-                $indicateur->valueKeys()->detach();
+                //$indicateur->valueKeys()->detach();
 
                 DB::commit();
 
