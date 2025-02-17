@@ -34,7 +34,7 @@ class OptionDeReponse extends Model
         static::deleting(function ($option_de_reponse) {
             if ($option_de_reponse->reponses->count() > 0) {
                 // Prevent deletion by throwing an exception
-                throw new Exception("Cannot delete because there are associated responses.");
+                throw new Exception("Impossible de supprimer cette option de réponse. Veuillez d'abord supprimer toutes les réponses associées.");
             }
         });
 
@@ -46,7 +46,7 @@ class OptionDeReponse extends Model
                 $option_de_reponse->update([
                     'nom' => time() . '::' . $option_de_reponse->nom
                 ]);
-                
+
                 $option_de_reponse->indicateurs_de_gouvernance()->detach();
                 $option_de_reponse->formulaires_de_gouvernance()->detach();
 

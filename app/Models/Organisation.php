@@ -60,7 +60,7 @@ class Organisation extends Model
 
                 if ((($organisation->projet) && ($organisation->projet->statut > -1)) || ($organisation->evaluations_de_gouvernance->count() > 0) || ($organisation->suivis_indicateurs->count() > 0 ) || ($organisation->indicateurs->count() > 0 ) || ($organisation->soumissions->count() > 0 ) || ($organisation->fiches_de_synthese->count() > 0 ) || ($organisation->profiles->count() > 0 )) {
                     // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete because there are associated resource. ".$organisation->projet);
+                    throw new Exception("Impossible de supprimer cette organisation car elle est liée à un projet actif ou contient des évaluations, indicateurs, suivis ou soumissions. Veuillez supprimer ou dissocier ces éléments avant de réessayer.");
                 }
 
                 $organisation->user()->delete();

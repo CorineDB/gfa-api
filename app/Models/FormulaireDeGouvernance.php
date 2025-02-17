@@ -33,7 +33,6 @@ class FormulaireDeGouvernance extends Model
             if ($formulaire_de_gouvernance->evaluations_de_gouvernance->count() > 0) {
                 // Prevent deletion by throwing an exception
                 throw new Exception("Impossible de supprimer ce formulaire de gouvernance. Veuillez d'abord supprimer toutes les évaluations associées.");
-                throw new Exception("Cannot delete because there are associated resource.");
             }
         });
 
@@ -45,6 +44,7 @@ class FormulaireDeGouvernance extends Model
                 $formulaire_de_gouvernance->options_de_reponse()->delete();
                 $formulaire_de_gouvernance->questions_de_gouvernance()->delete();
                 $formulaire_de_gouvernance->categories_de_gouvernance()->delete();
+                $formulaire_de_gouvernance->categorie_de_gouvernance()->detach();
                 $formulaire_de_gouvernance->evaluations_de_gouvernance()->delete();
 
                 DB::commit();
