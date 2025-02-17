@@ -115,7 +115,7 @@ class ChangeStatut extends Command
 
             }
 
-            else if($statut == 1 && $fin > date('Y-m-d'))
+            else if($statut == 1 && $fin >= date('Y-m-d'))
             {
                 /*$etat = ['etat' => 0];
                 $statut = $this->statuts()->create($etat);*/
