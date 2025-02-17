@@ -326,3 +326,4 @@ ajouter une cle de valeur indicateur
 supprimer une cle de valeur indicateur
 voir cadre de rendement
 voir reponses enquete individuelle
+supprimer une reponse enquete individuelle
