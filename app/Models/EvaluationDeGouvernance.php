@@ -43,6 +43,7 @@ class EvaluationDeGouvernance extends Model
 
                 $evaluation_de_gouvernance->actions_a_mener()->delete();
                 $evaluation_de_gouvernance->recommandations()->delete();
+                $evaluation_de_gouvernance->profiles()->delete();
                 $evaluation_de_gouvernance->fiches_de_synthese()->delete();
                 $evaluation_de_gouvernance->soumissions()->delete();
                 $evaluation_de_gouvernance->organisations()->detach();
