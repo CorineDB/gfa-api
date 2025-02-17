@@ -70,7 +70,9 @@ class Programme extends Model
                 $programme->suiviFinanciers()->delete();
 
                 $programme->users->each(function ($user) {
-                    optional($user)->update(['statut' => -1]);
+                    if($user){
+                        $user->update(['statut' => -1]);
+                    }
                 });
 
                 DB::commit();
