@@ -38,12 +38,12 @@ class Programme extends Model
     protected $hidden = ['updated_at', 'deleted_at'];
 
     protected $relationships = [
-        'fonds', 'recommandations', 'actions_a_mener', 
+        'indicateurs_valeurs', 'indicateurs', 'indicateurs_values_keys', 'fonds', 'recommandations', 'actions_a_mener', 
         'evaluations_de_gouvernance', 'formulaires_de_gouvernance', 
         'soumissions', 'indicateurs_de_gouvernance', 
-        'criteres_de_gouvernance', 'indicateurs_valeurs', 'indicateurs_values_keys', 
+        'criteres_de_gouvernance', 
         'principes_de_gouvernance', 'survey_forms', 'surveys', 'organisations', 
-        'indicateurs', 'suivis_indicateurs', 'suivis', 'sites', 'projets', 
+        'suivis_indicateurs', 'suivis', 'sites', 'projets', 
         'suiviFinanciers', 'types_de_gouvernance', 'options_de_reponse', 
         'sources_de_verification','unitees_de_mesure', 
     ];
@@ -81,7 +81,6 @@ class Programme extends Model
                 $programme->suiviFinanciers()->delete();
 
                 foreach ($programme->relationships as $relationship) {
-                    dd([$programme->{$relationship}()->exists(), $programme->{$relationship}]);
                     if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
                         // Prevent deletion by throwing an exception
                         throw new Exception("Impossible de supprimer cet élément, car des ".str_replace('_', ' ', $relationship)." sont associées au programme. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
