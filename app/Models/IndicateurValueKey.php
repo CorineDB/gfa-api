@@ -27,7 +27,7 @@ class IndicateurValueKey extends Model
             $indicateur_value_key->type = $indicateur_value_key->uniteeMesure->nom;
         });
 
-        static::deleted(function ($indicateur_value_key) {
+        static::deleting(function ($indicateur_value_key) {
 
             DB::beginTransaction();
             try {
@@ -37,7 +37,7 @@ class IndicateurValueKey extends Model
                     'key'       => time() . '::' . $indicateur_value_key->key
                 ]);
 
-                //$indicateur_value_key->indicateurs()->detach();
+                $indicateur_value_key->indicateurs()->detach();
 
                 DB::commit();
             } catch (\Throwable $th) {
