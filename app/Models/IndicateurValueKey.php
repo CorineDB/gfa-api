@@ -29,10 +29,10 @@ class IndicateurValueKey extends Model
 
         static::deleting(function ($indicateur_value_key) {
 
-            if ($indicateur_value_key->indicateurs->count() > 0) {
+            /* if ($indicateur_value_key->indicateurs->count() > 0) {
                 // Prevent deletion by throwing an exception
                 throw new Exception("Cannot delete");
-            }
+            } */
         }); 
 
         static::deleted(function ($indicateur_value_key) {
@@ -45,7 +45,7 @@ class IndicateurValueKey extends Model
                     'key'       => time() . '::' . $indicateur_value_key->key
                 ]);
 
-                $indicateur_value_key->indicateurs()->delete();
+                $indicateur_value_key->indicateurs()->detach();
 
                 DB::commit();
             } catch (\Throwable $th) {

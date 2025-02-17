@@ -36,9 +36,9 @@ class EvaluationDeGouvernance extends Model
             
             try {
 
-                if (($evaluation_de_gouvernance->soumissions->count() > 0) || ($evaluation_de_gouvernance->statut > -1)) {
+                if (($evaluation_de_gouvernance->soumissions->count() > 0) && ($evaluation_de_gouvernance->statut > -1)) {
                     // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete because there are associated resource.");
+                    throw new Exception("Impossible de supprimer cette évaluation de gouvernance. Veuillez d'abord supprimer toutes les soumissions associées.");
                 }
 
                 $evaluation_de_gouvernance->actions_a_mener()->delete();

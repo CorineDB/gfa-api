@@ -32,12 +32,8 @@ class Indicateur extends Model
 
                 if (($indicateur->suivis->pluck('suivisIndicateur')->count() > 0)) {
                     // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete");
+                    throw new Exception("Impossible de supprimer cet indicateur car il est lié à des données de suivi.");
                 }
-                /* if (($indicateur->ug_responsable->count() > 0) || ($indicateur->organisations_responsable->count() > 0) || ($indicateur->valeursCible->count() > 0) || ($indicateur->valeursDeBase->count() > 0) || ($indicateur->sites->count() > 0)) {
-                    // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete");
-                } */
 
                 $indicateur->ug_responsable()->detach();
                 $indicateur->organisations_responsable()->detach();

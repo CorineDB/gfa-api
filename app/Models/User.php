@@ -83,11 +83,14 @@ class User extends Authenticatable
 
             DB::beginTransaction();
             try {
+
                 $user->update([
                     'email' => time() . '::' . $user->email,
                     'nom' => time() . '::' . $user->nom,
                     'contact' => time() . '::' . $user->contact
                 ]);
+                
+                $user->roles()->detach();
 
                 DB::commit();
             } catch (\Throwable $th) {

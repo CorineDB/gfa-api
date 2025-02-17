@@ -46,6 +46,8 @@ class IndicateurDeGouvernance extends Model
                     'nom' => time() . '::' . $indicateur_de_gouvernance->nom
                 ]);
 
+                $indicateur_de_gouvernance->options_de_reponse()->detach();
+
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();

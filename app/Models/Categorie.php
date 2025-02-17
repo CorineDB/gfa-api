@@ -48,7 +48,7 @@ class Categorie extends Model
         static::deleting(function ($categorie) {
             if (($categorie->indicateurs->count() > 0) || $categorie->categories->count() > 0 || $categorie->indicateurMods->count() > 0) {
                 // Prevent deletion by throwing an exception
-                throw new Exception("Cannot delete");
+                throw new Exception("Impossible de supprimer cette catégorie. Veuillez d'abord supprimer tous les indicateurs, sous-catégories et modifications associées.");
             }
         }); 
 

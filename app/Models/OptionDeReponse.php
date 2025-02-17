@@ -46,7 +46,9 @@ class OptionDeReponse extends Model
                 $option_de_reponse->update([
                     'nom' => time() . '::' . $option_de_reponse->nom
                 ]);
-                //$option_de_reponse->indicateurs_de_gouvernance()->delete();
+                
+                $option_de_reponse->indicateurs_de_gouvernance()->detach();
+                $option_de_reponse->formulaires_de_gouvernance()->detach();
 
                 DB::commit();
             } catch (\Throwable $th) {
