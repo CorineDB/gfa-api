@@ -54,6 +54,8 @@ class UpdateRequest extends FormRequest
             'type'                  => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
 
             'fondId'                => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), new HashValidatorRule(new Fond())],
+            'fondId'                => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), new HashValidatorRule(new Fond())],
+
             'latitude'              => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
             'longitude'             => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
 
