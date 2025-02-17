@@ -37,7 +37,7 @@ class Programme extends Model
 
     protected $hidden = ['updated_at', 'deleted_at'];
 
-    public $relationships = [
+    protected $relationships = [
         'unitees_de_mesure', 'fonds', 'recommandations', 'actions_a_mener', 
         'profiles', 'fiches_de_synthese', 'indicatieurs_de_gouvernance', 
         'criteres_de_gouvernance', 'indicateurs_valeurs', 'indicateurs_values_keys', 
@@ -80,8 +80,8 @@ class Programme extends Model
 
                 $programme->suiviFinanciers()->delete();
 
-                foreach ($this->relationships as $relationship) {
-                    if ($this->{$relationship}()->exists()) {
+                foreach ($programme->relationships as $relationship) {
+                    if ($programme->{$relationship}()->exists()) {
                         // Prevent deletion by throwing an exception
                         throw new Exception("Impossible de supprimer cet élément, car des données associées existent. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
                     }
