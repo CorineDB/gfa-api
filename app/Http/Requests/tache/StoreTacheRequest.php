@@ -36,14 +36,14 @@ class StoreTacheRequest extends FormRequest
             'activiteId' => ['required', new HashValidatorRule(new Activite())],
             'debut' => ["required", "date", "date_format:Y-m-d", function($attribute, $value, $fail) use ($activite) {
 
-                if($activite->dureeActivite->debut >= $value){
+                if($activite->dureeActivite->debut > $value){
                     $fail("La date de debut de la tache est anterieur à celui de l'activite");
                 }
                 
             }],
             'fin' => ["required", "date", "date_format:Y-m-d", "after_or_equal:debut", function($attribute, $value, $fail) use ($activite) {
 
-                if($activite->dureeActivite->fin <= $value){
+                if($activite->dureeActivite->fin < $value){
                     $fail("La date de fin de la tache est superieur à celui de l'activite");
                 }
                 
