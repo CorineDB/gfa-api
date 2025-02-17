@@ -79,6 +79,62 @@ class UpdateRequest extends FormRequest
     public function messages()
     {
         return [
+            'nom.sometimes' => 'Le nom est obligatoire.',
+            'nom.max' => 'Le nom ne doit pas dépasser 255 caractères.',
+            'nom.unique' => 'Ce nom est déjà utilisé pour ce programme.',
+    
+            'contact.sometimes' => 'Le contact est obligatoire.',
+            'contact.max' => 'Le contact ne doit pas dépasser 8 caractères.',
+            'contact.unique' => 'Ce contact est déjà enregistré.',
+    
+            'email.sometimes' => 'L\'email est obligatoire.',
+            'email.email' => 'L\'email doit être valide.',
+            'email.max' => 'L\'email ne doit pas dépasser 50 caractères.',
+            'email.unique' => 'Cet email est déjà enregistré.',
+    
+            'nom_point_focal.sometimes' => 'Le nom du point focal est obligatoire.',
+            'nom_point_focal.max' => 'Le nom du point focal ne doit pas dépasser 50 caractères.',
+            'nom_point_focal.unique' => 'Ce nom de point focal est déjà utilisé.',
+    
+            'prenom_point_focal.sometimes' => 'Le prénom du point focal est obligatoire.',
+            'prenom_point_focal.max' => 'Le prénom du point focal ne doit pas dépasser 50 caractères.',
+            'prenom_point_focal.unique' => 'Ce prénom de point focal est déjà utilisé.',
+    
+            'contact_point_focal.sometimes' => 'Le contact du point focal est obligatoire.',
+            'contact_point_focal.numeric' => 'Le contact doit être un nombre.',
+            'contact_point_focal.digits_between' => 'Le contact doit avoir entre 8 et 24 chiffres.',
+            'contact_point_focal.unique' => 'Ce contact est déjà utilisé.',
+    
+            'sigle.max' => 'Le sigle ne doit pas dépasser 255 caractères.',
+            'sigle.unique' => 'Ce sigle est déjà utilisé.',
+    
+            'code.required_if' => 'Le code est obligatoire pour une unité de gestion.',
+            'code.numeric' => 'Le code doit être un nombre.',
+            'code.min' => 'Le code doit contenir au moins 2 chiffres.',
+            'code.unique' => 'Ce code est déjà enregistré.',
+    
+            'type.required' => 'Le type est obligatoire.',
+            'type.in' => 'Le type doit être soit "osc" soit "osc_fosir".',
+    
+            'fondId.required_if' => 'Le fond est obligatoire pour les organisations de type "osc_fosir".',
+    
+            'latitude.required' => 'La latitude est obligatoire.',
+            'latitude.numeric' => 'La latitude doit être un nombre.',
+            'latitude.regex' => 'La latitude n\'est pas valide.',
+    
+            'longitude.required' => 'La longitude est obligatoire.',
+            'longitude.numeric' => 'La longitude doit être un nombre.',
+            'longitude.regex' => 'La longitude n\'est pas valide.',
+    
+            'addresse.max' => 'L\'adresse ne doit pas dépasser 255 caractères.',
+            'quartier.max' => 'Le quartier ne doit pas dépasser 255 caractères.',
+            'arrondissement.max' => 'L\'arrondissement ne doit pas dépasser 255 caractères.',
+            'commune.max' => 'La commune ne doit pas dépasser 255 caractères.',
+            'departement.max' => 'Le département ne doit pas dépasser 255 caractères.',
+            'pays.max' => 'Le pays ne doit pas dépasser 255 caractères.',
+            'secteurActivite.max' => 'Le secteur d\'activité ne doit pas dépasser 255 caractères.',
+        ];
+        return [
             'nom.required'                      => 'Veuillez préciser votre nom.',
             'contact.required'                  => 'Veuillez préciser votre numéro de téléphone.',
             'email.email'                       => 'Veuillez préciser une adresse email valide.',
