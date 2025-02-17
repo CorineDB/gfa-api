@@ -222,7 +222,7 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
                 $composante->save();
             }
 
-            /* if(array_key_exists('statut', $attributs) && $attributs['statut'] === -1 ){
+            if(array_key_exists('statut', $attributs) && $attributs['statut'] === -1 ){
 
                 if(!Auth::user()->hasPermissionTo('validation')) throw new Exception( "Vous n'avez pas la permission de faire la validation", 500);
 
@@ -247,26 +247,26 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
                 }
                 $last = $composante->statut;
 
-                $this->verifieStatut($last, $attributs['statut']);*/
+                $this->verifieStatut($last, $attributs['statut']);
 
                 if($type)
                 {
-                    /*if( $last == -2 && $attributs['statut'] != -2 )
-                    {*/
+                    if( $last == -2 && $attributs['statut'] != -2 )
+                    {
                         $attributs = array_merge($attributs, ['position' => $this->position($composante->projet, 'composantes')]);
 
-                    /*}*/
+                    }
                 }
                 else
                 {
-                    /*if( $last === -2 && $attributs['statut'] !== -2 )
-                    {*/
+                    if( $last === -2 && $attributs['statut'] !== -2 )
+                    {
                         $attributs = array_merge($attributs, ['position' => $this->position($composante->composante, 'sousComposantes')]);
 
-                    /*}*/
+                    }
                 }
 
-            /*} */
+            }
 
             $composante->fill($attributs)->save();
 
