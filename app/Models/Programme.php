@@ -80,8 +80,8 @@ class Programme extends Model
 
                 $programme->suiviFinanciers()->delete();
 
-                foreach ($this->relationships as $relationship) {
-                    if ($this->{$relationship}()->exists()) {
+                foreach ($programme->relationships as $relationship) {
+                    if ($programme->{$relationship}()->exists()) {
                         // Prevent deletion by throwing an exception
                         throw new Exception("Impossible de supprimer cet élément, car des données associées existent. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
                     }
