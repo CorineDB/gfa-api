@@ -38,14 +38,14 @@ class Programme extends Model
     protected $hidden = ['updated_at', 'deleted_at'];
 
     protected $relationships = [
-        'unitees_de_mesure', 'fonds', 'recommandations', 'actions_a_mener', 
-        'profiles', 'fiches_de_synthese', 'indicatieurs_de_gouvernance', 
+        'fonds', 'recommandations', 'actions_a_mener', 
+        'evaluations_de_gouvernance', 'formulaires_de_gouvernance', 
+        'soumissions', 'indicateurs_de_gouvernance', 
         'criteres_de_gouvernance', 'indicateurs_valeurs', 'indicateurs_values_keys', 
         'principes_de_gouvernance', 'survey_forms', 'surveys', 'organisations', 
         'indicateurs', 'suivis_indicateurs', 'suivis', 'sites', 'projets', 
         'suiviFinanciers', 'types_de_gouvernance', 'options_de_reponse', 
-        'sources_de_verification', 'formulaires_de_gouvernance', 
-        'evaluations_de_gouvernance', 'soumissions'
+        'sources_de_verification','unitees_de_mesure', 
     ];
 
     protected static function boot() {
