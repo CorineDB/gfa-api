@@ -83,7 +83,7 @@ class Programme extends Model
                 foreach ($this->relationships as $relationship) {
                     if ($this->{$relationship}()->exists()) {
                         // Prevent deletion by throwing an exception
-                        throw new Exception("Suppression impossible : des ressources associées existent dans la table " . $relationship);
+                        throw new Exception("Impossible de supprimer cet élément, car des données associées existent. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
                     }
                 }
 
