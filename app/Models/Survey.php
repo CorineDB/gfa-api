@@ -26,24 +26,7 @@ class Survey extends Model
     protected static function boot()
     {
         parent::boot();
-
-        static::deleting(function ($survey) {
-
-            DB::beginTransaction();
-            try {
-
-                if (($survey->survey_reponses->count() > 0) || ($survey->statut > -1)) {
-                    // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete because there are associated resource.");
-                }
-                
-            } catch (\Throwable $th) {
-                DB::rollBack();
-
-                throw new Exception($th->getMessage(), 1);
-            }
-        });
-
+        
         static::deleted(function ($survey) {
 
             DB::beginTransaction();

@@ -29,7 +29,7 @@ class Site extends Model
         static::deleting(function ($site) {
             if (($site->indicateurs->count() > 0) || $site->projets->count() > 0 || $site->activites->count() > 0) {
                 // Prevent deletion by throwing an exception
-                throw new Exception("Cannot delete");
+                throw new Exception("Impossible de supprimer ce site car il est lié à un ou plusieurs indicateurs, projets ou activités. Veuillez d'abord supprimer ou dissocier ces éléments.");
             }
         }); 
 

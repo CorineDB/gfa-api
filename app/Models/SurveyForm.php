@@ -30,9 +30,9 @@ class SurveyForm extends Model
             DB::beginTransaction();
             try {
 
-                if (($survey_form->surveys->count() > 0) || ($survey_form->statut > -1)) {
+                if ($survey_form->surveys->count() > 0) {
                     // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete because there are associated resource.");
+                    throw new Exception("Impossible de supprimer ce formulaire d'enquete car des sondages y sont associés. Veuillez d'abord supprimer ou dissocier ces sondages avant de réessayer.");
                 }
                 
             } catch (\Throwable $th) {

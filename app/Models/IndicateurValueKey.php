@@ -27,14 +27,6 @@ class IndicateurValueKey extends Model
             $indicateur_value_key->type = $indicateur_value_key->uniteeMesure->nom;
         });
 
-        static::deleting(function ($indicateur_value_key) {
-
-            /* if ($indicateur_value_key->indicateurs->count() > 0) {
-                // Prevent deletion by throwing an exception
-                throw new Exception("Cannot delete");
-            } */
-        }); 
-
         static::deleted(function ($indicateur_value_key) {
 
             DB::beginTransaction();

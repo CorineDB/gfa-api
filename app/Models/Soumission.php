@@ -39,7 +39,7 @@ class Soumission extends Model
 
                 if (($soumission->statut)) {
                     // Prevent deletion by throwing an exception
-                    throw new Exception("Cannot delete because there are associated resource.");
+                    throw new Exception("Impossible de supprimer cette soumission validee.");
                 }
 
             } catch (\Throwable $th) {
