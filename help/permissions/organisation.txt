@@ -119,3 +119,7 @@ filtrer-indicateur
 voir-cadre-de-rendement
 voir-reponses-enquete-individuelle
 supprimer-une-reponse-enquete-individuelle
+voir-un-rapport
+modifier-un-rapport
+supprimer-un-rapport
+creer-un-rapport

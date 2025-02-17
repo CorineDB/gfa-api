@@ -99,6 +99,7 @@ class Permissions extends Command
             'un role',
             'un suivi',
             'un rappel',
+            'un rapport',
             'une configuration alerte',
             'une categorie',
             'un suivi indicateur',
@@ -395,7 +396,12 @@ class Permissions extends Command
 
             "voir-cadre-de-rendement",
             "voir-reponses-enquete-individuelle",
-            "supprimer-une-reponse-enquete-individuelle"
+            "supprimer-une-reponse-enquete-individuelle",
+
+            'voir-un-rapport',
+            'modifier-un-rapport',
+            'supprimer-un-rapport',
+            'creer-un-rapport'
         ];
 
         $administrateurs = [
@@ -577,6 +583,11 @@ class Permissions extends Command
             'modifier-un-rappel',
             'supprimer-un-rappel',
             'creer-un-rappel',
+
+            'voir-un-rapport',
+            'modifier-un-rapport',
+            'supprimer-un-rapport',
+            'creer-un-rapport',
 
             'voir-un-formulaire-de-gouvernance',
             'creer-un-formulaire-de-gouvernance',
@@ -1034,6 +1045,7 @@ class Permissions extends Command
         }
 
         foreach($autres as $autre){
+            
             $permissions = Permission::where('slug', str_replace(' ', '-', $autre))->get();
 
             if(!count($permissions))
