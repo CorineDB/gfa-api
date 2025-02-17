@@ -81,7 +81,7 @@ class Programme extends Model
                 $programme->suiviFinanciers()->delete();
 
                 foreach ($this->relationships as $relationship) {
-                    if ($programme->{$relationship}()->count() > 0) {
+                    if ($this->{$relationship}()->exists()) {
                         // Prevent deletion by throwing an exception
                         throw new Exception("Suppression impossible : des ressources associées existent dans la table " . $relationship);
                     }
