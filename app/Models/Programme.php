@@ -37,6 +37,17 @@ class Programme extends Model
 
     protected $hidden = ['updated_at', 'deleted_at'];
 
+    protected $relationships = [
+        'unitees_de_mesure', 'fonds', 'recommandations', 'actions_a_mener', 
+        'profiles', 'fiches_de_synthese', 'indicatieurs_de_gouvernance', 
+        'criteres_de_gouvernance', 'indicateurs_valeurs', 'indicateurs_values_keys', 
+        'principes_de_gouvernance', 'survey_forms', 'surveys', 'organisations', 
+        'indicateurs', 'suivis_indicateurs', 'suivis', 'sites', 'projets', 
+        'suiviFinanciers', 'types_de_gouvernance', 'options_de_reponse', 
+        'sources_de_verification', 'formulaires_de_gouvernance', 
+        'evaluations_de_gouvernance', 'soumissions'
+    ];
+
     protected static function boot() {
         parent::boot();
 
@@ -68,6 +79,13 @@ class Programme extends Model
                 $programme->eActiviteMods()->delete();
 
                 $programme->suiviFinanciers()->delete();
+
+                foreach ($this->relationships as $relationship) {
+                    if ($programme->{$relationship}()->count() > 0) {
+                        // Prevent deletion by throwing an exception
+                        throw new Exception("Suppression impossible : des ressources associées existent dans la table " . $relationship);
+                    }
+                }
 
                 $programme->users->each(function ($user) {
                     if($user){
@@ -551,7 +569,6 @@ class Programme extends Model
         return $this->morphMany(IndicateurCadreLogique::class, 'indicatable');
     }
 
-
     public function types_de_gouvernance()
     {
         return $this->hasMany(TypeDeGouvernance::class, 'programmeId');
@@ -610,6 +627,7 @@ class Programme extends Model
     {
         return $this->hasMany(OptionDeReponse::class, 'programmeId');
     }
+
 
     public function survey_forms()
     {
@@ -680,7 +698,6 @@ class Programme extends Model
         return $this->hasMany(IndicateurValeur::class, 'programmeId');
     }
     
-    
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
      */
@@ -688,7 +705,7 @@ class Programme extends Model
     {
         return $this->hasMany(CritereDeGouvernance::class, 'programmeId');
     }
-    
+
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
      */
