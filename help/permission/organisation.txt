@@ -8,6 +8,7 @@ modifier-un-role
 supprimer-un-role
 voir-un-decaissement
 voir-un-projet
+modifier-un-projet
 voir-un-outcome
 creer-un-outcome
 modifier-un-outcome
@@ -33,6 +34,7 @@ voir-une-unitee-de-mesure
 voir-un-site
 voir-une-categorie
 voir-un-suivi-financier
+voir-un-suivi-financier
 creer-un-suivi-financier
 modifier-un-suivi-financier
 supprimer-un-suivi-financier
@@ -57,7 +59,6 @@ voir-un-fichier
 supprimer-un-fichier
 creer-un-fichier
 voir-un-formulaire-de-gouvernance
-voir-une-evaluation-de-gouvernance
 voir-une-soumission
 creer-une-soumission
 voir-une-fiche-de-synthese

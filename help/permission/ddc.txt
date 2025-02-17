@@ -4,7 +4,11 @@ modifier-un-utilisateur
 voir-un-role
 creer-un-role
 modifier-un-role
+creer-un-bailleur
 voir-un-decaissement
+voir-un-mod
+voir-une-entreprise-executante
+voir-une-mission-de-controle
 voir-un-projet
 voir-une-composante
 voir-une-activite

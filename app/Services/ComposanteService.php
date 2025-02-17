@@ -98,7 +98,8 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
                 if(!($projet = $this->projetRepository->findById($attributs['projetId']))) throw new Exception( "Ce projet n'existe pas", 500);
 
                 $attributs = array_merge($attributs, [
-                    'composanteId' => 0
+                    'composanteId' => 0,
+                    'position' => $this->position($projet, 'composantes')
                 ]);
             }
 
@@ -109,9 +110,9 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
                 if(!$composanteParent) throw new Exception( "La composante n'existe pas", 500);
 
                 $attributs = array_merge($attributs, [
-                    'projetId' => $composanteParent->projetId
+                    'projetId' => $composanteParent->projetId,
+                    'position' => $this->position($composanteParent, 'sousComposantes')
                 ]);
-
             }
 
             else throw new Exception( "Pas de projet ni de composante", 500);
@@ -124,11 +125,11 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
 
             $this->changeState(1);
 
+            $composante = $composante->fresh();
+
             /*$statut = ['etat' => -2];
 
             $statuts = $composante->statuts()->create($statut);**/
-
-            $composante = $composante->fresh();
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
 
