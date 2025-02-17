@@ -81,7 +81,7 @@ class Programme extends Model
                 $programme->suiviFinanciers()->delete();
 
                 foreach ($programme->relationships as $relationship) {
-                    if ($this->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
+                    if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
                         // Prevent deletion by throwing an exception
                         throw new Exception("Impossible de supprimer cet élément, car des ".str_replace('_', ' ', $relationship)." sont associées au programme. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
                     }
