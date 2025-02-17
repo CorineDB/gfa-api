@@ -247,26 +247,26 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
                 }
                 $last = $composante->statut;
 
-                $this->verifieStatut($last, $attributs['statut']);
+                $this->verifieStatut($last, $attributs['statut']);*/
 
                 if($type)
                 {
-                    if( $last == -2 && $attributs['statut'] != -2 )
+                    /*if( $last == -2 && $attributs['statut'] != -2 )
                     {*/
                         $attributs = array_merge($attributs, ['position' => $this->position($composante->projet, 'composantes')]);
 
-                    /*}
+                    /*}*/
                 }
                 else
                 {
-                    if( $last === -2 && $attributs['statut'] !== -2 )
+                    /*if( $last === -2 && $attributs['statut'] !== -2 )
                     {*/
                         $attributs = array_merge($attributs, ['position' => $this->position($composante->composante, 'sousComposantes')]);
 
-                    /*}
+                    /*}*/
                 }
 
-            } */
+            /*} */
 
             $composante->fill($attributs)->save();
 
