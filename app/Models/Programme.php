@@ -82,8 +82,6 @@ class Programme extends Model
 
                 $programme->eActiviteMods()->delete();
 
-                dd($programme);
-
                 $programme->suiviFinanciers()->delete();
 
                 dd($programme);
