@@ -66,11 +66,9 @@ class Programme extends Model
 
                 $programme->uniteeDeGestion()->delete();
 
-                dump($programme->users);
+                $programme->userUniteeDeGestion()->delete();
 
                 $programme->indicateurs()->delete();
-
-                dd($programme);
 
                 $programme->objectifSpecifiques()->delete();
 
