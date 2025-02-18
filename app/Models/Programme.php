@@ -72,15 +72,15 @@ class Programme extends Model
 
                 $programme->objectifSpecifiques()->delete();
 
-                dump($programme->users);
-
                 $programme->resultats()->delete();
-
-                dd($programme);
 
                 $programme->sites()->delete();
 
+                dump($programme->users);
+
                 $programme->projets()->delete();
+
+                dd($programme);
 
                 $programme->eActivites()->delete();
 
