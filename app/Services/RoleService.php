@@ -59,7 +59,6 @@ class RoleService extends BaseService implements RoleServiceInterface
                     ->get();
             }
 
-
             // Retourner le token
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => RolesResource::collection($roles), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
