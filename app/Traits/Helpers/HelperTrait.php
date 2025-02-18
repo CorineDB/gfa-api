@@ -185,6 +185,10 @@ trait HelperTrait
         else {
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
         }
+        
+        // Convertir les dates données en objets Carbon pour manipulation
+        $debutDate = Carbon::parse($debutDate);
+        $finDate = Carbon::parse($finDate);
 
         // Vérifier s'il existe une durée de l'activité qui se chevauche avec la période donnée
         return $activite->durees()
