@@ -53,15 +53,16 @@ class Programme extends Model
 
         static::deleting(function($programme) {
 
+            dd($programme);
+            foreach ($programme->relationships as $relationship) {
+                if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
+                    // Prevent deletion by throwing an exception
+                    throw new Exception("Impossible de supprimer cet élément, car des ".str_replace('_', ' ', $relationship)." sont associées au programme. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
+                }
+            }
+
             DB::beginTransaction();
             try {
-
-                foreach ($programme->relationships as $relationship) {
-                    if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
-                        // Prevent deletion by throwing an exception
-                        throw new Exception("Impossible de supprimer cet élément, car des ".str_replace('_', ' ', $relationship)." sont associées au programme. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
-                    }
-                }
 
                 $programme->ptabScopes()->delete();
 
