@@ -1045,7 +1045,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                 array_push($valideActivites, $value);
             }
         }
-        dd([$valideActivites,$activites,$filterData]);
 
         if (is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])) {
             $filterData['annee'] = Carbon::now()->year;
