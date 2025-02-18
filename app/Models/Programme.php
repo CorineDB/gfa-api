@@ -64,9 +64,11 @@ class Programme extends Model
 
                 $programme->formulaires()->delete();
 
-                dd($programme);
+                dump($programme->users);
 
                 $programme->indicateurs()->delete();
+
+                dd($programme);
 
                 $programme->objectifSpecifiques()->delete();
 
