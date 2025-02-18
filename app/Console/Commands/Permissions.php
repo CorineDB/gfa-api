@@ -313,7 +313,7 @@ class Permissions extends Command
             'voir-une-cle-de-valeur-indicateur',
             'voir-une-option-de-reponse',
             'voir-une-source-de-verification',
-            'voir-un-categorie-de-gouvernance',
+            'voir-une-categorie-indicateur',
             'voir-un-indicateur-de-gouvernance',
             'voir-un-type-de-gouvernance',
             'voir-un-principe-de-gouvernance',
@@ -486,6 +486,11 @@ class Permissions extends Command
             'modifier-une-tache',
             'supprimer-une-tache',
 
+            'voir-une-categorie',
+            'creer-une-categorie',
+            'modifier-une-categorie',
+            'supprimer-une-categorie',
+
             'voir-un-indicateur',
             'creer-un-indicateur',
             'modifier-un-indicateur',
@@ -522,10 +527,10 @@ class Permissions extends Command
             'modifier-une-source-de-verification',
             'supprimer-une-source-de-verification',
 
-            'voir-une-categorie-de-gouvernance',
-            'creer-une-categorie-de-gouvernance',
-            'modifier-une-categorie-de-gouvernance',
-            'supprimer-une-categorie-de-gouvernance',
+            'voir-une-categorie-indicateur',
+            'creer-une-categorie-indicateur',
+            'modifier-une-categorie-indicateur',
+            'supprimer-une-categorie-indicateur',
 
             'voir-un-indicateur-de-gouvernance',
             'creer-un-indicateur-de-gouvernance',
