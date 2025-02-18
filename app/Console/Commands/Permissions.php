@@ -648,7 +648,6 @@ class Permissions extends Command
             'exporter-un-plan-decaissement',
 
             'valider-une-action-a-mener',
-            'rejeter-une-action-a-mener',
             "voir-plan-action",
             'voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps',
             'ajouter-nombre-de-participant',
