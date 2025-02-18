@@ -529,6 +529,7 @@ class Programme extends Model
                 function ($query) {
                     $query->whereHas('activite', function ($query) {
                         $query->whereHas('composante', function ($query) {
+                            dd($query->get());
                             $query->whereHas('projet', function ($query) {
                                 $user = auth()->user();
                                 if ($user->profilable) {
