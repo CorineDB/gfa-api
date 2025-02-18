@@ -53,7 +53,6 @@ class PermissionService extends BaseService implements PermissionServiceInterfac
             }
             else
             {
-                
                 $permissions = $user->permissions;
             }
             
