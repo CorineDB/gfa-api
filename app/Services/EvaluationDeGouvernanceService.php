@@ -145,7 +145,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             AppJob::dispatch(
                 // Call the GenerateEvaluationResultats command with the evaluation ID
                 Artisan::call('change-statut:evaluations')
-            )->delay(now()); // Optionally add additional delay at dispatch time->addMinutes(10)
+            )->delay(now()->addSeconds(30)); // Optionally add additional delay at dispatch time->addSeconds(30)
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
@@ -182,7 +182,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             AppJob::dispatch(
                 // Call the GenerateEvaluationResultats command with the evaluation ID
                 Artisan::call('change-statut:evaluations')
-            )->delay(now()); // Optionally add additional delay at dispatch time->addMinutes(10)
+            )->delay(now()->addSeconds(30)); // Optionally add additional delay at dispatch time->addSeconds(30)
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
