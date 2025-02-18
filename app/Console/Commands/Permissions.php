@@ -1019,7 +1019,7 @@ class Permissions extends Command
                 $permissions = Permission::where('slug', $slug)->get();
 
                 if($module==='un projet'){
-                    dump('Creation des permissions.....' . json_encode($permissions));
+                    dump(" {$action} - {$module}" . json_encode($permissions));
                 }
 
 
@@ -1139,9 +1139,8 @@ class Permissions extends Command
                         $role->permissions()->attach($permission->id);
                     }
                 }
-            }
+            }*/
 
-            */
             //A ne pas decommenter
             /* else if($role->slug == 'organisation')
             {
@@ -1158,8 +1157,8 @@ class Permissions extends Command
                     }
                 }
             } */
-           /*
 
+           /*
             else if($role->slug == 'mod')
             {
                 $ids = $role->permissions->pluck('id');
@@ -1238,7 +1237,7 @@ class Permissions extends Command
                         $role->permissions()->attach($permission->id);
                     }
                 }
-            } */
+            }*/
 
             if($role->slug == 'ddc')
             {
