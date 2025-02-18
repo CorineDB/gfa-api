@@ -31,20 +31,39 @@ class StoreUserRequest extends FormRequest
         return [
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'contact'               => ['required', 'string','max:12', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'contact'               => ['required', 'string','max:14', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             'email'               => ['required', 'email', 'string', Rule::unique('users', 'email')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'roles'  => 'required|array|min:1',
-            'roles.*'     => ['distinct', new HashValidatorRule(new Role())],
-            'programmeId'               => ['sometimes', new HashValidatorRule(new Programme()), function(){
+            'roles.*'     => ['distinct', new HashValidatorRule(new Role())]
+        ];
+    }
 
-                $programme = Programme::findByKey($this->programmeId);
+    public function messages()
+    {
+        return [
+            'nom.required' => 'Le champ nom est obligatoire.',
+            'nom.string' => 'Le champ nom doit être une chaîne de caractères.',
+            'nom.max' => 'Le champ nom ne doit pas dépasser 255 caractères.',
 
-                if( $programme->id != auth()->user()->programmeId ){
-                    throw ValidationException::withMessages(['programmeId' => "L'utilisateur doit appartenir au même programme que le chef equipe"]);
-                }
+            'prenom.required' => 'Le champ prénom est obligatoire.',
+            'prenom.string' => 'Le champ prénom doit être une chaîne de caractères.',
+            'prenom.max' => 'Le champ prénom ne doit pas dépasser 255 caractères.',
 
-            }]
+            'contact.required' => 'Le champ contact est obligatoire.',
+            'contact.string' => 'Le champ contact doit être une chaîne de caractères.',
+            'contact.max' => 'Le champ contact ne doit pas dépasser 12 caractères.',
+            'contact.unique' => 'Ce contact est déjà utilisé dans ce programme.',
+
+            'email.required' => "L'email est obligatoire.",
+            'email.email' => "L'email doit être une adresse email valide.",
+            'email.string' => "L'email doit être une chaîne de caractères.",
+            'email.unique' => "Cet email est déjà utilisé dans ce programme.",
+
+            'roles.required' => 'Au moins un rôle doit être sélectionné.',
+            'roles.array' => 'Les rôles doivent être fournis sous forme de tableau.',
+            'roles.min' => 'Au moins un rôle doit être attribué.',
+            'roles.*.distinct' => 'Les rôles doivent être distincts.'
         ];
     }
 }
