@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
             'nom' => ['required','max:255', Rule::unique('programmes')->whereNull('deleted_at')],
             'code' => ['required', Rule::unique('programmes')->whereNull('deleted_at')],
             'budgetNational' => 'nullable|int|min:0',
-            'objectifGlobaux' => 'required|max:255',
+            'objectifGlobaux' => 'required',
             'debut' => 'required|date|date_format:Y-m',
             'fin' => 'required|date|date_format:Y-m|after_or_equal:debut'
         ];
