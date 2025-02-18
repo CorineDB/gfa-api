@@ -52,8 +52,7 @@ class Programme extends Model
         parent::boot();
 
         static::deleting(function($programme) {
-
-            dd($programme);
+            
             foreach ($programme->relationships as $relationship) {
                 if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
                     // Prevent deletion by throwing an exception
