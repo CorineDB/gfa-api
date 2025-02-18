@@ -1018,7 +1018,7 @@ class Permissions extends Command
 
                 $permissions = Permission::where('slug', $slug)->get();
 
-                if($module==='projet'){
+                if($module==='un projet'){
                     dump('Creation des permissions.....' . json_encode($permissions));
                 }
 
