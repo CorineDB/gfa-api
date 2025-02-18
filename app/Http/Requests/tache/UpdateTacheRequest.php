@@ -22,7 +22,6 @@ cLass UpdateTacheRequest extends FormRequest
 
     public function prepareForValidation(){
 
-        dd([$this->tach,$this->tache]);
         if(!is_object($this->tach))
         {
             if(!($tache = Tache::findByKey($this->tach))){
