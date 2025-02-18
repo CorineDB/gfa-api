@@ -367,7 +367,7 @@ class Permissions extends Command
             'voir-details-projet',
             'exporter-un-suivi-indicateur',
             'exporter-un-decaissement',
-            'exporter-un-plan decaissement',
+            'exporter-un-plan-decaissement',
             'exporter-un-suivi-financier',
             'exporter-un-suivi-ptab',
             'importer-un-suivi-financier',
@@ -645,7 +645,7 @@ class Permissions extends Command
             'alerte-activite',
             'voir-statistique-activite',
             'validation',
-            'exporter-un-plan decaissement',
+            'exporter-un-plan-decaissement',
 
             'valider-une-action-a-mener',
             'rejeter-une-action-a-mener',
