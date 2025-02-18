@@ -198,7 +198,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
             if ($composante->projet->fin < $attributs['fin'])
                 throw new Exception("La date de fin de l'activité est supérieur à celui du projet", 500);
 
-            $attributs = array_merge($attributs, ['statut' => -1, 'programmeId' => auth()->user()->programmeId]);
+            $attributs = array_merge($attributs, ['statut' => -1, 'programmeId' => auth()->user()->programmeId, 'position' => $this->position($composante, 'activites')]);
 
             $activite = $this->repository->fill($attributs);
 

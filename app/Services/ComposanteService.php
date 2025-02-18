@@ -473,5 +473,4 @@ class ComposanteService extends BaseService implements ComposanteServiceInterfac
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 }
