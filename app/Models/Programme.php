@@ -38,7 +38,7 @@ class Programme extends Model
     protected $hidden = ['updated_at', 'deleted_at'];
 
     protected $relationships = [
-        'indicateurs_valeurs', 'indicateurs', 'indicateurs_values_keys', 'fonds', 'recommandations', 'actions_a_mener', 
+        'indicateurs_values_keys', 'indicateurs', 'indicateurs_valeurs', 'fonds', 'recommandations', 'actions_a_mener', 
         'evaluations_de_gouvernance', 'formulaires_de_gouvernance', 
         'soumissions', 'indicateurs_de_gouvernance', 
         'criteres_de_gouvernance', 
@@ -55,6 +55,13 @@ class Programme extends Model
 
             DB::beginTransaction();
             try {
+
+                foreach ($programme->relationships as $relationship) {
+                    if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
+                        // Prevent deletion by throwing an exception
+                        throw new Exception("Impossible de supprimer cet élément, car des ".str_replace('_', ' ', $relationship)." sont associées au programme. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
+                    }
+                }
 
                 $programme->ptabScopes()->delete();
 
@@ -89,13 +96,6 @@ class Programme extends Model
                         $user->update(['statut' => -1]);
                     }
                 });
-
-                foreach ($programme->relationships as $relationship) {
-                    if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
-                        // Prevent deletion by throwing an exception
-                        throw new Exception("Impossible de supprimer cet élément, car des ".str_replace('_', ' ', $relationship)." sont associées au programme. Veuillez d'abord supprimer ou dissocier ces éléments avant de réessayer.");
-                    }
-                }
 
                 DB::commit();
             } catch (\Throwable $th) {
@@ -243,6 +243,11 @@ class Programme extends Model
     public function uniteDeGestion()
     {
         return $this->hasOne(UniteeDeGestion::class, 'programmeId');
+    }
+
+    public function roles()
+    {
+        return $this->hasMany(Role::class, 'programmeId');
     }
 
     public function indicateurs()
