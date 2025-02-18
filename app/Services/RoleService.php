@@ -48,14 +48,14 @@ class RoleService extends BaseService implements RoleServiceInterface
 
             if( ($user && $user->hasRole("administrateur", "super-admin")) )
             {
-                $roles = $this->repository->getInstance()->where('roleable_id', $user->id)
+                $roles = $this->repository->getInstance()->where('roleable_type', "App\\Models\\Administrateur")->where('roleable_id', $user->profilable_id)
                     ->orderBy('created_at', 'desc')
                     ->get();
                 //$roles = $this->repository->all();
             }
             else
             {
-                $roles = $this->repository->getInstance()->where('roleable_id', $user->id)
+                $roles = $this->repository->getInstance()->where('roleable_type', $user->profilable_type)->where('roleable_id', $user->profilable_id)
                     ->orderBy('created_at', 'desc')
                     ->get();
             }
