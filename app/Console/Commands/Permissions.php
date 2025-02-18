@@ -449,7 +449,7 @@ class Permissions extends Command
             'voir-une-organisation',
             'creer-une-organisation',
             'modifier-une-organisation',
-            'supprimer-un-organisation',
+            'supprimer-une-organisation',
 
             'voir-un-projet',
             'creer-un-projet',
@@ -466,10 +466,10 @@ class Permissions extends Command
             'modifier-un-output',
             'supprimer-un-output',
 
-            'voir-un-activite',
-            'creer-un-activite',
-            'modifier-un-activite',
-            'supprimer-un-activite',
+            'voir-une-activite',
+            'creer-une-activite',
+            'modifier-une-activite',
+            'supprimer-une-activite',
 
             'voir-un-decaissement',
             'creer-un-decaissement',
@@ -481,10 +481,10 @@ class Permissions extends Command
             'modifier-un-plan-de-decaissement',
             'supprimer-un-plan-de-decaissement',
 
-            'voir-un-tache',
-            'creer-un-tache',
-            'modifier-un-tache',
-            'supprimer-un-tache',
+            'voir-une-tache',
+            'creer-une-tache',
+            'modifier-une-tache',
+            'supprimer-une-tache',
 
             'voir-un-indicateur',
             'creer-un-indicateur',
