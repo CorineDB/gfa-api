@@ -11,6 +11,7 @@ use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
 use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Http\Resources\OrganisationResource;
+use App\Jobs\AppJob;
 use App\Jobs\SendInvitationJob;
 use App\Mail\InvitationEnqueteDeCollecteEmail;
 use App\Models\ActionAMener;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Http;
@@ -140,6 +142,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             DB::commit();
 
+            AppJob::dispatch(
+                // Call the GenerateEvaluationResultats command with the evaluation ID
+                Artisan::call('change-statut:evaluations')
+            )->delay(now()); // Optionally add additional delay at dispatch time->addMinutes(10)
+
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
 
@@ -171,6 +178,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             //LogActivity::addToLog("Modification", $message, get_class($evaluationDeGouvernance), $evaluationDeGouvernance->id);
 
             DB::commit();
+
+            AppJob::dispatch(
+                // Call the GenerateEvaluationResultats command with the evaluation ID
+                Artisan::call('change-statut:evaluations')
+            )->delay(now()); // Optionally add additional delay at dispatch time->addMinutes(10)
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
