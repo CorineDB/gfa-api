@@ -444,7 +444,7 @@ class Permissions extends Command
             'voir-une-configuration-alerte',
             'creer-une-configuration-alerte',
             'modifier-une-configuration-alerte',
-            'supprimer-un-configuration-alerte',
+            'supprimer-une-configuration-alerte',
 
             'voir-une-organisation',
             'creer-une-organisation',
