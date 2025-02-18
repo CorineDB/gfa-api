@@ -230,7 +230,7 @@ class UserService extends BaseService implements UserServiceInterface
 
             $utilisateur->save();
 
-            $utilisateur->roles()->attach($roles);
+            $utilisateur->roles()->sync($roles);
 
             if($utilisateur->team){
                 $team = $utilisateur->team->fill($attributs);
