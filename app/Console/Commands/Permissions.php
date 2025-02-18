@@ -127,6 +127,7 @@ class Permissions extends Command
             "une action a mener",
             "une enquete individuelle",
             "un formulaire individuel",
+            "une configuration alerte",
 
             /* 'un bailleur',
             'un mod',
@@ -439,14 +440,16 @@ class Permissions extends Command
             'voir-un-ddc',
             'voir-un-historique',
             'faire-un-backup',
-            'configuration-alerte',
+
+            'voir-une-configuration-alerte',
+            'creer-une-configuration-alerte',
+            'modifier-une-configuration-alerte',
+            'supprimer-un-configuration-alerte',
 
             'voir-une-organisation',
             'creer-une-organisation',
             'modifier-une-organisation',
             'supprimer-un-organisation',
-
-            'voir-une-unitee-de-gestion',
 
             'voir-un-projet',
             'creer-un-projet',
