@@ -525,11 +525,11 @@ class Programme extends Model
         return $this->hasMany(SuiviFinancier::class, 'programmeId')->whereHas('activite', function ($query) {
             $query->whereHas('composante', function ($query) {
                 $query->whereHas('projet', function ($query) {
-                    $user = auth()->user();
+                    /* $user = auth()->user();
                     if ($user->profilable) {
                         $query->where("projetable_id", $user->profilable->id)
                               ->where("projetable_type", Organisation::class);
-                    }
+                    } */
                 });
             });
         });
