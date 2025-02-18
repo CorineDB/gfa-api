@@ -1237,24 +1237,7 @@ class Permissions extends Command
                         $role->permissions()->attach($permission->id);
                     }
                 }
-            }*/
-
-            if($role->slug == 'ddc')
-            {
-                $ids = $role->permissions->pluck('id');
-                $role->permissions()->detach($ids);
-
-                foreach($ddcs as $ddc)
-                {
-                    //if(!$role->permissions->where('slug', $mod)->first())
-                    {
-                        $permission = Permission::where('slug', $ddc)->first();
-
-                        $role->permissions()->attach($permission->id);
-                    }
-                }
             }
-
             else if($role->slug == 'unitee-de-gestion')
             {
                 $ids = $role->permissions->pluck('id');
@@ -1286,6 +1269,38 @@ class Permissions extends Command
 
                     $controle = 1;
 
+                }
+            }*/
+
+            if($role->slug == 'ddc')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($ddcs as $ddc)
+                {
+                    //if(!$role->permissions->where('slug', $mod)->first())
+                    {
+                        $permission = Permission::where('slug', $ddc)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
+                }
+            }
+
+            else if($role->slug == 'unitee-de-gestion')
+            {
+                $ids = $role->permissions->pluck('id');
+                $role->permissions()->detach($ids);
+
+                foreach($uniteeDeGestion as $unitee_de_gestion)
+                {
+                    //if(!$role->permissions->where('slug', $administrateur)->first())
+                    {
+                        $permission = Permission::where('slug', $unitee_de_gestion)->first();
+
+                        $role->permissions()->attach($permission->id);
+                    }
                 }
             }
 
