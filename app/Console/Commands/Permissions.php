@@ -1300,6 +1300,7 @@ class Permissions extends Command
                         $permission = Permission::where('slug', $unitee_de_gestion)->first();
 
                         if($permission){
+                            dump($permission);
                             $role->permissions()->attach($permission->id);
                         }
                         else{
