@@ -1299,7 +1299,12 @@ class Permissions extends Command
                     {
                         $permission = Permission::where('slug', $unitee_de_gestion)->first();
 
-                        $role->permissions()->attach($permission->id);
+                        if($permission){
+                            $role->permissions()->attach($permission->id);
+                        }
+                        else{
+                            dd($unitee_de_gestion);
+                        }
                     }
                 }
             }
