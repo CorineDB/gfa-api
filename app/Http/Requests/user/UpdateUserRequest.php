@@ -31,6 +31,8 @@ class UpdateUserRequest extends FormRequest
         {
             $this->id = User::findByKey($this->id);
         }
+
+        dd($this->id);
         
         return [
             'nom' => 'sometimes|string|max:255',
