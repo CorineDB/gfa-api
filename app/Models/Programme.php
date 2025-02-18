@@ -80,8 +80,6 @@ class Programme extends Model
 
                 $programme->eActivites()->delete();
 
-                dump($programme->users);
-
                 $programme->eActiviteMods()->delete();
 
                 dd($programme);
