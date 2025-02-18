@@ -84,8 +84,6 @@ class Programme extends Model
 
                 $programme->suiviFinanciers()->delete();
 
-                dd($programme);
-
                 $programme->users->each(function ($user) {
                     if($user){
                         $user->update(['statut' => -1]);
