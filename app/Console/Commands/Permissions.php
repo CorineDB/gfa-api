@@ -330,7 +330,7 @@ class Permissions extends Command
             'voir-une-soumission',
             'creer-une-soumission',
             'voir-une-fiche-de-synthese',
-            'voir-un-profile-de-gouvernance',
+            'voir-un-profil-de-gouvernance',
             
             'voir-une-recommandation',
             'creer-une-recommandation',
@@ -631,7 +631,7 @@ class Permissions extends Command
             'voir-details-soumission',
             'valider-une-soumission',
             'voir-une-fiche-de-synthese',
-            'voir-un-profile-de-gouvernance',
+            'voir-un-profil-de-gouvernance',
             
             'voir-ptab',
             'faire-revision-ptab',
