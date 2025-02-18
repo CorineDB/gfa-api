@@ -526,6 +526,7 @@ class Programme extends Model
             $query->whereHas('composante', function ($query) {
                 $query->whereHas('projet', function ($query) {
                     $user = auth()->user();
+                    dd($user);
                     if ($user->profilable) {
                         /* $query->where("projetable_id", $user->profilable->id)
                               ->where("projetable_type", Organisation::class); */
