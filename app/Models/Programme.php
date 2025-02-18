@@ -38,7 +38,7 @@ class Programme extends Model
     protected $hidden = ['updated_at', 'deleted_at'];
 
     protected $relationships = [
-        'indicateurs_valeurs', 'indicateurs', 'indicateurs_values_keys', 'fonds', 'recommandations', 'actions_a_mener', 
+        'indicateurs_values_keys', 'indicateurs', 'indicateurs_valeurs', 'fonds', 'recommandations', 'actions_a_mener', 
         'evaluations_de_gouvernance', 'formulaires_de_gouvernance', 
         'soumissions', 'indicateurs_de_gouvernance', 
         'criteres_de_gouvernance', 
