@@ -522,7 +522,28 @@ class Programme extends Model
 
     public function suiviFinanciers()
     {
-        return $this->hasMany(SuiviFinancier::class, 'programmeId')->whereHas('activite', function ($query) {
+        return $this->hasMany(SuiviFinancier::class, 'programmeId')->when(
+            auth()->check() &&
+            (auth()->user()->type == 'organisation' || (auth()->user()->profilable && get_class(auth()->user()->profilable) == Organisation::class)),
+            function ($query) {
+                $query->whereHas('activite', function ($query) {
+                    $query->whereHas('composante', function ($query) {
+                        $query->whereHas('projet', function ($query) {
+                            $user = auth()->user();
+                            if ($user) {
+                                $query->where("projetable_id", $user->profilable_id)
+                                      ->where("projetable_type", Organisation::class);
+                            }
+                            /* if ($user->profilable) {
+                                $query->where("projetable_id", $user->profilable->id)
+                                      ->where("projetable_type", Organisation::class);
+                            } */
+                        });
+                    });
+                });
+            }
+        );
+        /* ->whereHas('activite', function ($query) {
             $query->whereHas('composante', function ($query) {
                 $query->whereHas('projet', function ($query) {
                     $user = auth()->user();
@@ -530,30 +551,9 @@ class Programme extends Model
                         $query->where("projetable_id", $user->profilable_id)
                               ->where("projetable_type", Organisation::class);
                     }
-                    /* if ($user->profilable) {
-                        $query->where("projetable_id", $user->profilable->id)
-                              ->where("projetable_type", Organisation::class);
-                    } */
                 });
             });
-        });
-            /* ->when(
-                auth()->check() &&
-                (auth()->user()->type == 'organisation' || (auth()->user()->profilable && get_class(auth()->user()->profilable) == Organisation::class)),
-                function ($query) {
-                    $query->whereHas('activite', function ($query) {
-                        $query->whereHas('composante', function ($query) {
-                            $query->whereHas('projet', function ($query) {
-                                $user = auth()->user();
-                                if ($user->profilable) {
-                                    $query->where("projetable_id", $user->profilable->id)
-                                          ->where("projetable_type", Organisation::class);
-                                }
-                            });
-                        });
-                    });
-                }
-            ); */
+        }); */
 
         return $this->hasMany(SuiviFinancier::class, 'programmeId')->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query){
             $query->whereHas('activite', function($query){
