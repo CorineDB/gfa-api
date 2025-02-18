@@ -189,8 +189,8 @@ trait HelperTrait
         // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
         return $activite->durees()
             ->where(function($query) use ($debutDate, $finDate) {
-                $query->where('debut', '>=', $debutDate)
-                      ->where('fin', '<=', $finDate);
+                $query->where('debut', '<=', $debutDate)
+                      ->where('fin', '>=', $finDate);
             })
             ->exists(); // Return true if such a range exists
     }
