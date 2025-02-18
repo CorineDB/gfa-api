@@ -26,7 +26,7 @@ class Permission extends Model
      * @var array<int, string>
      */
     protected $hidden = [
-        'slug', 'pivot', 'created_at', 'updated_at', 'deleted_at'
+        /* 'slug',  */'pivot', 'created_at', 'updated_at', 'deleted_at'
     ];
 
     /* Les roles ayant cette permission */
