@@ -648,6 +648,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
             Route::apiResource('roles', 'RoleController')->names('roles');
 
+            Route::apiResource('utilisateurs', 'UserController')->names('utilisateurs');
+            
             Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function () {
 
                 Route::controller('UserController')->group(function () {
@@ -664,6 +666,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('/fichiers', 'fichiers')->name('fichiers')->middleware('permission:voir-un-fichier');
                     Route::put('/{id}', 'update')->name('update');
                     Route::post('/updatePassword', 'updatePassword')->name('updatePassword');
+                    Route::get('/{id}/permissions', 'permissions')->name('permissions');
                 });
             });
 
