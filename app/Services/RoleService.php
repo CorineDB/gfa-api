@@ -8,6 +8,7 @@ use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\RoleServiceInterface;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -78,6 +79,25 @@ class RoleService extends BaseService implements RoleServiceInterface
 
             $idSearch = Permission::where('slug', 'voir-un-projet')->first();
 
+            $user = auth()->user();
+
+            if(($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == "App\\Models\\Administrateur")){
+
+                $attributs = array_merge($attributs, [
+                    'roleable_type' => "App\\Models\\Administrateur",
+                    'roleable_id'   => $user->profilable_id,
+                ]);
+            }
+            else{
+                $roleableType = $user->profilable ? get_class($user->profilable) : auth()->user()->profilable_type;
+                $roleableId   = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
+            
+                $attributs = array_merge($attributs, [
+                    'roleable_type' => $roleableType,
+                    'roleable_id'   => $roleableId,
+                ]);
+            }
+
             $role = $this->repository->fill(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
 
             $role->save();
@@ -139,6 +159,37 @@ class RoleService extends BaseService implements RoleServiceInterface
             else{
                 $role = $idRole;
             }
+
+                $user = auth()->user();
+
+                if(($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == "App\\Models\\Administrateur")){
+
+                    if(($role->roleable_type != "App\\Models\\Administrateur") || $user->profilable_id != $role->roleable_id){
+                        throw new Exception("Action non autorisée : vous ne pouvez pas modifier ce rôle car il appartient à une autre entité.", 403);
+                    }
+                    elseif(($role->roleable_type == "App\\Models\\Administrateur") && $user->profilable_id != $role->roleable_id){
+                        $attributs = array_merge($attributs, [
+                            'roleable_type' => "App\\Models\\Administrateur",
+                            'roleable_id'   => $user->profilable_id,
+                        ]);
+                    }
+                }
+                else{
+                    if(($role->roleable_type != get_class($user->profilable)) || $user->profilable_id != $role->roleable_id){
+                        //if(($role->roleable_type != "App\\Models\\Administrateur") || $user->profilable_id != $role->roleable_id){
+                        throw new Exception("Error Processing Request", 403);
+                    }
+                    elseif(($role->roleable_type == get_class($user->profilable)) && $user->profilable_id != $role->roleable_id){
+
+                        $roleableType = $user->profilable ? get_class($user->profilable) : auth()->user()->profilable_type;
+                        $roleableId   = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
+                    
+                        $attributs = array_merge($attributs, [
+                            'roleable_type' => $roleableType,
+                            'roleable_id'   => $roleableId,
+                        ]);
+                    }
+                }
 
             $role = $role->fill($attributs);
 
