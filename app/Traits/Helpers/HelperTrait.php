@@ -186,24 +186,16 @@ trait HelperTrait
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
         }
 
-        // Convertir les dates données en objets Carbon pour manipulation
-        $debutDate = Carbon::parse($debutDate);
-        $finDate = Carbon::parse($finDate);
-
-        // Vérifier s'il existe une durée de l'activité qui se chevauche avec la période donnée
-        return $activite->durees()
-            ->where(function($query) use ($debutDate, $finDate) {
-                // La période de l'activité doit chevaucher avec la période donnée
-                $query->where('debut', '>=', $debutDate)  // La date de début de l'activité doit être avant ou égale à la fin de la période donnée
-                    ->where('fin', '<=', $finDate);  // La date de fin de l'activité doit être après ou égale au début de la période donnée
-            })
-            ->exists();  // Si une telle période existe, retourner true, sinon false
-
         // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
         return $activite->durees()
             ->where(function($query) use ($debutDate, $finDate) {
-                $query->where('debut', '<=', $debutDate)
-                      ->where('fin', '>=', $finDate);
+                $query->where('debut', '>=', $debutDate)
+                ->where('fin', '<=', $finDate);
+                // Check if the task's start date and end date fall within any of the ranges
+                /* $query->where(function ($subQuery) use ($debutDate, $finDate) {
+                    $subQuery->where('debut', '<=', $debutDate)
+                             ->where('fin', '>=', $finDate);
+                }); */
             })
             ->exists(); // Return true if such a range exists
     }
