@@ -56,7 +56,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
                 $surveys = Auth::user()->profilable->surveys;
             }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
-                $surveys = Auth::user()->programme->surveys;
+                $surveys = Auth::user()->profilable->surveys;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SurveysResource::collection($surveys), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
