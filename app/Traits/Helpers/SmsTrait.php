@@ -43,19 +43,6 @@ trait SmsTrait{
 
         try {
 
-            /* foreach ($phoneNumbers as $key => $phoneNumber) {
-
-                // Prepare the data for SMS API
-                $request_body = [
-                    "from"=>  "GFA",
-                    "to" => $phoneNumber,
-                    "content" => $message
-                ];
-    
-                // Send the request (HTTP client)
-                $response = Http::withHeaders($headers)->post($endpoint, $request_body);
-            } */
-
             // Send the request (HTTP client)
             $response = Http::withHeaders($headers)->post($endpoint, $request_body);
 
