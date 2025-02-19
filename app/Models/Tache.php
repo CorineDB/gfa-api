@@ -22,6 +22,16 @@ class Tache extends Model
     protected static function boot() {
         parent::boot();
 
+        static::creating(function ($tache) {
+            dump("Creating: ");
+            dump($tache);
+        });
+
+        static::created(function ($tache) {
+            dump("Created: ");
+            dump($tache);
+        });
+
         static::deleted(function($tache) {
             if(optional($tache->statuts->last())->etat !== -2)
             {
