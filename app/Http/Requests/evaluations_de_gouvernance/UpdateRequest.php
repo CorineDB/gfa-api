@@ -37,8 +37,8 @@ class UpdateRequest extends FormRequest
 
         return [
             'intitule'               => ['sometimes', 'string', Rule::unique('evaluations_de_gouvernance', 'intitule')->ignore($this->evaluation_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'annee_exercice'         => ['sometimes', 'integer', Rule::unique('evaluations_de_gouvernance', 'annee_exercice')->ignore($this->evaluation_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
-            'annee_exercice'        => 'sometimes|integer',
             'description'           => 'nullable|max:255',
             'debut'                 => 'sometimes|date|date_format:Y-m-d',
             'fin'                   => 'sometimes|date|date_format:Y-m-d|after_or_equal:debut',
