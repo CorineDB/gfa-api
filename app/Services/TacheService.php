@@ -83,6 +83,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             if(!($activite = $this->activiteRepository->findById($attributs['activiteId']))) throw new Exception( "Cette activité n'existe pas", 500);
 
+            dd($activite);
             //$activiteduree = $activite->durees->last();
 
             if(!(app(Tache::class)->verifiePlageDuree($attributs['debut'], $attributs['fin'], $activite))) throw new Exception( "La duree de la tache doit-etre comprise entre la plage de duree d'une activite", 500);
@@ -125,7 +126,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             DB::commit();
 
-            //GenererPta::dispatch(Auth::user()->programme)->delay(5);
+            GenererPta::dispatch(Auth::user()->programme)->delay(5);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new TacheResource($tache), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
