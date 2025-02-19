@@ -94,6 +94,7 @@ trait Pta{
 
     public function position(object $parent, string $enfant)
     {
+        dd([$parent,$enfant]);
         $objets = $parent->$enfant;
         $i = 0;
 
