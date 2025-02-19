@@ -83,12 +83,12 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             if(!($activite = $this->activiteRepository->findById($attributs['activiteId']))) throw new Exception( "Cette activité n'existe pas", 500);
 
-            dd($activite);
             //$activiteduree = $activite->durees->last();
 
             if(!(app(Tache::class)->verifiePlageDuree($attributs['debut'], $attributs['fin'], $activite))) throw new Exception( "La duree de la tache doit-etre comprise entre la plage de duree d'une activite", 500);
 
 
+            dd($activite);
             /*if($activiteduree == null) throw new Exception( "L'activté n'a pas de durée en cours, veillez verifier cela", 500);
 
             if($activiteduree->debut > $attributs['debut']) throw new Exception( "La date de début de la tache est antérieur à celui de l'activite", 500);
