@@ -30,6 +30,8 @@ class UpdateUserRequest extends FormRequest
         if(is_string($this->utilisateur))
         {
             $this->utilisateur = User::findByKey($this->utilisateur);
+
+            dd($this->utilisateur);
         }
         
         return [
