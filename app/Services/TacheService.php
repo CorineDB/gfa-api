@@ -88,7 +88,6 @@ class TacheService extends BaseService implements TacheServiceInterface
             if(!(app(Tache::class)->verifiePlageDuree($attributs['debut'], $attributs['fin'], $activite))) throw new Exception( "La duree de la tache doit-etre comprise entre la plage de duree d'une activite", 500);
 
 
-            dd($activite);
             /*if($activiteduree == null) throw new Exception( "L'activté n'a pas de durée en cours, veillez verifier cela", 500);
 
             if($activiteduree->debut > $attributs['debut']) throw new Exception( "La date de début de la tache est antérieur à celui de l'activite", 500);
@@ -101,6 +100,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             $tache = $this->repository->create($attributs);
 
+            dd($activite);
             $tache = $tache->fresh();
 
             /*$statut = ['etat' => -2];
