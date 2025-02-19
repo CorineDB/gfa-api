@@ -125,7 +125,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             DB::commit();
 
-            GenererPta::dispatch(Auth::user()->programme)->delay(5);
+            //GenererPta::dispatch(Auth::user()->programme)->delay(5);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new TacheResource($tache), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
