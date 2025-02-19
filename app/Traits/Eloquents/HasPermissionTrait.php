@@ -116,4 +116,9 @@ trait HasPermissionTrait
         $user->permissions()->attach($permissions);
 
     }
+
+    public function canEdit(){
+
+
+    }
 }

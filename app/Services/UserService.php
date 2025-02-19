@@ -209,8 +209,19 @@ class UserService extends BaseService implements UserServiceInterface
 
                 if( !($role = $this->roleRepository->findById($role)) ) throw new Exception("Role introuvable", 400);
 
-                if(!(auth()->user()->hasRole("administrateur", "super-admin", "ong", "agence", "institution", "bailleur", "mission-de-controle", "unitee-de-gestion", "mod" )))  throw new Exception("Le utilisateur avec un rôle inconnu", 400);
+                if(!(auth()->user()->hasRole("administrateur", "super-admin", "ong", "organisation", "agence", "institution", "bailleur", "mission-de-controle", "unitee-de-gestion", "mod" )) ){
 
+                    if(auth()->user()->profilable_type == "App\\Models\\Administrateur" && auth()->user()->profilable_id != $utilisateur->profilable_id){
+                        throw new Exception("Vous n'avez pas les permissions de suppresion de cet utilisateur inconnu", 40);
+                    }
+                    else if(auth()->user()->profilable && (auth()->user()->profilable_type == "App\\Models\\Organisation" || auth()->user()->profilable_type == "App\\Models\\UniteeDeGestion") && auth()->user()->profilable->id != $utilisateur->profilable_id){
+                        throw new Exception("Vous n'avez pas les permissions de suppresion de cet utilisateur inconnu", 40);
+
+                    }else{
+                        throw new Exception("Vous n'avez pas les permissions de suppresion de cet utilisateur inconnu", 40);
+                    }
+                }
+                
                 array_push($roles, $role->id);
             }
 
