@@ -70,6 +70,21 @@ class RoleService extends BaseService implements RoleServiceInterface
         }
     }
 
+    public function findById($role, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($role) && !($role = $this->repository->findById($role))) throw new Exception("Role inconnu.", 404);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new RolesResource($role), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public function create(array $attributs) : JsonResponse
     {
         DB::beginTransaction();
