@@ -96,6 +96,7 @@ class TacheService extends BaseService implements TacheServiceInterface
 
             $attributs = array_merge($attributs, ['activiteId' => $activite->id, 'programmeId' => auth()->user()->programmeId, 'position' => $this->position($activite, 'activites')]);
 
+            dd($activite);
             $attributs = array_merge($attributs, ['statut' => -1]);
 
             $tache = $this->repository->create($attributs);
