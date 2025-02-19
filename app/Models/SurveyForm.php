@@ -71,6 +71,6 @@ class SurveyForm extends Model
 
     public function surveys()
     {
-        return $this->hasMany(Survey::class, 'surveyId');
+        return $this->hasMany(Survey::class, 'surveyFormId');
     }
 }
