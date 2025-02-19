@@ -21,8 +21,7 @@ class RolesResource extends JsonResource
             "nom" => $this->nom,
             "description" => $this->description,
             'permissions' => $this->permissions,
-              "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
-
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
 }
