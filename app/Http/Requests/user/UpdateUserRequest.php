@@ -27,11 +27,11 @@ class UpdateUserRequest extends FormRequest
      */
     public function rules()
     {
-        dd($this->utilisateur);
         if(is_string($this->utilisateur))
         {
             $this->utilisateur = User::findByKey($this->utilisateur);
         }
+        dd($this->utilisateur);
         
         return [
             'nom' => 'sometimes|string|max:255',
