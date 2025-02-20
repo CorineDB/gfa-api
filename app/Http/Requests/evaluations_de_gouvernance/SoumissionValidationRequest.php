@@ -207,6 +207,62 @@ class SoumissionValidationRequest extends FormRequest
     public function messages()
     {
         return [
+            'programmeId.required' => 'Le champ programme est requis si vous n\'êtes pas authentifié.',
+            'soumissionId.exists' => 'La soumission sélectionnée est invalide.',
+            'organisationId.required' => 'Le champ organisation est requis pour les utilisateurs ayant le rôle "unitee-de-gestion".',
+            'formulaireDeGouvernanceId.required' => 'Le champ formulaire de gouvernance est requis.',
+            
+            'factuel.required' => 'Les données factuelles sont requises.',
+            'factuel.array' => 'Le champ factuel doit être un tableau.',
+            
+            'factuel.comite_members.required' => 'Le comité doit contenir au moins un membre.',
+            'factuel.comite_members.array' => 'Le comité doit être sous forme de tableau.',
+            'factuel.comite_members.*.nom.required' => 'Le nom du membre est requis.',
+            'factuel.comite_members.*.prenom.required' => 'Le prénom du membre est requis.',
+            'factuel.comite_members.*.contact.required' => 'Le contact du membre est requis.',
+            'factuel.comite_members.*.contact.distinct' => 'Chaque contact doit être unique.',
+            'factuel.comite_members.*.contact.numeric' => 'Le contact doit être un numéro valide.',
+            'factuel.comite_members.*.contact.digits_between' => 'Le contact doit comporter entre 8 et 24 chiffres.',
+    
+            'factuel.response_data.required' => 'Veuillez remplir tout le formulaire factuel.',
+            'factuel.response_data.array' => 'Les réponses doivent être sous forme de tableau.',
+    
+            'factuel.response_data.*.questionId.required' => 'L\'ID de la question est requis.',
+            'factuel.response_data.*.questionId.distinct' => 'Chaque question doit être unique.',
+            'factuel.response_data.*.questionId.exists' => 'Cette question n\'existe pas.',
+    
+            'factuel.response_data.*.optionDeReponseId.required' => 'Veuillez sélectionner une option de réponse.',
+            'factuel.response_data.*.optionDeReponseId.exists' => 'L\'option sélectionnée est invalide.',
+    
+            'factuel.response_data.*.sourceDeVerificationId.required' => 'Veuillez sélectionner une source de vérification.',
+            'factuel.response_data.*.sourceDeVerification.required' => 'Le champ source de vérification est requis.',
+    
+            'factuel.response_data.*.preuves.required' => 'Veuillez fournir une preuve de vérification.',
+            'factuel.response_data.*.preuves.array' => 'Les preuves doivent être sous forme de tableau.',
+            'factuel.response_data.*.preuves.min' => 'Au moins une preuve est requise.',
+            'factuel.response_data.*.preuves.*.file' => 'Chaque preuve doit être un fichier valide.',
+            'factuel.response_data.*.preuves.*.mimes' => 'Les fichiers doivent être au format : doc, docx, xls, csv, xlsx, ppt, pdf, jpg, png, jpeg, mp3, wav, mp4, mov, avi, mkv.',
+            'factuel.response_data.*.preuves.*.max' => 'Chaque fichier ne doit pas dépasser 20 Mo.',
+    
+            'perception.required' => 'Veuillez remplir tout le formulaire de perception.',
+            'perception.array' => 'Les réponses de perception doivent être sous forme de tableau.',
+    
+            'perception.categorieDeParticipant.required' => 'La catégorie de participant est requise.',
+            'perception.categorieDeParticipant.in' => 'La catégorie de participant doit être parmi : membre de conseil d\'administration, employé association, membre association, partenaire.',
+    
+            'perception.sexe.required' => 'Le sexe est requis.',
+            'perception.sexe.in' => 'Le sexe doit être soit masculin, soit féminin.',
+    
+            'perception.age.required' => 'L\'âge est requis.',
+            'perception.age.in' => 'L\'âge doit être soit <35, soit >35.',
+    
+            'perception.response_data.*.questionId.required' => 'L\'ID de la question est requis.',
+            'perception.response_data.*.questionId.distinct' => 'Chaque question doit être unique.',
+            'perception.response_data.*.questionId.exists' => 'Cette question opérationnelle n\'existe pas.',
+    
+            'perception.response_data.*.optionDeReponseId.required' => 'Veuillez sélectionner une option de réponse.',
+            'perception.response_data.*.optionDeReponseId.exists' => 'L\'option sélectionnée est invalide.',
+     
             // Custom messages for the 'nom' field
             'nom.required'      => 'Le champ nom est obligatoire.',
             'nom.max'           => 'Le nom ne doit pas dépasser 255 caractères.',
