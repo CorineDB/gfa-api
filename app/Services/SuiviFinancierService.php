@@ -1040,43 +1040,10 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         $suiviFinanciers = [];
         $valideActivites = [];
 
-            
-        if($filterData){
-        
-            $trimestre = ((isset($filterData['trimestre']) && (!is_null($filterData['trimestre']) && !empty($filterData['trimestre'])))) ? $filterData['trimestre'] : 1;
-            $year = ((isset($filterData['annee']) && (!is_null($filterData['annee']) && !empty($filterData['annee'])))) ? $filterData['annee'] : Carbon::now()->year;
-            [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
-        }
-        else {
-            [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
-        }
-        dump([$debutDate, $finDate]);
-        
         foreach ($activites as $value) {
-
-                $isValide = $value->durees()->where(function($query) use ($debutDate, $finDate) {
-                    // La période de l'activité doit chevaucher avec la période donnée
-                    $query->where('debut', '<=', $finDate)  // L'activité commence avant ou au même moment que la fin de la période donnée
-                    ->where('fin', '>=', $debutDate);  // L'activité se termine après ou au même moment que le début de la période donnée
-                })->exists();
-
-                dump([
-                    'activite'      => $value,
-                    'durees'        => $value->durees,
-                    'is_trimestre'  => $isValide
-                ]);
-
-                if($isValide == true){
-                    array_push($valideActivites, [
-                        'activite'      => $value,
-                        'durees'        => $value->durees,
-                        'is_trimestre'  => $isValide
-                    ]);
-                }
-            
-            /* if ($this->verifiePlageDuree($value, $filterData)) {
+            if ($this->verifiePlageDuree($value, $filterData)) {
                 array_push($valideActivites, $value);
-            } */
+            }
         }
 
         dd($valideActivites);
