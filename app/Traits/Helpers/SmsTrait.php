@@ -65,10 +65,10 @@ trait SmsTrait{
             // Handle the response
             if ($response->successful()) {
 
-                Log::info("SMS Response: " . $responseBody);
+                Log::info("SMS Response: " . json_encode($responseBody));
             } else {
-                Log::error('Failed to send SMS balance: ' . $responseBody);
-                throw new \Exception("Error Processing SMS Request: " . $responseBody, 1);
+                Log::error('Failed to send SMS balance: ' . json_encode($responseBody));
+                throw new \Exception("Error Processing SMS Request: " . json_encode($responseBody), 1);
             }
         } catch (\Exception $e) {
             Log::error('Error sending SMS : ' . $e->getMessage());
