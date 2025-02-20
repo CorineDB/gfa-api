@@ -1054,10 +1054,16 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         
         foreach ($activites as $value) {
 
-                $isValide=$value->durees()->where(function($query) use ($debutDate, $finDate) {
+                $isValide = $value->durees()->where(function($query) use ($debutDate, $finDate) {
                     $query->where('debut', '>=', $debutDate)
                         ->where('fin', '<=', $finDate);
                 })->exists();
+
+                dump([
+                    'activite'      => $value,
+                    'durees'        => $value->durees,
+                    'is_trimestre'  => $isValide
+                ]);
 
                 if($isValide == true){
                     array_push($valideActivites, [
