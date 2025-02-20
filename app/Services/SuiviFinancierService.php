@@ -1040,17 +1040,19 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         $suiviFinanciers = [];
         $valideActivites = [];
 
-        foreach ($activites as $value) {
             
-                if($filterData){
+        if($filterData){
         
-                    $trimestre = ((isset($filterData['trimestre']) && (!is_null($filterData['trimestre']) && !empty($filterData['trimestre'])))) ? $filterData['trimestre'] : 1;
-                    $year = ((isset($filterData['annee']) && (!is_null($filterData['annee']) && !empty($filterData['annee'])))) ? $filterData['annee'] : Carbon::now()->year;
-                    [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
-                }
-                else {
-                    [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
-                }
+            $trimestre = ((isset($filterData['trimestre']) && (!is_null($filterData['trimestre']) && !empty($filterData['trimestre'])))) ? $filterData['trimestre'] : 1;
+            $year = ((isset($filterData['annee']) && (!is_null($filterData['annee']) && !empty($filterData['annee'])))) ? $filterData['annee'] : Carbon::now()->year;
+            [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
+        }
+        else {
+            [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
+        }
+        dd([$debutDate, $finDate]);
+        
+        foreach ($activites as $value) {
 
                 $isValide=$value->durees()->where(function($query) use ($debutDate, $finDate) {
                     $query->where('debut', '>=', $debutDate)
