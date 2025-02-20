@@ -1065,19 +1065,6 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                         'is_trimestre'  => $isValide
                     ]);
                 }
-        
-                // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
-                /* return $value->durees()
-                    ->where(function($query) use ($debutDate, $finDate) {
-                        $query->where('debut', '>=', $debutDate)
-                            ->where('fin', '<=', $finDate);
-                        // Check if the task's start date and end date fall within any of the ranges
-                        *//* $query->where(function ($subQuery) use ($debutDate, $finDate) {
-                            $subQuery->where('debut', '<=', $debutDate)
-                                     ->where('fin', '>=', $finDate);
-                        }); *//*
-                    })
-                    ->exists(); */
             
             /* if ($this->verifiePlageDuree($value, $filterData)) {
                 array_push($valideActivites, $value);
