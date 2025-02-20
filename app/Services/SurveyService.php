@@ -193,6 +193,9 @@ class SurveyService extends BaseService implements SurveyServiceInterface
 
         try {
 
+            
+            dd($survey);
+
             if (!is_object($survey) && !($survey = $this->repository->findById($survey))) throw new Exception("Enquete inexistante", 500);
 
             if (!($surveyForm = app(SurveyRepository::class)->findById($attributs["surveyFormId"]))) {
