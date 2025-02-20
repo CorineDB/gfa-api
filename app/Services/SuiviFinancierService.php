@@ -1057,7 +1057,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                         ->where('fin', '<=', $finDate);
                 })->exists();
 
-                if($isValide){
+                if($isValide == true){
                     array_push($valideActivites, [
                         'activite'      => $value,
                         'durees'        => $value->durees,
