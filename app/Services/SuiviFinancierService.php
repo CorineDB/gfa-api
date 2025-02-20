@@ -1055,8 +1055,9 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         foreach ($activites as $value) {
 
                 $isValide = $value->durees()->where(function($query) use ($debutDate, $finDate) {
-                    $query->where('debut', '>=', $debutDate)
-                        ->where('fin', '<=', $finDate);
+                    // La période de l'activité doit chevaucher avec la période donnée
+                    $query->where('debut', '<=', $finDate)  // L'activité commence avant ou au même moment que la fin de la période donnée
+                    ->where('fin', '>=', $debutDate);  // L'activité se termine après ou au même moment que le début de la période donnée
                 })->exists();
 
                 dump([
