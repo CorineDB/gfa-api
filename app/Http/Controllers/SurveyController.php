@@ -70,6 +70,8 @@ class SurveyController extends Controller
      */
     public function update(UpdateRequest $request, $id)
     {
+
+        dd($id);
         return $this->surveyService->update($id, $request->all());
     }
 

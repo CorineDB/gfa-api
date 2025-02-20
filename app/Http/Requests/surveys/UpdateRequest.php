@@ -32,8 +32,6 @@ class UpdateRequest extends FormRequest
             $this->survey = Survey::findByKey($this->survey);
         }
 
-        dd($this->survey);
-
         return [
             'intitule'               => ['sometimes', 'string', Rule::unique('surveys', 'intitule')->ignore($this->survey)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
