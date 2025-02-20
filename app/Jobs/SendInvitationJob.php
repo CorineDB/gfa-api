@@ -118,6 +118,8 @@ class SendInvitationJob implements ShouldQueue
                                         "Participez des maintenant : " . $invite ."\nMerci !";
                             
                             Log::info('Processing invitation sending : ' . $message);
+        
+                            $this->sendSms($message, $phoneNumbers);
 
                             // Remove duplicates based on the "email" field (use email as the unique key)
                             $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
