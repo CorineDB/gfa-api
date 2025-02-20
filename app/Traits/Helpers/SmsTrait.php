@@ -43,15 +43,24 @@ trait SmsTrait{
 
         try {
 
-            Log::info('Sending SMS : ' . json_encode($message));
+            /* foreach ($phoneNumbers as $key => $phoneNumber) {
+
+                // Prepare the data for SMS API
+                $request_body = [
+                    "from"=>  "GFA",
+                    "to" => $phoneNumber,
+                    "content" => $message
+                ];
+    
+                // Send the request (HTTP client)
+                $response = Http::withHeaders($headers)->post($endpoint, $request_body);
+            } */
 
             // Send the request (HTTP client)
             $response = Http::withHeaders($headers)->post($endpoint, $request_body);
 
             // Log or handle the response if needed
             $responseBody = $response->json();
-
-            Log::info('Sending SMS : ' . json_encode($message));
 
             // Handle the response
             if ($response->successful()) {
