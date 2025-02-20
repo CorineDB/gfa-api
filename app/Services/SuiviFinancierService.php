@@ -1050,7 +1050,7 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         else {
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
         }
-        dd([$debutDate, $finDate]);
+        dump([$debutDate, $finDate]);
         
         foreach ($activites as $value) {
 
