@@ -109,15 +109,12 @@ class SendInvitationJob implements ShouldQueue
                     if (!empty($phoneNumbers)) {
 
                         try {
-                            Log::info('Processing invitation sending : ' . json_encode($phoneNumbers));
-
-                            $invite = "{$url}/dashboard/tools-perception/". $evaluationOrganisation->pivot->token;
 
                             $message = "Bonjour,\n" .
-                                        "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} (annee : {$this->evaluationDeGouvernance->annee_exercice}).\n" .
-                                        "Participez des maintenant : " . $invite ."\nMerci !";
-                            
-                            Log::info('Processing invitation sending : ' . $message);
+                                        "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
+                                        "Participez des maintenant : " .
+                                        "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
+                                        "Merci !";
         
                             $this->sendSms($message, $phoneNumbers);
 
@@ -125,7 +122,7 @@ class SendInvitationJob implements ShouldQueue
                             $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
 
                         } catch (\Throwable $th) {
-                            Log::error('Error sending invitation : ' . $th->getMessage());
+                            Log::error('Error sending SMS : ' . $th->getMessage());
                         }
                     }
                     // Update the pivot table with the merged participants
