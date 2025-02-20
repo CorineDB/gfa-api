@@ -177,7 +177,6 @@ trait HelperTrait
     protected function verifiePlageDuree(Activite $activite, array $period = null )
     {
         if($period){
-
             $trimestre = ((isset($period['trimestre']) && (!is_null($period['trimestre']) && !empty($period['trimestre'])))) ? $period['trimestre'] : 1;
             $year = ((isset($period['annee']) && (!is_null($period['annee']) && !empty($period['annee'])))) ? $period['annee'] : Carbon::now()->year;
             [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
@@ -191,19 +190,6 @@ trait HelperTrait
             $query->where('debut', '<=', $finDate)  // L'activité commence avant ou au même moment que la fin de la période donnée
             ->where('fin', '>=', $debutDate);  // L'activité se termine après ou au même moment que le début de la période donnée
         })->exists();
-
-        // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
-        return $activite->durees()
-            ->where(function($query) use ($debutDate, $finDate) {
-                $query->where('debut', '>=', $debutDate)
-                ->where('fin', '<=', $finDate);
-                // Check if the task's start date and end date fall within any of the ranges
-                /* $query->where(function ($subQuery) use ($debutDate, $finDate) {
-                    $subQuery->where('debut', '<=', $debutDate)
-                             ->where('fin', '>=', $finDate);
-                }); */
-            })
-            ->exists(); // Return true if such a range exists
     }
 
     /**
