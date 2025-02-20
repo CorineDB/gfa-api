@@ -160,16 +160,50 @@ class SoumissionRequest extends FormRequest
     public function messages()
     {
         return [
-            // Custom messages for the 'nom' field
-            'nom.required'      => 'Le champ nom est obligatoire.',
-            'nom.max'           => 'Le nom ne doit pas dépasser 255 caractères.',
-            'nom.unique'        => 'Ce nom est déjà utilisé dans les résultats.',
+            'organisationId.required_if' => "L'organisation est requise pour les unités de gestion.",
+            
+            'formulaireDeGouvernanceId.required' => "Le formulaire de gouvernance est requis.",
+            'formulaireDeGouvernanceId.exists' => "Le formulaire de gouvernance sélectionné n'existe pas ou pas associé à cette évaluation.",
 
-            // Custom messages for the 'description' field
-            'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
+            'factuel.required_if' => "Les données factuelles sont requises si la perception n'est pas fournie.",
+            'factuel.array' => "Les données factuelles doivent être sous forme de tableau.",
 
-            // Custom messages for the 'principeDeGouvernanceId' field
-            'principeDeGouvernanceId.required' => 'Le champ principe de gouvernance est obligatoire.',
+            'factuel.comite_members.array' => "Les informations des membres du comité doivent être sous forme de tableau.",
+            'factuel.comite_members.min' => "Il doit y avoir au moins des informations d'un membre du comité.",
+            'factuel.comite_members.*.nom.string' => "Le nom du membre doit être une chaîne de caractères.",
+            'factuel.comite_members.*.prenom.string' => "Le prénom du membre doit être une chaîne de caractères.",
+            'factuel.comite_members.*.contact.distinct' => "Chaque contact du membre doit être unique.",
+            'factuel.comite_members.*.contact.numeric' => "Le contact du membre doit être un numéro valide.",
+            'factuel.comite_members.*.contact.digits_between' => "Le contact du membre doit contenir entre 8 et 24 chiffres.",
+
+            'factuel.response_data.*.questionId.required_if' => "L'ID de la question est requis",
+            'factuel.response_data.*.questionId.distinct' => "Les questions doivent être uniques.",
+            'factuel.response_data.*.questionId.exists' => "L'indicateur sélectionné n'existe pas.",
+
+            'factuel.response_data.*.optionDeReponseId.required_if' => "L'option de réponse est requise",
+            'factuel.response_data.*.optionDeReponseId.exists' => "L'option de réponse sélectionnée est invalide.",
+
+            'factuel.response_data.*.preuves.array' => "Les preuves doivent être un tableau de fichiers.",
+            'factuel.response_data.*.preuves.*.file' => "Chaque preuve doit être un fichier valide.",
+            'factuel.response_data.*.preuves.*.mimes' => "Format de fichier non valide. Formats acceptés : txt, doc, docx, xls, csv, xlsx, ppt, pdf, jpg, png, jpeg, mp3, wav, mp4, mov, avi, mkv.",
+            'factuel.response_data.*.preuves.*.max' => "La taille maximale du fichier est de 20 Mo.",
+
+            'perception.required_if' => "Les données de perception sont requises.",
+            'perception.array' => "Les données de perception doivent être sous forme de tableau.",
+
+            'perception.response_data.categorieDeParticipant.in' => "La catégorie de participant sélectionnée est inconnue.",
+            'perception.response_data.sexe.in' => "Le sexe sélectionné est inconnue.",
+            'perception.response_data.age.in' => "L'âge sélectionné est invalide.",
+
+            'perception.response_data.*.questionId.required_if' => "L'ID de la question est requis.",
+            'perception.response_data.*.questionId.distinct' => "Les questions doivent être uniques.",
+            'perception.response_data.*.questionId.exists' => "La question opérationnelle sélectionnée n'existe pas.",
+
+            'perception.response_data.*.optionDeReponseId.required_if' => "L'option de réponse est requise.",
+            'perception.response_data.*.optionDeReponseId.exists' => "L'option de réponse sélectionnée n'existe pas.",
+
+            'perception.commentaire.string' => "Le commentaire doit être une chaîne de caractères.",
+            'perception.commentaire.max' => "Le commentaire ne doit pas dépasser 255 caractères.",
         ];
     }
 
