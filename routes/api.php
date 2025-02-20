@@ -670,7 +670,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
             });
 
-            Route::apiResource('programmes', 'ProgrammeController')->names('programmes')->middleware(['role:administrateur,super-admin']);
+            Route::apiResource('programmes', 'ProgrammeController')->names('programmes')/* ->middleware(['role:administrateur,super-admin']) */;
             
             Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
 
