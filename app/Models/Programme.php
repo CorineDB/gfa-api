@@ -52,7 +52,7 @@ class Programme extends Model
         parent::boot();
 
         static::deleting(function($programme) {
-            
+
             foreach ($programme->relationships as $relationship) {
                 if ($programme->{$relationship}()->exists() && $programme->{$relationship}->count()>0) {
                     // Prevent deletion by throwing an exception
@@ -533,10 +533,10 @@ class Programme extends Model
                     $query->whereHas('composante', function ($query) {
                         $query->whereHas('projet', function ($query) {
                             $user = auth()->user();
-                            if ($user->profilable) {
-                                $query->where("projetable_id", $user->profilable->id)
+                            //if ($user->profilable_) {
+                                $query->where("projetable_id", $user->profilable_id)
                                       ->where("projetable_type", Organisation::class);
-                            }
+                            //}
                         });
                     });
                 });
