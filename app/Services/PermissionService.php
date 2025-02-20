@@ -49,7 +49,8 @@ class PermissionService extends BaseService implements PermissionServiceInterfac
 
             if( ($user && $user->hasRole("administrateur", "super-admin")) )
             {
-                $permissions = $this->repository->all();
+                //$permissions = $this->repository->all();
+                $permissions = $user->permissions;
             }
             else
             {
