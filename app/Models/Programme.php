@@ -525,7 +525,7 @@ class Programme extends Model
 
     public function suiviFinanciers()
     {
-        return $this->hasMany(SuiviFinancier::class, 'programmeId')->when(
+        return $this->hasMany(SuiviFinancier::class, 'programmeId')/* ->when(
             auth()->check() &&
             (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)),
             function ($query) {
@@ -541,7 +541,7 @@ class Programme extends Model
                     });
                 });
             }
-        );
+        ) */;
         
         /* ->whereHas('activite', function ($query) {
             $query->whereHas('composante', function ($query) {
