@@ -43,7 +43,7 @@ class UpdateRequest extends FormRequest
             'annee_exercice'   => ['sometimes', 'integer', Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
                 ->where(function ($query) {
                     return $query->where('type', request()->input('type'));
-                })->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')
+                })->ignore($this->formulaire_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')
             ],
             'description'       => 'nullable|max:255',
             'type'             => 'sometimes|string|in:factuel,perception',
