@@ -55,24 +55,23 @@ trait SmsTrait{
                 // Send the request (HTTP client)
                 $response = Http::withHeaders($headers)->post($endpoint, $request_body);
             } */
-            Log::info("SMS request: " . json_encode($request_body));
 
             // Send the request (HTTP client)
-            //$response = Http::dd()->withHeaders($headers)->post($endpoint, $request_body);
+            $response = Http::withHeaders($headers)->post($endpoint, $request_body);
 
             // Log or handle the response if needed
-            //$responseBody = $response->json();
+            $responseBody = $response->json();
 
             // Handle the response
-            /* if ($response->successful()) {
+            if ($response->successful()) {
 
-                Log::info("SMS Response: " . json_encode($responseBody));
+                Log::info("SMS Response: " . $responseBody);
             } else {
-                Log::error('Failed to send SMS balance: ' . json_encode($responseBody));
-                throw new \Exception("Error Processing SMS Request: " . json_encode($responseBody), 1);
-            } */
+                Log::error('Failed to send SMS balance: ' . $responseBody);
+                throw new \Exception("Error Processing SMS Request: " . $responseBody, 1);
+            }
         } catch (\Exception $e) {
-            Log::error('Error Sending SMS : ' . $e->getMessage());
+            Log::error('Error sending SMS : ' . $e->getMessage());
         }
     }
 
