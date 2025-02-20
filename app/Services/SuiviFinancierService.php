@@ -1057,11 +1057,14 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
                         ->where('fin', '<=', $finDate);
                 })->exists();
 
-                array_push($valideActivites, [
-                    'activite'      => $value,
-                    'durees'        => $value->durees,
-                    'is_trimestre'  => $isValide
-                ]);
+                if($isValide){
+
+                    array_push($valideActivites, [
+                        'activite'      => $value,
+                        'durees'        => $value->durees,
+                        'is_trimestre'  => $isValide
+                    ]);
+                }
         
                 // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
                 /* return $value->durees()
