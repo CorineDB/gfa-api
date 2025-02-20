@@ -58,7 +58,7 @@ trait SmsTrait{
             Log::info("SMS request: " . json_encode($request_body));
 
             // Send the request (HTTP client)
-            $response = Http::withHeaders($headers)->post($endpoint, $request_body);
+            $response = Http::dd()->withHeaders($headers)->post($endpoint, $request_body);
 
             // Log or handle the response if needed
             $responseBody = $response->json();
