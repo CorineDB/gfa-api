@@ -43,15 +43,15 @@ trait SmsTrait{
 
         try {
 
-            Log::notice('Sending SMS : ' . json_encode($message));
+            Log::info('Sending SMS : ' . json_encode($message));
 
             // Send the request (HTTP client)
             $response = Http::withHeaders($headers)->post($endpoint, $request_body);
 
             // Log or handle the response if needed
             $responseBody = $response->json();
-            
-            Log::notice('Sending SMS : ' . json_encode($message));
+
+            Log::info('Sending SMS : ' . json_encode($message));
 
             // Handle the response
             if ($response->successful()) {
