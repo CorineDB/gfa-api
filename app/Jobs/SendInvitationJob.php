@@ -113,9 +113,8 @@ class SendInvitationJob implements ShouldQueue
                             $invite = "{$url}/dashboard/tools-perception/". $evaluationOrganisation->pivot->token;
 
                             $message = "Bonjour,\n" .
-                                        "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
-                                        "Participez des maintenant : " .$invite.
-                                        "\nMerci !";
+                                        "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} (annee : {$this->evaluationDeGouvernance->annee_exercice}).\n" .
+                                        "Participez des maintenant : " . $invite ."\nMerci !";
         
                             $this->sendSms($message, $phoneNumbers);
 
