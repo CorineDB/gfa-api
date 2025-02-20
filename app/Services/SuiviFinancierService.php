@@ -1041,10 +1041,47 @@ class SuiviFinancierService extends BaseService implements SuiviFinancierService
         $valideActivites = [];
 
         foreach ($activites as $value) {
-            if ($this->verifiePlageDuree($value, $filterData)) {
+            
+                if($filterData){
+        
+                    $trimestre = ((isset($filterData['trimestre']) && (!is_null($filterData['trimestre']) && !empty($filterData['trimestre'])))) ? $filterData['trimestre'] : 1;
+                    $year = ((isset($filterData['annee']) && (!is_null($filterData['annee']) && !empty($filterData['annee'])))) ? $filterData['annee'] : Carbon::now()->year;
+                    [$debutDate, $finDate] = $this->getCurrentTrimestreDates($trimestre, $year);
+                }
+                else {
+                    [$debutDate, $finDate] = $this->getCurrentTrimestreDates();
+                }
+
+                $isValide=$value->durees()->where(function($query) use ($debutDate, $finDate) {
+                    $query->where('debut', '>=', $debutDate)
+                        ->where('fin', '<=', $finDate);
+                })->exists();
+
+                array_push($valideActivites, [
+                    'activite'      => $value,
+                    'durees'        => $value->durees,
+                    'is_trimestre'  => $isValide
+                ]);
+        
+                // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
+                /* return $value->durees()
+                    ->where(function($query) use ($debutDate, $finDate) {
+                        $query->where('debut', '>=', $debutDate)
+                            ->where('fin', '<=', $finDate);
+                        // Check if the task's start date and end date fall within any of the ranges
+                        *//* $query->where(function ($subQuery) use ($debutDate, $finDate) {
+                            $subQuery->where('debut', '<=', $debutDate)
+                                     ->where('fin', '>=', $finDate);
+                        }); *//*
+                    })
+                    ->exists(); */
+            
+            /* if ($this->verifiePlageDuree($value, $filterData)) {
                 array_push($valideActivites, $value);
-            }
+            } */
         }
+
+        dd($valideActivites);
 
         if (is_null($filterData) || !isset($filterData['annee']) || is_null($filterData['annee']) || empty($filterData['annee'])) {
             $filterData['annee'] = Carbon::now()->year;
