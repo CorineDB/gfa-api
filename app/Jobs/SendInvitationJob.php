@@ -109,6 +109,7 @@ class SendInvitationJob implements ShouldQueue
                     if (!empty($phoneNumbers)) {
 
                         try {
+                            Log::info('Processing invitation sending : ' . json_encode($phoneNumbers));
 
                             $invite = "{$url}/dashboard/tools-perception/". $evaluationOrganisation->pivot->token;
 
