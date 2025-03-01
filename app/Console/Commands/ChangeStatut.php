@@ -80,7 +80,7 @@ class ChangeStatut extends Command
 
                         event(new NewNotification($this->formatageNotification($notification, $user)));
 
-                        ChangementStatutJob::dispatch($user,null, $tache, 'tache', 'en cours')->delay(10);
+             //           ChangementStatutJob::dispatch($user,null, $tache, 'tache', 'en cours')->delay(10);
                     }
                 }
             }
@@ -175,7 +175,7 @@ class ChangeStatut extends Command
 
                         $notification = $user->notifications->last();
 
-                        event(new NewNotification($this->formatageNotification($notification, $user)));
+                   //     event(new NewNotification($this->formatageNotification($notification, $user)));
 
                         ChangementStatutJob::dispatch($user,$activite, null, 'activite', 'en cours')->delay(10);
                     }
@@ -203,9 +203,9 @@ class ChangeStatut extends Command
 
                         $notification = $user->notifications->last();
 
-                        event(new NewNotification($this->formatageNotification($notification, $user)));
+                    //    event(new NewNotification($this->formatageNotification($notification, $user)));
 
-                        ChangementStatutJob::dispatch($user,$activite, null, 'activite', 'en retard')->delay(10);
+                    //wens    ChangementStatutJob::dispatch($user,$activite, null, 'activite', 'en retard')->delay(10);
                     }
                 }
             }
@@ -232,9 +232,9 @@ class ChangeStatut extends Command
 
                         $notification = $user->notifications->last();
 
-                        event(new NewNotification($this->formatageNotification($notification, $user)));
+                    //    event(new NewNotification($this->formatageNotification($notification, $user)));
 
-                        ChangementStatutJob::dispatch($user,$activite, null, 'activite', 'en cours')->delay(10);
+                       // ChangementStatutJob::dispatch($user,$activite, null, 'activite', 'en cours')->delay(10);
                     }
                 }
             }
