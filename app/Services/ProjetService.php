@@ -405,7 +405,6 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
                     
                     $sites[$site->id] = ['programmeId' => $programme->id];
-                    // array_push($sites, $site->id);
                 }
 
                 $projet->sites()->sync($sites);
@@ -426,7 +425,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             GenererPta::dispatch(Auth::user()->programme)->delay(5);
 
-            return response()->json(['statut' => 'success', 'message' => $attributs, 'data' => new ProjetResource($projet), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => "Projet {$projet->nom} a ete bien mis a jour", 'data' => new ProjetResource($projet), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
         catch (\Throwable $th)
         {
