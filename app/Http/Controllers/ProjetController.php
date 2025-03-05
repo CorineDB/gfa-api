@@ -89,7 +89,6 @@ class ProjetController extends Controller
      */
     public function update(UpdateProjetRequest $request, $idProjet)
     {
-        dd($idProjet);
         return $this->projetService->update($idProjet, $request->all());
     }
 
