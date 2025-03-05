@@ -404,10 +404,11 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 {
                     if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
                     
-                    array_push($sites, $site->id);
+                    $sites[$site->id] = ['programmeId' => $programme->id];
+                    // array_push($sites, $site->id);
                 }
 
-                $projet->sites()->sync($sites, ["programmeId" => $programme->id]);
+                $projet->sites()->sync($sites);
 
             }
 

@@ -54,10 +54,6 @@ class Projet extends Model
     protected static function boot() {
         parent::boot();
 
-        static::updating(function($projet){
-            dd($projet);
-        });
-
         static::deleting(function($projet) {
 
             DB::beginTransaction();
