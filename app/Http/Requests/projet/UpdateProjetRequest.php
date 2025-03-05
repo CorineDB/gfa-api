@@ -33,7 +33,6 @@ class UpdateProjetRequest extends FormRequest
      */
     public function rules()
     {
-        dd($this);
         return [
             'nom' => 'sometimes|required|max:255',
             'statut' => 'sometimes|required|integer|min:-1|max:-1',
