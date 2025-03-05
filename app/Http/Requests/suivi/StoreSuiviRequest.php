@@ -33,6 +33,10 @@ class StoreSuiviRequest extends FormRequest
 
                 $tache = Tache::findByKey($this->tacheId);
 
+                if( $tache->statut && !($tache->statut >= 0 &&  $tache->statut < 2) ){
+                    throw ValidationException::withMessages(["tacheId" =>  "Le suivi ne peut qu'etre effectuer, que pour les tâches en cours ou en retard d'execution."]);
+                }
+
                 /* if( $tache->statut && !($tache->statut >= 0 &&  $tache->statut < 2) ){
                     throw ValidationException::withMessages(["tacheId" =>  "Le suivi ne peut qu'etre effectuer, que pour les tâches en cours ou en retard d'execution."]);
                 } */
