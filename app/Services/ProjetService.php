@@ -290,7 +290,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             unset($attributs['bailleurId']);
 
-            if(array_key_exists('programeId', $attributs))
+            if(array_key_exists('programmeId', $attributs))
             {
                 if(!($programme = $this->programmeRepository->findById($attributs['programmeId']))) throw new Exception( "Ce programme n'existe pas", 500);
 
@@ -303,8 +303,9 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $programme = Auth::user()->programme;
             }
 
-            if((!is_object($projetId )))
+            if((!is_object($projetId ))){
                 $projet = $this->repository->findById($projetId);
+            }
             else {
                 $projet = $projetId;
             }
