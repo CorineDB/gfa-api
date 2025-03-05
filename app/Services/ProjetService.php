@@ -395,6 +395,8 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
             }
 
+            dd($projet);
+
             /* if(isset($attributs['sites'])){
 
                 $programme = Auth::user()->programme;
