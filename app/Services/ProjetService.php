@@ -395,9 +395,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 }
             }
 
-            dd($projet);
-
-            /* if(isset($attributs['sites'])){
+            if(isset($attributs['sites'])){
 
                 $programme = Auth::user()->programme;
 
@@ -411,7 +409,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 $projet->sites()->sync($sites, ["programmeId" => $programme->id]);
 
-            } */
+            }
 
             $projet = $projet->fresh();
 
