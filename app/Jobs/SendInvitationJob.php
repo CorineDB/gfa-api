@@ -129,15 +129,15 @@ class SendInvitationJob implements ShouldQueue
                     $evaluationOrganisation->pivot->participants = $participants;
                     $evaluationOrganisation->pivot->save();
 
-                    Log::error('nbreParticipants: '. json_encode($participants));
+                    dump(json_encode($participants));
                     
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
 
-                            Log::error('nbreParticipants: ' . $this->data['nbreParticipants'] ."; pivot->nbreParticipants: ". $evaluationOrganisation->pivot->nbreParticipants . "; total_soumissions_de_perception: " . $this->evaluationDeGouvernance->total_soumissions_de_perception);
-                            Log::error("nbreParticipants < pivot->nbreParticipants: " . $this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants . "; nbreParticipants < total_soumissions_de_perception: " . ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception));
+                            dump('nbreParticipants: ' . $this->data['nbreParticipants'] ."; pivot->nbreParticipants: ". $evaluationOrganisation->pivot->nbreParticipants . "; total_soumissions_de_perception: " . $this->evaluationDeGouvernance->total_soumissions_de_perception);
+                            dump("nbreParticipants < pivot->nbreParticipants: " . $this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants . "; nbreParticipants < total_soumissions_de_perception: " . ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception));
 
-                            Log::error("if condition: " . (($this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)));
+                            dd("if condition: " . (($this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)));
 
                             if(($this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)){
                                 $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
