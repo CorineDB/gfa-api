@@ -128,6 +128,9 @@ class SendInvitationJob implements ShouldQueue
                     // Update the pivot table with the merged participants
                     $evaluationOrganisation->pivot->participants = $participants;
                     $evaluationOrganisation->pivot->save();
+
+                    Log::info('nbreParticipants: '. json_encode($participants));
+                    
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
 
