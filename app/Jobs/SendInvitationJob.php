@@ -129,7 +129,7 @@ class SendInvitationJob implements ShouldQueue
                     $evaluationOrganisation->pivot->participants = $participants;
                     $evaluationOrganisation->pivot->save();
 
-                    dump(json_encode($participants));
+                    //dump(json_encode($participants));
                     
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
