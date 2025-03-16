@@ -17,7 +17,7 @@ class ReponseDeLaCollecte extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array("point", "type", 'sourceDeVerification', 'soumissionId', 'sourceDeVerificationId', 'questionId', 'optionDeReponseId', 'programmeId');
+    protected $fillable = array("point", "type", 'sourceDeVerification', 'soumissionId', 'sourceDeVerificationId', 'questionId', 'optionDeReponseId', 'preuveIsRequired', 'programmeId');
 
     protected $casts = [
         "point" => 'float'
@@ -96,7 +96,12 @@ class ReponseDeLaCollecte extends Model
 
         if($this->type == 'indicateur'){
 
-            $donnees_attendues = 8;
+            if($this->preuveIsRequired){
+                $donnees_attendues = 8;
+            }
+            else{
+                $donnees_attendues = 7;
+            }
 
             //array('soumissionId', 'questionId', 'optionDeReponseId', 'programmeId');
             //array("point", "type", 'sourceDeVerification', 'sourceDeVerificationId');

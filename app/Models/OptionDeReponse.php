@@ -76,7 +76,7 @@ class OptionDeReponse extends Model
 
     public function formulaires_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class,'formulaire_options_de_reponse', 'optionId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "point"]);
+        return $this->belongsToMany(FormulaireDeGouvernance::class,'formulaire_options_de_reponse', 'optionId', 'formulaireDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(["id", "point", "preuveIsRequired"]);
     }
 
     /*public function getNoteAttribute()
