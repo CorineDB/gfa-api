@@ -71,7 +71,7 @@ trait SmsTrait{
                 throw new \Exception("Error Processing SMS Request: " . $responseBody, 1);
             }
         } catch (\Exception $e) {
-            Log::error('Error sending SMS : ' . $e->getMessage());
+            Log::error('Error sending bulk SMS : ' . $e->getMessage());
         }
     }
 
