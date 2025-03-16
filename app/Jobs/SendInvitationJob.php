@@ -165,11 +165,11 @@ class SendInvitationJob implements ShouldQueue
         $uniqueParticipants = [];
     
         foreach ($participants as $participant) {
-            if($type == 'email'){
+            if($type == 'email' && isset($participant['email'])){
                 // If participant doesn't exist in uniqueParticipants array, add them
                 $uniqueParticipants[$participant['email']] = $participant;
             }
-            elseif($type == 'phone'){
+            elseif($type == 'phone' && isset($participant['phone'])){
                 $uniqueParticipants[$participant['phone']] = $participant;
             }
         }
