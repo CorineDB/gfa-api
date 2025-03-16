@@ -133,6 +133,9 @@ class SendInvitationJob implements ShouldQueue
                     
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
+                            $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
+                                $evaluationOrganisation->pivot->save();
+                                $evaluationOrganisation->save();
 
                             //dump('nbreParticipants: ' . $this->data['nbreParticipants'] ."; pivot->nbreParticipants: ". $evaluationOrganisation->pivot->nbreParticipants . "; total_soumissions_de_perception: " . $this->evaluationDeGouvernance->total_soumissions_de_perception);
                             //dump("nbreParticipants < pivot->nbreParticipants: " . $this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants . "; nbreParticipants < total_soumissions_de_perception: " . ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception));
@@ -140,9 +143,9 @@ class SendInvitationJob implements ShouldQueue
                            // dd("if condition: " . (($this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants) && ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception)));
 
                             if(/* ($this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants) &&  */($this->data['nbreParticipants'] > $this->evaluationDeGouvernance->total_soumissions_de_perception)){
-                                $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
+                                /* $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
                                 $evaluationOrganisation->pivot->save();
-                                $evaluationOrganisation->save();
+                                $evaluationOrganisation->save(); */
                             }
                         }
                     }
