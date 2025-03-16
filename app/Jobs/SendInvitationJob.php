@@ -125,7 +125,7 @@ class SendInvitationJob implements ShouldQueue
                             Log::error('Error sending SMS : ' . $th->getMessage());
                         }
                     }
-                    dd(json_encode($this->data['nbreParticipants']));
+                    dd($this->data['nbreParticipants']);
                     // Update the pivot table with the merged participants
                     $evaluationOrganisation->pivot->participants = $participants;
                     $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
