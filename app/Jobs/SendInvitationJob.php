@@ -122,7 +122,7 @@ class SendInvitationJob implements ShouldQueue
                             $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
 
                         } catch (\Throwable $th) {
-                            Log::error('Error sending SMS : ' . $th->getMessage());
+                            Log::error('Error sending SMS invitation : ' . $th->getMessage());
                         }
                     }
                     
