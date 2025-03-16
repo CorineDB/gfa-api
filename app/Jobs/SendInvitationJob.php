@@ -122,20 +122,21 @@ class SendInvitationJob implements ShouldQueue
                             $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]), 'phone');
 
                         } catch (\Throwable $th) {
-                            Log::error('Error sending SMS : ' . $th->getMessage());
+                            Log::error('Error sending SMS invitation : ' . $th->getMessage());
                         }
                     }
-                    dump($this->data['nbreParticipants']);
+                    
                     // Update the pivot table with the merged participants
                     $evaluationOrganisation->pivot->participants = $participants;
                     $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
                     $evaluationOrganisation->pivot->save();
-                    Log::warning('Error sending SMS : ' . $this->data['nbreParticipants']);
+                    Log::warning('Nombre de participant : ' . $this->data['nbreParticipants']);
 
                     //dump(json_encode($participants));
                     
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
+                            Log::info('Nombre de participant : ' . $this->data['nbreParticipants']);
 
                             //dump('nbreParticipants: ' . $this->data['nbreParticipants'] ."; pivot->nbreParticipants: ". $evaluationOrganisation->pivot->nbreParticipants . "; total_soumissions_de_perception: " . $this->evaluationDeGouvernance->total_soumissions_de_perception);
                             //dump("nbreParticipants < pivot->nbreParticipants: " . $this->data['nbreParticipants'] < $evaluationOrganisation->pivot->nbreParticipants . "; nbreParticipants < total_soumissions_de_perception: " . ($this->data['nbreParticipants'] >= $this->evaluationDeGouvernance->total_soumissions_de_perception));
