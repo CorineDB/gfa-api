@@ -73,7 +73,7 @@ class FormulaireDeGouvernance extends Model
 
     public function options_de_reponse()
     {
-        return $this->belongsToMany(OptionDeReponse::class,'formulaire_options_de_reponse', 'formulaireDeGouvernanceId', 'optionId')->wherePivotNull('deleted_at')->withPivot(["id", "point"]);
+        return $this->belongsToMany(OptionDeReponse::class,'formulaire_options_de_reponse', 'formulaireDeGouvernanceId', 'optionId')->wherePivotNull('deleted_at')->withPivot(["id", "point", "preuveIsRequired"]);
     }
 
     public function programme()
