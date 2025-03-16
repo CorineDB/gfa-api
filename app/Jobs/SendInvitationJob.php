@@ -129,6 +129,7 @@ class SendInvitationJob implements ShouldQueue
                     $evaluationOrganisation->pivot->participants = $participants;
                     $evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
                     $evaluationOrganisation->pivot->save();
+                    Log::warning('Error sending SMS : ' . json_encode($this->data['nbreParticipants']));
 
                     //dump(json_encode($participants));
                     
