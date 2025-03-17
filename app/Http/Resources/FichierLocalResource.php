@@ -6,7 +6,7 @@ use App\Http\Resources\user\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class FichierLocalResource extends JsonResource
+class FichierResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -20,7 +20,7 @@ class FichierLocalResource extends JsonResource
         return [
             "id" => $this->secure_id,
             "nom" => $this->nom,
-            "url" => config("app.url")."".Storage::disk('local')->path($this->chemin),
+            "url" => config("app.url")."".storage_path($this->chemin),
             "auteur" => new UserResource($this->auteur),
             "extension" => pathinfo(Storage::url($this->chemin), PATHINFO_EXTENSION)
         ];
