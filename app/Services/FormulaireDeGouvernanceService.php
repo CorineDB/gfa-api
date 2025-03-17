@@ -306,6 +306,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 
                     $categories_de_gouvernance = [];
 
+                    $questions_de_gouvernance = [];
+
                     foreach ($attributs['factuel']["types_de_gouvernance"] as $key => $type_de_gouvernance) {
                         
                         if(!(($typeDeGouvernance = app(TypeDeGouvernanceRepository::class)->findById($type_de_gouvernance['id'])) && $typeDeGouvernance->programmeId == $programmeId))
@@ -339,8 +341,6 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             }
 
                             $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
-
-                            $questions_de_gouvernance = [];
 
                             foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
                             
