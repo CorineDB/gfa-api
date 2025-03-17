@@ -112,7 +112,12 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                    if(isset($option_de_reponse['preuveIsRequired'])){
+                        $options[$option->id] = ['preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                    }else{
+                        $options[$option->id] = ['point' => $option_de_reponse['point']];
+                    }
+
                 }
 
                 $formulaireDeGouvernance->options_de_reponse()->attach($options);
@@ -196,7 +201,12 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+
+                    if(isset($option_de_reponse['preuveIsRequired'])){
+                        $options[$option->id] = ['preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                    }else{
+                        $options[$option->id] = ['point' => $option_de_reponse['point']];
+                    }
 
                 }
 
@@ -282,7 +292,11 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                    if(isset($option_de_reponse['preuveIsRequired'])){
+                        $options[$option->id] = ['preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                    }else{
+                        $options[$option->id] = ['point' => $option_de_reponse['point']];
+                    }
 
                 }
 
@@ -372,7 +386,11 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                    if(isset($option_de_reponse['preuveIsRequired'])){
+                        $options[$option->id] = ['preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                    }else{
+                        $options[$option->id] = ['point' => $option_de_reponse['point']];
+                    }
 
                 }
 
