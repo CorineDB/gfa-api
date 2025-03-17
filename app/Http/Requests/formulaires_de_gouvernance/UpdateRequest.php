@@ -53,7 +53,7 @@ class UpdateRequest extends FormRequest
             'factuel.options_de_reponse' => ['sometimes', Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:2"],
             'factuel.options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],
             'factuel.options_de_reponse.*.point' => ["required", "numeric", "min:0", "max:1"],
-            'factuel.options_de_reponse.*.preuveIsRequired' => ["required", "boolean:false"],
+            'factuel.options_de_reponse.*.preuveIsRequired' => ["sometimes", "boolean:false"],
 
             'factuel.types_de_gouvernance' => ['sometimes', Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:1"],
             'factuel.types_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new TypeDeGouvernance())],
