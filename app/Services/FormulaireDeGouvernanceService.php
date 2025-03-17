@@ -320,6 +320,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         if(!$typeDeGouvernanceCategorie){
                             $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $type_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => null, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
                         }
+
+                        $categories_de_gouvernance[] = $typeDeGouvernanceCategorie->id;
                         
                         foreach ($type_de_gouvernance["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
                             
@@ -336,6 +338,10 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $principe_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
                             }
 
+                            $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
+
+                            $questions_de_gouvernance = [];
+
                             foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
                             
                                 if(!(($critereDeGouvernance = app(CritereDeGouvernanceRepository::class)->findById($critere_de_gouvernance['id'])) && $critereDeGouvernance->programmeId == $programmeId))
@@ -351,8 +357,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                     $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $principe_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
                                 }
                                 
-                                $questions_de_gouvernance = [];
-                                                                
+                                $categories_de_gouvernance[] = $critereDeGouvernanceCategorie->id;
+                                                    
                                 foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
 
                                     if(!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceRepository::class)->findById($indicateur_de_gouvernance))))
@@ -368,16 +374,19 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                         $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'indicateur', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
                                     }
 
-                                    //$questions_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
-                                    $categories_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
+                                    $questions_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
+                                    // $categories_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
                                 }
 
                                 //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                             }
+
+                            $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                         }
                     }
 
-                    $formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
+                    $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
+                    //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
                 }
             }
 
