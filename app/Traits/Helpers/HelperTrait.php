@@ -71,7 +71,7 @@ trait HelperTrait
                     'programmeId'         => auth()->user()->programmeId
                   ]);
 
-                if($description == "image" || $description == "logo" || $description == "photo")
+                if($description == "image" || $description == "logo" || $description == "photo" || $description == "preuves")
                 {
                     Storage::disk('public')->put( "upload/".$path, $file->getContent());
                 }
