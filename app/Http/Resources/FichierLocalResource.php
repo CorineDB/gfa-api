@@ -6,7 +6,7 @@ use App\Http\Resources\user\UserResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
-class FichierResource extends JsonResource
+class FichierLocalResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
