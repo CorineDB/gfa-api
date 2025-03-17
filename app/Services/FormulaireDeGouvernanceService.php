@@ -303,6 +303,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                 if($formulaireDeGouvernance->type == 'factuel'){
 
                     $formulaireDeGouvernance->options_de_reponse()->sync($options);
+                                
+                    $categories_de_gouvernance = [];
 
                     foreach ($attributs['factuel']["types_de_gouvernance"] as $key => $type_de_gouvernance) {
                         
@@ -366,13 +368,16 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                         $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'indicateur', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
                                     }
 
-                                    $questions_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
+                                    //$questions_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
+                                    $categories_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
                                 }
 
-                                $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
+                                //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                             }
                         }
                     }
+
+                    $formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
                 }
             }
 
