@@ -361,7 +361,14 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                                     
                                 foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
 
-                                    if(!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceRepository::class)->findById($indicateur_de_gouvernance))))
+                                    if(is_array($indicateur_de_gouvernance)){
+                                        $id = $indicateur_de_gouvernance['id'];
+                                    }
+                                    else{
+                                        $id = $indicateur_de_gouvernance;
+                                    }
+
+                                    if(!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceRepository::class)->findById($id))))
                                     {
                                         throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                     }
