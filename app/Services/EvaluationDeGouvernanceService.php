@@ -167,6 +167,24 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $this->repository->update($evaluationDeGouvernance->id, $attributs);
 
+            if ($evaluationDeGouvernance->wasChanged('debut')) {
+                        
+                $debut = Carbon::parse($evaluationDeGouvernance->debut); // Convertit en Carbon
+                    
+                if ($debut->isAfter(today())) {
+                    $evaluationDeGouvernance->update(['statut' => 0]);
+                }
+            }
+
+            if ($evaluationDeGouvernance->isDirty('debut')) {
+                
+                if ($evaluationDeGouvernance->debut->after(today())) {
+                    
+                    $evaluationDeGouvernance->statut = 0;
+                    $evaluationDeGouvernance->save();
+                }
+            }
+
             $evaluationDeGouvernance->refresh();
             $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
             $evaluationDeGouvernance->formulaires_de_gouvernance()->syncWithoutDetaching($attributs['formulaires_de_gouvernance']);
