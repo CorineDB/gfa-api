@@ -66,7 +66,7 @@ class UpdateRequest extends FormRequest
             //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["sometimes", function($attribute, $value, $fail){
-                $fail(__('The :attribute must be a date after or equal to today.', ['attribute' => $attribute, $value]));
+                $fail(__('The :attribute must be a date after or equal to today.', $attribute . ' ' . $value));
             }, new DistinctAttributeRule(), /* "distinct",  */new HashValidatorRule(new IndicateurDeGouvernance())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.id' => ["sometimes", new DistinctAttributeRule(), new HashValidatorRule(new IndicateurDeGouvernance())],
 
