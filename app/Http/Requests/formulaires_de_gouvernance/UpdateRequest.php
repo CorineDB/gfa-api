@@ -65,9 +65,10 @@ class UpdateRequest extends FormRequest
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new CritereDeGouvernance())],
             //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["required", /* "distinct",  */new HashValidatorRule(new IndicateurDeGouvernance())],
-            
-            //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["sometimes", new DistinctAttributeRule(), /* "distinct",  */new HashValidatorRule(new IndicateurDeGouvernance())],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.id' => ["sometimes", new DistinctAttributeRule(), new HashValidatorRule(new IndicateurDeGouvernance())],
+
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:1"],
 
             'perception' => ['sometimes', Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:2"],
             //'perception' => ["required", Rule::requiredIf(request()->input('type') == 'perception')],
