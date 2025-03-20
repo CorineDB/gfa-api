@@ -45,7 +45,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
     {
         try
         {
-            if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
+            if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == 'App\\Models\\Administrateur')){
                 $formulaires_de_gouvernance = $this->repository->all();
             }
             else{

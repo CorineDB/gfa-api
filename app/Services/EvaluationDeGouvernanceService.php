@@ -172,6 +172,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $debut = Carbon::parse($evaluationDeGouvernance->debut); // Convertit en Carbon
                     
                 if ($debut->isAfter(today())) {
+                        
                     $evaluationDeGouvernance->update(['statut' => 0]);
                 }
             }
