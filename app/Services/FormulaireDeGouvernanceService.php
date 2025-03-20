@@ -418,6 +418,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                 $formulaireDeGouvernance->options_de_reponse()->sync($options);
 
                 if($formulaireDeGouvernance->type == 'perception'){
+                                
+                    $categories_de_gouvernance = [];
 
                     foreach ($attributs['perception']["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
                             
@@ -433,6 +435,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         if(!$principeDeGouvernanceCategorie){
                             $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $principe_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => null, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
                         }
+                        
+                        $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
 
                         $questions_de_gouvernance = [];
                         
@@ -457,6 +461,11 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                     }
+
+                    dd($categories_de_gouvernance);
+
+                    $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
+                    
                 }
             }
 
