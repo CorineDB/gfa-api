@@ -469,7 +469,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                     dump($categories_de_gouvernance->get());
                     dump($test->get());
 
-                    $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->get() ->delete();
+                    //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
                 }
             }
