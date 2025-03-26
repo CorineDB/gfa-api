@@ -464,7 +464,6 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                             // ✅ Store multiple questions under the same category ID
                             $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][] = [
-                                'question_id' => $questionDeGouvernance->id, // Unique question ID
                                 'type' => 'question_operationnelle',
                                 'programmeId' => $programmeId,
                                 'indicateurDeGouvernanceId' => $questionOperationnelle->id
@@ -474,13 +473,9 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         dump(array_values($questions_de_gouvernance));
 
-                        dd(collect($questions_de_gouvernance)->collapse()->toArray());
-
-                        // ✅ Flatten the array and sync all questions
-                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync(
-                            collect($questions_de_gouvernance)->collapse()->pluck('question_id')->toArray()
-                        );
+                        $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = collect($questions_de_gouvernance)->collapse()->toArray();
                         
+                        dd($questions_de_gouvernance);
                         /* 
                         $questions = [];
 
@@ -491,7 +486,6 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
 
-                        dd(array_values($questions));
                     }
 
                     $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
