@@ -463,15 +463,15 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             ]; */
 
                             // ✅ Store multiple questions under the same category ID
-                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][] = [
+                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = array_merge($questions_de_gouvernance[$principeDeGouvernanceCategorie->id], [
                                 'type' => 'question_operationnelle',
                                 'programmeId' => $programmeId,
                                 'indicateurDeGouvernanceId' => $questionOperationnelle->id
-                            ];
+                            ]);
 
                         }
 
-                        dump(array_values($questions_de_gouvernance));
+                        dd(array_values($questions_de_gouvernance));
 
                         $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = collect($questions_de_gouvernance)->collapse()->toArray();
                         
