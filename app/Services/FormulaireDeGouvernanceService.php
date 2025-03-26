@@ -463,7 +463,9 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             ]; */
 
                             // ✅ Store multiple questions under the same category ID
-                            if(isset($questions_de_gouvernance[$principeDeGouvernanceCategorie->id] )){
+                            dump($principeDeGouvernanceCategorie->id);
+                            dump($questions_de_gouvernance);
+                            if(isset($questions_de_gouvernance[$principeDeGouvernanceCategorie->id])){
                                 $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = array_merge($questions_de_gouvernance[$principeDeGouvernanceCategorie->id], [
                                     'type' => 'question_operationnelle',
                                     'programmeId' => $programmeId,
@@ -471,7 +473,6 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 ]);
                             }
                             else{
-
                                 $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = [
                                     'type' => 'question_operationnelle',
                                     'programmeId' => $programmeId,
