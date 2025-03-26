@@ -462,9 +462,9 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                     }
 
-                    $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
+                    /* $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
 
-                    $categories_de_gouvernance->delete();
+                    $categories_de_gouvernance->delete(); */
 
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
