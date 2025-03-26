@@ -470,7 +470,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         }
 
-                        dd(array_values($questions_de_gouvernance));/* 
+                        dump(array_values($questions_de_gouvernance));
                         $questions = [];
 
                         // Fix: Flatten the array before using sync()
@@ -478,7 +478,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             array_push($questions, [$categorieId=>$questionsOp]);
                         }
 
-                        dd($questions); */
+                        dd($questions);
 
                         $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                     }
