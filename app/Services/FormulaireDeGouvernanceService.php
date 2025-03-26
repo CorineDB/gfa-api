@@ -478,7 +478,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             array_push($questions, $questionsOp);
                         }
 
-                        dd($questions);
+                        dd(array_values($questions));
 
                         $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                     }
