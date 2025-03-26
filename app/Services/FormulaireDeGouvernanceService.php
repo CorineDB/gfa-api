@@ -452,6 +452,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->where('type', 'question_operationnelle')->where('programmeId', $programmeId)->where('formulaireDeGouvernanceId', $formulaireDeGouvernance->id)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
                                 $query->where('id', $formulaireDeGouvernance->id)->where('programmeId', $programmeId);
                             })->first();
+                            dump($questionDeGouvernance);
         
                             if(!$questionDeGouvernance){
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id]);
