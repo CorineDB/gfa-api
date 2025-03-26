@@ -474,7 +474,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         dump(array_values($questions_de_gouvernance));
 
-                        dd(collect($questions_de_gouvernance)->collapse()->pluck('question_id')->toArray());
+                        dd(collect($questions_de_gouvernance)->collapse()->toArray());
 
                         // ✅ Flatten the array and sync all questions
                         $formulaireDeGouvernance->categorie_de_gouvernance()->sync(
