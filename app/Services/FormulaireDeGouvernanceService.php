@@ -455,8 +455,16 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id]);
                             }
 
-                            // Fix: Make sure the ID is used as the key
-                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][$questionDeGouvernance->id] = [
+                            /* // Fix: Make sure the ID is used as the key
+                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = [
+                                'type' => 'question_operationnelle',
+                                'programmeId' => $programmeId,
+                                'indicateurDeGouvernanceId' => $questionOperationnelle->id
+                            ]; */
+
+                            // ✅ Store multiple questions under the same category ID
+                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][] = [
+                                'question_id' => $questionDeGouvernance->id, // Unique question ID
                                 'type' => 'question_operationnelle',
                                 'programmeId' => $programmeId,
                                 'indicateurDeGouvernanceId' => $questionOperationnelle->id
@@ -464,7 +472,16 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         }
 
-                        dump(array_values($questions_de_gouvernance));/* 
+                        dump(array_values($questions_de_gouvernance));
+
+                        dd(collect($questions_de_gouvernance)->collapse()->pluck('question_id')->toArray());
+
+                        // ✅ Flatten the array and sync all questions
+                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync(
+                            collect($questions_de_gouvernance)->collapse()->pluck('question_id')->toArray()
+                        );
+                        
+                        /* 
                         $questions = [];
 
                         // Fix: Flatten the array before using sync()
