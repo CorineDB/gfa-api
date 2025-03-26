@@ -478,9 +478,9 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             array_push($questions, $questionsOp);
                         }
 
-                        dd(array_values($questions));
+                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions);
 
-                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
+                        dd(array_values($questions));
                     }
 
                     $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
