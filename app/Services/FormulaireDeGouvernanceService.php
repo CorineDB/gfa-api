@@ -455,30 +455,24 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id]);
                             }
 
-                            array_push($questions_de_gouvernance, [$principeDeGouvernanceCategorie->id => [
-                                'type' => 'question_operationnelle',
-                                'programmeId' => $programmeId,
-                                'indicateurDeGouvernanceId' => $questionOperationnelle->id
-                            ]]);
-
                             // Fix: Make sure the ID is used as the key
-                            /* $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][$questionDeGouvernance->id] = [
+                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][$questionDeGouvernance->id] = [
                                 'type' => 'question_operationnelle',
                                 'programmeId' => $programmeId,
                                 'indicateurDeGouvernanceId' => $questionOperationnelle->id
-                            ]; */
+                            ];
 
                         }
 
-                        dump(array_values($questions_de_gouvernance));
+                        dump(array_values($questions_de_gouvernance));/* 
                         $questions = [];
 
                         // Fix: Flatten the array before using sync()
                         foreach ($questions_de_gouvernance as $categorieId => $questionsOp) {
                             array_push($questions, $questionsOp);
-                        }
+                        } */
 
-                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions);
+                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
 
                         dd(array_values($questions));
                     }
