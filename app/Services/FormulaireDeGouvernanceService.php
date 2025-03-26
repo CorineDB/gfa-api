@@ -381,7 +381,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                         $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'indicateur', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
                                     }
 
-                                    $questions_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
+                                    $questions_de_gouvernance[$critereDeGouvernanceCategorie->id][] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
                                     // $categories_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
                                 }
 
@@ -392,7 +392,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         }
                     }
 
-                    $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
+                    //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
                     //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
                 }
             }
@@ -455,16 +455,16 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id]);
                             }
 
-                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = ['type' => 'question_operationnelle', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id];
+                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][] = ['type' => 'question_operationnelle', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id];
 
                         }
 
                         $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                     }
 
-                    /* $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
+                    $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
 
-                    $categories_de_gouvernance->delete(); */
+                    $categories_de_gouvernance->delete();
 
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
