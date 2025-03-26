@@ -449,17 +449,15 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 throw new Exception( "Cette question operationnelle n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                             }
 
-                            $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->where('type', 'question_operationnelle')->where('programmeId', $programmeId)->where('formulaireDeGouvernanceId', $formulaireDeGouvernance->id)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
+                            $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->where('type', 'question_operationnelle')->where('indicateurDeGouvernanceId', $questionOperationnelle->id)->where('programmeId', $programmeId)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
                                 $query->where('id', $formulaireDeGouvernance->id)->where('programmeId', $programmeId);
                             })->first();
-                            dump($questionDeGouvernance);
         
                             if(!$questionDeGouvernance){
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id]);
                             }
 
                             $questions[] = $questionDeGouvernance->id;
-                            dump($questionOperationnelle->id);
                             /* 
 
                             // Fix: Make sure the ID is used as the key
