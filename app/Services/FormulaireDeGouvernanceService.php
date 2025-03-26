@@ -458,6 +458,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             }
 
                             $questions[] = $questionDeGouvernance->id;
+                            dump($questionOperationnelle->id);
+                            /* 
 
                             // Fix: Make sure the ID is used as the key
                             $questions_de_gouvernance[$questionOperationnelle->id] = [
@@ -465,7 +467,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 'type' => 'question_operationnelle',
                                 'programmeId' => $programmeId,
                                 //'indicateurDeGouvernanceId' => $questionOperationnelle->id
-                            ];
+                            ]; */
 
                         }
 
