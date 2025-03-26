@@ -475,8 +475,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         // Fix: Flatten the array before using sync()
                         foreach ($questions_de_gouvernance as $categorieId => $questionsOp) {
-                            dump($categorieId);
-                            dd($questionsOp);
+                            dump(array_keys($questionsOp));
+                            dd(array_values($questionsOp));
                             array_push($questions, [$categorieId=>$questionsOp]);
                         }
 
