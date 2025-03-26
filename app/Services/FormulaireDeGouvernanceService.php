@@ -437,6 +437,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         }
                         
                         $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
+                                
+                        $questions = [];
 
                         $questions_de_gouvernance = [];
                         
@@ -455,38 +457,22 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'question_operationnelle', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $questionOperationnelle->id]);
                             }
 
+                            $questions[] = $questionDeGouvernance->id;
+
                             // Fix: Make sure the ID is used as the key
-                            $questions_de_gouvernance[$principeDeGouvernanceCategorie->id][] = [
+                            $questions_de_gouvernance[$questionOperationnelle->id] = [
+                                'categorieDeGouvernanceId' => $principeDeGouvernanceCategorie->id,
                                 'type' => 'question_operationnelle',
                                 'programmeId' => $programmeId,
-                                'indicateurDeGouvernanceId' => $questionOperationnelle->id
+                                //'indicateurDeGouvernanceId' => $questionOperationnelle->id
                             ];
 
                         }
 
-                        $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = collect($questions_de_gouvernance)->collapse()->toArray();
-                        
-                        dump($questions_de_gouvernance);
 
-                                                // Extract only the IDs from $questions_de_gouvernance
-                        $syncData = [];
+                        //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
 
-                        foreach ($questions_de_gouvernance as $categorieId => $questions) {
-                            $syncData[$categorieId] = collect($questions)->pluck('indicateurDeGouvernanceId')->toArray();
-                        }
-
-                        dd($syncData);
-
-                        /* 
-                        $questions = [];
-
-                        // Fix: Flatten the array before using sync()
-                        foreach ($questions_de_gouvernance as $categorieId => $questionsOp) {
-                            array_push($questions, $questionsOp);
-                        } */
-
-                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
-
+                        $formulaireDeGouvernance->questions_de_gouvernance()->whereNotIn('id', $questions)->delete();
                     }
 
                     $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
