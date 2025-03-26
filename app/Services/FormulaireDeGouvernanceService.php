@@ -464,9 +464,9 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         }
 
-                        $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = collect($questions_de_gouvernance)->collapse()->toArray();
+                        //$questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = collect($questions_de_gouvernance)->collapse()->toArray();
                         
-                        dump($questions_de_gouvernance);
+                        dd($questions_de_gouvernance);
 
                                                 // Extract only the IDs from $questions_de_gouvernance
                         $syncData = [];
