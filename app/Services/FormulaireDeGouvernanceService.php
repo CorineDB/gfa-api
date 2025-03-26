@@ -469,7 +469,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         // Fix: Flatten the array before using sync()
                         foreach ($questions_de_gouvernance as $categorieId => $questionsOp) {
-                            array_push($questions, $questionsOp);
+                            array_push($questions, [$categorieId=>$questionsOp]);
                         }
 
                         dd($questions);
