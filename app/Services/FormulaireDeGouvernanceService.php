@@ -465,6 +465,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             // ✅ Store multiple questions under the same category ID
                             dump($principeDeGouvernanceCategorie->id);
                             dump($questions_de_gouvernance);
+                            dump($questionOperationnelle->id);
                             dump(isset($questions_de_gouvernance[$principeDeGouvernanceCategorie->id]));
                             if(isset($questions_de_gouvernance[$principeDeGouvernanceCategorie->id])){
                                 $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = array_merge($questions_de_gouvernance[$principeDeGouvernanceCategorie->id], [
