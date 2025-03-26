@@ -468,11 +468,13 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             dump($questionOperationnelle->id);
                             dump(isset($questions_de_gouvernance[$principeDeGouvernanceCategorie->id]));
                             if(isset($questions_de_gouvernance[$principeDeGouvernanceCategorie->id])){
+                                dump($questions_de_gouvernance[$principeDeGouvernanceCategorie->id]);
                                 $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = array_merge($questions_de_gouvernance[$principeDeGouvernanceCategorie->id], [
                                     'type' => 'question_operationnelle',
                                     'programmeId' => $programmeId,
                                     'indicateurDeGouvernanceId' => $questionOperationnelle->id
                                 ]);
+                                dump($questions_de_gouvernance);
                             }
                             else{
                                 $questions_de_gouvernance[$principeDeGouvernanceCategorie->id] = [
