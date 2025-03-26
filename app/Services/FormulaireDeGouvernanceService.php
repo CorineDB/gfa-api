@@ -464,6 +464,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         }
 
+                        dd($questions_de_gouvernance);
                         $questions = [];
 
                         // Fix: Flatten the array before using sync()
