@@ -78,7 +78,7 @@ class StoreRequest extends FormRequest
             'perception.principes_de_gouvernance.*.questions_operationnelle' => ["required", "array", "min:1"],
             'perception.principes_de_gouvernance.*.questions_operationnelle.*' => ["required", function ($attribute, $value, $fail) {
                 dump([$attribute, $value]);
-            }, new DistinctAttributeRule(), new HashValidatorRule(new IndicateurDeGouvernance())],
+            }, new HashValidatorRule(new IndicateurDeGouvernance())],
             //'perception.principes_de_gouvernance.*.questions_operationnelle.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
         ];
     }
