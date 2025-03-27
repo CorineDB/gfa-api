@@ -73,7 +73,7 @@ class StoreRequest extends FormRequest
             'perception.options_de_reponse.*.point' => ["required", "numeric", "min:0", "max:1"],
 
             'perception.principes_de_gouvernance' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:1"],
-            'perception.principes_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernance())],
+            'perception.principes_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new PrincipeDeGouvernance())],
             //'perception.principes_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             /* 'perception.principes_de_gouvernance.*.questions_operationnelle' => ["required", "array", "min:1"],
             'perception.principes_de_gouvernance.*.questions_operationnelle.*' => ["required", function ($attribute, $value, $fail) {
