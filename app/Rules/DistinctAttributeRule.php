@@ -38,6 +38,7 @@ class DistinctAttributeRule implements Rule
 
         // Get the dynamic scope based on the attribute
         $scope = $this->getScope($attribute);
+        dump($scope);
 
         // Check how many times this value appears in the scoped data
         $count = collect(data_get($data, $scope, []))->where('id', $value)->count();
