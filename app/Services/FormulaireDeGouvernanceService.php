@@ -321,7 +321,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $type_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => null, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
                         }
 
-                        $categories_de_gouvernance[] = $typeDeGouvernanceCategorie->id;
+                        $categories_de_gouvernance[] = ['id' => $typeDeGouvernanceCategorie->id, 'nom' => $typeDeGouvernanceCategorie->nom];
                         
                         foreach ($type_de_gouvernance["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
                             
