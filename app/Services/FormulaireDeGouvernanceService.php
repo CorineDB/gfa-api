@@ -458,8 +458,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             }
 
                             $questions[] = $questionDeGouvernance->id;
+                            
                             /* 
-
                             // Fix: Make sure the ID is used as the key
                             $questions_de_gouvernance[$questionOperationnelle->id] = [
                                 'categorieDeGouvernanceId' => $principeDeGouvernanceCategorie->id,
