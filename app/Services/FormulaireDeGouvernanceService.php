@@ -458,8 +458,8 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             }
 
                             $questions[] = $questionDeGouvernance->id;
+                            
                             /* 
-
                             // Fix: Make sure the ID is used as the key
                             $questions_de_gouvernance[$questionOperationnelle->id] = [
                                 'categorieDeGouvernanceId' => $principeDeGouvernanceCategorie->id,
@@ -473,7 +473,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
 
-                        //$formulaireDeGouvernance->questions_de_gouvernance()->whereNotIn('id', $questions)->delete();
+                        $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDeGouvernanceId', $principeDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
                     }
 
                     $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
