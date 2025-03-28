@@ -306,8 +306,6 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 
                     $categories_de_gouvernance = [];
 
-                    $questions_de_gouvernance = [];
-
                     foreach ($attributs['factuel']["types_de_gouvernance"] as $key => $type_de_gouvernance) {
                         
                         if(!(($typeDeGouvernance = app(TypeDeGouvernanceRepository::class)->findById($type_de_gouvernance['id'])) && $typeDeGouvernance->programmeId == $programmeId))
@@ -358,6 +356,10 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 }
                                 
                                 $categories_de_gouvernance[] = $critereDeGouvernanceCategorie->id;
+                                
+                                $questions = [];
+
+                                $questions_de_gouvernance = [];
                                                     
                                 foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
 
@@ -380,17 +382,21 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                     if(!$questionDeGouvernance){
                                         $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(['type' => 'indicateur', /*"position" => $question_operationnelle['position'],*/ 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
                                     }
-
-                                    $questions_de_gouvernance[$critereDeGouvernanceCategorie->id][] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
-                                    // $categories_de_gouvernance[$critereDeGouvernanceCategorie->id] = ['type' => 'indicateur', 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id];
+        
+                                    $questions[] = $questionDeGouvernance->id;
                                 }
+
+                                $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDeGouvernanceId', $principeDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
 
                                 //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                             }
-
-                            $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                         }
                     }
+
+
+                    $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
+
+                    $categories_de_gouvernance->delete();
 
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
                     //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
@@ -439,8 +445,6 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                         $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
                                 
                         $questions = [];
-
-                        $questions_de_gouvernance = [];
                         
                         foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $question_operationnelle) {
                         
@@ -458,7 +462,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                             }
 
                             $questions[] = $questionDeGouvernance->id;
-                            
+
                             /* 
                             // Fix: Make sure the ID is used as the key
                             $questions_de_gouvernance[$questionOperationnelle->id] = [
@@ -470,15 +474,10 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
 
                         }
 
-
-                        //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
-
                         $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDeGouvernanceId', $principeDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
                     }
 
-                    $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
-
-                    $categories_de_gouvernance->delete();
+                    $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
