@@ -386,7 +386,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                     $questions[] = $questionDeGouvernance->id;
                                 }
 
-                                $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDeGouvernanceId', $principeDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
+                                $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDeGouvernanceId', $critereDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
 
                                 //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($questions_de_gouvernance);
                             }
