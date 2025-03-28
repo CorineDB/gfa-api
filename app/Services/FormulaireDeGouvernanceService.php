@@ -338,7 +338,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                 $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $principe_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
                             }
 
-                            $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
+                            $categories_de_gouvernance[] = ['id' => $principeDeGouvernanceCategorie->id, 'nom' => $principeDeGouvernanceCategorie->nom];
 
                             foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
                             
@@ -355,7 +355,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                                     $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, /* "position" => $principe_de_gouvernance['position'], */ 'categorieDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
                                 }
                                 
-                                $categories_de_gouvernance[] = $critereDeGouvernanceCategorie->id;
+                                $categories_de_gouvernance[] = ['id' => $critereDeGouvernanceCategorie->id, 'nom' => $critereDeGouvernanceCategorie->nom];//$critereDeGouvernanceCategorie->id;
                                 
                                 $questions = [];
 
