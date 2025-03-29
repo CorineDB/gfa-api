@@ -61,6 +61,11 @@ class FormulaireDeGouvernance extends Model
         return $this->hasMany(CategorieDeGouvernance::class, 'formulaireDeGouvernanceId')->whereNull('categorieDeGouvernanceId');
     }
 
+    public function all_categories_de_gouvernance()
+    {
+        return $this->hasMany(CategorieDeGouvernance::class, 'formulaireDeGouvernanceId');
+    }
+
     public function categorie_de_gouvernance()
     {
         return $this->belongsToMany(CategorieDeGouvernance::class, 'questions_de_gouvernance', 'formulaireDeGouvernanceId', 'categorieDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(['id', 'type', 'indicateurDeGouvernanceId', 'programmeId']);
