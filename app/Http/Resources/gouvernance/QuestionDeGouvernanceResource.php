@@ -18,7 +18,8 @@ class QuestionDeGouvernanceResource extends JsonResource
         return [
             'id' => $this->secure_id,
             //'nom' => $this->indicateur_de_gouvernance->nom,
-            'type' => $this->type,/*
+            'type' => $this->type,
+            'position' => $this->position,/*
             'indicateur_de_gouvernance' => $this->indicateur_de_gouvernance ? [
                 'id' => $this->indicateur_de_gouvernance->secure_id,
                 'nom' => $this->indicateur_de_gouvernance->nom

@@ -15,10 +15,10 @@ class QuestionDeGouvernance extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array(/* "position", */ 'type', 'formulaireDeGouvernanceId', 'categorieDeGouvernanceId', 'indicateurDeGouvernanceId', 'programmeId');
+    protected $fillable = array("position", 'type', 'formulaireDeGouvernanceId', 'categorieDeGouvernanceId', 'indicateurDeGouvernanceId', 'programmeId');
 
     protected $casts = [
-        //"position" => "integer"
+        "position" => "integer"
     ];
 
     protected $with = ["indicateur_de_gouvernance"];

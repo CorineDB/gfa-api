@@ -68,7 +68,7 @@ class FormulaireDeGouvernance extends Model
 
     public function categorie_de_gouvernance()
     {
-        return $this->belongsToMany(CategorieDeGouvernance::class, 'questions_de_gouvernance', 'formulaireDeGouvernanceId', 'categorieDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(['id', 'type', 'indicateurDeGouvernanceId', 'programmeId']);
+        return $this->belongsToMany(CategorieDeGouvernance::class, 'questions_de_gouvernance', 'formulaireDeGouvernanceId', 'categorieDeGouvernanceId')->wherePivotNull('deleted_at')->withPivot(['id', 'type', 'position', 'indicateurDeGouvernanceId', 'programmeId']);
     }
 
     public function questions_de_gouvernance($annee_exercice = null)
