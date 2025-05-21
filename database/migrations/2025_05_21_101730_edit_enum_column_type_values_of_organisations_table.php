@@ -16,6 +16,8 @@ class EditEnumColumnTypeValuesOfOrganisationsTable extends Migration
         if(Schema::hasTable('organisations')){
             Schema::table('organisations', function (Blueprint $table) {
                 if(Schema::hasColumn('organisations', 'type')){
+                    $table->dropColumn('type');
+
                     $table->enum('type', ['osc_partenaire', 'osc_fosir', 'autre_osc', 'acteurs', 'structure_etatique'])->default('osc_partenaire')->change();
                 }
                 else{
