@@ -195,7 +195,6 @@ class UpdateRequest extends FormRequest
 
                 [$factuelFormulaire, $perceptionFormulaire] = $this->getForms($validator, $formulaire1, $formulaire2);
 
-
                 $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
             } else {
                 $formulaire1 = $formulaires[0];
