@@ -44,7 +44,7 @@ use Illuminate\Support\Facades\Log;
  */
 class EvaluationDeGouvernanceService extends BaseService implements EvaluationDeGouvernanceServiceInterface
 {
-    use ConfigueTrait,SmsTrait;
+    use ConfigueTrait, SmsTrait;
     /**
      * @var service
      */
@@ -112,7 +112,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             $evaluationDeGouvernance = $this->repository->create($attributs);
-            
+
             $evaluationDeGouvernance->formulaires_de_gouvernance()->attach($attributs['formulaires_de_gouvernance']);
 
             $organisationsId = [];
@@ -168,27 +168,33 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $this->repository->update($evaluationDeGouvernance->id, $attributs);
 
             if ($evaluationDeGouvernance->wasChanged('debut')) {
-                        
+
                 $debut = Carbon::parse($evaluationDeGouvernance->debut); // Convertit en Carbon
-                    
+
                 if ($debut->isAfter(today())) {
-                        
+
                     $evaluationDeGouvernance->update(['statut' => 0]);
                 }
             }
 
             if ($evaluationDeGouvernance->isDirty('debut')) {
-                
+
                 if ($evaluationDeGouvernance->debut->after(today())) {
-                    
+
                     $evaluationDeGouvernance->statut = 0;
                     $evaluationDeGouvernance->save();
                 }
             }
 
             $evaluationDeGouvernance->refresh();
-            $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
-            $evaluationDeGouvernance->formulaires_de_gouvernance()->syncWithoutDetaching($attributs['formulaires_de_gouvernance']);
+
+            if ($evaluationDeGouvernance->statut <= 0) {
+                $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
+            }
+
+            if ($evaluationDeGouvernance->statut == -1) {
+                $evaluationDeGouvernance->formulaires_de_gouvernance()->syncWithoutDetaching($attributs['formulaires_de_gouvernance']);
+            }
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
@@ -235,7 +241,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Liste des soumissions d'une evaluation de gouvernance
-     * 
+     *
      * return JsonResponse
      */
     public function soumissions($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
@@ -277,7 +283,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 ], $group_soumissions->toArray());
             } else {
 
-                /* 
+                /*
                     $organisation_soumissions = $evaluationDeGouvernance->soumissions()
                         ->with('organisation') // Load the associated organisations
                         ->get()->groupBy('organisationId')->map(function ($group) {
@@ -341,7 +347,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Liste des soumissions d'une evaluation de gouvernance
-     * 
+     *
      * return JsonResponse
      */
     public function fiches_de_synthese($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
@@ -553,7 +559,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Liste des soumissions d'une evaluation de gouvernance
-     * 
+     *
      * return JsonResponse
      */
     public function fiches_de_synthese_with_organisations_classement($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
@@ -738,7 +744,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Liste des formulaires d'une evaluation de gouvernance
-     * 
+     *
      * return JsonResponse
      */
     public function formulaires_de_gouvernance($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
@@ -754,7 +760,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Liste des formulaires d'une evaluation de gouvernance
-     * 
+     *
      * return JsonResponse
      */
     public function formulaire_factuel($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
@@ -800,7 +806,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Liste des formulaires d'une evaluation de gouvernance
-     * 
+     *
      * return JsonResponse
      */
     public function formulaire_factuel_de_gouvernance($token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
@@ -864,7 +870,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Liste des formulaires d'une evaluation de gouvernance
-     * 
+     *
      * return JsonResponse
      */
     public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
@@ -924,7 +930,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Envoi
-     * 
+     *
      * return JsonResponse
      */
     public function ajouterObjectifAttenduParPrincipe($evaluationDeGouvernance, array $attributs): JsonResponse
@@ -964,7 +970,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Envoi
-     * 
+     *
      * return JsonResponse
      */
     public function envoi_mail_au_participants($evaluationDeGouvernance, array $attributs): JsonResponse
@@ -988,7 +994,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
     /**
      * Envoi
-     * 
+     *
      * return JsonResponse
      */
     public function rappel_soumission($evaluationDeGouvernance): JsonResponse
@@ -1065,20 +1071,19 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     try {
 
                         $url = config("app.url");
-    
+
                         // If the URL is localhost, append the appropriate IP address and port
                         if (strpos($url, 'localhost') == false) {
                             $url = config("app.organisation_url");
                         }
 
                         $message = "Bonjour,\n\n" .
-                                    "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$evaluationDeGouvernance->programme->nom}, {$evaluationDeGouvernance->annee_exercice}).\n\n" .
-                                    "Repondez des maintenant :\n" .
-                                    "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                                    "Merci pour votre participation !";
+                            "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$evaluationDeGouvernance->programme->nom}, {$evaluationDeGouvernance->annee_exercice}).\n\n" .
+                            "Repondez des maintenant :\n" .
+                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                            "Merci pour votre participation !";
 
                         $this->sendSms($message, $phoneNumbers);
-
                     } catch (\Throwable $th) {
                         Log::error('Error sending SMS : ' . $th->getMessage());
                     }

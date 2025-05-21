@@ -114,7 +114,8 @@ class UpdateRequest extends FormRequest
             'code.unique' => 'Ce code est déjà enregistré.',
 
             'type.required' => 'Le type est obligatoire.',
-            'type.in' => 'Le type doit être soit "osc" soit "osc_fosir".',
+            'type.in' => "Le type doit être l'un de c'est element osc_partenaire, osc_fosir, autre_osc, acteurs, structure_etatique.",
+
 
             'fondId.required_if' => 'Le fond est obligatoire pour les organisations de type "osc_fosir".',
 

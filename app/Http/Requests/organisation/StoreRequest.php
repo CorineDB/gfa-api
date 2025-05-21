@@ -117,7 +117,7 @@ class StoreRequest extends FormRequest
 
             'type.required' => 'Le type est obligatoire.',
             'type.string' => 'Le type doit être une chaîne de caractères.',
-            'type.in' => 'Le type doit être soit "osc" soit "osc_fosir".',
+            'type.in' => "Le type doit être l'un de c'est element osc_partenaire, osc_fosir, autre_osc, acteurs, structure_etatique.",
 
             'fondId.required_if' => 'Le fond est obligatoire pour les organisations de type "osc_fosir".',
 
