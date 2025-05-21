@@ -1,0 +1,8 @@
+{
+    "229": {
+        "country": "bj",
+        "local_indicatif": "01",
+        "local_number_length": 8,
+        "local_prefix": "bj/phone_number_prefix.json"
+    }
+}
