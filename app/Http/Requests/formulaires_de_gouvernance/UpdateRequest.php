@@ -40,15 +40,15 @@ class UpdateRequest extends FormRequest
         return [
             'libelle'               => ['sometimes', 'string', Rule::unique('formulaires_de_gouvernance', 'libelle')->ignore($this->formulaire_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
-            'annee_exercice'   => ['sometimes', 'integer', Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
+            'annee_exercice'   => ['sometimes', 'integer'/* , Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
                 ->where(function ($query) {
                     return $query->where('type', request()->input('type'));
-                })->ignore($this->formulaire_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')
+                })->ignore($this->formulaire_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at') */
             ],
             'description'       => 'nullable|max:255',
             'type'             => 'sometimes|string|in:factuel,perception',
             'lien'             => 'nullable|string',
-            
+
             'factuel' => ['sometimes', Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:2"],
             'factuel.options_de_reponse' => ['sometimes', Rule::requiredIf(request()->input('type') == 'factuel'), "array", "min:2"],
             'factuel.options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponse())],

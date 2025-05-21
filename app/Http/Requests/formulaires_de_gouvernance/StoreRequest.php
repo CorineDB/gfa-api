@@ -34,10 +34,10 @@ class StoreRequest extends FormRequest
         return [
             'libelle'               => ['required', 'string', Rule::unique('formulaires_de_gouvernance', 'libelle')->ignore($this->evaluation_de_gouvernance)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
-            'annee_exercice'   => ['required', 'integer', Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
+            'annee_exercice'   => ['required', 'integer', /* Rule::unique('formulaires_de_gouvernance', 'annee_exercice')
                 ->where(function ($query) {
                     return $query->where('type', request()->input('type'));
-                })->where("programmeId", auth()->user()->programmeId)
+                })->where("programmeId", auth()->user()->programmeId) */
             ],
             'description'       => 'nullable|max:255',
             'type'             => 'required|string|in:factuel,perception',
@@ -63,7 +63,7 @@ class StoreRequest extends FormRequest
             //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["required", /* "distinct",  */new HashValidatorRule(new IndicateurDeGouvernance())],
-            
+
             //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.position' => ["required", new DistinctAttributeRule(), "min:1"],
 
             'perception' => [Rule::requiredIf(request()->input('type') == 'perception'), "array", "min:2"],
