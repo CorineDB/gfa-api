@@ -19,7 +19,7 @@ class UpdateRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {        
+    {
         return request()->user()->hasPermissionTo("modifier-une-organisation") || request()->user()->hasRole("unitee-de-gestion");
 
         $this->user = request()->user();
@@ -38,7 +38,7 @@ class UpdateRequest extends FormRequest
         {
             $this->organisation = Organisation::findByKey($this->organisation);
         }
-        
+
         $rules = [
             'nom'           => ['sometimes','max:255', Rule::unique('users', 'nom')->ignore($this->organisation->user)->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             'contact'       => ['sometimes','max:8', Rule::unique('users', 'contact')->ignore($this->organisation->user)->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
@@ -51,7 +51,7 @@ class UpdateRequest extends FormRequest
             'sigle'                 => ['nullable','string','max:255', Rule::unique('organisations', 'sigle')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at')],
             'code'                  => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at') ],
 
-            'type'                  => 'required|string|in:osc,osc_fosir',  // Ensures the value is either 'osc' or 'osc_fosir'
+            'type'                  => 'required|string|in:osc_partenaire,osc_fosir,autre_osc,acteurs,structure_etatique',  // Ensures the value is either 'osc' or 'osc_fosir'
 
             'fondId'                => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), (request()->input('type') != 'osc_fosir') ? 'nullable' : '', new HashValidatorRule(new Fond())],
 
@@ -69,7 +69,7 @@ class UpdateRequest extends FormRequest
 
         return $rules;
     }
-   
+
 
     /**
      * Get the error messages for the defined validation rules.
@@ -82,50 +82,50 @@ class UpdateRequest extends FormRequest
             'nom.sometimes' => 'Le nom est obligatoire.',
             'nom.max' => 'Le nom ne doit pas dépasser 255 caractères.',
             'nom.unique' => 'Ce nom est déjà utilisé pour ce programme.',
-    
+
             'contact.sometimes' => 'Le contact est obligatoire.',
             'contact.max' => 'Le contact ne doit pas dépasser 8 caractères.',
             'contact.unique' => 'Ce contact est déjà enregistré.',
-    
+
             'email.sometimes' => 'L\'email est obligatoire.',
             'email.email' => 'L\'email doit être valide.',
             'email.max' => 'L\'email ne doit pas dépasser 50 caractères.',
             'email.unique' => 'Cet email est déjà enregistré.',
-    
+
             'nom_point_focal.sometimes' => 'Le nom du point focal est obligatoire.',
             'nom_point_focal.max' => 'Le nom du point focal ne doit pas dépasser 50 caractères.',
             'nom_point_focal.unique' => 'Ce nom de point focal est déjà utilisé.',
-    
+
             'prenom_point_focal.sometimes' => 'Le prénom du point focal est obligatoire.',
             'prenom_point_focal.max' => 'Le prénom du point focal ne doit pas dépasser 50 caractères.',
             'prenom_point_focal.unique' => 'Ce prénom de point focal est déjà utilisé.',
-    
+
             'contact_point_focal.sometimes' => 'Le contact du point focal est obligatoire.',
             'contact_point_focal.numeric' => 'Le contact doit être un nombre.',
             'contact_point_focal.digits_between' => 'Le contact doit avoir entre 8 et 24 chiffres.',
             'contact_point_focal.unique' => 'Ce contact est déjà utilisé.',
-    
+
             'sigle.max' => 'Le sigle ne doit pas dépasser 255 caractères.',
             'sigle.unique' => 'Ce sigle est déjà utilisé.',
-    
+
             'code.required_if' => 'Le code est obligatoire pour une unité de gestion.',
             'code.numeric' => 'Le code doit être un nombre.',
             'code.min' => 'Le code doit contenir au moins 2 chiffres.',
             'code.unique' => 'Ce code est déjà enregistré.',
-    
+
             'type.required' => 'Le type est obligatoire.',
             'type.in' => 'Le type doit être soit "osc" soit "osc_fosir".',
-    
+
             'fondId.required_if' => 'Le fond est obligatoire pour les organisations de type "osc_fosir".',
-    
+
             'latitude.required' => 'La latitude est obligatoire.',
             'latitude.numeric' => 'La latitude doit être un nombre.',
             'latitude.regex' => 'La latitude n\'est pas valide.',
-    
+
             'longitude.required' => 'La longitude est obligatoire.',
             'longitude.numeric' => 'La longitude doit être un nombre.',
             'longitude.regex' => 'La longitude n\'est pas valide.',
-    
+
             'addresse.max' => 'L\'adresse ne doit pas dépasser 255 caractères.',
             'quartier.max' => 'Le quartier ne doit pas dépasser 255 caractères.',
             'arrondissement.max' => 'L\'arrondissement ne doit pas dépasser 255 caractères.',
