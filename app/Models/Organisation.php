@@ -18,14 +18,14 @@ class Organisation extends Model
     protected $table = 'organisations';
 
     public $timestamps = true;
-    
+
     protected $fillable = ["sigle", "code", "nom_point_focal", "prenom_point_focal", "contact_point_focal", 'type', 'pays', 'departement', 'commune', 'arrondissement', 'programmeId', 'addresse', 'quartier', 'secteurActivite', 'longitude', 'latitude'];
 
     protected $dates = ['deleted_at'];
 
     protected $with = ['user'];
 
-    protected $default = ['type' => 'osc'];
+    protected $default = ['type' => 'osc_partenaire'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -135,7 +135,7 @@ class Organisation extends Model
             $q->where('programmeId', $programmeId)->where('type', "organisation");
         });
     }
-    
+
     /**
      * Charger la liste des outcomes d'un projet
      */
@@ -168,7 +168,7 @@ class Organisation extends Model
         if ($token) {
             $evaluations_de_gouvernance = $evaluations_de_gouvernance->wherePivot("token", $token);
         }
-        
+
         return $evaluations_de_gouvernance;
     }
 
