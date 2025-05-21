@@ -113,7 +113,7 @@ class UpdateRequest extends FormRequest
 
                     $evaluation_factuelFormulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
 
-                    $evaluation_perceptionFormulaire = $this->evaluation_de_gouvernance->formulaire_perception_de_gouvernance();
+                    $evaluation_perceptionFormulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
 
                     if($evaluation_factuelFormulaire){
                         if($this->evaluation_de_gouvernance->soumissionsFactuel()->count()){
