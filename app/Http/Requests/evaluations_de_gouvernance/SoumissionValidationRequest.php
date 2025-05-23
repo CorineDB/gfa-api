@@ -72,10 +72,9 @@ class SoumissionValidationRequest extends FormRequest
             'factuel.comite_members.*.contact'                              => ['required', 'distinct', 'numeric','digits_between:8,24'],
             'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', function($attribute, $value, $fail) {
 
-                $fail([count($value), $this->getCountOfQuestionsOfAFormular()]);
-                    /* if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
+                    if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
-                    } */
+                    }
                 }
             ],
             'factuel.response_data.*.questionId'      => [Rule::requiredIf(!request()->input('perception')), 'distinct',
