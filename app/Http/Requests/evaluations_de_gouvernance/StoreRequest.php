@@ -165,7 +165,7 @@ class StoreRequest extends FormRequest
 
                 if (!$formulaire1) {
                     $validator->errors()->add(
-                        'formulaires_de_gouvernance',
+                        'formulaires_de_gouvernance.0',
                         "Formulaire de gouvernance inconnu"
                     );
                     return;
