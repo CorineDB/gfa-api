@@ -31,7 +31,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     "objectif_attendu" => json_decode($item->pivot->objectif_attendu)
                 ];
             }):[], */
-            
+
             'debut' => Carbon::parse($this->debut)->format("Y-m-d"),
             'fin' => Carbon::parse($this->fin)->format("Y-m-d"),
             'annee_exercice' => $this->annee_exercice,
@@ -51,10 +51,10 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'nbreDeParticipants' => optional(Auth::user()->profilable)->getNbreDeParticipantsAttribute($this->id) ?? 0
                 ];
             }),
-            
+
             'total_participants_evaluation_factuel' => $this->total_participants_evaluation_factuel,
             'total_participants_evaluation_de_perception' => $this->total_participants_evaluation_de_perception,
-            
+
             'total_soumissions_factuel' => $this->total_soumissions_factuel,
             'total_soumissions_de_perception' => $this->total_soumissions_de_perception,
             'total_soumissions_factuel_non_demarrer' => $this->total_soumissions_factuel_non_demarrer,
@@ -68,7 +68,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'factuel')->first()->secure_id,
-            'formulaire_perception_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'perception')->first()->secure_id,
+            'formulaire_perception_de_gouvernance' => $this->formulaires_de_gouvernance->where('type', 'perception')->first() ? $this->formulaires_de_gouvernance->where('type', 'perception')->first()->secure_id : null,
             'formulaires_de_gouvernance' => FormulairesDeGouvernanceResource::collection($this->formulaires_de_gouvernance),
 
             /*
