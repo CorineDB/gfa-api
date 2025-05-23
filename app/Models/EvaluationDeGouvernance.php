@@ -33,7 +33,7 @@ class EvaluationDeGouvernance extends Model
         static::deleting(function ($evaluation_de_gouvernance) {
 
             DB::beginTransaction();
-            
+
             try {
 
                 if (($evaluation_de_gouvernance->soumissions->count() > 0) && ($evaluation_de_gouvernance->statut > -1)) {
@@ -261,7 +261,7 @@ class EvaluationDeGouvernance extends Model
     /**
      * Retrieve fiches de synthese associated with the evaluation.
      *
-     * This method returns a collection of FicheDeSynthese models related to the 
+     * This method returns a collection of FicheDeSynthese models related to the
      * EvaluationDeGouvernance, with optional filtering by organisation ID and type.
      *
      * @param int|null $organisationId Optional organisation ID to filter the fiches de synthese.
@@ -374,8 +374,8 @@ class EvaluationDeGouvernance extends Model
                      ->where('users.profilable_type', '=', 'App\\Models\\Organisation');
             })
             // Select necessary fields
-            ->select('profiles_de_gouvernance.id', 
-                     'profiles_de_gouvernance.organisationId', 
+            ->select('profiles_de_gouvernance.id',
+                     'profiles_de_gouvernance.organisationId',
                      DB::raw('CONCAT(users.nom, " - ", organisations.sigle) as organisationName') // Combine `users.nom` and `organisations.sigle`
                     )
             ->selectRaw('
@@ -636,7 +636,7 @@ class EvaluationDeGouvernance extends Model
                 'code'                  => $organisation->code,
                 'nom_point_focal'       => $organisation->nom_point_focal,
                 'prenom_point_focal'    => $organisation->prenom_point_focal,
-                'contact_point_focal'   => $organisation->contact_point_focal,/* 
+                'contact_point_focal'   => $organisation->contact_point_focal,/*
                 'nbreParticipants'              => $organisation->pivot->nbreParticipants,
                 'PerceptionSubmissionsCompletion' => $organisation->getPerceptionSubmissionsCompletionAttribute($this->id), */
                 'pourcentage_evolution' => $organisation->getPourcentageEvolutionAttribute($this->id),
@@ -654,7 +654,7 @@ class EvaluationDeGouvernance extends Model
         $soumissionIds = $this->soumissionsDePerception->pluck("id");
 
         // Get all options (options_de_reponse) and their IDs
-        $options = $this->formulaire_de_perception_de_gouvernance()->options_de_reponse;
+        $options = $this->formulaire_de_perception_de_gouvernance() ? $this->formulaire_de_perception_de_gouvernance()->options_de_reponse : [];
         $optionIds = $options->pluck('id');
         $optionLibelles = $options->pluck('libelle', 'id');
 
@@ -664,7 +664,7 @@ class EvaluationDeGouvernance extends Model
         // Generate the Cartesian product of all organisations, categories, and options
         $organisations = $this->organisations;
 
-        // Generate the Cartesian product of all categories and options        
+        // Generate the Cartesian product of all categories and options
         $combinations = [];
         foreach ($organisations as $organisation) {
             foreach ($categories as $category) {
