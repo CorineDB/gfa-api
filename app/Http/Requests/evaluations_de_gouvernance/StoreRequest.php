@@ -50,7 +50,7 @@ class StoreRequest extends FormRequest
                 }
             ],
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
-            'formulaires_de_gouvernance'     => ['required', 'array', 'min:1'],
+            'formulaires_de_gouvernance'     => ['required', 'array', 'min:1', 'max:2'],
             'formulaires_de_gouvernance.*'   => ['required', 'distinct', new HashValidatorRule(new FormulaireDeGouvernance())],
             'organisations'     => ['required', 'array', 'min:1'],
             'organisations.*'   => ['required', 'distinct', new HashValidatorRule(new Organisation())]
@@ -101,7 +101,7 @@ class StoreRequest extends FormRequest
 
             //[$formulaireDeGouvernanceId, $perceptionFormulaire] = $this->input("formulaires_de_gouvernance");
 
-            /* if (count($formulaires) > 1) {
+            if (count($formulaires) > 1) {
 
                 $formulaire1 = $formulaires[0];
                 $formulaire2 = $formulaires[1];
@@ -159,7 +159,7 @@ class StoreRequest extends FormRequest
                         "Les principes de gouvernance du formulaire de perception doivent etre les memes dans le formulaire factuel."
                     );
                 }
-            } else { */
+            } else {
                 $formulaire1 = $formulaires[0];
                 $formulaire1 = FormulaireDeGouvernance::find($formulaire1);
 
@@ -171,7 +171,7 @@ class StoreRequest extends FormRequest
                     return;
                     //$fail("Invalid 'formulaires_de_gouvernance' IDs provided.");
                 }
-            //}
+            }
         }
     }
 }
