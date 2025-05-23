@@ -73,9 +73,9 @@ class SoumissionValidationRequest extends FormRequest
             'factuel.response_data'                                 => [Rule::requiredIf(!request()->input('perception')), 'array', function($attribute, $value, $fail) {
 
                 $fail(count($value));
-                    if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
+                    /* if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
-                    }
+                    } */
                 }
             ],
             'factuel.response_data.*.questionId'      => [Rule::requiredIf(!request()->input('perception')), 'distinct',
