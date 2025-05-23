@@ -50,7 +50,7 @@ class StoreRequest extends FormRequest
                 }
             ],
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
-            'formulaires_de_gouvernance'     => ['required', 'array', 'min:1', 'max:2'],
+            'formulaires_de_gouvernance'     => ['required', 'array', 'min:1'],
             'formulaires_de_gouvernance.*'   => ['required', 'distinct', new HashValidatorRule(new FormulaireDeGouvernance())],
             'organisations'     => ['required', 'array', 'min:1'],
             'organisations.*'   => ['required', 'distinct', new HashValidatorRule(new Organisation())]
