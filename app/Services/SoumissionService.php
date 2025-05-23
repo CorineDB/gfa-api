@@ -113,16 +113,15 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 if (!(($organisation = app(OrganisationRepository::class)->findById($attributs['organisationId'])) && $organisation->user->programmeId == $programme->id)) {
                     throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
-                
-                if(!($organisation = $evaluationDeGouvernance->organisations($organisation->id)->first())){
+
+                if (!($organisation = $evaluationDeGouvernance->organisations($organisation->id)->first())) {
                     throw new Exception("Cette organisation n'est pas de cette evaluation.", Response::HTTP_NOT_FOUND);
                 }
-            } else if(auth()->check()){ 
-                if (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
+            } else if (auth()->check()) {
+                if (Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)) {
                     $organisation = Auth::user()->profilable;
-                } 
-            }
-            else{
+                }
+            } else {
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
 
@@ -130,7 +129,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             if ($formulaireDeGouvernance->type == 'factuel') {
 
-                if(($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut){
+                if (($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut) {
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
 
@@ -139,7 +138,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                 $evaluationOrganisation = $evaluationDeGouvernance->organisations($organisation->id)->first();
 
-                if($evaluationDeGouvernance->soumissionsDePerception($organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants){
+                if ($evaluationDeGouvernance->soumissionsDePerception($organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants) {
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
 
@@ -201,13 +200,23 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                     if (isset($item['preuves']) && !empty($item['preuves'])) {
                         foreach ($item['preuves'] as $preuve) {
-                            $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
+
+                            // On suppose que $preuve est un fichier de type UploadedFile
+                            $filenameWithExt = $preuve->getClientOriginalName();
+                            $filename = strtolower(str_replace(' ', '-',time() . '-'. $filenameWithExt));
+
+                            // Vérifie si le fichier existe déjà pour cette réponse
+                            $alreadyExists = $reponseDeLaCollecte->preuves_de_verification()
+                                ->where('nom', $filename)
+                                ->exists();
+
+                            if (!$alreadyExists) {
+                                $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
+                            }
                         }
                     }
                 }
-            }
-            
-            else if (isset($attributs['perception']) && !empty($attributs['perception'])) {
+            } else if (isset($attributs['perception']) && !empty($attributs['perception'])) {
                 $soumission->fill($attributs['perception']);
                 $soumission->save();
                 foreach ($attributs['perception']['response_data'] as $key => $item) {
@@ -236,7 +245,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $soumission->refresh();
 
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function ($query) use ($soumission) {
-                    $query->when($soumission->formulaireDeGouvernance->type == 'factuel', function($query) {
+                    $query->when($soumission->formulaireDeGouvernance->type == 'factuel', function ($query) {
 
                         $query->where(function ($query) {
                             $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
