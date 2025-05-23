@@ -654,7 +654,7 @@ class EvaluationDeGouvernance extends Model
         $soumissionIds = $this->soumissionsDePerception->pluck("id");
 
         // Get all options (options_de_reponse) and their IDs
-        $options = $this->formulaire_de_perception_de_gouvernance() ? $this->formulaire_de_perception_de_gouvernance()->options_de_reponse : [];
+        $options = $this->formulaire_de_perception_de_gouvernance() ? $this->formulaire_de_perception_de_gouvernance()->options_de_reponse : collect([]);
         $optionIds = $options->pluck('id');
         $optionLibelles = $options->pluck('libelle', 'id');
 
