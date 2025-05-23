@@ -91,7 +91,7 @@ class StoreRequest extends FormRequest
         if ($this->input("formulaires_de_gouvernance")) {
             $formulaires = $this->input("formulaires_de_gouvernance");
 
-            if (count($formulaires) < 1) {
+            if (count($formulaires) <= 0) {
                 $validator->errors()->add(
                     'formulaires_de_gouvernance',
                     "Veuillez soumettre le formulaire factuel de gouvernance ou le formulaire de perception de gouvernance."
