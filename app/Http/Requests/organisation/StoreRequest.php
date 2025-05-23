@@ -38,9 +38,9 @@ class StoreRequest extends FormRequest
             'contact'       => ['required', 'numeric','digits_between:8,24', Rule::unique('users', 'contact')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             'email'         => ['required','email','max:50', Rule::unique('users', 'email')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
 
-            'nom_point_focal'       => ['required','max:50', Rule::unique('organisations', 'nom_point_focal')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
-            'prenom_point_focal'    => ['required','max:50', Rule::unique('organisations', 'prenom_point_focal')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
-            'contact_point_focal'   => ['required', 'numeric','digits_between:8,24', Rule::unique('organisations', 'contact_point_focal')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
+            'nom_point_focal'       => ['required','max:50'/* , Rule::unique('organisations', 'nom_point_focal')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at') */],
+            'prenom_point_focal'    => ['required','max:50'/* , Rule::unique('organisations', 'prenom_point_focal')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at') */],
+            'contact_point_focal'   => ['required', 'numeric','digits_between:8,24'/* , Rule::unique('organisations', 'contact_point_focal')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at') */],
 
             'sigle'             => ['required','string','max:15', Rule::unique('organisations', 'sigle')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at')],
             'code'              => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->where("programmeId", request()->user()->programmeId)->whereNull('deleted_at') ],
