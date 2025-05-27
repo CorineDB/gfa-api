@@ -18,7 +18,7 @@ class CreateCategoriesFactuelDeGouvernanceTable extends Migration
 
             $table->integer('position')->default(0);
             $table->bigInteger('categorieFactuelDeGouvernanceId')->nullable()->unsigned();
-            $table->foreign('categorieFactuelDeGouvernanceId')->references('id')->on('categories_factuel_de_gouvernance')
+            $table->foreign('categorieFactuelDeGouvernanceId', 'cfg_parent_fk')->references('id')->on('categories_factuel_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->morphs('categorieable', 'categorieFactuel');
