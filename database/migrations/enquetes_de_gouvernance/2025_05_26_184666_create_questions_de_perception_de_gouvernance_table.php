@@ -21,7 +21,7 @@ class CreateQuestionsDePerceptionDeGouvernanceTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('categorieDePerceptionDeGouvernanceId')->unsigned();
-            $table->foreign('categorieDePerceptionDeGouvernanceId')->references('id')->on('categories_de_perception_de_gouvernance')
+            $table->foreign('categorieDePerceptionDeGouvernanceId', 'qfg_cat_fk')->references('id')->on('categories_de_perception_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('questionOperationnelleId')->unsigned();
