@@ -1,24 +1,22 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\enquetes_de_gouvernance;
 
-use App\Http\Resources\FichesDeSyntheseResource;
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
-use App\Models\Indicateur;
 use App\Models\Organisation;
-use App\Models\Recommandation;
+use App\Models\enquetes_de_gouvernance\Recommandation;
 use App\Models\UniteeDeGestion;
-use App\Repositories\ActionAMenerRepository;
-use App\Repositories\EvaluationDeGouvernanceRepository;
-use App\Repositories\IndicateurRepository;
-use App\Repositories\PrincipeDeGouvernanceRepository;
-use App\Repositories\RecommandationRepository;
+use App\Repositories\enquetes_de_gouvernance\ActionAMenerRepository;
+use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelRepository as IndicateurRepository;
+use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelRepository as PrincipeDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\RecommandationRepository;
 use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Carbon\Carbon;
-use Core\Services\Interfaces\ActionAMenerServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\ActionAMenerServiceInterface;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
