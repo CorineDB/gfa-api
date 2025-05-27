@@ -16,17 +16,17 @@ class CreateEvaluationFormulairesDeGouvernanceTable extends Migration
         Schema::create('evaluation_de_gouvernance_formulaires', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('evaluationDeGouvernanceId')->unsigned();
-            $table->foreign('evaluationDeGouvernanceId', 'evaluation')->references('id')->on('evaluations_de_gouvernance')
+            $table->foreign('evaluationDeGouvernanceId', 'eval_fk')->references('id')->on('evaluations_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
             $table->bigInteger('formulaireFactuelId')->unsigned()->nullable();
-            $table->foreign('formulaireFactuelId')->references('id')->on('formulaires_factuel_de_gouvernance')
+            $table->foreign('formulaireFactuelId', 'form_fact_fk')->references('id')->on('formulaires_factuel_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
             $table->bigInteger('formulaireDePerceptionId')->unsigned()->nullable();
-            $table->foreign('formulaireDePerceptionId')->references('id')->on('formulaires_de_perception_de_gouvernance')
+            $table->foreign('formulaireDePerceptionId', 'form_perc_fk')->references('id')->on('formulaires_de_perception_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->timestamps();
