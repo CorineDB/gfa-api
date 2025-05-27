@@ -25,7 +25,7 @@ class CreateFormulairesDePerceptionDeGouvernanceTable extends Migration
             $table->foreign('programmeId')->references('id')->on('programmes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->unique(['libelle', 'programmeId']);
+            $table->unique(['libelle', 'programmeId'], 'fdpg_libelle_programme_unique');
             $table->timestamps();
             $table->softDeletes();
         });
