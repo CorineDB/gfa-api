@@ -21,22 +21,22 @@ class CreateSoumissionsDePerceptionTable extends Migration
             $table->string('sexe')->nullable();
             $table->string('age')->nullable();
             $table->bigInteger('submittedBy')->unsigned()->nullable();
-            $table->foreign('submittedBy')->references('id')->on('users')
+            $table->foreign('submittedBy', 'sdp_submittedby_fk')->references('id')->on('users')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->boolean('statut')->default(0);
             $table->longText('commentaire')->nullable();
             $table->datetime('submitted_at')->nullable()->change();
             $table->bigInteger('evaluationId')->unsigned();
-            $table->foreign('evaluationId')->references('id')->on('evaluations_de_gouvernance')
+            $table->foreign('evaluationId', 'sdp_eval_fk')->references('id')->on('evaluations_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('formulaireDePerceptionId')->unsigned();
-            $table->foreign('formulaireDePerceptionId')->references('id')->on('formulaires_de_perception_de_gouvernance')
+            $table->foreign('formulaireDePerceptionId', 'sdp_formperc_fk')->references('id')->on('formulaires_de_perception_de_gouvernance')
                     ->onDelete('cascade')
                     ->onUpdate('cascade');
             $table->bigInteger('organisationId')->unsigned();
-            $table->foreign('organisationId')->references('id')->on('organisations')
+            $table->foreign('organisationId', 'sdp_org_fk')->references('id')->on('organisations')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
