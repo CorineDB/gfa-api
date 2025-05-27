@@ -2,6 +2,14 @@
 
 namespace App\Models;
 
+use App\Models\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuel;
+use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
+use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel;
+use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernancePerception;
+use App\Models\enquetes_de_gouvernance\QuestionOperationnelle;
+use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
+use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
+use App\Models\enquetes_de_gouvernance\TypeDeGouvernanceFactuel;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,14 +46,14 @@ class Programme extends Model
     protected $hidden = ['updated_at', 'deleted_at'];
 
     protected $relationships = [
-        'indicateurs_values_keys', 'indicateurs', 'indicateurs_valeurs', 'fonds', 'recommandations', 'actions_a_mener', 
-        'evaluations_de_gouvernance', 'formulaires_de_gouvernance', 
-        'soumissions', 'indicateurs_de_gouvernance', 
-        'criteres_de_gouvernance', 
-        'principes_de_gouvernance', 'survey_forms', 'surveys', 'organisations', 
-        'suivis_indicateurs', 'suivis', 'sites', 'projets', 
-        'suiviFinanciers', 'types_de_gouvernance', 'options_de_reponse', 
-        'sources_de_verification','unitees_de_mesure', 
+        'indicateurs_values_keys', 'indicateurs', 'indicateurs_valeurs', 'fonds', 'recommandations', 'actions_a_mener',
+        'evaluations_de_gouvernance', 'formulaires_de_gouvernance',
+        'soumissions', 'indicateurs_de_gouvernance',
+        'criteres_de_gouvernance',
+        'principes_de_gouvernance', 'survey_forms', 'surveys', 'organisations',
+        'suivis_indicateurs', 'suivis', 'sites', 'projets',
+        'suiviFinanciers', 'types_de_gouvernance', 'options_de_reponse',
+        'sources_de_verification','unitees_de_mesure',
     ];
 
     protected static function boot() {
@@ -155,7 +163,7 @@ class Programme extends Model
     {
         return $this->hasMany(User::class, 'programmeId')->where("type", "institution");
     }
-    
+
     /**
      * Charger la liste des organisations d'un oogramme
      */
@@ -366,7 +374,7 @@ class Programme extends Model
             'id',           // Local key on programmes table
             'id'            // Local key on projets table
         );
-        
+
         // Get the related sites through the projets of the programme
         return Site::whereHas('projets', function($query) {
             $query->whereIn('projets.id', $this->projets->pluck('id'));
@@ -551,7 +559,7 @@ class Programme extends Model
                 });
             }
         );
-        
+
         /* ->whereHas('activite', function ($query) {
             $query->whereHas('composante', function ($query) {
                 $query->whereHas('projet', function ($query) {
@@ -643,7 +651,7 @@ class Programme extends Model
     {
         return $this->hasMany(EvaluationDeGouvernance::class, 'programmeId');
     }
-    
+
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
      */
@@ -705,7 +713,7 @@ class Programme extends Model
     {
         return $this->hasMany(Enquete::class, 'programmeId');
     }
-    
+
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
      */
@@ -729,7 +737,7 @@ class Programme extends Model
             'id'                               // Local key on the types_de_gouvernance table
         );
     }
-    
+
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
      */
@@ -753,7 +761,7 @@ class Programme extends Model
     {
         return $this->hasMany(IndicateurValeur::class, 'programmeId');
     }
-    
+
     /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
      */
@@ -809,5 +817,72 @@ class Programme extends Model
     public function fonds()
     {
         return $this->hasMany(Fond::class, 'programmeId');
+    }
+
+
+    /**
+     * Charger la liste des indicateurs factuel
+     */
+    public function indicateurs_de_gouvernance_factuel()
+    {
+        return $this->hasMany(IndicateurDeGouvernanceFactuel::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function questions_operationnelle()
+    {
+        return $this->hasMany(QuestionOperationnelle::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function options_de_reponse_gouvernance()
+    {
+        return $this->hasMany(OptionDeReponseGouvernance::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function criteres_de_gouvernance_factuel()
+    {
+        return $this->hasMany(PrincipeDeGouvernanceFactuel::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function principes_de_gouvernance_perception()
+    {
+        return $this->hasMany(PrincipeDeGouvernancePerception::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function principes_de_gouvernance_factuel()
+    {
+        return $this->hasMany(PrincipeDeGouvernanceFactuel::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function types_de_gouvernance_factuel()
+    {
+        return $this->hasMany(TypeDeGouvernanceFactuel::class, 'programmeId');
+    }
+
+    public function soumissions_factuel()
+    {
+        return $this->hasMany(SoumissionFactuel::class, 'programmeId');
+    }
+
+    public function soumissions_de_perception()
+    {
+        return $this->hasMany(SoumissionDePerception::class, 'programmeId');
     }
 }
