@@ -4,12 +4,9 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
 use App\Traits\Helpers\LogActivity;
-use App\Models\OptionDeReponse;
-use App\Repositories\CritereDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelRepository as IndicateurDeGouvernanceRepository;
-use App\Repositories\PrincipeDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelServiceInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -18,10 +15,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
-* Interface IndicateurDeGouvernanceServiceInterface
+* Interface IndicateurDeGouvernanceFactuelServiceInterface
 * @package Core\Services\Interfaces
 */
-class IndicateurDeGouvernanceFactuelService extends BaseService implements IndicateurDeGouvernanceServiceInterface
+class IndicateurDeGouvernanceFactuelService extends BaseService implements IndicateurDeGouvernanceFactuelServiceInterface
 {
     /**
      * @var service

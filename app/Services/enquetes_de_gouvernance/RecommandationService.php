@@ -7,7 +7,7 @@ use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\RecommandationRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\RecommandationServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\RecommandationServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;

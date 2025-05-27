@@ -6,7 +6,7 @@ use App\Http\Resources\gouvernance\CriteresDeGouvernanceResource;
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
 use App\Repositories\enquetes_de_gouvernance\CritereDeGouvernanceFactuelRepository as CritereDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\CritereDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\CritereDeGouvernanceFactuelServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;
@@ -16,10 +16,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
-* Interface CritereDeGouvernanceServiceInterface
+* Interface CritereDeGouvernanceFactuelServiceInterface
 * @package Core\Services\Interfaces
 */
-class CritereDeGouvernanceFactuelService extends BaseService implements CritereDeGouvernanceServiceInterface
+class CritereDeGouvernanceFactuelService extends BaseService implements CritereDeGouvernanceFactuelServiceInterface
 {
 
     /**

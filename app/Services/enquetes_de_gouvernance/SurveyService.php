@@ -13,7 +13,7 @@ use App\Repositories\enquetes_de_gouvernance\SurveyRepository;
 use App\Repositories\enquetes_de_gouvernance\SurveyFormRepository;
 use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\SurveyServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SurveyServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;

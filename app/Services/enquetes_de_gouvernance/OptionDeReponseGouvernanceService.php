@@ -5,7 +5,7 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\gouvernance\OptionsDeReponseResource;
 use App\Repositories\enquetes_de_gouvernance\OptionDeReponseGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\OptionDeReponseServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\OptionDeReponseGouvernanceServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;
@@ -15,10 +15,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
-* Interface OptionDeReponseServiceInterface
+* Interface OptionDeReponseGouvernanceServiceInterface
 * @package Core\Services\Interfaces
 */
-class OptionDeReponseGouvernanceService extends BaseService implements OptionDeReponseServiceInterface
+class OptionDeReponseGouvernanceService extends BaseService implements OptionDeReponseGouvernanceServiceInterface
 {
 
     /**

@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Models\FicheDeSynthese;
 use App\Repositories\ActionAMenerRepository;
 use Core\Repositories\BaseRepository;
 use Core\Repositories\EloquentRepositoryInterface;
@@ -58,6 +57,28 @@ use App\Repositories\ReponseRepository;
 use App\Repositories\AuditRepository;
 use App\Repositories\CritereDeGouvernanceRepository;
 use App\Repositories\EnqueteDeCollecteRepository;
+use App\Repositories\enquetes_de_gouvernance\ActionAMenerRepository as EnqueteActionAMenerRepository;
+use App\Repositories\enquetes_de_gouvernance\CritereDeGouvernanceFactuelRepository;
+use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository as EnqueteEvaluationDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\FicheDeSyntheseRepository as EnqueteFicheDeSyntheseRepository;
+use App\Repositories\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelRepository;
+use App\Repositories\enquetes_de_gouvernance\OptionDeReponseGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelRepository;
+use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionRepository;
+use App\Repositories\enquetes_de_gouvernance\QuestionDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\QuestionDePerceptionDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\QuestionFactuelDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\QuestionOperationnelleRepository;
+use App\Repositories\enquetes_de_gouvernance\RecommandationRepository as EnqueteRecommandationRepository;
+use App\Repositories\enquetes_de_gouvernance\SoumissionDePerceptionRepository;
+use App\Repositories\enquetes_de_gouvernance\SoumissionFactuelRepository;
+use App\Repositories\enquetes_de_gouvernance\SourceDeVerificationRepository as EnqueteSourceDeVerificationRepository;
+use App\Repositories\enquetes_de_gouvernance\SurveyFormRepository as EnqueteSurveyFormRepository;
+use App\Repositories\enquetes_de_gouvernance\SurveyReponseRepository as EnqueteSurveyReponseRepository;
+use App\Repositories\enquetes_de_gouvernance\SurveyRepository as EnqueteSurveyRepository;
+use App\Repositories\enquetes_de_gouvernance\TypeDeGouvernanceFactuelRepository;
 use App\Repositories\EvaluationDeGouvernanceRepository;
 use App\Repositories\FicheDeSyntheseRepository;
 use App\Repositories\FondRepository;
@@ -140,6 +161,24 @@ use App\Services\ReponseService;
 use App\Services\AuditService;
 use App\Services\CritereDeGouvernanceService;
 use App\Services\EnqueteDeCollecteService;
+use App\Services\enquetes_de_gouvernance\ActionAMenerService as ActionAMenerGouvernanceService;
+use App\Services\enquetes_de_gouvernance\CritereDeGouvernanceFactuelService;
+use App\Services\enquetes_de_gouvernance\EvaluationDeGouvernanceService as EvaluationDeGouvernanceEnqueteService;
+use App\Services\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceService;
+use App\Services\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceService;
+use App\Services\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelService;
+use App\Services\enquetes_de_gouvernance\OptionDeReponseGouvernanceService;
+use App\Services\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelService;
+use App\Services\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionService;
+use App\Services\enquetes_de_gouvernance\QuestionOperationnelleService;
+use App\Services\enquetes_de_gouvernance\RecommandationService as RecommandationGouvernanceService;
+use App\Services\enquetes_de_gouvernance\SoumissionDePerceptionService;
+use App\Services\enquetes_de_gouvernance\SoumissionFactuelService;
+use App\Services\enquetes_de_gouvernance\SourceDeVerificationService as EnqueteSourceDeVerificationService;
+use App\Services\enquetes_de_gouvernance\SurveyFormService as EnqueteSurveyFormService;
+use App\Services\enquetes_de_gouvernance\SurveyReponseService as EnqueteSurveyReponseService;
+use App\Services\enquetes_de_gouvernance\SurveyService as EnqueteSurveyService;
+use App\Services\enquetes_de_gouvernance\TypeDeGouvernanceFactuelService;
 use App\Services\EvaluationDeGouvernanceService;
 use App\Services\FicheDeSyntheseService;
 use App\Services\FondService;
@@ -223,6 +262,24 @@ use Core\Services\Interfaces\ReponseServiceInterface;
 use Core\Services\Interfaces\AuditServiceInterface;
 use Core\Services\Interfaces\CritereDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\EnqueteDeCollecteServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\ActionAMenerServiceInterface as ActionAMenerGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\CritereDeGouvernanceFactuelServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\EvaluationDeGouvernanceServiceInterface as EvaluationDeGouvernanceServiceEnqueteInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\OptionDeReponseGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\QuestionOperationnelleServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\RecommandationServiceInterface as RecommandationGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SoumissionDePerceptionServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SoumissionFactuelServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SourceDeVerificationServiceInterface as EnqueteSourceDeVerificationServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SurveyFormServiceInterface as EnqueteSurveyFormServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SurveyReponseServiceInterface as EnqueteSurveyReponseServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SurveyServiceInterface as EnqueteSurveyServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\TypeDeGouvernanceFactuelServiceInterface;
 use Core\Services\Interfaces\EvaluationDeGouvernanceServiceInterface;
 use Core\Services\Interfaces\FicheDeSyntheseServiceInterface;
 use Core\Services\Interfaces\FondServiceInterface;
@@ -397,7 +454,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(OptionDeReponseServiceInterface::class, OptionDeReponseService::class);
         $this->app->bind(EnqueteDeCollecteServiceInterface::class, EnqueteDeCollecteService::class);
         $this->app->bind(IndicateurValueKeyServiceInterface::class, IndicateurValueKeyService::class);
-        
+
         $this->app->bind(SourceDeVerificationServiceInterface::class, SourceDeVerificationService::class);
         $this->app->bind(SoumissionServiceInterface::class, SoumissionService::class);
         $this->app->bind(EvaluationDeGouvernanceServiceInterface::class, EvaluationDeGouvernanceService::class);
@@ -414,6 +471,60 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(SurveyServiceInterface::class, SurveyService::class);
         $this->app->bind(SurveyFormServiceInterface::class, SurveyFormService::class);
         $this->app->bind(SurveyReponseServiceInterface::class, SurveyReponseService::class);
+
+        $this->gouvernanceDependancesInjection();
+    }
+
+    protected function gouvernanceDependancesInjection(){
+
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteActionAMenerRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, CritereDeGouvernanceFactuelRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteEvaluationDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteFicheDeSyntheseRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, FormulaireFactuelDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, FormulaireDePerceptionDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, IndicateurDeGouvernanceFactuelRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, OptionDeReponseGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, PrincipeDeGouvernanceFactuelRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, PrincipeDeGouvernancePerceptionRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, QuestionDePerceptionDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, QuestionFactuelDeGouvernanceRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, QuestionOperationnelleRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteRecommandationRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, SoumissionDePerceptionRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, SoumissionFactuelRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteSourceDeVerificationRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteSurveyRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteSurveyFormRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, EnqueteSurveyReponseRepository::class);
+        $this->app->bind(EloquentRepositoryInterface::class, TypeDeGouvernanceFactuelRepository::class);
+
+
+        $this->app->bind(TypeDeGouvernanceFactuelServiceInterface::class, TypeDeGouvernanceFactuelService::class);
+        $this->app->bind(PrincipeDeGouvernanceFactuelServiceInterface::class, PrincipeDeGouvernanceFactuelService::class);
+        $this->app->bind(PrincipeDeGouvernancePerceptionServiceInterface::class, PrincipeDeGouvernancePerceptionService::class);
+        $this->app->bind(CritereDeGouvernanceFactuelServiceInterface::class, CritereDeGouvernanceFactuelService::class);
+        $this->app->bind(IndicateurDeGouvernanceFactuelServiceInterface::class, IndicateurDeGouvernanceFactuelService::class);
+        $this->app->bind(QuestionOperationnelleServiceInterface::class, QuestionOperationnelleService::class);
+        $this->app->bind(OptionDeReponseGouvernanceServiceInterface::class, OptionDeReponseGouvernanceService::class);
+        $this->app->bind(FormulaireFactuelDeGouvernanceServiceInterface::class, FormulaireFactuelDeGouvernanceService::class);
+        $this->app->bind(FormulaireDePerceptionDeGouvernanceServiceInterface::class, FormulaireDePerceptionDeGouvernanceService::class);
+
+        $this->app->bind(EnqueteSourceDeVerificationServiceInterface::class, EnqueteSourceDeVerificationService::class);
+
+        $this->app->bind(EvaluationDeGouvernanceServiceEnqueteInterface::class, EvaluationDeGouvernanceEnqueteService::class);
+
+        $this->app->bind(SoumissionFactuelServiceInterface::class, SoumissionFactuelService::class);
+        $this->app->bind(SoumissionDePerceptionServiceInterface::class, SoumissionDePerceptionService::class);
+
+        $this->app->bind(RecommandationGouvernanceServiceInterface::class, RecommandationGouvernanceService::class);
+        $this->app->bind(ActionAMenerGouvernanceServiceInterface::class, ActionAMenerGouvernanceService::class);
+
+
+        $this->app->bind(EnqueteSurveyServiceInterface::class, EnqueteSurveyService::class);
+        $this->app->bind(EnqueteSurveyFormServiceInterface::class, EnqueteSurveyFormService::class);
+        $this->app->bind(EnqueteSurveyReponseServiceInterface::class, EnqueteSurveyReponseService::class);
+
     }
 
     /**

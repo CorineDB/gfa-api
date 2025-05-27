@@ -6,7 +6,7 @@ use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
 use App\Http\Resources\gouvernance\TypesDeGouvernanceResource;
 use App\Repositories\enquetes_de_gouvernance\TypeDeGouvernanceFactuelRepository as TypeDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\TypeDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\TypeDeGouvernanceFactuelServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;
@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
-* Interface TypeDeGouvernanceServiceInterface
+* Interface TypeDeGouvernanceFactuelServiceInterface
 * @package Core\Services\Interfaces
 */
-class TypeDeGouvernanceFactuelService extends BaseService implements TypeDeGouvernanceServiceInterface
+class TypeDeGouvernanceFactuelService extends BaseService implements TypeDeGouvernanceFactuelServiceInterface
 {
     /**
      * @var service

@@ -6,7 +6,7 @@ use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipesDeGouvernanceResource;
 use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionRepository as PrincipeDeGouvernanceRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\PrincipeDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;
@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 /**
-* Interface PrincipeDeGouvernanceServiceInterface
+* Interface PrincipeDeGouvernancePerceptionServiceInterface
 * @package Core\Services\Interfaces
 */
-class PrincipeDeGouvernancePerceptionService extends BaseService implements PrincipeDeGouvernanceServiceInterface
+class PrincipeDeGouvernancePerceptionService extends BaseService implements PrincipeDeGouvernancePerceptionServiceInterface
 {
 
     /**

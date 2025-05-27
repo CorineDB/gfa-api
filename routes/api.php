@@ -27,7 +27,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
     Route::get('test-email/{email}', function ($email) {
         try {
-            Log::info("Test email sent to: {$email}");/* 
+            Log::info("Test email sent to: {$email}");/*
 
             Mail::to($email)->send(new ConfirmationDeCompteEmail([
                 'view' => "emails.auth.confirmation_de_compte",
@@ -41,9 +41,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
             Mail::raw("Bonjour TESTER, voici votre lien d'activation : https://example.com/activation", function ($message) use ($email) {
                 $message->to($email)
-                        ->subject('Activation de votre compte');
+                    ->subject('Activation de votre compte');
             });
-    
+
             Log::info("Test email sent to: {$email}");
             return response()->json(['message' => 'Email sent successfully to ' . $email]);
         } catch (\Exception $e) {
@@ -52,7 +52,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
         }
     });
 
-    
+
     Route::get('confirmation-de-compte/{email}', [AuthController::class, 'confirmationDeCompte'])->name('confirmationDeCompte');
 
     Route::get('activation-de-compte/{token}', [AuthController::class, 'activationDeCompte'])->name('activationDeCompte');
@@ -643,13 +643,13 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
         Route::apiResource('reponses', 'ReponseController')->names('reponses');
 
         Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
-            
+
             Route::apiResource('permissions', 'PermissionController', ['only' => ['index']])->names('permissions')->middleware(['permission:voir-une-permission']);
 
             Route::apiResource('roles', 'RoleController')->names('roles');
 
             Route::apiResource('utilisateurs', 'UserController')->names('utilisateurs');
-            
+
             Route::group(['prefix' =>  'utilisateurs', 'as' => 'utilisateurs.'], function () {
 
                 Route::controller('UserController')->group(function () {
@@ -671,7 +671,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             });
 
             Route::apiResource('programmes', 'ProgrammeController')->names('programmes')/* ->middleware(['role:administrateur,super-admin']) */;
-            
+
             Route::group(['prefix' =>  'programmes', 'as' => 'programmes.'], function () {
 
                 Route::controller('ProgrammeController')->group(function () {
@@ -686,7 +686,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('evolution-des-scores-au-fil-du-temps/{organisationId}', 'scoresAuFilDuTemps')->name('evolution-des-scores-au-fil-du-temps')->middleware('permission:voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps');
                     Route::get('evaluations-organisations/{id?}', 'evaluations_organisations')->name('evaluations-organisations')->middleware('permission:voir-une-organisation');
-
                 });
             });
 
@@ -717,12 +716,12 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::apiResource('organisations', 'OrganisationController', ['except' => ['index']])->names('organisations')->middleware(['role:unitee-de-gestion']);
 
             Route::apiResource('organisations', 'OrganisationController', ['only' => ['index']])->names('organisation')->middleware('permission:voir-une-organisation');
-            
+
             Route::apiResource('planDecaissements', 'PlanDecaissementController')->names('plan-decaissements');
 
-            Route::apiResource('projets', 'ProjetController', ['except' => ['index','show', 'update']])->names('projets')->middleware(['role:unitee-de-gestion']);
+            Route::apiResource('projets', 'ProjetController', ['except' => ['index', 'show', 'update']])->names('projets')->middleware(['role:unitee-de-gestion']);
 
-            Route::apiResource('projets', 'ProjetController', ['only' => ['index','show']])->names('projet')->middleware('permission:voir-un-projet');
+            Route::apiResource('projets', 'ProjetController', ['only' => ['index', 'show']])->names('projet')->middleware('permission:voir-un-projet');
 
             Route::group(['prefix' =>  'projets', 'as' => 'projets.'], function () {
 
@@ -773,15 +772,14 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('/{id}/suivis', 'suivis')->name('suivis')->middleware('permission:voir-un-suivi');
                     Route::post('/{id}/suivis-financier', 'suivis_financier')->name('suivis_financier')->middleware('permission:voir-un-suivi-financier');
 
-                    
+
                     Route::post('{id}/ajouterDuree', 'ajouterDuree')->name('ajouterDuree')->middleware('permission:modifier-une-activite');
 
                     Route::post('{id}/modifierDuree/{dureeId}', 'modifierDuree')->name('modifierDuree')->middleware('permission:modifier-une-activite');
-                    
+
                     Route::post('{id}/deplacer', 'deplacer')->name('deplacer')->middleware('permission:modifier-une-tache');
 
                     Route::get('{id}/plansDeDecaissement', 'plansDeDecaissement')->name('plansDeDecaissement')->middleware('permission:voir-un-plan-de-decaissement');
-
                 });
             });
 
@@ -820,7 +818,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             });
 
             Route::post('suivisV2', 'SuiviController@suivisV2');
-            
+
             Route::apiResource('suiviFinanciers', 'SuiviFinancierController')->names('suivi-financiers');
 
             Route::group(['prefix' =>  'suiviFinanciers', 'as' => 'suiviFinanciers'], function () {
@@ -988,7 +986,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ]);
 
             Route::get('formulaire-factuel/{token}', 'EvaluationDeGouvernanceController@formulaire_factuel_de_gouvernance')->middleware('permission:voir-formulaire-factuel');
-            
+
             Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
 
                 Route::controller('EvaluationDeGouvernanceController')->group(function () {
@@ -1008,7 +1006,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{evaluation_de_gouvernance}/resultats-syntheses', 'resultats_syntheses')->name('resultats_syntheses')->middleware('permission:voir-resultats-evaluation');
                     Route::get('{evaluation_de_gouvernance}/voir-resultats-avec-classement-organisations', 'voir_resultats_syntheses_avec_classement_des_organisations')->name('voir_resultats_syntheses_avec_classement_des_organisations')->middleware('permission:voir-resultats-evaluation');
 
-                    Route::get('{evaluation_de_gouvernance}/fiches-de-synthese-with-organisations-classement', 'fiches_de_synthese_with_organisations_classement')->name('fiches_de_synthese_with_organisations_classement')->middleware('permission:voir-une-fiche-de-synthese');                  
+                    Route::get('{evaluation_de_gouvernance}/fiches-de-synthese-with-organisations-classement', 'fiches_de_synthese_with_organisations_classement')->name('fiches_de_synthese_with_organisations_classement')->middleware('permission:voir-une-fiche-de-synthese');
 
                     Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants')->middleware('permission:envoyer-une-invitation');
 
@@ -1019,12 +1017,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('{evaluation_de_gouvernance}/feuille-de-route', 'feuille_de_route')->name('feuille-de-route')->middleware('permission:voir-plan-action');
                     Route::post('{evaluation_de_gouvernance}/ajouterObjectifAttenduParPrincipe', 'ajouterObjectifAttenduParPrincipe')->name('feuille-de-route')->middleware('permission:creer-une-evaluation-de-gouvernance');
-
-                    
                 });
 
                 Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('evaluation.validate-soumission')->middleware('permission:valider-une-soumission');
-
             });
 
             Route::apiResource('survey-forms', 'SurveyFormController')->names('survey-forms')
@@ -1042,17 +1037,16 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 ->parameters([
                     'survey-reponses' => 'survey_reponse',
                 ]);
-            
-                Route::group(['prefix' =>  'surveys', 'as' => 'surveys.'], function () {
 
-                    Route::controller('SurveyController')->group(function () {
-                        Route::get('{survey}/survey-reponses', 'survey_reponses')->name('survey_reponses')->middleware('permission:voir-reponses-enquete-individuelle');
-                        Route::get('{survey}/formulaire', 'formulaire')->name('formulaire')->middleware('permission:voir-un-formulaire-individuel');
+            Route::group(['prefix' =>  'surveys', 'as' => 'surveys.'], function () {
 
-                        Route::get('{token}/form/{participantId}', 'private_survey_form')->name('private_survey_form')->middleware('permission:voir-un-formulaire-individuel');
-                    });
+                Route::controller('SurveyController')->group(function () {
+                    Route::get('{survey}/survey-reponses', 'survey_reponses')->name('survey_reponses')->middleware('permission:voir-reponses-enquete-individuelle');
+                    Route::get('{survey}/formulaire', 'formulaire')->name('formulaire')->middleware('permission:voir-un-formulaire-individuel');
+
+                    Route::get('{token}/form/{participantId}', 'private_survey_form')->name('private_survey_form')->middleware('permission:voir-un-formulaire-individuel');
                 });
-            
+            });
         });
     });
 
@@ -1074,9 +1068,32 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::controller('SurveyReponseController')->group(function () {
 
                 Route::post('reponses', 'survey_reponse')->name('survey_reponse');
-
             });
         });
     });
-    
+
+    /**
+     * Enquete de gouvernance
+     */
+    Route::group(['prefix' =>  'gfa', 'as' => 'gfa.'], function () {
+        Route::group(['prefix' =>  'enquete-de-gouvernance', 'as' => 'enquetes-de-gouvernance.', 'namespace' => 'enquetes_de_gouvernance'], function () {
+
+            Route::group(['middleware' => ['auth:sanctum']], function () {
+
+
+                Route::apiResource('types-de-gouvernance-factuel', 'TypeDeGouvernanceFactuelController')->names('types-de-gouvernance-factuel')
+                    ->parameters([
+                        'types-de-gouvernance-factuel' => 'type_de_gouvernance_factuel',
+                    ]);
+
+                Route::group(['prefix' =>  'types-de-gouvernance', 'as' => 'types-de-gouvernance.'], function () {
+
+                    Route::controller('TypeDeGouvernanceFactuelController')->group(function () {
+
+                        Route::get('{type_de_gouvernance_factuel}/principes-de-gouvernance', 'principes')->name('principes')->middleware('permission:voir-un-principe-de-gouvernance');
+                    });
+                });
+            });
+        });
+    });
 });

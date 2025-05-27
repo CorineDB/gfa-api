@@ -2,9 +2,7 @@
 
 namespace App\Services\enquetes_de_gouvernance;
 
-use App\Http\Resources\FichesDeSyntheseResource;
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
-use App\Models\Indicateur;
 use App\Models\Organisation;
 use App\Models\enquetes_de_gouvernance\Recommandation;
 use App\Models\UniteeDeGestion;
@@ -15,10 +13,10 @@ use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelReposit
 use App\Repositories\enquetes_de_gouvernance\RecommandationRepository;
 use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\ActionAMenerServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Carbon\Carbon;
+use Core\Services\Interfaces\enquetes_de_gouvernance\ActionAMenerServiceInterface;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;

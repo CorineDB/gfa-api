@@ -5,7 +5,7 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\gouvernance\SourcesDeVerificationResource;
 use App\Repositories\enquetes_de_gouvernance\SourceDeVerificationRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\SourceDeVerificationServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SourceDeVerificationServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;

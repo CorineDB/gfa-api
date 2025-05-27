@@ -15,10 +15,10 @@ use App\Repositories\PrincipeDeGouvernanceRepository;
 use App\Repositories\RecommandationRepository;
 use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\ActionAMenerServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Carbon\Carbon;
+use Core\Services\Interfaces\ActionAMenerServiceInterface;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -104,13 +104,13 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     $action_a_mener = $evaluation->actions_a_mener()->create($attributs);
                 }
             } */
-           
+
             if(isset($attributs['evaluationId'])){
                 if(!($evaluation = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))){
                     throw new Exception("Cette evaluation n'existe pas", 500);
                 }
             }
-           
+
             if(isset($attributs['recommandationId'])){
                 if(!($recommandation = app(RecommandationRepository::class)->findById($attributs['recommandationId']))){
                     throw new Exception("Cette recommandation n'existe pas", 500);
@@ -119,7 +119,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     $attributs = array_merge($attributs, ['actionable_id' => $attributs['recommandationId'], 'actionable_type' => Recommandation::class]);
                 }
             }
-            
+
             $action_a_mener = $this->repository->create($attributs);
 
             if(isset($attributs['indicateurs'])){
@@ -129,7 +129,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                 foreach($attributs['indicateurs'] as $id)
                 {
                     if(!($indicateur = app(IndicateurRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
-                    
+
                     array_push($indicateurs, $indicateur->id);
                 }
 
@@ -140,11 +140,11 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
             if(isset($attributs['principes_de_gouvernance'])){
 
                 $principes_de_gouvernance = [];
-                
+
                 foreach($attributs['principes_de_gouvernance'] as $id)
                 {
                     if(!($principe_de_gouvernance = app(PrincipeDeGouvernanceRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
-                    
+
                     array_push($principes_de_gouvernance, $principe_de_gouvernance->id);
                 }
 
@@ -184,7 +184,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     throw new Exception("Cette evaluation n'existe pas", 500);
                 }
             }
-           
+
             if(isset($attributs['recommandationId'])){
                 if(!($recommandation = app(RecommandationRepository::class)->findById($attributs['recommandationId']))){
                     throw new Exception("Cette recommandation n'existe pas", 500);
@@ -262,19 +262,19 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                 {
                     $action_a_mener->commentaires()->create(['contenu' => $attributs['commentaire'], 'auteurId' => Auth::user()->id]);
                 }
-                
+
                 $action_a_mener->refresh();
 
                 $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
-    
+
                 $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($action_a_mener));
-    
+
                 //LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
-    
+
                 DB::commit();
-    
+
                 return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ActionsAMenerResource($action_a_mener), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-    
+
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -324,26 +324,26 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                 $action_a_mener->has_upload_preuves = true;
 
                 $action_a_mener->statut = 2;
-                
+
                 $action_a_mener->save();
 
                 if(isset($attributs['commentaire']))
                 {
                     $action_a_mener->commentaires()->create(['contenu' => $attributs['commentaire'], 'auteurId' => Auth::user()->id]);
                 }
-                
+
                 $action_a_mener->refresh();
 
                 $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
-    
+
                 $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($action_a_mener));
-    
+
                 //LogActivity::addToLog("Modification", $message, get_class($action_a_mener), $action_a_mener->id);
-    
+
                 DB::commit();
-    
+
                 return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ActionsAMenerResource($action_a_mener), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-    
+
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

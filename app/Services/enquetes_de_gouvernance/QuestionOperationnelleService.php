@@ -4,10 +4,9 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
 use App\Traits\Helpers\LogActivity;
-use App\Repositories\enquetes_de_gouvernance\QuestionDeGouvernanceRepository;
-use App\Repositories\PrincipeDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\QuestionOperationnelleRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\IndicateurDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\QuestionOperationnelleServiceInterface;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
@@ -16,10 +15,10 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
-* Interface IndicateurDeGouvernanceServiceInterface
+* Interface QuestionOperationnelleServiceInterface
 * @package Core\Services\Interfaces
 */
-class QuestionOperationnelleService extends BaseService implements IndicateurDeGouvernanceServiceInterface
+class QuestionOperationnelleService extends BaseService implements QuestionOperationnelleServiceInterface
 {
     /**
      * @var service
@@ -27,11 +26,11 @@ class QuestionOperationnelleService extends BaseService implements IndicateurDeG
     protected $repository;
 
     /**
-     * QuestionDeGouvernanceRepository constructor.
+     * QuestionOperationnelleRepository constructor.
      *
-     * @param QuestionDeGouvernanceRepository $questionOperationnelleRepository
+     * @param QuestionOperationnelleRepository $questionOperationnelleRepository
      */
-    public function __construct(QuestionDeGouvernanceRepository $questionOperationnelleRepository)
+    public function __construct(QuestionOperationnelleRepository $questionOperationnelleRepository)
     {
         parent::__construct($questionOperationnelleRepository);
     }
@@ -41,13 +40,13 @@ class QuestionOperationnelleService extends BaseService implements IndicateurDeG
         try
         {
 
-            $indicateurs_de_gouvernance = collect([]);
+            $question_operationnelle = collect([]);
 
             if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
-                $indicateurs_de_gouvernance = Auth::user()->programme->questions_operationnelle;
+                $question_operationnelle = Auth::user()->programme->questions_operationnelle;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($indicateurs_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($question_operationnelle), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -95,7 +94,6 @@ class QuestionOperationnelleService extends BaseService implements IndicateurDeG
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             $questionOperationnelle = $this->repository->create($attributs);
-
 
             DB::commit();
 

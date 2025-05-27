@@ -7,7 +7,7 @@ use App\Models\Organisation;
 use App\Models\UniteeDeGestion;
 use App\Repositories\enquetes_de_gouvernance\SurveyFormRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\SurveyFormServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SurveyFormServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;

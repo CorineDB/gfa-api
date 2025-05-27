@@ -9,7 +9,7 @@ use App\Repositories\enquetes_de_gouvernance\OptionDeReponseGouvernanceRepositor
 use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionRepository;
 
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\FormulaireDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;
@@ -22,7 +22,7 @@ use Illuminate\Http\Response;
 * Interface FormulaireDeGouvernanceServiceInterface
 * @package Core\Services\Interfaces
 */
-class FormulaireDePerceptionDeGouvernanceService extends BaseService implements FormulaireDeGouvernanceServiceInterface
+class FormulaireDePerceptionDeGouvernanceService extends BaseService implements FormulaireDePerceptionDeGouvernanceServiceInterface
 {
 
     /**
@@ -31,11 +31,11 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
     protected $repository;
 
     /**
-     * FormulaireDeGouvernanceRepository constructor.
+     * FormulaireDePerceptionDeGouvernanceRepository constructor.
      *
-     * @param FormulaireDeGouvernanceRepository $formulaireDeGouvernanceRepository
+     * @param FormulaireDePerceptionDeGouvernanceRepository $formulaireDeGouvernanceRepository
      */
-    public function __construct(FormulaireDeGouvernanceRepository $formulaireDeGouvernanceRepository)
+    public function __construct(FormulaireDePerceptionDeGouvernanceRepository $formulaireDeGouvernanceRepository)
     {
         parent::__construct($formulaireDeGouvernanceRepository);
     }

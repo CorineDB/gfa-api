@@ -10,7 +10,7 @@ use App\Repositories\enquetes_de_gouvernance\OptionDeReponseGouvernanceRepositor
 use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelRepository;
 use App\Repositories\enquetes_de_gouvernance\TypeDeGouvernanceFactuelRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\FormulaireDeGouvernanceServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\FormulaireDeGouvernanceServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;

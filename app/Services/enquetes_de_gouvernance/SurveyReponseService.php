@@ -8,7 +8,7 @@ use App\Models\UniteeDeGestion;
 use App\Repositories\enquetes_de_gouvernance\SurveyReponseRepository;
 use App\Repositories\enquetes_de_gouvernance\SurveyRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\SurveyReponseServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\SurveyReponseServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
 use Illuminate\Support\Str;
