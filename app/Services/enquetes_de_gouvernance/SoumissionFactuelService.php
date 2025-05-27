@@ -105,7 +105,7 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     throw new Exception("Formulaire de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                 }
 
-                $attributs = array_merge($attributs, ['formulaireDeGouvernanceId' => $formulaireDeGouvernance->id]);
+                $attributs = array_merge($attributs, ['formulaireFactuelId' => $formulaireDeGouvernance->id]);
             }
 
             if (isset($attributs['organisationId'])) {
@@ -127,23 +127,11 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
-            if ($formulaireDeGouvernance->type == 'factuel') {
-
                 if (($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut) {
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                 }
 
-                $soumission  = $this->repository->getInstance()->where('type', 'factuel')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->first();
-            } else {
-
-                $evaluationOrganisation = $evaluationDeGouvernance->organisations($organisation->id)->first();
-
-                if ($evaluationDeGouvernance->soumissionsDePerception($organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants) {
-                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
-                }
-
-                $soumission  = $this->repository->getInstance()->where('type', 'perception')->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDeGouvernanceId", $formulaireDeGouvernance->id)->where('identifier_of_participant', $attributs['identifier_of_participant'])->first();
-            }
+                $soumission  = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireFactuelId", $formulaireDeGouvernance->id)->first();
 
             if ($soumission == null) {
                 $soumission = $this->repository->create($attributs);
@@ -154,12 +142,6 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                 $soumission->fill($attributs);
                 $soumission->save();
             }
-
-            $soumission->refresh();
-
-            $soumission->type = $soumission->formulaireDeGouvernance->type;
-
-            $soumission->save();
 
             if (isset($attributs['factuel']) && !empty($attributs['factuel'])) {
                 $soumission->fill($attributs['factuel']);
@@ -191,10 +173,10 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                     //$pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
 
                     if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
-                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'questionId' => $questionDeGouvernance->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $pivot->point, 'preuveIsRequired' => $pivot->preuveIsRequired]));
+                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'questionId' => $questionDeGouvernance->id, 'programmeId' => $programme->id, 'point' => $pivot->point, 'preuveIsRequired' => $pivot->preuveIsRequired]));
                     } else {
                         unset($item['questionId']);
-                        $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'indicateur', 'programmeId' => $programme->id, 'point' => $pivot->point, 'preuveIsRequired' => $pivot->preuveIsRequired]));
+                        $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'programmeId' => $programme->id, 'point' => $pivot->point, 'preuveIsRequired' => $pivot->preuveIsRequired]));
                         $reponseDeLaCollecte->save();
                     }
 
@@ -216,31 +198,9 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
                         }
                     }
                 }
-            } else if (isset($attributs['perception']) && !empty($attributs['perception'])) {
-                $soumission->fill($attributs['perception']);
-                $soumission->save();
-                foreach ($attributs['perception']['response_data'] as $key => $item) {
-
-                    if (!(($questionDeGouvernance = app(QuestionDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id)) {
-                        throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
-                    }
-
-                    //$option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
-                    $option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId']);
-
-                    if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
-
-                    if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
-                        $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'questionId' => $questionDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
-                    } else {
-                        unset($item['questionId']);
-                        $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDeGouvernanceId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $option->formulaires_de_gouvernance()->wherePivot("formulaireDeGouvernanceId", $soumission->formulaireDeGouvernance->id)->first()->pivot->point]));
-                        $reponseDeLaCollecte->save();
-                    }
-                }
             }
 
-            if (($soumission->formulaireDeGouvernance->type == 'factuel' && $soumission->comite_members !== null) || ($soumission->formulaireDeGouvernance->type == 'perception' && $soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null)) {
+            if ($soumission->comite_members !== null) {
 
                 $soumission->refresh();
 

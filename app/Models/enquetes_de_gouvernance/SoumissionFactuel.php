@@ -20,7 +20,7 @@ class SoumissionFactuel extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('submitted_at', 'statut', 'comite_members', 'submittedBy', 'evaluationId', 'formulaireDeGouvernanceId', 'organisationId', 'programmeId');
+    protected $fillable = array('submitted_at', 'statut', 'comite_members', 'submittedBy', 'evaluationId', 'formulaireFactuelId', 'organisationId', 'programmeId');
 
     protected $casts = [
         "comite_members" => "json",
@@ -75,7 +75,7 @@ class SoumissionFactuel extends Model
 
     public function formulaireDeGouvernance()
     {
-        return $this->belongsTo(FormulaireDeGouvernance::class, 'formulaireDeGouvernanceId');
+        return $this->belongsTo(FormulaireFactuelDeGouvernance::class, 'formulaireFactuelId');
     }
 
     public function authoredBy()
@@ -95,7 +95,7 @@ class SoumissionFactuel extends Model
 
     public function reponses_de_la_collecte()
     {
-        return $this->hasMany(ReponseDeLaCollecte::class, 'soumissionId');
+        return $this->hasMany(ReponseDeLaCollecteFactuel::class, 'soumissionId');
     }
 
     public function getPourcentageEvolutionAttribute()

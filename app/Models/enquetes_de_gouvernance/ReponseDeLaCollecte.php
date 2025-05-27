@@ -2,6 +2,9 @@
 
 namespace App\Models\enquetes_de_gouvernance;
 
+use App\Models\Fichier;
+use App\Models\OptionDeReponse;
+use App\Models\Programme;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

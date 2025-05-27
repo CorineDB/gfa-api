@@ -34,7 +34,6 @@ class ReponseDeLaCollecteDePerception extends Model
 
             DB::beginTransaction();
             try {
-                $reponse_de_la_collecte->preuves_de_verification()->delete();
 
                 DB::commit();
             } catch (\Throwable $th) {
@@ -44,17 +43,7 @@ class ReponseDeLaCollecteDePerception extends Model
             }
         });
     }
-
-    /**
-     * Get the source de verification associated with the reponse de la collecte.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function source_de_verification()
-    {
-        return $this->belongsTo(SourceDeVerification::class, 'sourceDeVerificationId');
-    }
-
+    
     public function soumission()
     {
         return $this->belongsTo(SoumissionDePerception::class, 'soumissionId');
