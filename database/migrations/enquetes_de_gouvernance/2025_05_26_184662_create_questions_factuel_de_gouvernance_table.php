@@ -21,7 +21,7 @@ class CreateQuestionsFactuelDeGouvernanceTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('categorieFactuelDeGouvernanceId')->unsigned();
-            $table->foreign('categorieFactuelDeGouvernanceId')->references('id')->on('categories_factuel_de_gouvernance')
+            $table->foreign('categorieFactuelDeGouvernanceId', 'qfg_cat_fk')->references('id')->on('categories_factuel_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->bigInteger('indicateurFactuelDeGouvernanceId')->unsigned();

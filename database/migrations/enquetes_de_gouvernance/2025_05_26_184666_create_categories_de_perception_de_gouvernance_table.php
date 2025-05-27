@@ -18,13 +18,13 @@ class CreateCategoriesPerceptionDeGouvernanceTable extends Migration
 
             $table->integer('position')->default(0);
             $table->bigInteger('categorieDePerceptionDeGouvernanceId')->nullable()->unsigned();
-            $table->foreign('categorieDePerceptionDeGouvernanceId')->references('id')->on('categories_de_perception_de_gouvernance')
+            $table->foreign('categorieDePerceptionDeGouvernanceId', 'qdpg_cat_fk')->references('id')->on('categories_de_perception_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
             $table->morphs('categorieable', 'categorieDePerception');
 
             $table->bigInteger('formulaireDePerceptionId')->nullable()->unsigned();
-            $table->foreign('formulaireDePerceptionId')->references('id')->on('formulaires_de_perception_de_gouvernance')
+            $table->foreign('formulaireDePerceptionId', 'fdpcat_formulaire_foreign')->references('id')->on('formulaires_de_perception_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
