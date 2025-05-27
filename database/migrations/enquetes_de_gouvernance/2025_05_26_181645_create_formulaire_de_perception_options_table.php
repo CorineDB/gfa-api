@@ -27,7 +27,7 @@ class CreateFormulaireDePerceptionOptionsTable extends Migration
                 ->onUpdate('cascade');
 
             $table->bigInteger('formulaireDePerceptionId')->unsigned();
-            $table->foreign('formulaireDePerceptionId')->references('id')->on('formulaires_de_perception_de_gouvernance')
+            $table->foreign('formulaireDePerceptionId', 'fdpopt_formulaire_foreign')->references('id')->on('formulaires_de_perception_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
@@ -36,8 +36,7 @@ class CreateFormulaireDePerceptionOptionsTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->unique(['point', 'optionId', 'formulaireDePerceptionId', 'programmeId'],
-            'fdpopt_point_option_formulaire_programme_unique');
+            $table->unique(['point', 'optionId', 'formulaireDePerceptionId', 'programmeId'], 'fdpopt_point_option_formulaire_programme_unique');
             $table->timestamps();
             $table->softDeletes();
         });
