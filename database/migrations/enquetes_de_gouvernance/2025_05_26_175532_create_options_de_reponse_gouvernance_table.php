@@ -23,7 +23,7 @@ class CreateOptionsDeReponseGouvernanceTable extends Migration
             $table->foreign('programmeId')->references('id')->on('programmes')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-            $table->unique(['libelle', 'slug', 'type', 'programmeId']);
+            $table->unique(['libelle', 'slug', 'programmeId']);
             $table->timestamps();
             $table->softDeletes();
         });
