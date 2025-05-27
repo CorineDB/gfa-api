@@ -36,7 +36,8 @@ class CreateFormulaireDePerceptionOptionsTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->unique(['point', 'optionId', 'formulaireDePerceptionId', 'programmeId']);
+            $table->unique(['point', 'optionId', 'formulaireDePerceptionId', 'programmeId'],
+            'fdpopt_point_option_formulaire_programme_unique');
             $table->timestamps();
             $table->softDeletes();
         });

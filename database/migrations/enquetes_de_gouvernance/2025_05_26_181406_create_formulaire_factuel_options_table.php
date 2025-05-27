@@ -36,7 +36,8 @@ class CreateFormulaireFactuelOptionsTable extends Migration
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
 
-            $table->unique(['point', 'optionId', 'formulaireFactuelId', 'programmeId']);
+            $table->unique(['point', 'optionId', 'formulaireFactuelId', 'programmeId'],
+            'ffopt_point_option_formulaire_programme_unique');
             $table->timestamps();
             $table->softDeletes();
         });
