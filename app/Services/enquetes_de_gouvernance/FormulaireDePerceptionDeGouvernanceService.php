@@ -200,7 +200,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point']];
+                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
 
                 }
 
@@ -216,6 +216,8 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                         {
                             throw new Exception( "Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                         }
+
+                        dd($principeDeGouvernance);
 
                         $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->whereNull("categorieDePerceptionDeGouvernanceId")->where('programmeId', $programmeId)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
                             $query->where('id', $formulaireDeGouvernance->id)->where('programmeId', $programmeId);

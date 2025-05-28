@@ -65,15 +65,7 @@ class PrincipeDeGouvernancePerception extends Model
      */
     public function categories_de_gouvernance($annee_exercice = null)
     {
-        $categories_de_gouvernance = $this->morphMany(CategorieDePerceptionDeGouvernance::class, 'categorieable');
-
-        if($annee_exercice){
-            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
-                $query->where('annee_exercice', $annee_exercice);
-            });
-        }
-
-        return $categories_de_gouvernance;
+        return $this->morphMany(CategorieDePerceptionDeGouvernance::class, 'categorieable');
     }
 
     /**
