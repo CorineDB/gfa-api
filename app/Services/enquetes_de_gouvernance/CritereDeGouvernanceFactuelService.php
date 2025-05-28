@@ -4,7 +4,7 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\CriteresDeGouvernanceResource;
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
-use App\Repositories\enquetes_de_gouvernance\CritereDeGouvernanceFactuelRepository as CritereDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\CritereDeGouvernanceFactuelRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\enquetes_de_gouvernance\CritereDeGouvernanceFactuelServiceInterface;
 use Exception;
@@ -28,11 +28,11 @@ class CritereDeGouvernanceFactuelService extends BaseService implements CritereD
     protected $repository;
 
     /**
-     * CritereDeGouvernanceRepository constructor.
+     * CritereDeGouvernanceFactuelRepository constructor.
      *
-     * @param CritereDeGouvernanceRepository $critereDeGouvernanceRepository
+     * @param CritereDeGouvernanceFactuelRepository $critereDeGouvernanceRepository
      */
-    public function __construct(CritereDeGouvernanceRepository $critereDeGouvernanceRepository)
+    public function __construct(CritereDeGouvernanceFactuelRepository $critereDeGouvernanceRepository)
     {
         parent::__construct($critereDeGouvernanceRepository);
     }
