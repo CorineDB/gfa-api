@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\enquetes_de_gouvernance;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\enquetes_de_gouvernance\questions_operationnelle\StoreRequest;
-use App\Http\Requests\enquetes_de_gouvernance\questions_operationnelle\UpdateRequest;
+use App\Http\Requests\enquetes_de_gouvernance\options_de_reponse_gouvernance\StoreRequest;
+use App\Http\Requests\enquetes_de_gouvernance\options_de_reponse_gouvernance\UpdateRequest;
 use Core\Services\Interfaces\enquetes_de_gouvernance\OptionDeReponseGouvernanceServiceInterface;
 
 class OptionDeReponseGouvernanceController extends Controller
