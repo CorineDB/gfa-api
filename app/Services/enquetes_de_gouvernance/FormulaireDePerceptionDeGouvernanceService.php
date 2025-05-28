@@ -3,7 +3,6 @@
 namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\enquetes_de_gouvernance\formulaires_de_gouvernance_de_perception\ListFormulaireDeGouvernanceDePerceptionResource;
-use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Repositories\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\QuestionOperationnelleRepository;
 use App\Repositories\enquetes_de_gouvernance\OptionDeReponseGouvernanceRepository;
@@ -68,7 +67,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
         try
         {
             $filtres = array_merge($filtres, ['programmeId__eq' => auth()->user()->programmeId]);
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($this->repository->filterBy($filtres, $columns, $relations)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ListFormulaireDeGouvernanceDePerceptionResource::collection($this->repository->filterBy($filtres, $columns, $relations)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -83,7 +82,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
         {
             if(!is_object($formulaireDeGouvernance) && !($formulaireDeGouvernance = $this->repository->findById($formulaireDeGouvernance))) throw new Exception("Formulaire de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new FormulairesDeGouvernanceResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new ListFormulaireDeGouvernanceDePerceptionResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -278,7 +277,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new FormulairesDeGouvernanceResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ListFormulaireDeGouvernanceDePerceptionResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
         } catch (\Throwable $th) {
 
