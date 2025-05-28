@@ -114,7 +114,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point']];
+                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
                 }
 
                 $formulaireDeGouvernance->options_de_reponse()->attach($options);
