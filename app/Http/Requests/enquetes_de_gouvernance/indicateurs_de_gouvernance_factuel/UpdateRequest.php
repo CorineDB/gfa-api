@@ -25,13 +25,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->indicateur_de_gouvernance_factuel))
+        if(is_string($this->indicateur_factuel))
         {
-            $this->indicateur_de_gouvernance_factuel = IndicateurDeGouvernanceFactuel::findByKey($this->indicateur_de_gouvernance_factuel);
+            $this->indicateur_factuel = IndicateurDeGouvernanceFactuel::findByKey($this->indicateur_factuel);
         }
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('indicateurs_de_gouvernance_factuel', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->indicateur_de_gouvernance_factuel)->whereNull('deleted_at')],
+            'nom'  => ['sometimes','max:255', Rule::unique('indicateurs_de_gouvernance_factuel', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->indicateur_factuel)->whereNull('deleted_at')],
             'description' => 'sometimes|nullable|max:255'
         ];
     }
