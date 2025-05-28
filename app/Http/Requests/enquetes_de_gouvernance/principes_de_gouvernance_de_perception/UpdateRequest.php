@@ -25,13 +25,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->principe_de_gouvernance_de_perception))
+        if(is_string($this->principe_de_gouvernance_perception))
         {
-            $this->principe_de_gouvernance_de_perception = PrincipeDeGouvernancePerception::findByKey($this->principe_de_gouvernance_de_perception);
+            $this->principe_de_gouvernance_perception = PrincipeDeGouvernancePerception::findByKey($this->principe_de_gouvernance_perception);
         }
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('principes_de_gouvernance_de_perception', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->principe_de_gouvernance_de_perception)->whereNull('deleted_at')],
+            'nom'  => ['sometimes','max:255', Rule::unique('principes_de_gouvernance_de_perception', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->principe_de_gouvernance_perception)->whereNull('deleted_at')],
             'description' => 'sometimes|nullable|max:255'
         ];
     }
