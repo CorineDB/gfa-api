@@ -1131,9 +1131,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                 });
 
-                Route::apiResource('formulaires-de-gouvernance-de-perception', 'FormulaireDePerceptionDeGouvernanceController')->names('formulaires-de-gouvernance-de-perception')
+                Route::apiResource('formulaires-de-perception-de-gouvernance', 'FormulaireDePerceptionDeGouvernanceController')->names('formulaires-de-perception-de-gouvernance')
                     ->parameters([
-                        'formulaires-de-gouvernance-de-perception' => 'formulaire_de_perception',
+                        'formulaires-de-perception-de-gouvernance' => 'formulaire_de_perception',
                     ]);
             });
         });
