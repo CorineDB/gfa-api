@@ -2,11 +2,10 @@
 
 namespace App\Http\Requests\enquetes_de_gouvernance\questions_operationnelle;
 
-use App\Models\enquetes_de_gouvernance\QuestionOperationnelle;
-use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRequest extends FormRequest
+class StoreRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -15,7 +14,7 @@ class UpdateRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasPermissionTo("modifier-un-indicateur-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
+        return request()->user()->hasPermissionTo("creer-un-indicateur-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -25,22 +24,17 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->indicateur_factuel))
-        {
-            $this->indicateur_factuel = QuestionOperationnelle::findByKey($this->indicateur_factuel);
-        }
-
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('questions_operationnelle', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->indicateur_factuel)->whereNull('deleted_at')],
-            'description' => 'sometimes|nullable|max:255'
+            'nom'           => ['required', 'string', Rule::unique('questions_operationnelle', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'description' => 'nullable|max:255'
         ];
     }
 
     /**
-    * Get the error messages for the defined validation rules.
-    *
-    * @return array
-    */
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [

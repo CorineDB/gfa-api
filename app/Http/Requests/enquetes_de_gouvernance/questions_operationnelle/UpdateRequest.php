@@ -25,13 +25,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->indicateur_factuel))
+        if(is_string($this->question_operationnelle))
         {
-            $this->indicateur_factuel = QuestionOperationnelle::findByKey($this->indicateur_factuel);
+            $this->question_operationnelle = QuestionOperationnelle::findByKey($this->question_operationnelle);
         }
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('questions_operationnelle', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->indicateur_factuel)->whereNull('deleted_at')],
+            'nom'  => ['sometimes','max:255', Rule::unique('questions_operationnelle', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->question_operationnelle)->whereNull('deleted_at')],
             'description' => 'sometimes|nullable|max:255'
         ];
     }
