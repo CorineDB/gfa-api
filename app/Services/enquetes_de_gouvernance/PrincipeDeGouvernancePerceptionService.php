@@ -4,7 +4,7 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipesDeGouvernanceResource;
-use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionRepository as PrincipeDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionServiceInterface;
 use Exception;
@@ -28,11 +28,11 @@ class PrincipeDeGouvernancePerceptionService extends BaseService implements Prin
     protected $repository;
 
     /**
-     * PrincipeDeGouvernanceRepository constructor.
+     * PrincipeDeGouvernancePerceptionRepository constructor.
      *
-     * @param PrincipeDeGouvernanceRepository $principeDeGouvernanceRepository
+     * @param PrincipeDeGouvernancePerceptionRepository $principeDeGouvernanceRepository
      */
-    public function __construct(PrincipeDeGouvernanceRepository $principeDeGouvernanceRepository)
+    public function __construct(PrincipeDeGouvernancePerceptionRepository $principeDeGouvernanceRepository)
     {
         parent::__construct($principeDeGouvernanceRepository);
     }
