@@ -1098,6 +1098,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     ->parameters([
                         'principes-de-gouvernance-factuel' => 'principe_de_gouvernance_factuel',
                     ]);
+
+                Route::apiResource('criteres-de-gouvernance-factuel', 'CritereDeGouvernanceFactuelController')->names('criteres-de-gouvernance-factuel')
+                    ->parameters([
+                        'criteres-de-gouvernance-factuel' => 'critere_de_gouvernance_factuel',
+                    ]);
             });
         });
     });

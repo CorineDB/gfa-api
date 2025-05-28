@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers\enquetes_de_gouvernance;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\enquetes_de_gouvernance\principes_de_gouvernance_factuel\StoreRequest;
-use App\Http\Requests\enquetes_de_gouvernance\principes_de_gouvernance_factuel\UpdateRequest;
+use App\Http\Requests\enquetes_de_gouvernance\criteres_de_gouvernance_factuel\StoreRequest;
+use App\Http\Requests\enquetes_de_gouvernance\criteres_de_gouvernance_factuel\UpdateRequest;
 use Core\Services\Interfaces\enquetes_de_gouvernance\CritereDeGouvernanceFactuelServiceInterface;
 
 class CritereDeGouvernanceFactuelController extends Controller
@@ -22,11 +22,12 @@ class CritereDeGouvernanceFactuelController extends Controller
      */
     public function __construct(CritereDeGouvernanceFactuelServiceInterface $critereDeGouvernanceFactuelServiceInterface)
     {
-        $this->middleware('permission:voir-un-principe-de-gouvernance')->only(['index', 'show']);
-        $this->middleware('permission:modifier-un-principe-de-gouvernance')->only(['update']);
-        $this->middleware('permission:creer-un-principe-de-gouvernance')->only(['store']);
-        $this->middleware('permission:supprimer-un-principe-de-gouvernance')->only(['destroy']);
-        $this->middleware('permission:voir-un-principe-de-gouvernance')->only(['principes']);
+        $this->middleware('permission:voir-un-critere-de-gouvernance')->only(['index', 'show']);
+        $this->middleware('permission:modifier-un-critere-de-gouvernance')->only(['update']);
+        $this->middleware('permission:creer-un-critere-de-gouvernance')->only(['store']);
+        $this->middleware('permission:supprimer-un-critere-de-gouvernance')->only(['destroy']);
+        $this->middleware('permission:voir-un-indicateur-de-gouvernance')->only(['indicateurs']);
+
         $this->critereDeGouvernanceFactuelService = $critereDeGouvernanceFactuelServiceInterface;
     }
 
@@ -85,18 +86,6 @@ class CritereDeGouvernanceFactuelController extends Controller
         return $this->critereDeGouvernanceFactuelService->deleteById($id);
     }
 
-
-    /**
-     * Criteres of a principe de gouvernance.
-     *
-     * @param  String  $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function criteres($id)
-    {
-        return $this->critereDeGouvernanceFactuelService->criteres($id);
-    }
-
     /**
      * Indicateurs of a principe de gouvernance.
      *
@@ -106,16 +95,5 @@ class CritereDeGouvernanceFactuelController extends Controller
     public function indicateurs($id)
     {
         return $this->critereDeGouvernanceFactuelService->indicateurs($id);
-    }
-
-    /**
-     * Formulaire de l'outil factuel
-     *
-     * @param  String  $progammeId
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function formulaire_factuel($enqueteId = null, $organisationId = null)
-    {
-        return $this->critereDeGouvernanceFactuelService->formulaire_factuel($enqueteId, $organisationId);
     }
 }

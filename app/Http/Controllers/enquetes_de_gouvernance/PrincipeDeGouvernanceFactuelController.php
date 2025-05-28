@@ -26,7 +26,6 @@ class PrincipeDeGouvernanceFactuelController extends Controller
         $this->middleware('permission:modifier-un-principe-de-gouvernance')->only(['update']);
         $this->middleware('permission:creer-un-principe-de-gouvernance')->only(['store']);
         $this->middleware('permission:supprimer-un-principe-de-gouvernance')->only(['destroy']);
-        $this->middleware('permission:voir-un-principe-de-gouvernance')->only(['principes']);
         $this->principeDeGouvernanceFactuelService = $principeDeGouvernanceFactuelServiceInterface;
     }
 
