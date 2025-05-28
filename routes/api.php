@@ -1118,6 +1118,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     ->parameters([
                         'questions-operationnelle' => 'question_operationnelle',
                     ]);
+
+                Route::apiResource('options-de-reponse-gouvernance', 'OptionDeRepoonseGouvernanceController')->names('options-de-reponse-gouvernance')
+                    ->parameters([
+                        'options-de-reponse-gouvernance' => 'option_de_reponse',
+                    ]);
             });
         });
     });
