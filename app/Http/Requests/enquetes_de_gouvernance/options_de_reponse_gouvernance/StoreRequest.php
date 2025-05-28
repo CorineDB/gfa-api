@@ -26,7 +26,9 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom'           => ['required', 'string', Rule::unique('options_de_reponse_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
-            'description' => 'nullable|max:255'
+
+            'type'          => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
+            'description'   => 'nullable|max:255'
         ];
     }
 

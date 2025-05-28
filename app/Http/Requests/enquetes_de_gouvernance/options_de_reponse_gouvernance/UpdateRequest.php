@@ -32,6 +32,8 @@ class UpdateRequest extends FormRequest
 
         return [
             'nom'  => ['sometimes','max:255', Rule::unique('options_de_reponse_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->option_de_reponse)->whereNull('deleted_at')],
+
+            'type'          => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description' => 'sometimes|nullable|max:255'
         ];
     }
