@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\enquetes_de_gouvernance\formulaires_de_gouvernance_de_perception;
 
+use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernancePerception;
 use App\Models\enquetes_de_gouvernance\QuestionOperationnelle;
@@ -31,7 +32,7 @@ class UpdateRequest extends FormRequest
     {
         if(is_string($this->formulaire_de_perception))
         {
-            $this->formulaire_de_perception = PrincipeDeGouvernancePerception::findByKey($this->formulaire_de_perception);
+            $this->formulaire_de_perception = FormulaireDePerceptionDeGouvernance::findByKey($this->formulaire_de_perception);
         }
 
         return [
