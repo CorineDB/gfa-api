@@ -1108,6 +1108,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     ->parameters([
                         'criteres-de-gouvernance-factuel' => 'critere_de_gouvernance_factuel',
                     ]);
+
+                Route::apiResource('indicateurs-de-gouvernance-factuel', 'IndicateurDeGouvernanceFactuelController')->names('indicateurs-de-gouvernance-factuel')
+                    ->parameters([
+                        'indicateurs-de-gouvernance-factuel' => 'indicateur_de_gouvernance_factuel',
+                    ]);
             });
         });
     });

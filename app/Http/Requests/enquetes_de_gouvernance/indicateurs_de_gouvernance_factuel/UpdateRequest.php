@@ -2,10 +2,11 @@
 
 namespace App\Http\Requests\enquetes_de_gouvernance\indicateurs_de_gouvernance_factuel;
 
-use Illuminate\Validation\Rule;
+use App\Models\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuel;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
-class StoreRequest extends FormRequest
+class UpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -14,7 +15,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasPermissionTo("creer-un-principe-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
+        return request()->user()->hasPermissionTo("modifier-un-indicateur-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -24,18 +25,22 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'nom'           => ['required', 'string', Rule::unique('indicateurs_de_gouvernance_factuel', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+        if(is_string($this->indicateur_de_gouvernance_factuel))
+        {
+            $this->indicateur_de_gouvernance_factuel = IndicateurDeGouvernanceFactuel::findByKey($this->indicateur_de_gouvernance_factuel);
+        }
 
-            'description' => 'nullable|max:255'
+        return [
+            'nom'  => ['sometimes','max:255', Rule::unique('indicateurs_de_gouvernance_factuel', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->indicateur_de_gouvernance_factuel)->whereNull('deleted_at')],
+            'description' => 'sometimes|nullable|max:255'
         ];
     }
 
     /**
-     * Get the error messages for the defined validation rules.
-     *
-     * @return array
-     */
+    * Get the error messages for the defined validation rules.
+    *
+    * @return array
+    */
     public function messages()
     {
         return [
