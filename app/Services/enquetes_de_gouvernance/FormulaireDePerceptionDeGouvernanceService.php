@@ -2,7 +2,7 @@
 
 namespace App\Services\enquetes_de_gouvernance;
 
-use App\Http\Resources\formulaires_de_gouvernance_de_perception\ListFormulaireDeGouvernanceDePerceptionResource;
+use App\Http\Resources\enquetes_de_gouvernance\formulaires_de_gouvernance_de_perception\ListFormulaireDeGouvernanceDePerceptionResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Repositories\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\QuestionOperationnelleRepository;
@@ -45,14 +45,16 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
     {
         try
         {
+            $programme = Auth::user()->programme;
+
             if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == 'App\\Models\\Administrateur')){
-                $formulaires_de_gouvernance = $this->repository->all();
+                $formulaires_de_perception_de_gouvernance = $programme->formulaires_de_perception_gouvernance;
             }
             else{
-                $formulaires_de_gouvernance = Auth::user()->programme->formulaires_de_gouvernance;
+                $formulaires_de_perception_de_gouvernance = $programme->formulaires_de_perception_gouvernance;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ListFormulaireDeGouvernanceDePerceptionResource::collection($formulaires_de_perception_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
