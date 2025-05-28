@@ -1093,6 +1093,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::get('{type_de_gouvernance_factuel}/principes-de-gouvernance', 'principes')->name('principes')->middleware('permission:voir-un-principe-de-gouvernance');
                     });
                 });
+
+                Route::apiResource('principes-de-gouvernance-factuel', 'PrincipeDeGouvernanceFactuelController')->names('principes-de-gouvernance-factuel')
+                    ->parameters([
+                        'principes-de-gouvernance-factuel' => 'principe_de_gouvernance_factuel',
+                    ]);
             });
         });
     });
