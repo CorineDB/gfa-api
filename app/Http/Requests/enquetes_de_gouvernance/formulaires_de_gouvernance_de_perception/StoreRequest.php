@@ -31,11 +31,9 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom'           => ['required', 'string', Rule::unique('formulaires_de_perception_de_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'libelle'           => ['required', 'string', Rule::unique('formulaires_de_perception_de_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'description' => 'nullable|max:255',
-
-            'lien'             => 'nullable|string',
 
             'perception' => ["required","array", "min:2"],
             'perception.options_de_reponse' => ['required', "array", "min:2"],
