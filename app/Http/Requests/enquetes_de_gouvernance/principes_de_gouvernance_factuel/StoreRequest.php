@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\enquetes_de_gouvernance\indicateurs_de_gouvernance_factuel;
+namespace App\Http\Requests\enquetes_de_gouvernance\principes_de_gouvernance_factuel;
 
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom'           => ['required', 'string', Rule::unique('indicateurs_de_gouvernance_factuel', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'nom'           => ['required', 'string', Rule::unique('principes_de_gouvernance_factuel', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'description' => 'nullable|max:255'
         ];
