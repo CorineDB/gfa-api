@@ -81,7 +81,7 @@ class FormulaireDePerceptionDeGouvernance extends Model
 
     public function options_de_reponse()
     {
-        return $this->belongsToMany(OptionDeReponseGouvernance::class,'formulaire_de_perception_options', 'formulaireDePerceptionId', 'optionId')->withPivot(["id", "point", "preuveIsRequired", "sourceIsRequired", "descriptionIsRequired"]);
+        return $this->belongsToMany(OptionDeReponseGouvernance::class,'formulaire_de_perception_options', 'formulaireDePerceptionId', 'optionId')->withPivot(["id", "point", "preuveIsRequired", "sourceIsRequired", "descriptionIsRequired", 'programmeId']);
     }
 
     public function programme()
