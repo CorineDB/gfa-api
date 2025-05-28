@@ -1099,9 +1099,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         'principes-de-gouvernance-factuel' => 'principe_de_gouvernance_factuel',
                     ]);
 
-                Route::apiResource('principes-de-gouvernance-perception', 'PrincipeDeGouvernancePerceptionController')->names('principes-de-gouvernance-perception')
+                Route::apiResource('principes-de-gouvernance-de-perception', 'PrincipeDeGouvernancePerceptionController')->names('principes-de-gouvernance-de-perception')
                     ->parameters([
-                        'principes-de-gouvernance-perception' => 'principe_de_gouvernance_perception',
+                        'principes-de-gouvernance-de-perception' => 'principe_de_perception',
                     ]);
 
                 Route::apiResource('criteres-de-gouvernance-factuel', 'CritereDeGouvernanceFactuelController')->names('criteres-de-gouvernance-factuel')
