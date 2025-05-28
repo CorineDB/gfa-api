@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\enquetes_de_gouvernance\CritereDeGouvernanceFactuel;
+use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
+use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
 use App\Models\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuel;
 use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel;
@@ -891,6 +893,22 @@ class Programme extends Model
     public function types_de_gouvernance_factuel()
     {
         return $this->hasMany(TypeDeGouvernanceFactuel::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des formulaires factuel de gouvernance du programme
+     */
+    public function formulaire_factuel_de_gouvernance()
+    {
+        return $this->hasMany(FormulaireFactuelDeGouvernance::class, 'programmeId');
+    }
+
+    /**
+     * Charger la liste des formulaires de perception de gouvernance du programme
+     */
+    public function formulaire_de_perception_gouvernance()
+    {
+        return $this->hasMany(FormulaireDePerceptionDeGouvernance::class, 'programmeId');
     }
 
     public function soumissions_factuel()
