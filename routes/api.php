@@ -1123,6 +1123,15 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     ->parameters([
                         'options-de-reponse-gouvernance' => 'option_de_reponse',
                     ]);
+
+                Route::group(['prefix' =>  'options-de-reponse-gouvernance', 'as' => 'options-de-reponse-gouvernance.'], function () {
+
+                    Route::controller('OptionDeReponseGouvernanceController')->group(function () {
+
+                        Route::get('{option_de_reponse}/options-factuel', 'options_factuel')->name('options-factuel')->middleware('permission:voir-une-option-de-reponse');
+                        Route::get('{option_de_reponse}/options-de-perception', 'options_de_perception')->name('options-de-perception')->middleware('permission:voir-une-option-de-reponse');
+                    });
+                });
             });
         });
     });

@@ -55,6 +55,55 @@ class OptionDeReponseGouvernanceService extends BaseService implements OptionDeR
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+    /**
+     * Liste des options de gouvernance factuel
+     *
+     * return JsonResponse
+     */
+    public function options_factuel(array $columns = ['*'], array $relations = []): JsonResponse
+    {
+        try
+        {
+            $optionsDeReponse = collect([]);
+
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $optionsDeReponse = Auth::user()->programme->options_de_reponse_factuel_gouvernance;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OptionsDeReponseResource::collection($optionsDeReponse), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des options de gouvernance perception
+     *
+     * return JsonResponse
+     */
+    public function options_de_perception(array $columns = ['*'], array $relations = []): JsonResponse
+    {
+        try
+        {
+            $optionsDeReponse = collect([]);
+
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
+                //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
+                $optionsDeReponse = Auth::user()->programme->options_de_reponse_de_perception_gouvernance;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OptionsDeReponseResource::collection($optionsDeReponse), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public function findById($optionDeReponse, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
