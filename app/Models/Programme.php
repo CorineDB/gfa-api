@@ -898,7 +898,7 @@ class Programme extends Model
     /**
      * Charger la liste des formulaires factuel de gouvernance du programme
      */
-    public function formulaire_factuel_de_gouvernance()
+    public function formulaires_factuel_de_gouvernance()
     {
         return $this->hasMany(FormulaireFactuelDeGouvernance::class, 'programmeId');
     }
@@ -906,7 +906,7 @@ class Programme extends Model
     /**
      * Charger la liste des formulaires de perception de gouvernance du programme
      */
-    public function formulaire_de_perception_gouvernance()
+    public function formulaires_de_perception_gouvernance()
     {
         return $this->hasMany(FormulaireDePerceptionDeGouvernance::class, 'programmeId');
     }
