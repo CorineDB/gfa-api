@@ -31,12 +31,12 @@ class QuestionDePerceptionDeGouvernance extends Model
 
     public function formulaire_de_gouvernance()
     {
-        return $this->belongsTo(FormulaireFactuelDeGouvernance::class, 'formulaireDePerceptionId');
+        return $this->belongsTo(FormulaireDePerceptionDeGouvernance::class, 'formulaireDePerceptionId');
     }
 
     public function categorie_de_gouvernance()
     {
-        return $this->belongsTo(CategorieFactuelDeGouvernance::class, 'categorieDePerceptionDeGouvernanceId');
+        return $this->belongsTo(CategorieDePerceptionDeGouvernance::class, 'categorieDePerceptionDeGouvernanceId');
     }
 
     public function question_operationnelle()

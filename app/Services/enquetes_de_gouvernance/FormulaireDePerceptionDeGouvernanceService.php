@@ -2,6 +2,7 @@
 
 namespace App\Services\enquetes_de_gouvernance;
 
+use App\Http\Resources\formulaires_de_gouvernance_de_perception\ListFormulaireDeGouvernanceDePerceptionResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Repositories\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\QuestionOperationnelleRepository;
@@ -160,7 +161,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new FormulairesDeGouvernanceResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ListFormulaireDeGouvernanceDePerceptionResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
         }
         catch (\Throwable $th) {

@@ -59,7 +59,9 @@ class FormulaireDePerceptionDeGouvernance extends Model
 
     public function categories_de_gouvernance()
     {
-        return $this->hasMany(CategorieDePerceptionDeGouvernance::class, 'formulaireDePerceptionId')->whereNull('categorieDePerceptionDeGouvernanceId');
+        return $this->hasMany(CategorieDePerceptionDeGouvernance::class, 'formulaireDePerceptionId')
+                    ->whereNull('categorieDePerceptionDeGouvernanceId')
+                    ->orderBy('position','asc');
     }
 
     public function all_categories_de_gouvernance()
@@ -102,5 +104,18 @@ class FormulaireDePerceptionDeGouvernance extends Model
         return $this->categories_de_gouvernance->map(function($categorie_de_gouvernance){
             return $categorie_de_gouvernance->categorieable;
         });
+    }
+
+    public function loadForm()
+    {
+        return $this->load([
+            'categories_de_gouvernance' => function ($query) {
+                $query->with([
+                    'questions_de_gouvernance' => function ($q) {
+                        $q->orderBy('position');
+                    }
+                ]);
+            }
+        ]);
     }
 }

@@ -35,11 +35,9 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'nom'  => ['sometimes','max:255', Rule::unique('formulaires_de_perception_de_gouvernance', 'nom')->where("programmeId", auth()->user()->programmeId)->ignore($this->formulaire_de_perception)->whereNull('deleted_at')],
+            'libelle'  => ['sometimes','max:255', Rule::unique('formulaires_de_perception_de_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->ignore($this->formulaire_de_perception)->whereNull('deleted_at')],
 
             'description' => 'nullable|max:255',
-
-            'lien'             => 'nullable|string',
 
             'perception' => ["sometimes","array", "min:2"],
             'perception.options_de_reponse' => ['sometimes', "array", "min:2"],
