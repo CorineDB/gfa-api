@@ -34,6 +34,8 @@ class UpdateRequest extends FormRequest
             $this->formulaire_de_perception = PrincipeDeGouvernancePerception::findByKey($this->formulaire_de_perception);
         }
 
+        dd($this->formulaire_de_perception);
+
         return [
             'libelle'  => ['sometimes','max:255', Rule::unique('formulaires_de_perception_de_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->ignore($this->formulaire_de_perception)->whereNull('deleted_at')],
 
