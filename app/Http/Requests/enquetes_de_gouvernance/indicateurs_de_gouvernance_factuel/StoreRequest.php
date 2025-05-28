@@ -14,7 +14,7 @@ class StoreRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasPermissionTo("creer-un-principe-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
+        return request()->user()->hasPermissionTo("creer-un-indicateur-de-gouvernance") || request()->user()->hasRole("unitee-de-gestion");
     }
 
     /**
@@ -26,7 +26,6 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom'           => ['required', 'string', Rule::unique('indicateurs_de_gouvernance_factuel', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
-
             'description' => 'nullable|max:255'
         ];
     }
