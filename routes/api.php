@@ -1130,6 +1130,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('options-de-reponse-gouvernance-de-perception', 'options_de_perception')->name('options-de-perception')->middleware('permission:voir-une-option-de-reponse');
 
                 });
+
+                Route::apiResource('formulaires-de-gouvernance-de-perception', 'PrincipeDeGouvernancePerceptionController')->names('formulaires-de-gouvernance-de-perception')
+                    ->parameters([
+                        'formulaires-de-gouvernance-de-perception' => 'formulaire_de_perception',
+                    ]);
             });
         });
     });
