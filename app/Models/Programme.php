@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\enquetes_de_gouvernance\CritereDeGouvernanceFactuel;
 use App\Models\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuel;
 use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel;
@@ -849,7 +850,7 @@ class Programme extends Model
      */
     public function criteres_de_gouvernance_factuel()
     {
-        return $this->hasMany(PrincipeDeGouvernanceFactuel::class, 'programmeId');
+        return $this->hasMany(CritereDeGouvernanceFactuel::class, 'programmeId');
     }
 
     /**
