@@ -9,7 +9,7 @@ use App\Http\Requests\enquetes_de_gouvernance\indicateurs_de_gouvernance_factuel
 use App\Http\Requests\enquetes_de_gouvernance\indicateurs_de_gouvernance_factuel\UpdateRequest;
 use Core\Services\Interfaces\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelServiceInterface;
 
-class IndicateurGouvernanceFactuelController extends Controller
+class IndicateurDeGouvernanceFactuelController extends Controller
 {
     /**
      * @var service
@@ -17,7 +17,7 @@ class IndicateurGouvernanceFactuelController extends Controller
     private $indicateurDeGouvernanceFactuelService;
 
     /**
-     * Instantiate a new IndicateurGouvernanceFactuelController instance.
+     * Instantiate a new IndicateurDeGouvernanceFactuelController instance.
      * @param IndicateurDeGouvernanceFactuelServiceInterface $indicateurDeGouvernanceFactuelServiceInterface
      */
     public function __construct(IndicateurDeGouvernanceFactuelServiceInterface $indicateurDeGouvernanceFactuelServiceInterface)
