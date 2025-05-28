@@ -17,7 +17,7 @@ class CritereDeGouvernanceFactuelController extends Controller
     private $critereDeGouvernanceFactuelService;
 
     /**
-     * Instantiate a new PrincipeDeGouvernanceFactuelController instance.
+     * Instantiate a new CritereDeGouvernanceFactuelController instance.
      * @param CritereDeGouvernanceFactuelServiceInterface $critereDeGouvernanceFactuelServiceInterface
      */
     public function __construct(CritereDeGouvernanceFactuelServiceInterface $critereDeGouvernanceFactuelServiceInterface)
@@ -55,7 +55,7 @@ class CritereDeGouvernanceFactuelController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel  $paye
+     * @param  \App\Models\enquetes_de_gouvernance\CritereDeGouvernanceFactuel  $paye
      * @return \Illuminate\Http\Response
      */
     public function show($id)
@@ -67,7 +67,7 @@ class CritereDeGouvernanceFactuelController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel  $paye
+     * @param  \App\Models\enquetes_de_gouvernance\CritereDeGouvernanceFactuel  $paye
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateRequest $request, $id)
@@ -78,7 +78,7 @@ class CritereDeGouvernanceFactuelController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel  $paye
+     * @param  \App\Models\enquetes_de_gouvernance\CritereDeGouvernanceFactuel  $paye
      * @return \Illuminate\Http\Response
      */
     public function destroy($id)
