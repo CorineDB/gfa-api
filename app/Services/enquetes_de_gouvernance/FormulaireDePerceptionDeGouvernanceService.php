@@ -180,9 +180,6 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
         try {
 
-
-            dd($formulaireDeGouvernance);
-
             if(!is_object($formulaireDeGouvernance) && !($formulaireDeGouvernance = $this->repository->findById($formulaireDeGouvernance))) throw new Exception("Cette option de reponse n'existe pas", 500);
 
             $programmeId = Auth::user()->programme->id;
