@@ -1114,9 +1114,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         'indicateurs-de-gouvernance-factuel' => 'indicateur_factuel',
                     ]);
 
-                Route::apiResource('questions_operationnelle', 'QuestionOperationnelleController')->names('questions_operationnelle')
+                Route::apiResource('questions-operationnelle', 'QuestionOperationnelleController')->names('questions-operationnelle')
                     ->parameters([
-                        'questions_operationnelle' => 'question_operationnelle',
+                        'questions-operationnelle' => 'question_operationnelle',
                     ]);
             });
         });
