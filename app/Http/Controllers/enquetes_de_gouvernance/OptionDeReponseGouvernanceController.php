@@ -84,4 +84,23 @@ class OptionDeReponseGouvernanceController extends Controller
     {
         return $this->optionDeReponseGouvernanceService->deleteById($id);
     }
+
+
+    /**
+     * Liste des options de gouvernance factuel
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function options_factuel(){
+        return $this->optionDeReponseGouvernanceService->options_factuel();
+    }
+
+    /**
+     * Liste des options de gouvernance perception
+     *
+     * return JsonResponse
+     */
+    public function options_de_perception(){
+        return $this->optionDeReponseGouvernanceService->options_de_perception();
+    }
 }

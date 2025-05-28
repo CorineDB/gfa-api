@@ -846,6 +846,22 @@ class Programme extends Model
     }
 
     /**
+     * Charger la liste des options de gouvernance factuel
+     */
+    public function options_de_reponse_factuel_gouvernance()
+    {
+        return $this->hasMany(OptionDeReponseGouvernance::class, 'programmeId')->where('type', 'factuel');
+    }
+
+    /**
+     * Charger la liste des options de gouvernance de perception
+     */
+    public function options_de_reponse_de_perception_gouvernance()
+    {
+        return $this->hasMany(OptionDeReponseGouvernance::class, 'programmeId')->where('type', 'perception');
+    }
+
+    /**
      * Charger la liste des indicateurs de tous les criteres de gouvernance
      */
     public function criteres_de_gouvernance_factuel()
