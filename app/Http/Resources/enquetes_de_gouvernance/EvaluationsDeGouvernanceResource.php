@@ -63,7 +63,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaire_factuel_de_gouvernance() ? $this->formulaire_factuel_de_gouvernance()->secure_id : null,
             'formulaire_de_perception_de_gouvernance' => $this->formulaire_de_perception_de_gouvernance() ? $this->formulaire_de_perception_de_gouvernance()->secure_id : null,
-            'formulaires_de_gouvernance' => [new ListFormulaireDeGouvernanceFactuelResource($this->formulaire_factuel_de_gouvernance), new ListFormulaireDeGouvernanceDePerceptionResource($this->formulaire_de_perception_de_gouvernance)],
+            'formulaires_de_gouvernance' => [new ListFormulaireDeGouvernanceFactuelResource($this->formulaire_factuel_de_gouvernance()), new ListFormulaireDeGouvernanceDePerceptionResource($this->formulaire_de_perception_de_gouvernance())],
 
             'organisations' => $this->organisations->map(function($organisation){
                 return [
