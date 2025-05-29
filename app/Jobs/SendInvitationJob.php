@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\InvitationEnqueteDeCollecteEmail;
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance as EnqueteEvaluationDeGouvernance;
 use App\Models\EvaluationDeGouvernance;
 use App\Traits\Helpers\ConfigueTrait;
 use App\Traits\Helpers\SmsTrait;
@@ -33,7 +34,7 @@ class SendInvitationJob implements ShouldQueue
      *
      * @return voidSendInvi
      */
-    public function __construct(EvaluationDeGouvernance $evaluationDeGouvernance, $data, $type)
+    public function __construct(EvaluationDeGouvernance | EnqueteEvaluationDeGouvernance $evaluationDeGouvernance, $data, $type)
     {
         $this->data = $data;
         $this->type = $type;
@@ -105,7 +106,7 @@ class SendInvitationJob implements ShouldQueue
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
                     }
 
-                    // Send the sms if there are any phone 
+                    // Send the sms if there are any phone
                     if (!empty($phoneNumbers)) {
 
                         try {
@@ -115,7 +116,7 @@ class SendInvitationJob implements ShouldQueue
                                         "Participez des maintenant : " .
                                         "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
                                         "Merci !";
-        
+
                             $this->sendSms($message, $phoneNumbers);
 
                             // Remove duplicates based on the "email" field (use email as the unique key)
@@ -125,7 +126,7 @@ class SendInvitationJob implements ShouldQueue
                             Log::error('Error sending SMS invitation : ' . $th->getMessage());
                         }
                     }
-                    
+
                     // Update the pivot table with the merged participants
                     $evaluationOrganisation->pivot->participants = $participants;
                     //$evaluationOrganisation->pivot->nbreParticipants = $this->data['nbreParticipants'];
@@ -133,7 +134,7 @@ class SendInvitationJob implements ShouldQueue
                     Log::warning('Nombre de participant : ' . $this->data['nbreParticipants']);
 
                     //dump(json_encode($participants));
-                    
+
                     if(isset($this->data['nbreParticipants'])){
                         if($this->data['nbreParticipants'] > 0){
 
@@ -163,7 +164,7 @@ class SendInvitationJob implements ShouldQueue
     private function removeDuplicateParticipants($participants, string $type = 'email')
     {
         $uniqueParticipants = [];
-    
+
         foreach ($participants as $participant) {
             if($type == 'email' && isset($participant['email'])){
                 // If participant doesn't exist in uniqueParticipants array, add them
@@ -173,7 +174,7 @@ class SendInvitationJob implements ShouldQueue
                 $uniqueParticipants[$participant['phone']] = $participant;
             }
         }
-    
+
         // Return the unique participants as a re-indexed array
         return array_values($uniqueParticipants);
     }
