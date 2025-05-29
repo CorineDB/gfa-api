@@ -225,7 +225,7 @@ class UpdateRequest extends FormRequest
                     }
 
                     if ($evaluation_perceptionFormulaire) {
-                        if ($this->evaluation_de_gouvernance->soumissionsPerception->count()) {
+                        if ($this->evaluation_de_gouvernance->soumissionsDePerception->count()) {
                             $formulaireDePerception = $evaluation_perceptionFormulaire;
                         }
                     }
@@ -292,7 +292,7 @@ class UpdateRequest extends FormRequest
                          */
                         $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
 
-                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsPerception->count()) {
+                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsDePerception->count()) {
 
                             $validator->errors()->add(
                                 'formulaires_de_gouvernance.perception',
