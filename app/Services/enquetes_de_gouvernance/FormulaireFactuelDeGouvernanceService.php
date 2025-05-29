@@ -297,6 +297,8 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                         }
                     }
 
+                    dd($categories_de_gouvernance);
+
                     $categories_de_gouvernance = $formulaireDeGouvernance->all_categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
 
                     $categories_de_gouvernance->delete();
