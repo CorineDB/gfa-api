@@ -112,7 +112,11 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired'], 'programmeId' => $programmeId];
+                    if(isset($option_de_reponse['preuveIsRequired'])){
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired'], 'programmeId' => $programmeId];
+                    }else{
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
+                    }
 
                 }
 
