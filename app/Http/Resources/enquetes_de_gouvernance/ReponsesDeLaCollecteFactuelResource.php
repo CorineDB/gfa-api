@@ -21,7 +21,7 @@ class ReponsesDeLaCollecteFactuelResource extends JsonResource
             'nom' => $this->option_de_reponse->libelle,
             'pourcentage_evolution' => $this->pourcentage_evolution,
             'point' => $this->point,
-            "sourceDeVerification" => $this->sourceDeVerificationId ? $this->source_de_verification->intitule : $this->sourceDeVerification,
+            "sourceDeVerification" => $this->sourceDeVerificationId ? $this->source_de_verification->intitule : ($this->sourceDeVerification ?? null),
             "sourceDeVerificationId" => $this->source_de_verification ? $this->source_de_verification->secure_id : null,
             "optionDeReponseId" => $this->option_de_reponse->secure_id,
             "questionId" => $this->question->secure_id,
