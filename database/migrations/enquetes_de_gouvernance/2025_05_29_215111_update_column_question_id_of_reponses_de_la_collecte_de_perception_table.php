@@ -16,7 +16,7 @@ class UpdateColumnQuestionIdOfReponsesDeLaCollecteDePerceptionTable extends Migr
         Schema::table('reponses_de_la_collecte_de_perception', function (Blueprint $table) {
             $table->dropForeign(['optionDeReponseId']); // Drop old FK first
 
-            $table->foreign('optionDeReponseId')->references('id')->on('questions_de_perception_de_gouvernance')
+            $table->foreign('optionDeReponseId')->references('id')->on('options_de_reponse_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
         });
