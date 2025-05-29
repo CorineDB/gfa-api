@@ -2,8 +2,16 @@
 
 namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance;
 
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
+use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
+use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
 use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
+use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel;
+use App\Models\enquetes_de_gouvernance\TypeDeGouvernanceFactuel;
+use App\Models\Organisation;
+use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class UpdateRequest extends FormRequest
@@ -25,24 +33,50 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->option_de_reponse))
-        {
-            $this->option_de_reponse = OptionDeReponseGouvernance::findByKey($this->option_de_reponse);
+
+        if (is_string($this->evaluation_de_gouvernance)) {
+            $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
 
         return [
-            'libelle'  => ['sometimes','max:255', Rule::unique('options_de_reponse_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->ignore($this->option_de_reponse)->whereNull('deleted_at')],
+            'intitule'               => ['sometimes', 'string', Rule::unique('evaluations_de_gouvernance', 'intitule')->where("programmeId", auth()->user()->programmeId)->ignore($this->evaluation_de_gouvernance)->whereNull('deleted_at')],
 
-            'type'          => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
-            'description' => 'sometimes|nullable|max:255'
+            'annee_exercice'    => 'sometimes|integer',
+            'description'       => 'nullable|max:255',
+            'debut'             => [
+                'required',
+                'date',
+                'date_format:Y-m-d',
+                'before:fin',
+                function ($attribute, $value, $fail) {
+                    $anneeExercice = $this->input('annee_exercice');
+                    if (date('Y', strtotime($value)) < $anneeExercice) {
+                        $fail("The $attribute must be equal to or later than the start of annee_exercice.");
+                    }
+                }
+            ],
+            'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
+            'formulaires_de_gouvernance'     => ['required', 'array', 'min:1', 'max:2'],
+            'formulaires_de_gouvernance.factuel'   => ['sometimes', 'distinct', new HashValidatorRule(new FormulaireFactuelDeGouvernance())],
+            'formulaires_de_gouvernance.perception'   => ['sometimes', 'distinct', new HashValidatorRule(new FormulaireDePerceptionDeGouvernance())],
+
+            'organisations'     => ['required', 'array', 'min:1'],
+            'organisations.*'   => ['required', 'distinct', new HashValidatorRule(new Organisation())]
         ];
     }
 
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            $this->checkPrincipesMatch($validator);
+        });
+    }
+
     /**
-    * Get the error messages for the defined validation rules.
-    *
-    * @return array
-    */
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
@@ -58,5 +92,242 @@ class UpdateRequest extends FormRequest
             'programmeId.required' => 'Le champ programme est obligatoire.',
 
         ];
+    }
+
+    private function checkPrincipesMatch($validator)
+    {
+        if ($this->evaluation_de_gouvernance->statut == -1) {
+
+            $formulaires = $this->input("formulaires_de_gouvernance");
+            if ($formulaires) {
+
+                if (count($formulaires) > 1) {
+
+                    $formulaireFactuel = $formulaires['factuel'];
+                    $formulaireFactuel = FormulaireFactuelDeGouvernance::find($formulaireFactuel);
+
+                    if (!$formulaireFactuel) {
+                        $validator->errors()->add(
+                            'formulaires_de_gouvernance.factuel',
+                            "Formulaire de gouvernance factuel inconnu"
+                        );
+                        return;
+                    }
+
+                    $formulaireDePerception = $formulaires['perception'];
+                    $formulaireDePerception = FormulaireDePerceptionDeGouvernance::find($formulaireDePerception);
+
+                    if (!$formulaireDePerception) {
+                        $validator->errors()->add(
+                            'formulaires_de_gouvernance.perception',
+                            "Formulaire de gouvernance de perception inconnu"
+                        );
+                        return;
+                    }
+
+                    // Step 1: Retrieve Principe IDs from the 'perception' form
+                    $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance')
+                        ->where('formulaireDePerceptionId', $formulaireDePerception->id)
+                        ->whereNull('categorieDePerceptionDeGouvernanceId')
+                        ->pluck('categorieable_id')
+                        ->toArray();
+
+                    // Step 2: Retrieve unique Principe IDs from the 'factuel' form
+                    $factuelPrincipesIds = DB::table('categories_factuel_de_gouvernance as types')
+                        ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
+                        ->where('types.formulaireFactuelId', $formulaireFactuel->id)
+                        ->whereNull('types.categorieFactuelDeGouvernanceId')
+                        ->where('principes.formulaireFactuelId', $formulaireFactuel->id)
+                        ->whereNotNull('principes.categorieFactuelDeGouvernanceId')
+                        ->where('types.categorieable_type', get_class(new TypeDeGouvernanceFactuel()))
+                        ->where('principes.categorieable_type', get_class(new PrincipeDeGouvernanceFactuel()))
+                        ->select('principes.categorieable_id as principe_id')
+                        ->distinct() // Ignore duplicates by selecting only unique perception IDs
+                        ->pluck('principe_id')
+                        ->toArray();
+
+                    // Step 3: Compare perception IDs across forms
+                    //if (array_diff($perceptionPrincipesIds, $factuelPrincipesIds) || array_diff($factuelPrincipesIds, $perceptionPrincipesIds)) {
+                    if (!empty(array_diff($perceptionPrincipesIds, $factuelPrincipesIds)) || !empty(array_diff($factuelPrincipesIds, $perceptionPrincipesIds))) {
+
+                        $validator->errors()->add(
+                            'formulaires_de_gouvernance',
+                            "Les principes de gouvernance du formulaire de perception doivent etre les memes dans le formulaire factuel."
+                        );
+                    }
+                } else {
+
+                    if (isset($formulaires['factuel'])) {
+                        $formulaire = $formulaires['factuel'];
+                        $formulaire = FormulaireFactuelDeGouvernance::find($formulaire);
+
+                        if (!$formulaire) {
+                            $validator->errors()->add(
+                                'formulaires_de_gouvernance.factuel',
+                                "Formulaire de gouvernance factuel inconnu"
+                            );
+                            return;
+                        }
+
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
+
+                        $factuelFormulaire = $formulaire;
+                        $perceptionFormulaire = $evaluation_formulaire;
+
+                        if ($evaluation_formulaire) {
+                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
+                        }
+
+                    } else if (isset($formulaires['perception'])) {
+                        $formulaire = $formulaires['perception'];
+                        $formulaire = FormulaireDePerceptionDeGouvernance::find($formulaire);
+
+                        if (!$formulaire) {
+                            $validator->errors()->add(
+                                'formulaires_de_gouvernance.perception',
+                                "Formulaire de gouvernance de perception inconnu"
+                            );
+                            return;
+                        }
+
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
+
+                        $factuelFormulaire = $evaluation_formulaire;
+                        $perceptionFormulaire = $formulaire;
+
+                        if ($evaluation_formulaire) {
+                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
+                        }
+                    }
+                }
+            } else {
+                $validator->errors()->add(
+                    'formulaires_de_gouvernance',
+                    "Veuillez soumettre au moins le formulaire d'un outil"
+                );
+            }
+        }
+
+        else if ($this->evaluation_de_gouvernance->statut == 0) {
+
+            $formulaires = $this->input("formulaires_de_gouvernance");
+            if ($formulaires) {
+
+                if (count($formulaires) > 1) {
+
+                    $formulaireFactuel = $formulaires['factuel'];
+                    $formulaireFactuel = FormulaireFactuelDeGouvernance::find($formulaireFactuel);
+
+                    if (!$formulaireFactuel) {
+                        $validator->errors()->add(
+                            'formulaires_de_gouvernance.factuel',
+                            "Formulaire de gouvernance factuel inconnu"
+                        );
+                        return;
+                    }
+
+                    $formulaireDePerception = $formulaires['perception'];
+                    $formulaireDePerception = FormulaireDePerceptionDeGouvernance::find($formulaireDePerception);
+
+                    if (!$formulaireDePerception) {
+                        $validator->errors()->add(
+                            'formulaires_de_gouvernance.perception',
+                            "Formulaire de gouvernance de perception inconnu"
+                        );
+                        return;
+                    }
+
+                    $evaluation_factuelFormulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
+
+                    $evaluation_perceptionFormulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
+
+                    if ($evaluation_factuelFormulaire) {
+                        if ($this->evaluation_de_gouvernance->soumissionsFactuel()->count()) {
+                            $formulaireFactuel = $evaluation_factuelFormulaire;
+                        }
+                    }
+
+                    if ($evaluation_perceptionFormulaire) {
+                        if ($this->evaluation_de_gouvernance->soumissionsPerception()->count()) {
+                            $formulaireDePerception = $evaluation_perceptionFormulaire;
+                        }
+                    }
+
+                    $this->formMatch($validator, $formulaireDePerception, $formulaireFactuel);
+
+                } else {
+                    if (isset($formulaires['factuel'])) {
+                        $formulaire = $formulaires['factuel'];
+                        $formulaire = FormulaireFactuelDeGouvernance::find($formulaire);
+
+                        if (!$formulaire) {
+                            $validator->errors()->add(
+                                'formulaires_de_gouvernance.factuel',
+                                "Formulaire de gouvernance factuel inconnu"
+                            );
+                            return;
+                        }
+
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
+
+                        $factuelFormulaire = $formulaire;
+                        $perceptionFormulaire = $evaluation_formulaire;
+
+                        if ($evaluation_formulaire) {
+                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
+                        }
+
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
+
+                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsFactuel()->count()) {
+
+                            $validator->errors()->add(
+                                'formulaires_de_gouvernance.factuel',
+                                "Formulaire de gouvernance factuel ne peut plus etre modifie"
+                            );
+                            return;
+                        }
+                    } else if (isset($formulaires['perception'])) {
+                        $formulaire = $formulaires['perception'];
+                        $formulaire = FormulaireDePerceptionDeGouvernance::find($formulaire);
+
+                        if (!$formulaire) {
+                            $validator->errors()->add(
+                                'formulaires_de_gouvernance.perception',
+                                "Formulaire de gouvernance de perception inconnu"
+                            );
+                            return;
+                        }
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
+
+                        $factuelFormulaire = $evaluation_formulaire;
+                        $perceptionFormulaire = $formulaire;
+
+                        if ($evaluation_formulaire) {
+                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
+                        }
+
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
+
+                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsPerception()->count()) {
+
+                            $validator->errors()->add(
+                                'formulaires_de_gouvernance.perception',
+                                "Formulaire de gouvernance de perception ne peut plus etre modifie"
+                            );
+                            return;
+                        }
+                    }
+                }
+            } else {
+                $validator->errors()->add(
+                    'formulaires_de_gouvernance',
+                    "Veuillez soumettre au moins le formulaire d'un outil"
+                );
+            }
+        }
+        else{
+
+        }
     }
 }
