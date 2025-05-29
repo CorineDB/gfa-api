@@ -24,7 +24,7 @@ class CategoriesFactuelDeGouvernanceResource extends JsonResource
 
             'categories_de_gouvernance' => $this->when($this->categories_de_gouvernance->count(), CategoriesFactuelDeGouvernanceResource::collection($this->categories_de_gouvernance)),
 
-            'questions_de_gouvernance' => $this->when($this->categories_de_gouvernance->count(), QuestionsFactuelDeGouvernanceResource::collection($this->questions_de_gouvernance))
+            'questions_de_gouvernance' => $this->when($this->questions_de_gouvernance->count(), QuestionsFactuelDeGouvernanceResource::collection($this->questions_de_gouvernance))
         ];
     }
 }
