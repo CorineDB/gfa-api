@@ -1138,7 +1138,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
 
 
-            $evaluationOrganisation = $this->evaluationDeGouvernance->organisations($this->data["organisationId"])->first();
+            $evaluationOrganisation = $evaluationDeGouvernance->organisations($this->data["organisationId"])->first();
 
             dd($evaluationOrganisation);
 
