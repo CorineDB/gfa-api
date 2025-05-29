@@ -198,6 +198,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (isset($attributs['formulaires_de_gouvernance'])) {
                 $formulaires = $attributs['formulaires_de_gouvernance'];
 
+                dd($evaluationDeGouvernance);
+
                 if ($evaluationDeGouvernance->statut == -1) {
 
                     if (isset($formulaires['perception'])) {
