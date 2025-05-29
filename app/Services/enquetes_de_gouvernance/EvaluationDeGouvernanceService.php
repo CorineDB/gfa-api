@@ -1023,7 +1023,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 });*/
                 else {
 
-                    dd($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
+                    dd($evaluationDeGouvernance->formulaires_factuel_de_gouvernance);
 
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
