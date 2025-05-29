@@ -115,7 +115,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
 
             'factuel.response_data.*.preuves'                       => [
-                Rule::requiredIf(request()->input('soumissionId') == null),
+               "sometimes",
                 function ($attribute, $value, $fail) {
 
                     if (request()->input('soumissionId') != null) {
