@@ -15,7 +15,6 @@ class SoumissionDePerceptionResource extends JsonResource
      */
     public function toArray($request)
     {
-        dd($this->formulaireDeGouvernance);
         return [
             'id' => $this->formulaireDeGouvernance->secure_id,
             'libelle' => $this->formulaireDeGouvernance->libelle,
@@ -30,7 +29,7 @@ class SoumissionDePerceptionResource extends JsonResource
                 ];
             }),
 
-            'categories_de_gouvernance' => $this->when($this->formulaireDeGouvernance->categories_de_gouvernance->count(), $this->sections($this->categories_de_gouvernance)),
+            'categories_de_gouvernance' => $this->when($this->formulaireDeGouvernance->categories_de_gouvernance->count(), $this->sections($this->formulaireDeGouvernance->categories_de_gouvernance)),
         ];
     }
 
