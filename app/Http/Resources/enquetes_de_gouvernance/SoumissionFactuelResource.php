@@ -68,7 +68,7 @@ class SoumissionFactuelResource extends JsonResource
                     'id' => $question->indicateur_de_gouvernance->secure_id,
                     'nom' => $question->indicateur_de_gouvernance->nom
                 ] : null,
-                'reponse_de_la_collecte'   => new ReponsesDeLaCollecteFactuelResource($question->reponse($this->id)),
+                'reponse_de_la_collecte'   => new ReponsesDeLaCollecteFactuelResource($question->reponses()->where('soumissionId', $this->soumissionId)->first()),
             ];
         });
     }
