@@ -187,7 +187,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
             $formulaireDeGouvernance->refresh();
 
-            if (isset($attributs['factuel']) && $attributs['factuel'] !== null && $formulaireDeGouvernance->type == 'factuel') {
+            if (isset($attributs['factuel']) && $attributs['factuel'] !== null) {
 
                 $options = [];
 
