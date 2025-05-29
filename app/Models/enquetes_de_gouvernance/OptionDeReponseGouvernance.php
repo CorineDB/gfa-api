@@ -75,56 +75,23 @@ class OptionDeReponseGouvernance extends Model
         return $this->hasMany(ReponseDeLaCollecte::class, 'optionDeReponseId');
     }
 
-    public function formulaires_de_gouvernance()
+    public function reponses_factuel()
     {
-        return $this->belongsToMany(FormulaireFactuelDeGouvernance::class,'formulaire_factuel_options', 'optionId', 'formulaireFactuelId')->wherePivotNull('deleted_at')->withPivot(["id", "point", "preuveIsRequired", "sourceIsRequired", "descriptionIsRequired"]);
+        return $this->hasMany(ReponseDeLaCollecteFactuel::class, 'optionDeReponseId')->where("type", 'factuel');
     }
 
-    /*public function getNoteAttribute()
+    public function reponses_de_perception()
     {
-        $value = 0;
+        return $this->hasMany(ReponseDeLaCollecteDePerception::class, 'optionDeReponseId')->where("type", 'perception');
+    }
 
-        if($this->slug){
+    public function formulaires_factuel_de_gouvernance()
+    {
+        return $this->belongsToMany(FormulaireFactuelDeGouvernance::class,'formulaire_factuel_options', 'optionId', 'formulaireFactuelId')->withPivot(["id", "point", "preuveIsRequired", "sourceIsRequired", "descriptionIsRequired", 'programmeId']);
+    }
 
-            switch ($this->slug) {
-                case 'oui':
-                    $value = 1;
-                    break;
-
-                case 'non':
-                    $value = 0;
-                    break;
-
-                case 'ne-peux-repondre':
-                    $value = 1;
-                    break;
-
-                case 'pas-du-tout':
-                    $value = 2;
-                    break;
-
-                case 'faiblement':
-                    $value = 3;
-                    break;
-
-                case 'moyennement':
-                    $value = 4;
-                    break;
-
-                case 'dans-une-grande-mesure':
-                    $value = 5;
-                    break;
-
-                case 'totalement':
-                    $value = 6;
-                    break;
-
-                default:
-                    $value = 0;
-                    break;
-            }
-        }
-        // Return a default value if no observation matches
-        return $value; // or null, depending on your requirement
-    }*/
+    public function formulaires_de_perception_de_gouvernance()
+    {
+        return $this->belongsToMany(FormulaireDePerceptionDeGouvernance::class,'formulaire_de_perception_options', 'optionId', 'formulaireDePerceptionId')->withPivot(["id", "point", "preuveIsRequired", "sourceIsRequired", "descriptionIsRequired", 'programmeId']);
+    }
 }
