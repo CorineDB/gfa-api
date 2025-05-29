@@ -38,7 +38,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'libelle'           => ['sometimes', 'string', Rule::unique('formulaires_factuel_de_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'libelle'           => ['sometimes', 'string', Rule::unique('formulaires_factuel_de_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->ignore($this->formulaire_factuel)->whereNull('deleted_at')],
 
             'description' => 'nullable|max:255',
 
