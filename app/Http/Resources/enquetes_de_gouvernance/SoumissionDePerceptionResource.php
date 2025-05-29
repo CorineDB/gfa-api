@@ -41,9 +41,9 @@ class SoumissionDePerceptionResource extends JsonResource
 
             $questions = [];
 
-            if($sousCategorieDeGouvernance->questions_de_gouvernance->count()){
+            /* if($sousCategorieDeGouvernance->questions_de_gouvernance->count()){
                 $questions = ['questions_de_gouvernance' =>  $this->questions_reponses($sousCategorieDeGouvernance->questions_de_gouvernance)];
-            }
+            } */
 
             return array_merge([
                 'id' => $sousCategorieDeGouvernance->secure_id,
