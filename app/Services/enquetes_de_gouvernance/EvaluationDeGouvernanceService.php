@@ -1032,9 +1032,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $soumission = $evaluationDeGouvernance->soumissionsFactuel->create($attributs);
 
-                    $formulaire_factuel_de_gouvernance = new ListFormulaireDeGouvernanceFactuelResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
+                    $formulaire_factuel_de_gouvernance = new SoumissionFactuelResource($soumission);
                 }
             } else {
+
+                return response()->json(['statut' => 'success', 'message' => "Organisation inconnu du programme", 'data' => null, 'statutCode' => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
+
                 $formulaire_factuel_de_gouvernance = new ListFormulaireDeGouvernanceFactuelResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
             }
 
