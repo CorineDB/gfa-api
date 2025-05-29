@@ -1162,13 +1162,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             dump($organisationId);
 
-            dd($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first());
-
             if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
 
                 $participants = [];
                 // Decode and merge participants from the organisation's pivot data
                 $participants = array_merge($participants, $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : []);
+
+                dd($participants);
 
                 // Filter participants for those with "email" contact type
                 $emailParticipants = array_filter($participants, function ($participant) {
