@@ -208,9 +208,12 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                     $formulaireDeGouvernance->options_de_reponse()->sync($options);
                 }
 
+                if(isset($attributs['perception']["principes_de_gouvernance"]) && $attributs['perception']["principes_de_gouvernance"] !== null){
                     $categories_de_gouvernance = [];
 
                     foreach ($attributs['perception']["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
+
+                        $formulaireDeGouvernance->refresh();
 
                         if(!(($principeDeGouvernance = app(PrincipeDeGouvernancePerceptionRepository::class)->findById($principe_de_gouvernance['id'])) && $principeDeGouvernance->programmeId == $programmeId))
                         {
@@ -222,8 +225,9 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                         })->first();
 
                         if(!$principeDeGouvernanceCategorie){
-                            dd($principe_de_gouvernance);
-                            $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : 0;
+
+                            $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $formulaireDeGouvernance->categories_de_gouvernance->count() + 1;
+
                             $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieDePerceptionDeGouvernanceId' => null, 'formulaireDePerceptionId' => $formulaireDeGouvernance->id]);
                         }
 
@@ -232,6 +236,8 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                         $questions = [];
 
                         foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $question_operationnelle) {
+
+                            $principeDeGouvernanceCategorie->refresh();
 
                             if(!(($questionOperationnelle = app(QuestionOperationnelleRepository::class)->findById($question_operationnelle))))
                             {
@@ -243,7 +249,9 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                             })->first();
 
                             if(!$questionDeGouvernance){
-                                $position = isset($question_operationnelle['position']) ? $question_operationnelle['position'] : 0;
+
+                                $position = isset($question_operationnelle['position']) ? $question_operationnelle['position'] : $principeDeGouvernanceCategorie->questions_de_gouvernance->count() + 1;
+
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireDePerceptionId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'questionOperationnelleId' => $questionOperationnelle->id]);
                             }
 
@@ -267,6 +275,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
+                }
             }
 
             $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
