@@ -964,7 +964,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $terminer = false;
 
             if ($organisation != null) {
-                if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
+                if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)) {
                     if ($soumission->statut === true) {
                         $terminer = true;
                     }
@@ -1003,11 +1003,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $organisation = $evaluationDeGouvernance->organisations->first();
             $terminer = false;
 
-            dd($organisation);
-
             if ($organisation != null) {
 
-                if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
+                if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id, $token)) {
 
                     if ($soumission->statut === true) {
                         $terminer = true;
