@@ -48,6 +48,8 @@ class SoumissionFactuelRequest extends FormRequest
                 new HashValidatorRule(new FormulaireFactuelDeGouvernance()),
                 function ($attribute, $value, $fail) {
 
+                    dd($this->evaluation_de_gouvernance);
+
                     // Check if formulaireDeGouvernanceId exists within the related formulaire_factuel_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()
                         ->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
