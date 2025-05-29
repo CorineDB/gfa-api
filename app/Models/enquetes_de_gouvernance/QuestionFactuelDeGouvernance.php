@@ -56,7 +56,7 @@ class QuestionFactuelDeGouvernance extends Model
 
     public function reponse($soumissionId)
     {
-        return $this->hasOne(ReponseDeLaCollecteFactuel::class, 'questionId')/* ->where("soumissionId", $soumissionId) */;
+        return $this->hasOne(ReponseDeLaCollecteFactuel::class, 'questionId')->where("soumissionId", $soumissionId);
     }
 
 }
