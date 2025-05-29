@@ -95,7 +95,6 @@ class SoumissionFactuelRequest extends FormRequest
                         $fail('The selected option is invalid for the given formulaire.');
                     }
                 }
-                dd("cool optionDeReponseId");
             }],
 
             'factuel.response_data.*.sourceDeVerificationId'        => ['nullable', new HashValidatorRule(new SourceDeVerification())],

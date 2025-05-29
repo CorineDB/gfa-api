@@ -120,6 +120,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
 
+            dd($organisation);
+
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
                 if (($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut) {
