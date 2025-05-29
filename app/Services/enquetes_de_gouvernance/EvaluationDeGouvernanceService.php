@@ -1013,7 +1013,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                         return response()->json(['statut' => 'success', 'message' => "Soumission deja valider", 'data' => ['terminer' => $terminer, 'idEvaluation' => $evaluationDeGouvernance->secure_id, 'idSoumission' => $soumission->secure_id], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                     } else {
-                        $formulaire_factuel_de_gouvernance = new SoumissionFactuelService($soumission->formulaireDeGouvernance, true, $soumission->id);
+                        $formulaire_factuel_de_gouvernance = new SoumissionFactuelResource($soumission, true, $soumission->id);
                     }
                 }
                 /*$formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->load("questions_de_gouvernance.reponses", function ($query) use ($evaluationDeGouvernance, $token) {
@@ -1022,10 +1022,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     });
                 });*/
                 else {
-                    $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
+                    $formulaire_factuel_de_gouvernance = new ListFormulaireDeGouvernanceFactuelResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
                 }
             } else {
-                $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
+                $formulaire_factuel_de_gouvernance = new ListFormulaireDeGouvernanceFactuelResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => [
