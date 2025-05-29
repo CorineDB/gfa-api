@@ -1160,6 +1160,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $organisationId = Auth::user()->profilable->id;
 
+            dump($organisationId);
+
+            dd($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first());
+
             if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
 
                 $participants = [];
