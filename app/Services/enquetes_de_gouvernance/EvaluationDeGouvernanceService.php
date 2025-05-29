@@ -1013,7 +1013,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                         return response()->json(['statut' => 'success', 'message' => "Soumission deja valider", 'data' => ['terminer' => $terminer, 'idEvaluation' => $evaluationDeGouvernance->secure_id, 'idSoumission' => $soumission->secure_id], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                     } else {
-                        $formulaire_factuel_de_gouvernance = new SoumissionFactuelResource($soumission, true, $soumission->id);
+                        $formulaire_factuel_de_gouvernance = new SoumissionFactuelResource($soumission);
                     }
                 }
                 /*$formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->load("questions_de_gouvernance.reponses", function ($query) use ($evaluationDeGouvernance, $token) {
@@ -1081,14 +1081,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $organisation = $evaluationDeGouvernance->organisations->first();
             $terminer = false;
 
-            dump($organisation);
-
             if ($organisation != null) {
 
                 /* if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $organisation->pivot->nbreParticipants){
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 } */
-            dd(($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first()));
 
                 if (($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())) {
 
@@ -1096,7 +1093,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $terminer = true;
                         $formulaire_de_perception_de_gouvernance = false;
                     } else {
-                        $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission->formulaireDeGouvernance, true, $soumission->id);
+                        $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
                     }
                 } else {
                     $attributs = [
