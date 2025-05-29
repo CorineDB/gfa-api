@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_factuel;
+namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_de_perception;
 
 use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\QuestionDePerceptionDeGouvernance;
@@ -10,7 +10,7 @@ use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PerceptionSoumissionRequest extends FormRequest
+class SoumissionDePerceptionRequest extends FormRequest
 {
     protected $formulaireCache = null;
     protected $organisation = null;
