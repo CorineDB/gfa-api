@@ -1093,6 +1093,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $terminer = true;
                         $formulaire_de_perception_de_gouvernance = false;
                     } else {
+                        dd($soumission);
                         $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
                     }
                 } else {
