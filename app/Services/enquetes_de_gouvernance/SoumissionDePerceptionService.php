@@ -2,7 +2,7 @@
 
 namespace App\Services\enquetes_de_gouvernance;
 
-use App\Http\Resources\gouvernance\SoumissionsResource;
+use App\Http\Resources\enquetes_de_gouvernance\SoumissionDePerceptionResource;
 use App\Jobs\AppJob;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
@@ -57,7 +57,7 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
                 $soumissions = Auth::user()->programme->soumissions_de_perception;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SoumissionsResource::collection($soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SoumissionDePerceptionResource::collection($soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -68,7 +68,7 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
         try {
             if (!is_object($soumissionDePerceptionId) && !($soumissionDePerceptionId = $this->repository->findById($soumissionDePerceptionId))) throw new Exception("Soumission de perception inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionsResource($soumissionDePerceptionId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionDePerceptionResource($soumissionDePerceptionId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -196,7 +196,7 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionsResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionDePerceptionResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
 
             DB::rollBack();
