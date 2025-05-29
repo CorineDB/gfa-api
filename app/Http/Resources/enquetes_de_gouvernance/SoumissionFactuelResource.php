@@ -16,6 +16,7 @@ class SoumissionFactuelResource extends JsonResource
      */
     public function toArray($request)
     {
+        dd($this);
         return [
             'id' => $this->formulaireDeGouvernance->secure_id,
             'libelle' => $this->formulaireDeGouvernance->libelle,
