@@ -34,10 +34,10 @@ class EvaluationDeGouvernanceController extends Controller
         $this->middleware('permission:voir-resultats-evaluation')->only(['resultats_syntheses']);
         $this->middleware('permission:voir-un-formulaires-de-gouvernance')->only(['formulaires_de_gouvernance']);
         $this->middleware('permission:voir-formulaire-factuel')->only(['formulaire_factuel', 'formulaire_factuel_de_gouvernance']);
-  
+
         $this->middleware('permission:envoyer-un-rappel-soumission')->only(['rappel_soumission']);
         $this->middleware('permission:envoyer-une-invitation')->only(['envoi_mail_au_participants']);
-        
+
         $this->evaluationDeGouvernanceService = $evaluationDeGouvernanceServiceInterface;
     }
 
@@ -100,7 +100,7 @@ class EvaluationDeGouvernanceController extends Controller
         return $this->evaluationDeGouvernanceService->ajouterObjectifAttenduParPrincipe($id, $request->all());
     }
 
-    
+
 
     public function organisations($id)
     {
@@ -130,7 +130,7 @@ class EvaluationDeGouvernanceController extends Controller
     public function feuille_de_route($id)
     {
         return $this->evaluationDeGouvernanceService->feuille_de_route($id);
-    }    
+    }
 
     public function fiches_de_synthese($id)
     {
@@ -141,12 +141,12 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->fiches_de_synthese_with_organisations_classement($id);
     }
-    
+
     public function resultats_syntheses($id)
     {
         return $this->evaluationDeGouvernanceService->resultats_syntheses($id);
     }
-    
+
     public function voir_resultats_syntheses_avec_classement_des_organisations($id)
     {
         return $this->evaluationDeGouvernanceService->classement_resultats_syntheses_des_organisation($id);
@@ -161,7 +161,7 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->envoi_mail_au_participants($id, $request->all());
     }
-    
+
     public function formulaire_factuel($id)
     {
         return $this->evaluationDeGouvernanceService->formulaire_factuel($id);
@@ -176,11 +176,11 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->formulaire_factuel_de_gouvernance($token);
     }
-    
+
 
     public function formulaire_de_perception_de_gouvernance(string $participant_id, string $token)
     {
         return $this->evaluationDeGouvernanceService->formulaire_de_perception_de_gouvernance($participant_id, $token);
     }
-    
+
 }
