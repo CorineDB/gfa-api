@@ -75,7 +75,6 @@ class SoumissionFactuelRequest extends FormRequest
                 'distinct',
                 new HashValidatorRule(new QuestionFactuelDeGouvernance()),
                 function ($attribute, $value, $fail) {
-                    dd("cool questionId");
                     if ($this->formulaireCache) {
                         $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($value)->exists();
                         if (!$question) {
@@ -83,6 +82,7 @@ class SoumissionFactuelRequest extends FormRequest
                             $fail("Cet Indicateur n'existe pas.");
                         }
                     }
+                    dd("cool questionId");
                 }
             ],
             'factuel.response_data.*.optionDeReponseId'             => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
