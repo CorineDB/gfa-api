@@ -161,7 +161,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                                 $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : 0;
 
-                                $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
+                                $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurFactuelDeGouvernanceId' => $indicateurDeGouvernance->id]);
 
                             }
                         }
@@ -312,7 +312,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                                     if(!$questionDeGouvernance){
                                         $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : 0;
-                                        $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurDeGouvernanceId' => $indicateurDeGouvernance->id]);
+                                        $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurFactuelDeGouvernanceId' => $indicateurDeGouvernance->id]);
                                     }
 
                                     $questions[] = $questionDeGouvernance->id;
