@@ -64,6 +64,7 @@ class SoumissionDePerceptionController extends Controller
      */
     public function store(SoumissionDePerceptionRequest $request, $evaluationId)
     {
+        dd($evaluationId);
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
         return $this->soumissionDePerceptionService->create($atttributs);
