@@ -85,6 +85,7 @@ class SoumissionFactuelRequest extends FormRequest
                 }
             ],
             'factuel.response_data.*.optionDeReponseId'             => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
+                dd($this->formulaireCache);
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  *
