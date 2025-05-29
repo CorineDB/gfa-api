@@ -1005,9 +1005,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($organisation != null) {
 
+                dd($evaluationDeGouvernance->soumissionFactuel($organisation->id)->first());
+
                 if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
 
-                    dd($soumission);
                     if ($soumission->statut === true) {
                         $terminer = true;
                         $formulaire_factuel_de_gouvernance = false;
