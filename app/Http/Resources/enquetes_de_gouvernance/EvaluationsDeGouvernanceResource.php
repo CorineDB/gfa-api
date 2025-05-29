@@ -58,7 +58,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
 
             'organisations_ranking' => $this->organisations_ranking,
-            'options_de_reponse_stats' => $this->options_de_reponse_stats,
+            'options_de_reponse_stats' => $this->options_de_reponse_gouvernance_stats,
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaire_factuel_de_gouvernance() ? $this->formulaire_factuel_de_gouvernance()->secure_id : null,

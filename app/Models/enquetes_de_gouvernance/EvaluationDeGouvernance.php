@@ -757,4 +757,90 @@ class EvaluationDeGouvernance extends Model
 
         return $responseCounts;
     }
+
+    public function getOptionsDeReponseGouvernanceStatsAttribute()
+    {
+
+        // Get all soumission IDs
+        $soumissionIds = $this->soumissionsDePerception->pluck("id");
+
+        // Get all options (options_de_reponse) and their IDs
+        $options = $this->formulaire_de_perception_de_gouvernance() ? $this->formulaire_de_perception_de_gouvernance()->options_de_reponse : collect([]);
+        $optionIds = $options->pluck('id');
+        $optionLibelles = $options->pluck('libelle', 'id');
+
+        // Categories to include in the Cartesian product
+        $categories = ['membre_de_conseil_administration', 'employe_association', 'membre_association'];
+
+        // Generate the Cartesian product of all organisations, categories, and options
+        $organisations = $this->organisations;
+
+        // Generate the Cartesian product of all categories and options
+        $combinations = [];
+        foreach ($organisations as $organisation) {
+            foreach ($categories as $category) {
+                foreach ($optionLibelles as $optionId => $optionLibelle) {
+                    $combinations[] = [
+                        'organisationId' => $organisation->id,
+                        'categorieDeParticipant' => $category,
+                        'optionDeReponseId' => $optionId,
+                        'libelle' => $optionLibelle
+                    ];
+                }
+            }
+        }
+
+        // Get the response counts from the database
+        $responseCounts = DB::table('reponses_de_la_collecte_de_perception')
+            ->join('soumissions_de_perception', 'reponses_de_la_collecte_de_perception.soumissionId', '=', 'soumissions_de_perception.id')
+            ->join('options_de_reponse_gouvernance', 'reponses_de_la_collecte_de_perception.optionDeReponseId', '=', 'options_de_reponse_gouvernance.id')
+            ->select(
+                'soumissions_de_perception.organisationId',
+                'soumissions_de_perception.categorieDeParticipant',
+                'options_de_reponse_gouvernance.libelle',
+                DB::raw('COUNT(reponses_de_la_collecte_de_perception.id) as count')
+            )
+            ->whereIn('reponses_de_la_collecte_de_perception.soumissionId', $soumissionIds)
+            ->whereIn('reponses_de_la_collecte_de_perception.optionDeReponseId', $optionIds)
+            ->groupBy('soumissions_de_perception.organisationId', 'soumissions_de_perception.categorieDeParticipant', 'options_de_reponse_gouvernance.libelle')
+            ->get();
+
+        // Combine the counts with the pre-generated combinations, ensuring no missing combinations
+        $query = collect($combinations)->map(function ($combination) use ($responseCounts) {
+
+            // Find the response count for this combination using where with multiple conditions
+            $responseCount = $responseCounts->where('organisationId', $combination['organisationId'])
+                ->where('categorieDeParticipant', $combination['categorieDeParticipant'])
+                ->where('libelle', $combination['libelle'])
+                ->first(); // Get the first matching response (or null if none)
+
+            // If no response count found, set to 0
+            $combination['count'] = $responseCount ? $responseCount->count : 0;
+
+            return $combination;
+        });
+
+        // Reorganize data under each organisation and categorieDeParticipant
+        $groupedStats = $query->groupBy('organisationId')->map(function ($dataByOrganisation, $organisationId) use ($organisations) {
+            $organisation = $organisations->firstWhere('id', $organisationId);
+            return [
+                'id' => $organisation->secure_id,
+                'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
+                'categories' => $dataByOrganisation->groupBy('categorieDeParticipant')->map(function ($optionsDeReponse, $categorie) {
+                    return [
+                        'categorieDeParticipant' => $categorie,
+                        'options_de_reponse' => $optionsDeReponse->map(function ($optionDeReponse) {
+                            return [
+                                'label' => $optionDeReponse['libelle'],
+                                'count' => $optionDeReponse['count'],
+                            ];
+                        }),
+                    ];
+                })->values(),
+            ];
+        });
+
+        // Return the grouped stats as values
+        return $groupedStats->values();
+    }
 }
