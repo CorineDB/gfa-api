@@ -994,7 +994,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 //$query->where('evaluation_organisations.token', $token);pivot_token
             })->with(["organisations" => function($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
-            }, "formulaires_factuel_de_gouvernance" => function($query) use ($token) {
+            }, "formulaires_factuel_de_gouvernance" => function($query) {
                 $query;
             }])->first();
 
