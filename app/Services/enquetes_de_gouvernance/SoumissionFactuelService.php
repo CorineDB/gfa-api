@@ -213,6 +213,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     })->orWhere($query->where('preuveIsRequired', false));
                 })->count();
 
+                dd($responseCount);
+
                 if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
                     $soumission->submitted_at = now();
                     $soumission->submittedBy  = Auth::check() ? auth()->id() : null;
