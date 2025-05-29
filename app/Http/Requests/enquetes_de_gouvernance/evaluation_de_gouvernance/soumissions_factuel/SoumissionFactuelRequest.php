@@ -50,7 +50,7 @@ class SoumissionFactuelRequest extends FormRequest
 
                     // Check if formulaireDeGouvernanceId exists within the related formulaire_factuel_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()
-                        ->wherePivot('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
+                        ->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
                         ->first();
 
                     if ($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
@@ -84,6 +84,18 @@ class SoumissionFactuelRequest extends FormRequest
                     }
                 }
             ],
+            'factuel.response_data.*.optionDeReponseId'             => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
+                /**
+                 * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
+                 *
+                 * If the provided optionDeReponseId is not valid, fail the validation
+                 */
+                if ($this->formulaireCache) {
+                    if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
+                        $fail('The selected option is invalid for the given formulaire.');
+                    }
+                }
+            }],
 
             'factuel.response_data.*.sourceDeVerificationId'        => ['nullable', new HashValidatorRule(new SourceDeVerification())],
             'factuel.response_data.*.sourceDeVerification'          => ['nullable'],
