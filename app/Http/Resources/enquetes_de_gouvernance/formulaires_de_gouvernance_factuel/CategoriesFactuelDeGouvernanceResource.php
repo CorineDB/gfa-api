@@ -21,7 +21,10 @@ class CategoriesFactuelDeGouvernanceResource extends JsonResource
             'categorieableId' => $this->categorieable->secure_id,
             'position' => $this->position,
             'categorieDeGouvernanceId' => optional($this->categorieDeGouvernanceParent)->secure_id,
-            'questions_de_gouvernance' => QuestionsFactuelDeGouvernanceResource::collection($this->questions_de_gouvernance)
+
+            'categories_de_gouvernance' => $this->when($this->categories_de_gouvernance->count(), CategoriesFactuelDeGouvernanceResource::collection($this->categories_de_gouvernance)),
+
+            'questions_de_gouvernance' => $this->when($this->questions_de_gouvernance->count(), QuestionsFactuelDeGouvernanceResource::collection($this->questions_de_gouvernance))
         ];
     }
 }
