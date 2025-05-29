@@ -3,6 +3,7 @@
 namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_de_perception;
 
 use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
+use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\QuestionDePerceptionDeGouvernance;
 use App\Models\EvaluationDeGouvernance;
 use App\Models\OptionDeReponse;
@@ -86,7 +87,7 @@ class SoumissionDePerceptionRequest extends FormRequest
                 }
             ],
 
-            'perception.response_data.*.optionDeReponseId'   => ['sometimes', new HashValidatorRule(new OptionDeReponse()), function ($attribute, $value, $fail) {
+            'perception.response_data.*.optionDeReponseId'   => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  *
