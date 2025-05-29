@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_factuel;
+namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_de_perception;
 
 use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
