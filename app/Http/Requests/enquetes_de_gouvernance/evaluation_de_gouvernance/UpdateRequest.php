@@ -69,6 +69,8 @@ class UpdateRequest extends FormRequest
         $validator->after(function ($validator) {
             $this->checkPrincipesMatch($validator);
         });
+
+        dd("Cool");
     }
 
     /**
