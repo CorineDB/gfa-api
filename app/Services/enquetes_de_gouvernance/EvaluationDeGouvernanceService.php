@@ -233,7 +233,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 Artisan::call('change-statut:evaluations')
             )->delay(now()->addSeconds(30)); // Optionally add additional delay at dispatch time->addSeconds(30)
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new EvaluationsDeGouvernanceResource($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => ($evaluationDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
 
             DB::rollBack();
