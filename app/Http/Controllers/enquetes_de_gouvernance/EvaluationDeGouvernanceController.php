@@ -98,6 +98,16 @@ class EvaluationDeGouvernanceController extends Controller
         return $this->evaluationDeGouvernanceService->deleteById($id);
     }
 
+    public function organisations($id)
+    {
+        return $this->evaluationDeGouvernanceService->organisations($id);
+    }
+
+    public function soumissions($id)
+    {
+        return $this->evaluationDeGouvernanceService->soumissions($id);
+    }
+
 
     public function recommandations($id)
     {
