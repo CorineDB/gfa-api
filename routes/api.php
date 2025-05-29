@@ -997,8 +997,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('{evaluation_de_gouvernance}/formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')->middleware('permission:voir-formulaire-factuel');
                     Route::get('{evaluation_de_gouvernance}/rappel-soumission', 'rappel_soumission')->name('rappel_soumission')->middleware('permission:envoyer-un-rappel-soumission');
 
-                    Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionController', ['except' => ['update']])->names('soumissions');
-                    Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
+                    Route::apiResource('{evaluation_de_gouvernance}/soumissions-factuel', 'SoumissionController', ['except' => ['update']])->names('soumissions-factuel');
+                    Route::post('{evaluation_de_gouvernance}/validate-soumission-factuel', 'SoumissionController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
+
+                    Route::apiResource('{evaluation_de_gouvernance}/soumissions-de-perception', 'SoumissionDePerceptionController', ['only' => ['index', 'show']])->names('soumissions-de-perception');
 
                     Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions')->name('soumissions')->middleware('permission:voir-une-soumission');
 
