@@ -96,6 +96,9 @@ class UpdateRequest extends FormRequest
 
     private function checkPrincipesMatch($validator)
     {
+        /**
+         * If l 'evaluation n'a pas encore demarre
+         */
         if ($this->evaluation_de_gouvernance->statut == -1) {
 
             $formulaires = $this->input("formulaires_de_gouvernance");
@@ -124,37 +127,7 @@ class UpdateRequest extends FormRequest
                         );
                         return;
                     }
-
-                    // Step 1: Retrieve Principe IDs from the 'perception' form
-                    $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance')
-                        ->where('formulaireDePerceptionId', $formulaireDePerception->id)
-                        ->whereNull('categorieDePerceptionDeGouvernanceId')
-                        ->pluck('categorieable_id')
-                        ->toArray();
-
-                    // Step 2: Retrieve unique Principe IDs from the 'factuel' form
-                    $factuelPrincipesIds = DB::table('categories_factuel_de_gouvernance as types')
-                        ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
-                        ->where('types.formulaireFactuelId', $formulaireFactuel->id)
-                        ->whereNull('types.categorieFactuelDeGouvernanceId')
-                        ->where('principes.formulaireFactuelId', $formulaireFactuel->id)
-                        ->whereNotNull('principes.categorieFactuelDeGouvernanceId')
-                        ->where('types.categorieable_type', get_class(new TypeDeGouvernanceFactuel()))
-                        ->where('principes.categorieable_type', get_class(new PrincipeDeGouvernanceFactuel()))
-                        ->select('principes.categorieable_id as principe_id')
-                        ->distinct() // Ignore duplicates by selecting only unique perception IDs
-                        ->pluck('principe_id')
-                        ->toArray();
-
-                    // Step 3: Compare perception IDs across forms
-                    //if (array_diff($perceptionPrincipesIds, $factuelPrincipesIds) || array_diff($factuelPrincipesIds, $perceptionPrincipesIds)) {
-                    if (!empty(array_diff($perceptionPrincipesIds, $factuelPrincipesIds)) || !empty(array_diff($factuelPrincipesIds, $perceptionPrincipesIds))) {
-
-                        $validator->errors()->add(
-                            'formulaires_de_gouvernance',
-                            "Les principes de gouvernance du formulaire de perception doivent etre les memes dans le formulaire factuel."
-                        );
-                    }
+                    $this->formMatch($validator, $formulaireDePerception, $formulaireFactuel);
                 } else {
 
                     if (isset($formulaires['factuel'])) {
@@ -177,7 +150,6 @@ class UpdateRequest extends FormRequest
                         if ($evaluation_formulaire) {
                             $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
                         }
-
                     } else if (isset($formulaires['perception'])) {
                         $formulaire = $formulaires['perception'];
                         $formulaire = FormulaireDePerceptionDeGouvernance::find($formulaire);
@@ -208,6 +180,9 @@ class UpdateRequest extends FormRequest
             }
         }
 
+        /**
+         * If l 'evaluation est cours
+         */
         else if ($this->evaluation_de_gouvernance->statut == 0) {
 
             $formulaires = $this->input("formulaires_de_gouvernance");
@@ -237,6 +212,7 @@ class UpdateRequest extends FormRequest
                         return;
                     }
 
+
                     $evaluation_factuelFormulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
 
                     $evaluation_perceptionFormulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
@@ -253,8 +229,11 @@ class UpdateRequest extends FormRequest
                         }
                     }
 
-                    $this->formMatch($validator, $formulaireDePerception, $formulaireFactuel);
 
+                        /**
+                         * Verifier si les formulaires ont les memes principes
+                         */
+                    $this->formMatch($validator, $formulaireDePerception, $formulaireFactuel);
                 } else {
                     if (isset($formulaires['factuel'])) {
                         $formulaire = $formulaires['factuel'];
@@ -268,14 +247,9 @@ class UpdateRequest extends FormRequest
                             return;
                         }
 
-                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
-
-                        $factuelFormulaire = $formulaire;
-                        $perceptionFormulaire = $evaluation_formulaire;
-
-                        if ($evaluation_formulaire) {
-                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
-                        }
+                        /**
+                         * verifier si le nouveau formulaire soumis est different de l'existant quand l'existant est deja utilise pour une soumission
+                         */
 
                         $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
 
@@ -287,6 +261,19 @@ class UpdateRequest extends FormRequest
                             );
                             return;
                         }
+
+                        /**
+                         * Verifier si le nouveau formulaire et l'ancien ont les memes principes
+                         */
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
+
+                        $factuelFormulaire = $formulaire;
+                        $perceptionFormulaire = $evaluation_formulaire;
+
+                        if ($evaluation_formulaire) {
+                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
+                        }
+
                     } else if (isset($formulaires['perception'])) {
                         $formulaire = $formulaires['perception'];
                         $formulaire = FormulaireDePerceptionDeGouvernance::find($formulaire);
@@ -298,15 +285,10 @@ class UpdateRequest extends FormRequest
                             );
                             return;
                         }
-                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
 
-                        $factuelFormulaire = $evaluation_formulaire;
-                        $perceptionFormulaire = $formulaire;
-
-                        if ($evaluation_formulaire) {
-                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
-                        }
-
+                        /**
+                         * verifier si le nouveau formulaire soumis est different de l'existant quand l'existant est deja utilise pour une soumission
+                         */
                         $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
 
                         if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsPerception()->count()) {
@@ -317,6 +299,18 @@ class UpdateRequest extends FormRequest
                             );
                             return;
                         }
+
+                        /**
+                         * Verifier si le nouveau formulaire et l'ancien ont les memes principes
+                         */
+                        $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
+
+                        $factuelFormulaire = $evaluation_formulaire;
+                        $perceptionFormulaire = $formulaire;
+
+                        if ($evaluation_formulaire) {
+                            $this->formMatch($validator, $perceptionFormulaire, $factuelFormulaire);
+                        }
                     }
                 }
             } else {
@@ -326,8 +320,46 @@ class UpdateRequest extends FormRequest
                 );
             }
         }
-        else{
 
+        /**
+         * If l 'evaluation est termine
+         */
+        else {
+        }
+    }
+
+    private function formMatch($validator, $formulaireDePerception, $formulaireFactuel)
+    {
+
+        // Step 1: Retrieve Principe IDs from the 'perception' form
+        $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance')
+            ->where('formulaireDePerceptionId', $formulaireDePerception->id)
+            ->whereNull('categorieDePerceptionDeGouvernanceId')
+            ->pluck('categorieable_id')
+            ->toArray();
+
+        // Step 2: Retrieve unique Principe IDs from the 'factuel' form
+        $factuelPrincipesIds = DB::table('categories_factuel_de_gouvernance as types')
+            ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
+            ->where('types.formulaireFactuelId', $formulaireFactuel->id)
+            ->whereNull('types.categorieFactuelDeGouvernanceId')
+            ->where('principes.formulaireFactuelId', $formulaireFactuel->id)
+            ->whereNotNull('principes.categorieFactuelDeGouvernanceId')
+            ->where('types.categorieable_type', get_class(new TypeDeGouvernanceFactuel()))
+            ->where('principes.categorieable_type', get_class(new PrincipeDeGouvernanceFactuel()))
+            ->select('principes.categorieable_id as principe_id')
+            ->distinct() // Ignore duplicates by selecting only unique perception IDs
+            ->pluck('principe_id')
+            ->toArray();
+
+        // Step 3: Compare perception IDs across forms
+        //if (array_diff($perceptionPrincipesIds, $factuelPrincipesIds) || array_diff($factuelPrincipesIds, $perceptionPrincipesIds)) {
+        if (!empty(array_diff($perceptionPrincipesIds, $factuelPrincipesIds)) || !empty(array_diff($factuelPrincipesIds, $perceptionPrincipesIds))) {
+
+            $validator->errors()->add(
+                'formulaires_de_gouvernance',
+                "Les principes de gouvernance du formulaire de perception doivent etre les memes dans le formulaire factuel."
+            );
         }
     }
 }
