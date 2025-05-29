@@ -202,7 +202,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                 $soumission->refresh();
 
-                $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function ($query) use ($soumission) {
+                $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses_factuel', function ($query) use ($soumission) {
                     $query->when($soumission->formulaireDeGouvernance, function ($query) {
 
                         $query->where(function ($query) {
