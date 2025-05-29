@@ -104,7 +104,7 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissionsFactuel()
     {
-        return $this->hasMany(SoumissionFactuel::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
+        return $this->hasOne(SoumissionFactuel::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
             $organisationId = optional(auth()->user()->profilable)->id;
 
             // If the organisationId is null, return an empty collection
