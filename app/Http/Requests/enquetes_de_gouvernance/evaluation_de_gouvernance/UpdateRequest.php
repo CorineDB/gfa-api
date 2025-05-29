@@ -187,9 +187,9 @@ class UpdateRequest extends FormRequest
 
             $formulaires = $this->input("formulaires_de_gouvernance");
 
-            dd($formulaires);
             if ($formulaires) {
 
+                dd(count($formulaires));
                 if (count($formulaires) > 1) {
 
                     $formulaireFactuel = $formulaires['factuel'];
