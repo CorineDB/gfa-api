@@ -20,9 +20,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
-* Interface FormulaireFactuelDeGouvernanceServiceInterface
-* @package Core\Services\Interfaces
-*/
+ * Interface FormulaireFactuelDeGouvernanceServiceInterface
+ * @package Core\Services\Interfaces
+ */
 class FormulaireFactuelDeGouvernanceService extends BaseService implements FormulaireFactuelDeGouvernanceServiceInterface
 {
 
@@ -43,54 +43,41 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
     public function all(array $columns = ['*'], array $relations = []): JsonResponse
     {
-        try
-        {
-            if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == 'App\\Models\\Administrateur')){
+        try {
+            if ((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == 'App\\Models\\Administrateur')) {
                 $formulaires_factuel_de_gouvernance = Auth::user()->programme->formulaires_factuel_de_gouvernance;
-            }
-            else{
+            } else {
                 $formulaires_factuel_de_gouvernance = Auth::user()->programme->formulaires_factuel_de_gouvernance;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ListFormulaireDeGouvernanceFactuelResource::collection($formulaires_factuel_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function allFiltredBy(array $filtres = [], array $columns = ['*'], array $relations = []) : JsonResponse
+    public function allFiltredBy(array $filtres = [], array $columns = ['*'], array $relations = []): JsonResponse
     {
-        try
-        {
+        try {
             $filtres = array_merge($filtres, ['programmeId__eq' => auth()->user()->programmeId]);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ListFormulaireDeGouvernanceFactuelResource::collection($this->repository->filterBy($filtres, $columns, $relations)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function findById($formulaireDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($formulaireDeGouvernance) && !($formulaireDeGouvernance = $this->repository->findById($formulaireDeGouvernance))) throw new Exception("Formulaire de gouvernance inconnue.", 500);
+        try {
+            if (!is_object($formulaireDeGouvernance) && !($formulaireDeGouvernance = $this->repository->findById($formulaireDeGouvernance))) throw new Exception("Formulaire de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new ListFormulaireDeGouvernanceFactuelResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function create(array $attributs) : JsonResponse
+    public function create(array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
@@ -102,7 +89,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
             $formulaireDeGouvernance = $this->repository->create($attributs);
 
-            if(isset($attributs['factuel']) && $attributs['factuel'] !== null){
+            if (isset($attributs['factuel']) && $attributs['factuel'] !== null) {
 
                 $options = [];
 
@@ -110,62 +97,55 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($option_de_reponse['id']);
 
-                    if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                    if (!$option && $option->programmeId == $programmeId) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    if(isset($option_de_reponse['preuveIsRequired'])){
+                    if (isset($option_de_reponse['preuveIsRequired'])) {
                         $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired'], 'sourceIsRequired' => $option_de_reponse['preuveIsRequired'], 'descriptionIsRequired' => !$option_de_reponse['preuveIsRequired'], 'programmeId' => $programmeId];
-                    }else{
+                    } else {
                         $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => false, 'sourceIsRequired' => false, 'descriptionIsRequired' => false, 'programmeId' => $programmeId];
                     }
-
                 }
 
                 $formulaireDeGouvernance->options_de_reponse()->attach($options);
 
                 foreach ($attributs['factuel']["types_de_gouvernance"] as $key => $type_de_gouvernance) {
 
-                    if(!(($typeDeGouvernance = app(TypeDeGouvernanceFactuelRepository::class)->findById($type_de_gouvernance['id'])) && $typeDeGouvernance->programmeId == $programmeId))
-                    {
-                        throw new Exception( "Ce type de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                    if (!(($typeDeGouvernance = app(TypeDeGouvernanceFactuelRepository::class)->findById($type_de_gouvernance['id'])) && $typeDeGouvernance->programmeId == $programmeId)) {
+                        throw new Exception("Ce type de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                     }
 
-                        $position = isset($type_de_gouvernance['position']) ? $type_de_gouvernance['position'] : $formulaireDeGouvernance->categories_de_gouvernance->count() + 1;
+                    $position = isset($type_de_gouvernance['position']) ? $type_de_gouvernance['position'] : $formulaireDeGouvernance->categories_de_gouvernance->count() + 1;
 
-                        $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => null, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
+                    $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => null, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
                     foreach ($type_de_gouvernance["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
 
-                        if(!(($principeDeGouvernance = app(PrincipeDeGouvernanceFactuelRepository::class)->findById($principe_de_gouvernance['id'])) && $principeDeGouvernance->programmeId == $programmeId))
-                        {
-                            throw new Exception( "Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                        if (!(($principeDeGouvernance = app(PrincipeDeGouvernanceFactuelRepository::class)->findById($principe_de_gouvernance['id'])) && $principeDeGouvernance->programmeId == $programmeId)) {
+                            throw new Exception("Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                         }
 
-                            $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $typeDeGouvernanceCategorie->categories_de_gouvernance->count() + 1;
-                            $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
+                        $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $typeDeGouvernanceCategorie->categories_de_gouvernance->count() + 1;
+                        $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
                         foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
 
-                            if(!(($critereDeGouvernance = app(CritereDeGouvernanceFactuelRepository::class)->findById($critere_de_gouvernance['id'])) && $critereDeGouvernance->programmeId == $programmeId))
-                            {
-                                throw new Exception( "Ce critere de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                            if (!(($critereDeGouvernance = app(CritereDeGouvernanceFactuelRepository::class)->findById($critere_de_gouvernance['id'])) && $critereDeGouvernance->programmeId == $programmeId)) {
+                                throw new Exception("Ce critere de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                             }
-                                $position = isset($critere_de_gouvernance['position']) ? $critere_de_gouvernance['position'] : $principeDeGouvernanceCategorie->categories_de_gouvernance->count() + 1;
-                                $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
+                            $position = isset($critere_de_gouvernance['position']) ? $critere_de_gouvernance['position'] : $principeDeGouvernanceCategorie->categories_de_gouvernance->count() + 1;
+                            $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
                             foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
 
-                                if(!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($indicateur_de_gouvernance))))
-                                {
-                                    throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                                if (!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($indicateur_de_gouvernance)))) {
+                                    throw new Exception("Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                 }
 
                                 $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : $critereDeGouvernanceCategorie->questions_de_gouvernance->count() + 1;
 
                                 $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurFactuelDeGouvernanceId' => $indicateurDeGouvernance->id]);
-
                             }
                         }
-
                     }
                 }
             }
@@ -173,7 +153,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
             $formulaireDeGouvernance->save();
             $formulaireDeGouvernance->refresh();
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($formulaireDeGouvernance));
 
@@ -182,9 +162,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ListFormulaireDeGouvernanceFactuelResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
-        }
-        catch (\Throwable $th) {
+        } catch (\Throwable $th) {
 
             DB::rollBack();
 
@@ -193,13 +171,13 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
         }
     }
 
-    public function update($formulaireDeGouvernance, array $attributs) : JsonResponse
+    public function update($formulaireDeGouvernance, array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
         try {
 
-            if(!is_object($formulaireDeGouvernance) && !($formulaireDeGouvernance = $this->repository->findById($formulaireDeGouvernance))) throw new Exception("Cette option de reponse n'existe pas", 500);
+            if (!is_object($formulaireDeGouvernance) && !($formulaireDeGouvernance = $this->repository->findById($formulaireDeGouvernance))) throw new Exception("Cette option de reponse n'existe pas", 500);
 
             $programmeId = Auth::user()->programme->id;
 
@@ -209,7 +187,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
             $formulaireDeGouvernance->refresh();
 
-            if(isset($attributs['factuel']) && $attributs['factuel'] !== null && $formulaireDeGouvernance->type == 'factuel'){
+            if (isset($attributs['factuel']) && $attributs['factuel'] !== null && $formulaireDeGouvernance->type == 'factuel') {
 
                 $options = [];
 
@@ -217,17 +195,16 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($option_de_reponse['id']);
 
-                    if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                    if (!$option && $option->programmeId == $programmeId) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    if(isset($option_de_reponse['preuveIsRequired'])){
+                    if (isset($option_de_reponse['preuveIsRequired'])) {
                         $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId, 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
-                    }else{
+                    } else {
                         $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
                     }
-
                 }
 
-                if($formulaireDeGouvernance->type == 'factuel'){
+                if ($formulaireDeGouvernance->type == 'factuel') {
 
                     $formulaireDeGouvernance->options_de_reponse()->sync($options);
 
@@ -235,16 +212,15 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                     foreach ($attributs['factuel']["types_de_gouvernance"] as $key => $type_de_gouvernance) {
 
-                        if(!(($typeDeGouvernance = app(TypeDeGouvernanceFactuelRepository::class)->findById($type_de_gouvernance['id'])) && $typeDeGouvernance->programmeId == $programmeId))
-                        {
-                            throw new Exception( "Ce type de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                        if (!(($typeDeGouvernance = app(TypeDeGouvernanceFactuelRepository::class)->findById($type_de_gouvernance['id'])) && $typeDeGouvernance->programmeId == $programmeId)) {
+                            throw new Exception("Ce type de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                         }
 
-                        $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->whereNull("categorieFactuelDeGouvernanceId")->where('programmeId', $programmeId)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
+                        $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->whereNull("categorieFactuelDeGouvernanceId")->where('programmeId', $programmeId)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function ($query) use ($formulaireDeGouvernance, $programmeId) {
                             $query->where('id', $formulaireDeGouvernance->id)->where('programmeId', $programmeId);
                         })->first();
 
-                        if(!$typeDeGouvernanceCategorie){
+                        if (!$typeDeGouvernanceCategorie) {
                             $position = isset($type_de_gouvernance['position']) ? $type_de_gouvernance['position'] : $formulaireDeGouvernance->categories_de_gouvernance->count() + 1;
                             $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => null, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
                         }
@@ -253,16 +229,15 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                         foreach ($type_de_gouvernance["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
 
-                            if(!(($principeDeGouvernance = app(PrincipeDeGouvernanceFactuelRepository::class)->findById($principe_de_gouvernance['id'])) && $principeDeGouvernance->programmeId == $programmeId))
-                            {
-                                throw new Exception( "Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                            if (!(($principeDeGouvernance = app(PrincipeDeGouvernanceFactuelRepository::class)->findById($principe_de_gouvernance['id'])) && $principeDeGouvernance->programmeId == $programmeId)) {
+                                throw new Exception("Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                             }
 
-                            $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->where('programmeId', $programmeId)->where('categorieFactuelDeGouvernanceId', $typeDeGouvernanceCategorie->id,)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
+                            $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->where('programmeId', $programmeId)->where('categorieFactuelDeGouvernanceId', $typeDeGouvernanceCategorie->id,)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function ($query) use ($formulaireDeGouvernance, $programmeId) {
                                 $query->where('id', $formulaireDeGouvernance->id)->where('programmeId', $programmeId);
                             })->first();
 
-                            if(!$principeDeGouvernanceCategorie){
+                            if (!$principeDeGouvernanceCategorie) {
                                 $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $typeDeGouvernanceCategorie->categories_de_gouvernance->count() + 1;
                                 $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
                             }
@@ -271,16 +246,15 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                             foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
 
-                                if(!(($critereDeGouvernance = app(CritereDeGouvernanceFactuelRepository::class)->findById($critere_de_gouvernance['id'])) && $critereDeGouvernance->programmeId == $programmeId))
-                                {
-                                    throw new Exception( "Ce critere de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                                if (!(($critereDeGouvernance = app(CritereDeGouvernanceFactuelRepository::class)->findById($critere_de_gouvernance['id'])) && $critereDeGouvernance->programmeId == $programmeId)) {
+                                    throw new Exception("Ce critere de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                 }
 
-                                $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->where('programmeId', $programmeId)->where('categorieFactuelDeGouvernanceId', $principeDeGouvernanceCategorie->id)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
+                                $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->where('programmeId', $programmeId)->where('categorieFactuelDeGouvernanceId', $principeDeGouvernanceCategorie->id)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function ($query) use ($formulaireDeGouvernance, $programmeId) {
                                     $query->where('id', $formulaireDeGouvernance->id)->where('programmeId', $programmeId);
                                 })->first();
 
-                                if(!$critereDeGouvernanceCategorie){
+                                if (!$critereDeGouvernanceCategorie) {
 
                                     $position = isset($critere_de_gouvernance['position']) ? $critere_de_gouvernance['position'] : $principeDeGouvernanceCategorie->categories_de_gouvernance->count() + 1;
                                     $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
@@ -294,23 +268,21 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                                 foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
 
-                                    if(is_array($indicateur_de_gouvernance)){
+                                    if (is_array($indicateur_de_gouvernance)) {
                                         $id = $indicateur_de_gouvernance['id'];
-                                    }
-                                    else{
+                                    } else {
                                         $id = $indicateur_de_gouvernance;
                                     }
 
-                                    if(!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($id))))
-                                    {
-                                        throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                                    if (!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($id)))) {
+                                        throw new Exception("Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                     }
 
-                                    $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->where('programmeId', $programmeId)->where('formulaireFactuelId', $formulaireDeGouvernance->id)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function($query) use ($formulaireDeGouvernance, $programmeId){
+                                    $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->where('programmeId', $programmeId)->where('formulaireFactuelId', $formulaireDeGouvernance->id)/* ->where("position", $principe_de_gouvernance['position']) */->whereHas("formulaire_de_gouvernance", function ($query) use ($formulaireDeGouvernance, $programmeId) {
                                         $query->where('id', $formulaireDeGouvernance->id)->where('programmeId', $programmeId);
                                     })->first();
 
-                                    if(!$questionDeGouvernance){
+                                    if (!$questionDeGouvernance) {
                                         $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : $critereDeGouvernanceCategorie->questions_de_gouvernance->count() + 1;
                                         $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurFactuelDeGouvernanceId' => $indicateurDeGouvernance->id]);
                                     }
@@ -334,7 +306,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                 }
             }
 
-            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
 
             $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($formulaireDeGouvernance));
 
@@ -343,7 +315,6 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ListFormulaireDeGouvernanceFactuelResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
-
         } catch (\Throwable $th) {
 
             DB::rollBack();
@@ -352,5 +323,4 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 }
