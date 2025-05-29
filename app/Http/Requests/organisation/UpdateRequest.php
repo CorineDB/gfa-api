@@ -51,20 +51,20 @@ class UpdateRequest extends FormRequest
             'sigle'                 => ['nullable','string','max:255', Rule::unique('organisations', 'sigle')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at')],
             'code'                  => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at') ],
 
-            'type'                  => 'required|string|in:osc_partenaire,osc_fosir,autre_osc,acteurs,structure_etatique',  // Ensures the value is either 'osc' or 'osc_fosir'
+            'type'                  => 'sometimes|string|in:osc_partenaire,osc_fosir,autre_osc,acteurs,structure_etatique',  // Ensures the value is either 'osc' or 'osc_fosir'
 
             'fondId'                => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), (request()->input('type') != 'osc_fosir') ? 'nullable' : '', new HashValidatorRule(new Fond())],
 
-            'latitude'              => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
-            'longitude'             => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'latitude'              => ['nullable', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'             => ['nullable', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
 
-            'addresse'              => 'sometimes|max:255',
-            'quartier'              => 'sometimes|max:255',
-            'arrondissement'        => 'sometimes|max:255',
-            'commune'               => 'sometimes|max:255',
-            'departement'           => 'sometimes|max:255',
-            'pays'                  => 'sometimes|max:255',
-            'secteurActivite'       => 'sometimes|max:255',
+            'addresse'              => 'nullable|max:255',
+            'quartier'              => 'nullable|max:255',
+            'arrondissement'        => 'nullable|max:255',
+            'commune'               => 'nullable|max:255',
+            'departement'           => 'nullable|max:255',
+            'pays'                  => 'nullable|max:255',
+            'secteurActivite'       => 'nullable|max:255',
         ];
 
         return $rules;

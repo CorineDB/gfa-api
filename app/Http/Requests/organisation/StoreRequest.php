@@ -48,17 +48,17 @@ class StoreRequest extends FormRequest
 
             'fondId'            => [Rule::requiredIf((request()->input('type') === 'osc_fosir')), (request()->input('type') != 'osc_fosir') ? 'nullable' : '', new HashValidatorRule(new Fond())],
 
-            'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
-            'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'latitude'          => ['nullable', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'         => ['nullable', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
 
 
-            'addresse'          => 'required|max:255',
-            'quartier'          => 'required|max:255',
-            'arrondissement'    => 'required|max:255',
-            'commune'           => 'required|max:255',
-            'departement'       => 'required|max:255',
-            'pays'              => 'required|max:255',
-            'secteurActivite'   => 'required|max:255',
+            'addresse'          => 'nullable|max:255',
+            'quartier'          => 'nullable|max:255',
+            'arrondissement'    => 'nullable|max:255',
+            'commune'           => 'nullable|max:255',
+            'departement'       => 'nullable|max:255',
+            'pays'              => 'nullable|max:255',
+            'secteurActivite'   => 'nullable|max:255',
         ];
 
         return $rules;
