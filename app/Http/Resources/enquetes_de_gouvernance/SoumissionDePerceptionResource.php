@@ -29,7 +29,7 @@ class SoumissionDePerceptionResource extends JsonResource
                 ];
             }),
 
-            'categories_de_gouvernance' => $this->when($this->formulaireDeGouvernance->categories_de_gouvernance->count(), $this->sections($this->categories_de_gouvernance)),
+            'categories_de_gouvernance' => $this->when($this->formulaireDeGouvernance->categories_de_gouvernance->count(), $this->categories_de_gouvernance),
         ];
     }
 
