@@ -189,7 +189,6 @@ class UpdateRequest extends FormRequest
 
             if ($formulaires) {
 
-                dd(count($formulaires));
                 if (count($formulaires) > 1) {
 
                     $formulaireFactuel = $formulaires['factuel'];
@@ -220,13 +219,13 @@ class UpdateRequest extends FormRequest
                     $evaluation_perceptionFormulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
 
                     if ($evaluation_factuelFormulaire) {
-                        if ($this->evaluation_de_gouvernance->soumissionsFactuel()->count()) {
+                        if ($this->evaluation_de_gouvernance->soumissionsFactuel->count()) {
                             $formulaireFactuel = $evaluation_factuelFormulaire;
                         }
                     }
 
                     if ($evaluation_perceptionFormulaire) {
-                        if ($this->evaluation_de_gouvernance->soumissionsPerception()->count()) {
+                        if ($this->evaluation_de_gouvernance->soumissionsPerception->count()) {
                             $formulaireDePerception = $evaluation_perceptionFormulaire;
                         }
                     }
@@ -255,7 +254,7 @@ class UpdateRequest extends FormRequest
 
                         $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance();
 
-                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsFactuel()->count()) {
+                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsFactuel->count()) {
 
                             $validator->errors()->add(
                                 'formulaires_de_gouvernance.factuel',
@@ -293,7 +292,7 @@ class UpdateRequest extends FormRequest
                          */
                         $evaluation_formulaire = $this->evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance();
 
-                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsPerception()->count()) {
+                        if ($evaluation_formulaire && $evaluation_formulaire->id != $formulaire->id && $this->evaluation_de_gouvernance->soumissionsPerception->count()) {
 
                             $validator->errors()->add(
                                 'formulaires_de_gouvernance.perception',
