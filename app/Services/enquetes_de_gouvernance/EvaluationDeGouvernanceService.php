@@ -5,12 +5,12 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Http\Resources\gouvernance\CategoriesDeGouvernanceResource;
 use App\Http\Resources\enquetes_de_gouvernance\EvaluationsDeGouvernanceResource;
+use App\Http\Resources\enquetes_de_gouvernance\OrganisationsEnqueteResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
 use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
-use App\Http\Resources\OrganisationResource;
 use App\Jobs\AppJob;
 use App\Jobs\SendInvitationJob;
 use App\Mail\InvitationEnqueteDeCollecteEmail;
@@ -257,7 +257,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ($evaluationDeGouvernance->organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationsEnqueteResource::collection($evaluationDeGouvernance->organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
