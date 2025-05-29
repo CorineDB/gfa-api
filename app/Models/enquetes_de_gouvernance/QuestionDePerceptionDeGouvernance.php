@@ -51,7 +51,12 @@ class QuestionDePerceptionDeGouvernance extends Model
 
     public function reponses()
     {
-        return $this->hasMany(ReponseDeLaCollecte::class, 'questionId');
+        return $this->hasMany(ReponseDeLaCollecteDePerception::class, 'questionId');
+    }
+
+    public function reponse($soumissionId)
+    {
+        return $this->hasOne(ReponseDeLaCollecteDePerception::class, 'questionId')->where("soumissionId", $soumissionId);
     }
 
 }
