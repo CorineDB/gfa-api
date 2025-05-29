@@ -174,8 +174,8 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses')->count();
 
                 if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
-                    $soumission->submitted_at = now();
-                    $soumission->submittedBy  = Auth::check() ? auth()->id() : null;
+
+                    $soumission->submittedBy  = null;
                     $soumission->statut       = true;
 
                     $soumission->save();
