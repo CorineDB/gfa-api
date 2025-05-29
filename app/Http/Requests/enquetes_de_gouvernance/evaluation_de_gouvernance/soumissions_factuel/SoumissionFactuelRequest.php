@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_factuel;
 
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
 use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\QuestionFactuelDeGouvernance;
-use App\Models\EvaluationDeGouvernance;
 use App\Models\Organisation;
 use App\Models\Programme;
 use App\Models\SourceDeVerification;
@@ -50,7 +50,7 @@ class SoumissionFactuelRequest extends FormRequest
 
                     // Check if formulaireDeGouvernanceId exists within the related formulaire_factuel_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()
-                        ->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
+                        ->wherePivot('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
                         ->first();
 
                     if ($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
