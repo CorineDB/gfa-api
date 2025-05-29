@@ -1030,6 +1030,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'formulaireFactuelId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id,
                         'organisationId' => $organisation->id,
                         'programmeId' => $evaluationDeGouvernance->programmeId,
+                        'submitted_at' => now()
                     ];
 
                     $soumission = $evaluationDeGouvernance->soumissionsFactuel()->create($attributs);
