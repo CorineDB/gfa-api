@@ -36,8 +36,6 @@ class SoumissionFactuelResource extends JsonResource
     public function sections($categories)
     {
         return $categories->map(function($sousCategorieDeGouvernance){
-
-            dd($sousCategorieDeGouvernance->secure_id);
             $subCategories = [];
             $questions = [];
 
@@ -54,7 +52,7 @@ class SoumissionFactuelResource extends JsonResource
                 'nom' => $sousCategorieDeGouvernance->categorieable->nom,
                 'categorieableId' => $sousCategorieDeGouvernance->categorieable->secure_id,
                 'position' => $sousCategorieDeGouvernance->position,
-                'categorieDeGouvernanceId' => optional($sousCategorieDeGouvernance->categorieDeGouvernanceParent)->secure_id
+                'categorieDeGouvernanceId' => optional($sousCategorieDeGouvernance->categorieDeGouvernanceParent)?->secure_id
             ], $subCategories), $questions);
         });
     }
