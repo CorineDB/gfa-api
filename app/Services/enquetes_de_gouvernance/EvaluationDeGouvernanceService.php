@@ -945,7 +945,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         try {
 
-            dd(auth()->user());
             if ((!Auth::user()->hasRole('organisation') && (get_class(auth()->user()->profilable) != Organisation::class))) {
 
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
