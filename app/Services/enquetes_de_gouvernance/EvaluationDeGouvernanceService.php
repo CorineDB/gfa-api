@@ -1032,6 +1032,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $soumission = $evaluationDeGouvernance->soumissionsFactuel->create($attributs);
 
+                    dd($soumission);
+
                     $formulaire_factuel_de_gouvernance = new SoumissionFactuelResource($soumission);
                 }
             } else {
