@@ -18,6 +18,7 @@ use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Jobs\AppJob;
 use App\Jobs\SendInvitationJob;
 use App\Mail\InvitationEnqueteDeCollecteEmail;
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance as EnqueteEvaluationDeGouvernance;
 use App\Models\EvaluationDeGouvernance;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
@@ -989,18 +990,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     {
         try {
             ///if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
-            $evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
+            $evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
                 //$query->where('evaluation_organisations.token', $token);pivot_token
             })->with(["organisations" => function($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
-            }, "formulaires_factuel_de_gouvernance" => function($query) {
-                $query;
             }])->first();
 
             dd($evaluationDeGouvernance->formulaires_factuel_de_gouvernance);
 
-            $evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
+            $evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
             })->with(["organisations" => function ($query) use ($token) {
                 $query->wherePivot('token', $token);
