@@ -1032,7 +1032,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'programmeId' => $evaluationDeGouvernance->programmeId,
                     ];
 
-                    $soumission = $evaluationDeGouvernance->soumissionsFactuel->create($attributs);
+                    $soumission = $evaluationDeGouvernance->soumissionsFactuel()->create($attributs);
 
                     dd($soumission);
 
