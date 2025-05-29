@@ -39,7 +39,6 @@ class SoumissionDePerceptionRequest extends FormRequest
         }
 
         return [
-            'programmeId'               => ['required', new HashValidatorRule(new Programme())],
             'identifier_of_participant' => ['required'],
             'token'                     => ['required', 'string', 'max:255', function ($attribute, $value, $fail) {
                 $this->organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
