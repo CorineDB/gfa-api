@@ -121,9 +121,9 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
 
             $evaluationOrganisation = $evaluationDeGouvernance->organisations($organisation->id)->first();
 
-            if ($evaluationDeGouvernance->soumissionsDePerception($organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants) {
+            /* if ($evaluationDeGouvernance->soumissionsDePerception($organisation->id)->where('statut', true)->count() == $evaluationOrganisation->pivot->nbreParticipants) {
                 return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
-            }
+            } */
 
             $soumission = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireDePerceptionId", $formulaireDeGouvernance->id)->where('identifier_of_participant', $attributs['identifier_of_participant'])->first();
 
