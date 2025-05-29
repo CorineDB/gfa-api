@@ -81,7 +81,7 @@ class FormulaireFactuelDeGouvernance extends Model
 
     public function options_de_reponse()
     {
-        return $this->belongsToMany(OptionDeReponseGouvernance::class,'formulaire_factuel_options', 'formulaireFactuelId', 'optionId')->withPivot(["id", "point", "preuveIsRequired", "sourceIsRequired", "descriptionIsRequired"]);
+        return $this->belongsToMany(OptionDeReponseGouvernance::class,'formulaire_factuel_options', 'formulaireFactuelId', 'optionId')->withPivot(["id", "point", "preuveIsRequired", "sourceIsRequired", "descriptionIsRequired", 'programmeId']);
     }
 
     public function programme()
