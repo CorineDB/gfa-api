@@ -1169,8 +1169,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
             Route::get('evaluations-de-gouvernance-perception/{participantId}/{token}', 'EvaluationDeGouvernanceController@formulaire_de_perception_de_gouvernance');
 
             Route::group(['prefix' =>  'evaluations-de-gouvernance-de-perception', 'as' => 'evaluations-de-gouvernance.'], function () {
-                Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionDePerceptionController', ['only' => ['store']])->names('soumissions');
-                Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionDePerceptionController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
+                Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionDePerceptionController', ['only' => ['store']])->names('save-soumission-de-perception');
+                Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionDePerceptionController@validated')->name('validate-soumission-de-perception');
             });
         });
     });
