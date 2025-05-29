@@ -1168,7 +1168,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 // Decode and merge participants from the organisation's pivot data
                 $participants = array_merge($participants, $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : []);
 
-                dd($participants);
+                dd($evaluationOrganisation->pivot->participants);
 
                 // Filter participants for those with "email" contact type
                 $emailParticipants = array_filter($participants, function ($participant) {
