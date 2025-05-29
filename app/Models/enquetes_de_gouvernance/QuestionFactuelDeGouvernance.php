@@ -51,7 +51,12 @@ class QuestionFactuelDeGouvernance extends Model
 
     public function reponses()
     {
-        return $this->hasMany(ReponseDeLaCollecte::class, 'questionId');
+        return $this->hasMany(ReponseDeLaCollecteFactuel::class, 'questionId');
+    }
+
+    public function reponse($soumissionId)
+    {
+        return $this->hasOne(ReponseDeLaCollecteFactuel::class, 'questionId')->where("soumissionId", $soumissionId);
     }
 
 }

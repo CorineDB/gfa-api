@@ -6,10 +6,13 @@ use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Http\Resources\gouvernance\CategoriesDeGouvernanceResource;
 use App\Http\Resources\enquetes_de_gouvernance\EvaluationsDeGouvernanceResource;
 use App\Http\Resources\enquetes_de_gouvernance\OrganisationsEnqueteResource;
+use App\Http\Resources\enquetes_de_gouvernance\SoumissionsFactuelResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
 use App\Http\Resources\gouvernance\RecommandationsResource;
+use App\Http\Resources\gouvernance\SoumissionDePerceptionResource;
+use App\Http\Resources\gouvernance\SoumissionFactuelResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Jobs\AppJob;
 use App\Jobs\SendInvitationJob;
@@ -258,6 +261,156 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationsEnqueteResource::collection($evaluationDeGouvernance->organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des soumissions d'une evaluation de gouvernance
+     *
+     * return JsonResponse
+     */
+    public function soumissions_enquete($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $url = config("app.url");
+
+            // If the URL is localhost, append the appropriate IP address and port
+            if (strpos($url, 'localhost') == false) {
+                $url = config("app.organisation_url");
+            }
+
+            $group_soumissions = [];
+
+            if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
+
+                $organisation = Auth::user()->profilable;
+
+                $evaluationDeGouvernance
+                    ->load([
+                        "soumissionsFactuel" => function ($query) use ($organisation) {
+                            $query->where('organisationId', $organisation->id);
+                        },
+                        "soumissionsDePerception" => function ($query) use ($organisation) {
+                            $query->where('organisationId', $organisation->id);
+                        }
+                    ]);
+
+                $group_soumissions = array_merge([
+                    "id"                    => $organisation->secure_id,
+                    'nom'                   => optional($organisation->user)->nom ?? null,
+                    'sigle'                 => $organisation->sigle,
+                    'code'                  => $organisation->code,
+                    'nom_point_focal'       => $organisation->nom_point_focal,
+                    'prenom_point_focal'    => $organisation->prenom_point_focal,
+                    'contact_point_focal'   => $organisation->contact_point_focal
+                ], ['factuel' => new SoumissionFactuelResource($evaluationDeGouvernance->soumissionsFactuel->first()), 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
+            } else {
+                $group_soumissions = $evaluationDeGouvernance->organisations()
+                    ->with(['sousmissions_enquete_factuel', 'sousmissions_enquete_de_perception'])
+                    ->get()
+                    ->map(function ($organisation) use ($evaluationDeGouvernance, $url) {
+
+                        // Fetch submissions for this organization
+                        $soumissionsFactuel = $organisation->sousmissions_enquete_factuel
+                            ->where('evaluationId', $evaluationDeGouvernance->id)
+                            ->map(function ($soumissions) {
+                                return SoumissionFactuelResource::collection($soumissions);
+                            }); // Group submissions by type
+
+                        $soumissionsDePerception = $organisation->sousmissions_enquete_de_perception
+                            ->where('evaluationId', $evaluationDeGouvernance->id)
+                            ->map(function ($soumissions) {
+                                return SoumissionDePerceptionResource::collection($soumissions);
+                            }); // Group submissions by type
+
+                        return array_merge([
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal,
+                            "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
+                            "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
+                        ], ['factuel' => $soumissionsFactuel->toArray(), 'perception' => $soumissionsDePerception->toArray()]);
+                    });
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $group_soumissions, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des soumissions d'une evaluation de gouvernance
+     *
+     * return JsonResponse
+     */
+    public function soumissionsDePerception($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $url = config("app.url");
+
+            // If the URL is localhost, append the appropriate IP address and port
+            if (strpos($url, 'localhost') == false) {
+                $url = config("app.organisation_url");
+            }
+
+            if ((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")) {
+                $group_soumissions = [];
+            } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
+
+                $organisation = Auth::user()->profilable;
+
+                $group_soumissions = $evaluationDeGouvernance->soumissionsDePerception()->where('organisationId', $organisation->id)
+                    ->get()->map(function ($soumissions) {
+                        return SoumissionDePerceptionResource::collection($soumissions);
+                    });
+
+                $group_soumissions = array_merge([
+                    "id"                    => $organisation->secure_id,
+                    'nom'                   => optional($organisation->user)->nom ?? null,
+                    'sigle'                 => $organisation->sigle,
+                    'code'                  => $organisation->code,
+                    'nom_point_focal'       => $organisation->nom_point_focal,
+                    'prenom_point_focal'    => $organisation->prenom_point_focal,
+                    'contact_point_focal'   => $organisation->contact_point_focal,
+                    'pourcentage_evolution_des_soumissions_de_perception'   => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id)
+                ], $group_soumissions->toArray());
+            } else {
+
+                $group_soumissions = $evaluationDeGouvernance->organisations()
+                    ->with('soumissions') // Load the associated organisations
+                    ->get()->map(function ($organisation) use ($evaluationDeGouvernance, $url) {
+                        // Fetch submissions for this organization
+                        $types_soumissions = $organisation->soumissions
+                            ->where('evaluationId', $evaluationDeGouvernance->id)
+                            ->groupBy('type')->map(function ($soumissions, $type) {
+                                return SoumissionsResource::collection($soumissions);
+                            }); // Group submissions by type
+
+                        return array_merge([
+                            "id"                    => $organisation->secure_id,
+                            'nom'                   => optional($organisation->user)->nom ?? null,
+                            'sigle'                 => $organisation->sigle,
+                            'code'                  => $organisation->code,
+                            'nom_point_focal'       => $organisation->nom_point_focal,
+                            'prenom_point_focal'    => $organisation->prenom_point_focal,
+                            'contact_point_focal'   => $organisation->contact_point_focal,
+                            "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
+                            "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
+                        ], $types_soumissions->toArray());
+                    });
+            }
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $group_soumissions, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }

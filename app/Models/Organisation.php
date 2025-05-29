@@ -6,6 +6,7 @@ use App\Http\Resources\user\UserResource;
 use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
 use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
 use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
