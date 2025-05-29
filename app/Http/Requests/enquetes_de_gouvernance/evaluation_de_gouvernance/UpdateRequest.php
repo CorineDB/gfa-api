@@ -5,7 +5,6 @@ namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance;
 use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
-use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuel;
 use App\Models\enquetes_de_gouvernance\TypeDeGouvernanceFactuel;
 use App\Models\Organisation;

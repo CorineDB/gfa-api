@@ -220,6 +220,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                         })->first();
 
                         if(!$principeDeGouvernanceCategorie){
+                            dd($principe_de_gouvernance);
                             $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : 0;
                             $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieDePerceptionDeGouvernanceId' => null, 'formulaireDePerceptionId' => $formulaireDeGouvernance->id]);
                         }
