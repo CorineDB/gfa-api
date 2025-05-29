@@ -118,7 +118,7 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissionFactuel(?int $organisationId = null, ?string $token = null)
     {
-        $soumissionFactuel = $this->hasOne(SoumissionFactuel::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
+        $soumissionFactuel = $this->hasMany(SoumissionFactuel::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
             $query->where('organisationId', optional(auth()->user()->profilable)->id);
         })/* ->where('organisationId', $organisationId)->orWhere(function($query) use($token){
             $query->whereHas('organisation', function($query) use($token){
@@ -132,9 +132,9 @@ class EvaluationDeGouvernance extends Model
             $soumissionFactuel = $soumissionFactuel->where('organisationId', $organisationId);
         }
 
-        /* if ($token) {
+        if ($token) {
             $soumissionFactuel = $soumissionFactuel->where('organisationId', $this->organisations($organisationId, $token)->first()->id);
-        } */
+        }
 
         return $soumissionFactuel;
     }
