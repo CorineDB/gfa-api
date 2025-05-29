@@ -1022,6 +1022,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     });
                 });*/
                 else {
+                    dd("Pas de soumission");
                     $formulaire_factuel_de_gouvernance = new ListFormulaireDeGouvernanceFactuelResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
                 }
             } else {
