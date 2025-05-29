@@ -203,14 +203,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 $soumission->refresh();
 
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses', function ($query) use ($soumission) {
-                    $query->when($soumission->formulaireDeGouvernance, function ($query) {
-
-                        $query->where(function ($query) {
-                            $query->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
-                        });
-
-                        $query->whereHas('preuves_de_verification');
-                    });
+                    $query->where(function ($query) {
+                        $query->where('preuveIsRequired', true)->whereHas('preuves_de_verification')->whereNotNull('sourceDeVerificationId')->orWhereNotNull('sourceDeVerification');
+                    })->orWhere($query->where('preuveIsRequired', false));
                 })->count();
 
                 if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
