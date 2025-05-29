@@ -213,8 +213,6 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                     foreach ($attributs['perception']["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
 
-                        $formulaireDeGouvernance->refresh();
-
                         if(!(($principeDeGouvernance = app(PrincipeDeGouvernancePerceptionRepository::class)->findById($principe_de_gouvernance['id'])) && $principeDeGouvernance->programmeId == $programmeId))
                         {
                             throw new Exception( "Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
@@ -236,8 +234,6 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                         $questions = [];
 
                         foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $question_operationnelle) {
-
-                            $principeDeGouvernanceCategorie->refresh();
 
                             if(!(($questionOperationnelle = app(QuestionOperationnelleRepository::class)->findById($question_operationnelle))))
                             {
