@@ -9,7 +9,6 @@ use App\Http\Resources\enquetes_de_gouvernance\formulaires_de_gouvernance_de_per
 use App\Http\Resources\enquetes_de_gouvernance\formulaires_de_gouvernance_factuel\ListFormulaireDeGouvernanceFactuelResource;
 use App\Http\Resources\enquetes_de_gouvernance\OrganisationsEnqueteResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
-use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
 use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionDePerceptionResource;
