@@ -40,7 +40,7 @@ class UpdateRequest extends FormRequest
 
             'description' => 'nullable|max:255',
 
-            'perception' => ["sometimes","array", "min:2"],
+            'perception' => ["sometimes","array", "min:1"],
             'perception.options_de_reponse' => ['sometimes', "array", "min:2"],
             'perception.options_de_reponse.*.id' => ["required", "distinct", new HashValidatorRule(new OptionDeReponseGouvernance())],
             'perception.options_de_reponse.*.point' => ["required", "numeric", "min:0", "max:1"],
