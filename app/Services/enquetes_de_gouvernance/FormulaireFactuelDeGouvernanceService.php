@@ -190,21 +190,25 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
             if (isset($attributs['factuel']) && $attributs['factuel'] !== null) {
 
                 $options = [];
+                if (isset($attributs['factuel']["options_de_reponse"]) && $attributs['factuel']["options_de_reponse"] !== null) {
 
-                foreach ($attributs['factuel']["options_de_reponse"] as $key => $option_de_reponse) {
+                    foreach ($attributs['factuel']["options_de_reponse"] as $key => $option_de_reponse) {
 
-                    $option = app(OptionDeReponseGouvernanceRepository::class)->findById($option_de_reponse['id']);
+                        $option = app(OptionDeReponseGouvernanceRepository::class)->findById($option_de_reponse['id']);
 
-                    if (!$option && $option->programmeId == $programmeId) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                        if (!$option && $option->programmeId == $programmeId) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    if (isset($option_de_reponse['preuveIsRequired'])) {
-                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId, 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
-                    } else {
-                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
+                        if (isset($option_de_reponse['preuveIsRequired'])) {
+                            $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId, 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                        } else {
+                            $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
+                        }
                     }
-                }
 
                     $formulaireDeGouvernance->options_de_reponse()->sync($options);
+                }
+
+                if (isset($attributs['factuel']["types_de_gouvernance"]) && $attributs['factuel']["types_de_gouvernance"] !== null) {
 
                     $categories_de_gouvernance = [];
 
@@ -298,9 +302,9 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                     $categories_de_gouvernance = $formulaireDeGouvernance->all_categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
 
                     $categories_de_gouvernance->delete();
-
-                    //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
-                    //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
+                }
+                //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
+                //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
             }
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
