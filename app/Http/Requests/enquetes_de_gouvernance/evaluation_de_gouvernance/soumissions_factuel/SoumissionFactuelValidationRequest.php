@@ -141,9 +141,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $fail("La preuve est required.");
                             }
                         }
-                        else{
-                            $fail("La preuve est required.");
-                        }
                     }
 
                 }, "array", "min:1"],
