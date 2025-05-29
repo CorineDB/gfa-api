@@ -1081,8 +1081,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $organisation = $evaluationDeGouvernance->organisations->first();
             $terminer = false;
 
-            dump($organisation);
-
             if ($organisation != null) {
 
                 /* if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $organisation->pivot->nbreParticipants){
