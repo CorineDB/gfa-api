@@ -76,7 +76,7 @@ class SoumissionFactuelRequest extends FormRequest
                 new HashValidatorRule(new QuestionFactuelDeGouvernance()),
                 function ($attribute, $value, $fail) {
                     if ($this->formulaireCache) {
-                        $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->where("type", "indicateur")->findByKey($value)->exists();
+                        $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($value)->exists();
                         if (!$question) {
                             // Fail validation if no response options are available
                             $fail("Cet Indicateur n'existe pas.");
@@ -84,18 +84,7 @@ class SoumissionFactuelRequest extends FormRequest
                     }
                 }
             ],
-            'factuel.response_data.*.optionDeReponseId'             => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
-                /**
-                 * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
-                 *
-                 * If the provided optionDeReponseId is not valid, fail the validation
-                 */
-                if ($this->formulaireCache) {
-                    if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
-                        $fail('The selected option is invalid for the given formulaire.');
-                    }
-                }
-            }],
+
             'factuel.response_data.*.sourceDeVerificationId'        => ['nullable', new HashValidatorRule(new SourceDeVerification())],
             'factuel.response_data.*.sourceDeVerification'          => ['nullable'],
             'factuel.response_data.*.preuves'                       => ['sometimes', "array", "min:0"],
