@@ -44,14 +44,14 @@ class TypeDeGouvernanceFactuel extends Model
 
     public function categories_de_gouvernance($annee_exercice = null)
     {
-        return $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
+        return $this->morphMany(CategorieFactuelDeGouvernance::class, 'categorieable');
     }
 
     public function sous_categories_de_gouvernance($annee_exercice = null)
     {
         return $this->hasManyThrough(
-            CategorieDeGouvernance::class,// Final Model
-            CategorieDeGouvernance::class,// Intermediate Model
+            CategorieFactuelDeGouvernance::class,// Final Model
+            CategorieFactuelDeGouvernance::class,// Intermediate Model
             'categorieable_id',
             'categorieFactuelDeGouvernanceId',
             'id',
