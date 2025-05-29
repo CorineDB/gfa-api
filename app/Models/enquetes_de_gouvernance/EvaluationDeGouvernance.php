@@ -626,7 +626,7 @@ class EvaluationDeGouvernance extends Model
                 'contact_point_focal'   => $organisation->contact_point_focal,/*
                 'nbreParticipants'              => $organisation->pivot->nbreParticipants,
                 'PerceptionSubmissionsCompletion' => $organisation->getPerceptionSubmissionsCompletionAttribute($this->id), */
-                'pourcentage_evolution' => $organisation->getPourcentageEvolutionAttribute($this->id),
+                'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($this->id),
             ];
         });
 

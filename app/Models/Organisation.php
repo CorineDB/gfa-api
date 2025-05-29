@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Http\Resources\user\UserResource;
+use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
+use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -187,6 +189,16 @@ class Organisation extends Model
         return $this->hasMany(Soumission::class, 'organisationId')->where("type", "perception");
     }
 
+    public function sousmissions_enquete_factuel()
+    {
+        return $this->hasMany(SoumissionFactuel::class, 'organisationId');
+    }
+
+    public function sousmissions_enquete_de_perception()
+    {
+        return $this->hasMany(SoumissionDePerception::class, 'organisationId');
+    }
+
     public function fiches_de_synthese($evaluationDeGouvernanceId = null, $type = null)
     {
         $fiches_de_synthese = $this->hasMany(FicheDeSynthese::class, 'organisationId');
@@ -269,6 +281,46 @@ class Organisation extends Model
         return $factualSubmission ? round($factualSubmission->pourcentage_evolution, 2) : 0;
     }
 
+    /**
+     * Calculate the completion percentage for perception submissions.
+     *
+     * @param int $evaluationDeGouvernanceId
+     * @return float
+     */
+    public function getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId)
+    {
+        // Fetch all perception submissions for this organisation and evaluation
+        $perceptionSubmissions = $this->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernanceId)->get();
+
+        // Fetch the number of expected participants for perception evaluation
+        $nbreOfParticipants = $this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first()->pivot->nbreParticipants;
+
+        // Calculate perception submission completion (average of submissions)
+        $perceptionSubmissionsCompletion = $perceptionSubmissions->count() > 0
+            ? $perceptionSubmissions->avg('pourcentage_evolution')
+            : 0;
+
+        // Adjust completion percentage based on number of participants
+        return $nbreOfParticipants > 0
+            ? round((($perceptionSubmissionsCompletion * $perceptionSubmissions->count()) / $nbreOfParticipants), 2)
+            : 0;
+    }
+
+    /**
+     * Calculate the completion percentage for perception submissions.
+     *
+     * @param int $evaluationDeGouvernanceId
+     * @return float
+     */
+    public function getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId)
+    {
+        // Fetch submissions for the organisation
+        $factualSubmission = $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
+
+        // Calculate factual completion percentage
+        return $factualSubmission ? round($factualSubmission->pourcentage_evolution, 2) : 0;
+    }
+
     public function getPourcentageEvolutionAttribute($evaluationDeGouvernanceId)
     {
         /* // Fetch submissions for the organisation
@@ -282,6 +334,23 @@ class Organisation extends Model
 
         // Calculate perception completion using the helper method
         $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId);
+
+        // Define weightage
+        $weightFactual = 0.5; // 60%
+        $weightPerception = 0.5; // 40%
+
+        // Final weighted completion percentage
+        return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
+    }
+
+    public function getSubmissionRateAttribute($evaluationDeGouvernanceId)
+    {
+
+        // Calculate factual completion percentage
+        $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId);
+
+        // Calculate perception completion using the helper method
+        $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
 
         // Define weightage
         $weightFactual = 0.5; // 60%
