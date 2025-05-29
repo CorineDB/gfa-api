@@ -26,7 +26,7 @@ class CreateSoumissionsDePerceptionTable extends Migration
                 ->onUpdate('cascade');
             $table->boolean('statut')->default(0);
             $table->longText('commentaire')->nullable();
-            $table->datetime('submitted_at')->nullable()->change();
+            $table->datetime('submitted_at')->nullable();
             $table->bigInteger('evaluationId')->unsigned();
             $table->foreign('evaluationId', 'sdp_eval_fk')->references('id')->on('evaluations_de_gouvernance')
                 ->onDelete('cascade')

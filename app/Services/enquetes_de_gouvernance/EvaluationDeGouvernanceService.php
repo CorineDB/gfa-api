@@ -1102,7 +1102,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'formulaireFactuelId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
                         'organisationId' => $organisation->id,
                         'programmeId' => $evaluationDeGouvernance->programmeId,
-                        'submitted_at' => now(),
                         'identifier_of_participant' => $paricipant_id
                     ];
 
@@ -1172,8 +1171,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             } */
 
             $organisationId = Auth::user()->profilable->id;
-
-            dump($organisationId);
 
             if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
 
