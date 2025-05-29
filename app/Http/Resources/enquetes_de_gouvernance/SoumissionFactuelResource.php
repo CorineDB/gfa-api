@@ -60,7 +60,7 @@ class SoumissionFactuelResource extends JsonResource
     public function questions_reponses($questions)
     {
         return $questions->map(function($question){
-
+            $reponse = $question->reponse($this->id)->first();
             return [
                 'id' => $question->secure_id,
                 'nom' => $question->indicateur_de_gouvernance->nom,
@@ -69,7 +69,7 @@ class SoumissionFactuelResource extends JsonResource
                     'id' => $question->indicateur_de_gouvernance->secure_id,
                     'nom' => $question->indicateur_de_gouvernance->nom
                 ] : null,
-                'reponse_de_la_collecte' => $question->reponse($this->id)->first()
+                'reponse_de_la_collecte' => $reponse ? ReponsesDeLaCollecteFactuelResource($reponse) : null
             ];
         });
     }
