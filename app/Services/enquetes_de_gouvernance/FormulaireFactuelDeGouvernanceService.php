@@ -2,7 +2,7 @@
 
 namespace App\Services\enquetes_de_gouvernance;
 
-use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
+use App\Http\Resources\enquetes_de_gouvernance\formulaires_de_gouvernance_factuel\ListFormulaireDeGouvernanceFactuelResource;
 use App\Repositories\enquetes_de_gouvernance\CritereDeGouvernanceFactuelRepository;
 use App\Repositories\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelRepository;
@@ -10,9 +10,9 @@ use App\Repositories\enquetes_de_gouvernance\OptionDeReponseGouvernanceRepositor
 use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelRepository;
 use App\Repositories\enquetes_de_gouvernance\TypeDeGouvernanceFactuelRepository;
 use Core\Services\Contracts\BaseService;
-use Core\Services\Interfaces\enquetes_de_gouvernance\FormulaireDeGouvernanceServiceInterface;
 use Exception;
 use App\Traits\Helpers\LogActivity;
+use Core\Services\Interfaces\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceServiceInterface;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -20,10 +20,10 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 /**
-* Interface FormulaireDeGouvernanceServiceInterface
+* Interface FormulaireFactuelDeGouvernanceServiceInterface
 * @package Core\Services\Interfaces
 */
-class FormulaireFactuelDeGouvernanceService extends BaseService implements FormulaireDeGouvernanceServiceInterface
+class FormulaireFactuelDeGouvernanceService extends BaseService implements FormulaireFactuelDeGouvernanceServiceInterface
 {
 
     /**
@@ -46,13 +46,13 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
         try
         {
             if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == 'App\\Models\\Administrateur')){
-                $formulaires_de_gouvernance = $this->repository->all();
+                $formulaires_factuel_de_gouvernance = Auth::user()->programme->formulaires_factuel_de_gouvernance;
             }
             else{
-                $formulaires_de_gouvernance = Auth::user()->programme->formulaires_de_gouvernance;
+                $formulaires_factuel_de_gouvernance = Auth::user()->programme->formulaires_factuel_de_gouvernance;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ListFormulaireDeGouvernanceFactuelResource::collection($formulaires_factuel_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -66,7 +66,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
         try
         {
             $filtres = array_merge($filtres, ['programmeId__eq' => auth()->user()->programmeId]);
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($this->repository->filterBy($filtres, $columns, $relations)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ListFormulaireDeGouvernanceFactuelResource::collection($this->repository->filterBy($filtres, $columns, $relations)), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -81,7 +81,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
         {
             if(!is_object($formulaireDeGouvernance) && !($formulaireDeGouvernance = $this->repository->findById($formulaireDeGouvernance))) throw new Exception("Formulaire de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new FormulairesDeGouvernanceResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new ListFormulaireDeGouvernanceFactuelResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         }
 
         catch (\Throwable $th)
@@ -113,9 +113,9 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if(isset($option_de_reponse['preuveIsRequired'])){
-                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired'], 'programmeId' => $programmeId];
                     }else{
-                        $options[$option->id] = ['point' => $option_de_reponse['point']];
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
                     }
 
                 }
@@ -181,7 +181,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new FormulairesDeGouvernanceResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ListFormulaireDeGouvernanceFactuelResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
         }
         catch (\Throwable $th) {
@@ -220,9 +220,9 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                     if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if(isset($option_de_reponse['preuveIsRequired'])){
-                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId, 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
                     }else{
-                        $options[$option->id] = ['point' => $option_de_reponse['point']];
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
                     }
 
                 }
@@ -342,7 +342,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new FormulairesDeGouvernanceResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new ListFormulaireDeGouvernanceFactuelResource($formulaireDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
 
         } catch (\Throwable $th) {
 

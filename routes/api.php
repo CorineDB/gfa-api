@@ -1135,6 +1135,13 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     ->parameters([
                         'formulaires-de-perception-de-gouvernance' => 'formulaire_de_perception',
                     ]);
+
+                Route::apiResource('formulaires-factuel-de-gouvernance', 'FormulaireFactuelDeGouvernanceController')->names('formulaires-factuel-de-gouvernance')
+                    ->parameters([
+                        'formulaires-factuel-de-gouvernance' => 'formulaire_factuel',
+                    ]);
+
+
             });
         });
     });
