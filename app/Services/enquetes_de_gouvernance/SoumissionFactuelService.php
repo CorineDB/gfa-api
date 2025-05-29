@@ -236,7 +236,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionsResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new SoumissionFactuelResource($soumission), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
         } catch (\Throwable $th) {
 
             DB::rollBack();
