@@ -57,7 +57,7 @@ class SoumissionFactuelRequest extends FormRequest
 
                     $this->formulaireCache = $formulaire;
 
-                    if (($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisationId', request()->input('organisationId') ?? auth()->user()->profilable->id)->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true) {
+                    if (($soumission = $this->evaluation_de_gouvernance->soumissionsFactuel->where('organisationId', request()->input('organisationId') ?? auth()->user()->profilable->id)->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true) {
                         $fail('La soumission a déjà été validée.');
                     }
                 }
