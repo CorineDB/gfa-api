@@ -1104,6 +1104,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'programmeId' => $evaluationDeGouvernance->programmeId,
                         'identifier_of_participant' => $paricipant_id
                     ];
+                    dd($attributs);
 
                     $soumission = $evaluationDeGouvernance->soumissionsDePerception()->create($attributs);
 
