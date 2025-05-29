@@ -161,7 +161,7 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDePerceptionId' => $soumission->formulaireDeGouvernance->id, 'questionId' => $questionDeGouvernance->id, 'optionDeReponseId' => $option->id, 'programmeId' => $programme->id, 'point' => $pivot->point]));
                     } else {
                         unset($item['questionId']);
-                        $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDePerceptionId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'type' => 'question_operationnelle', 'programmeId' => $programme->id, 'point' => $pivot->point]));
+                        $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDePerceptionId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'programmeId' => $programme->id, 'point' => $pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
                 }
