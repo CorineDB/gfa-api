@@ -4,6 +4,7 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\CriteresDeGouvernanceResource;
 use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
+use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\CritereDeGouvernanceFactuelRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\enquetes_de_gouvernance\CritereDeGouvernanceFactuelServiceInterface;
@@ -43,7 +44,9 @@ class CritereDeGouvernanceFactuelService extends BaseService implements CritereD
         {
             $criteres_de_gouvernance = collect([]);
 
-            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
+            if (Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur") {
+                $criteres_de_gouvernance = $this->repository->all();
+            } else {
                 $criteres_de_gouvernance = Auth::user()->programme->criteres_de_gouvernance_factuel;
             }
 

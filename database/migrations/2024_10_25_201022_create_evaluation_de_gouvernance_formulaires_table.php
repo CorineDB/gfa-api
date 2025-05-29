@@ -19,7 +19,7 @@ class CreateEvaluationDeGouvernanceFormulairesTable extends Migration
             $table->foreign('evaluationDeGouvernanceId', 'evaluation')->references('id')->on('evaluations_de_gouvernance')
                 ->onDelete('cascade')
                 ->onUpdate('cascade');
-                
+
             $table->bigInteger('formulaireDeGouvernanceId')->unsigned();
             $table->foreign('formulaireDeGouvernanceId', 'formulaire')->references('id')->on('formulaires_de_gouvernance')
                 ->onDelete('cascade')

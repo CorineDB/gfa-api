@@ -104,7 +104,7 @@ class EvaluationDeGouvernance extends Model
 
     public function soumissionsFactuel()
     {
-        return $this->hasMany(SoumissionFactuel::class, 'evaluationId')->where("type", 'factuel')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
+        return $this->hasMany(SoumissionFactuel::class, 'evaluationId')->when((optional(auth()->user())->type === 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function ($query) {
             $organisationId = optional(auth()->user()->profilable)->id;
 
             // If the organisationId is null, return an empty collection
@@ -198,32 +198,27 @@ class EvaluationDeGouvernance extends Model
 
     public function formulaires_factuel_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireFactuelId')->whereNotNull('formulaireFactuelId')->wherePivotNull('deleted_at');
+        return $this->belongsToMany(FormulaireFactuelDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireFactuelId')->whereNotNull('formulaireFactuelId')->wherePivotNull('deleted_at');
     }
 
     public function formulaires_de_perception_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireDePerceptionId')->whereNotNull('formulaireDePerceptionId')->wherePivotNull('deleted_at');
+        return $this->belongsToMany(FormulaireDePerceptionDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireDePerceptionId')->whereNotNull('formulaireDePerceptionId')->wherePivotNull('deleted_at');
     }
 
     public function formulaire_factuel_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireFactuelId')->whereNotNull('formulaireFactuelId')->wherePivotNull('deleted_at')->first();
+        return $this->belongsToMany(FormulaireFactuelDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireFactuelId')->whereNotNull('formulaireFactuelId')->wherePivotNull('deleted_at')->first();
     }
 
     public function formulaire_de_perception_de_gouvernance()
     {
-        return $this->belongsToMany(FormulaireDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireDePerceptionId')->whereNotNull('formulaireDePerceptionId')->wherePivotNull('deleted_at')->first();
+        return $this->belongsToMany(FormulaireDePerceptionDeGouvernance::class, 'evaluation_de_gouvernance_formulaires', 'evaluationDeGouvernanceId', 'formulaireDePerceptionId')->whereNotNull('formulaireDePerceptionId')->wherePivotNull('deleted_at')->first();
     }
 
     public function principes_de_gouvernance()
     {
         return $this->formulaire_de_perception_de_gouvernance()->principes_de_gouvernance();
-    }
-
-    public function objectifs_par_principe()
-    {
-        return $this->belongsToMany(PrincipeDeGouvernanceFactuel::class, 'evaluation_principes_de_gouvernance_objectifs', 'evaluationId', 'principeId')->wherePivotNull('deleted_at')->withPivot(['objectif_attendu', 'programmeId']);
     }
 
     public function recommandations()
@@ -236,11 +231,6 @@ class EvaluationDeGouvernance extends Model
     {
         return $this->hasMany(ActionAMener::class, 'evaluationId');
         return $this->morphMany(ActionAMener::class, "actionable");
-    }
-
-    public function evaluation()
-    {
-        return $this->belongsTo(EvaluationDeGouvernance::class, 'evaluationId');
     }
 
     /*public function fiches_de_synthese()

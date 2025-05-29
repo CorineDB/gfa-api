@@ -4,7 +4,7 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Http\Resources\gouvernance\CategoriesDeGouvernanceResource;
-use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
+use App\Http\Resources\enquetes_de_gouvernance\EvaluationsDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
@@ -64,15 +64,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if (Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur") {
                 $evaluationsDeGouvernance = $this->repository->all();
             } else if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
-                $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance()->whereHas('organisations', function ($query) {
+                $evaluationsDeGouvernance = Auth::user()->programme->enquetes_de_gouvernance()->whereHas('organisations', function ($query) {
                     $query->where('organisationId', Auth::user()->profilable->id);
                 })->get();
             } else {
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
-                $evaluationsDeGouvernance = Auth::user()->programme->evaluations_de_gouvernance;
+                $evaluationsDeGouvernance = Auth::user()->programme->enquetes_de_gouvernance;
             }
-
-
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => EvaluationsDeGouvernanceResource::collection($evaluationsDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -111,7 +109,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $evaluationDeGouvernance = $this->repository->create($attributs);
 
-            $evaluationDeGouvernance->formulaires_de_gouvernance()->attach($attributs['formulaires_de_gouvernance']);
+            $formulaires = $attributs['formulaires_de_gouvernance'];
+
+            if (isset($formulaires['perception'])) {
+                $evaluationDeGouvernance->formulaires_de_perception_de_gouvernance()->attach([$attributs['formulaires_de_gouvernance']['perception']]);
+            }
+            if (isset($formulaires['factuel'])) {
+                $evaluationDeGouvernance->formulaires_factuel_de_gouvernance()->attach([$attributs['formulaires_de_gouvernance']['factuel']]);
+            }
 
             $organisationsId = [];
             foreach ($attributs['organisations'] as $organisation) {
@@ -190,8 +195,29 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
             }
 
-            if ($evaluationDeGouvernance->statut == -1) {
-                $evaluationDeGouvernance->formulaires_de_gouvernance()->syncWithoutDetaching($attributs['formulaires_de_gouvernance']);
+            if (isset($attributs['formulaires_de_gouvernance'])) {
+                $formulaires = $attributs['formulaires_de_gouvernance'];
+
+                if ($evaluationDeGouvernance->statut == -1) {
+
+                    if (isset($formulaires['perception'])) {
+                        $evaluationDeGouvernance->formulaires_de_perception_de_gouvernance()->syncWithoutDetaching([$formulaires['perception']]);
+                    }
+                    if (isset($formulaires['factuel'])) {
+                        $evaluationDeGouvernance->formulaires_factuel_de_gouvernance()->syncWithoutDetaching([$formulaires['factuel']]);
+                    }
+                } else if ($evaluationDeGouvernance->statut == 0) {
+                    if (isset($formulaires['factuel'])) {
+                        if ($evaluationDeGouvernance->soumissionsFactuel->count() == 0) {
+                            $evaluationDeGouvernance->formulaires_factuel_de_gouvernance()->syncWithoutDetaching([$formulaires['factuel']]);
+                        }
+                    }
+                    if (isset($formulaires['perception'])) {
+                        if ($evaluationDeGouvernance->soumissionsPercetion->count() == 0) {
+                            $evaluationDeGouvernance->formulaires_de_perception_de_gouvernance()->syncWithoutDetaching([$formulaires['perception']]);
+                        }
+                    }
+                }
             }
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
