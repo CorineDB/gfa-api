@@ -101,24 +101,16 @@ class FormulaireFactuelDeGouvernance extends Model
 
     public function principes_de_gouvernance()
     {
-        return $this->categories_de_gouvernance->map(function($categorie_de_gouvernance){
+        return $this->all_categories_de_gouvernance()->whereNotNull('categorieFactuelDeGouvernanceId')->whereHas('categorieDeGouvernanceParent', function($query){
+            $query->where("categorieable_type", TypeDeGouvernanceFactuel::class);
+        })->get()->map(function($categorie_de_gouvernance){
             return $categorie_de_gouvernance->categorieable;
-        });
+        })
+        ->filter(); // remove any null categorieable
     }
 
-    public function loadForm()
+    public function principesIds()
     {
-        return $this->load([
-            'categories_de_gouvernance' => function ($query) {
-                $query->with([
-                    'questions_de_gouvernance' => function ($q) {
-                        $q->orderBy('position');
-                    },
-                    'questions_de_gouvernance' => function ($q) {
-                        $q->orderBy('position');
-                    }
-                ]);
-            }
-        ]);
+        return $this->principes_de_gouvernance()->pluck("id");
     }
 }
