@@ -1150,8 +1150,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                 Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
 
-                    Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionFactuelController', ['except' => ['update']])->names('soumissions');
-                    Route::post('{evaluation_de_gouvernance}/validate-soumission', 'SoumissionFactuelController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
+                    Route::apiResource('{evaluation_de_gouvernance}/soumissions-factuel', 'SoumissionFactuelController', ['except' => ['update']])->names('soumissions');
+                    Route::post('{evaluation_de_gouvernance}/validate-soumission-factuel', 'SoumissionFactuelController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
+
+                    Route::apiResource('{evaluation_de_gouvernance}/soumissions-de-perception', 'SoumissionDePerceptionController', ['except' => ['update']])->names('soumissions');
+                    Route::post('{evaluation_de_gouvernance}/validate-soumission-de-perception', 'SoumissionDePerceptionController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
 
                     Route::controller('EvaluationDeGouvernanceController')->group(function () {
                         Route::get('{evaluation_de_gouvernance}/organisations', 'organisations')->name('organisations')->middleware('permission:voir-une-organisation');
