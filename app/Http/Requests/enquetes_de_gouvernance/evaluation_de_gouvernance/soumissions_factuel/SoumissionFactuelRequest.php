@@ -50,7 +50,7 @@ class SoumissionFactuelRequest extends FormRequest
 
                     // Check if formulaireDeGouvernanceId exists within the related formulaire_factuel_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()
-                        ->wherePivot('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
+                        ->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
                         ->first();
 
                     if ($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
