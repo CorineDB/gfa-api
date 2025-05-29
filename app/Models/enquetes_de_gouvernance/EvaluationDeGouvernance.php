@@ -132,9 +132,9 @@ class EvaluationDeGouvernance extends Model
             $soumissionFactuel = $soumissionFactuel->where('organisationId', $organisationId);
         }
 
-        if ($token) {
+        /* if ($token) {
             $soumissionFactuel = $soumissionFactuel->where('organisationId', $this->organisations($organisationId, $token)->first()->id);
-        }
+        } */
 
         return $soumissionFactuel;
     }
