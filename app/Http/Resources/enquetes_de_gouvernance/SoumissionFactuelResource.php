@@ -37,6 +37,7 @@ class SoumissionFactuelResource extends JsonResource
     {
         return $categories->map(function($sousCategorieDeGouvernance){
 
+            dd($sousCategorieDeGouvernance);
             $subCategories = [];
             $questions = [];
 
