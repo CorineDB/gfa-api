@@ -14,7 +14,6 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Organisation extends Model
 {
-
     use HasSecureIds, HasFactory ;
 
     protected $table = 'organisations';
