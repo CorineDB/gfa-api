@@ -60,7 +60,8 @@ class SoumissionFactuelResource extends JsonResource
     public function questions_reponses($questions)
     {
         return $questions->map(function($question){
-            dd($question->reponse($this->id));
+            dd($question);
+            dd($question->reponse($question->id));
             return [
                 'id' => $question->secure_id,
                 'nom' => $question->indicateur_de_gouvernance->nom,
