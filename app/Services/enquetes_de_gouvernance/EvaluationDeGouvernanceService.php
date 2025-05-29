@@ -992,9 +992,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
                 //$query->where('evaluation_organisations.token', $token);pivot_token
-            })/* ->with("organisations", function($query) use ($token) {
+            })->with("organisations", function($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
-            }) */->first();
+            })->first();
 
             dd($evaluationDeGouvernance);
 
