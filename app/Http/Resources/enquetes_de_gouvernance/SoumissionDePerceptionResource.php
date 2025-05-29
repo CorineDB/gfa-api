@@ -40,10 +40,6 @@ class SoumissionDePerceptionResource extends JsonResource
             $subCategories = [];
             $questions = [];
 
-            if($sousCategorieDeGouvernance->categories_de_gouvernance->count()){
-                $subCategories = ['categories_de_gouvernance' =>  $this->sections($sousCategorieDeGouvernance->categories_de_gouvernance)];
-            }
-
             if($sousCategorieDeGouvernance->questions_de_gouvernance->count()){
                 $questions = ['questions_de_gouvernance' =>  $this->questions_reponses($sousCategorieDeGouvernance->questions_de_gouvernance)];
             }
