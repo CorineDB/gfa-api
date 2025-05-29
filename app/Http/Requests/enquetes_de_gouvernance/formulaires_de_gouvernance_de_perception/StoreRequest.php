@@ -61,8 +61,6 @@ class StoreRequest extends FormRequest
             'nom.required' => 'Le champ "Nom" est requis.',
             'nom.string' => 'Le nom doit être une chaîne de caractères.',
             'nom.unique' => 'Ce nom est déjà utilisé pour ce programme.',
-            'type.required' => 'Le type est requis.',
-            'type.in' => 'Le type doit être "factuel" ou "perception".',
 
             // Perception global
             'perception.required' => 'La section perception est obligatoire.',

@@ -31,17 +31,17 @@ class CategorieDePerceptionDeGouvernance extends Model
 
     public function categories_de_gouvernance()
     {
-        return $this->hasMany(CategorieDePerceptionDeGouvernance::class, 'formulaireDePerceptionId');
+        return $this->hasMany(CategorieDePerceptionDeGouvernance::class, 'categorieDePerceptionDeGouvernanceId');
     }
 
     public function sousCategoriesDeGouvernance()
     {
-        return $this->hasMany(CategorieDePerceptionDeGouvernance::class, 'formulaireDePerceptionId');
+        return $this->hasMany(CategorieDePerceptionDeGouvernance::class, 'categorieDePerceptionDeGouvernanceId');
     }
 
     public function categorieDeGouvernanceParent()
     {
-        return $this->belongsTo(CategorieDePerceptionDeGouvernance::class, 'formulaireDePerceptionId');
+        return $this->belongsTo(CategorieDePerceptionDeGouvernance::class, 'categorieDePerceptionDeGouvernanceId');
     }
 
     public function programme()
