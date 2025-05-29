@@ -15,6 +15,7 @@ class SoumissionDePerceptionResource extends JsonResource
      */
     public function toArray($request)
     {
+        dd($this->formulaireDeGouvernance);
         return [
             'id' => $this->formulaireDeGouvernance->secure_id,
             'libelle' => $this->formulaireDeGouvernance->libelle,
