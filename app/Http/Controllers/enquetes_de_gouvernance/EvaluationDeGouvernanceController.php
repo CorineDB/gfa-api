@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\enquetes_de_gouvernance;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\EvaluationParticipantRequest;
 use App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\StoreRequest;
 use App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\UpdateRequest;
 use Core\Services\Interfaces\enquetes_de_gouvernance\EvaluationDeGouvernanceServiceInterface;
@@ -108,6 +109,10 @@ class EvaluationDeGouvernanceController extends Controller
         return $this->evaluationDeGouvernanceService->soumissions($id);
     }
 
+    public function soumissions_enquete($id)
+    {
+        return $this->evaluationDeGouvernanceService->soumissions_enquete($id);
+    }
 
     public function recommandations($id)
     {
@@ -173,7 +178,6 @@ class EvaluationDeGouvernanceController extends Controller
     {
         return $this->evaluationDeGouvernanceService->formulaire_factuel_de_gouvernance($token);
     }
-
 
     public function formulaire_de_perception_de_gouvernance(string $participant_id, string $token)
     {

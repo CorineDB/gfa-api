@@ -1146,12 +1146,21 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         'evaluations-de-gouvernance' => 'evaluation_de_gouvernance',
                     ]);
 
-                Route::controller('EvaluationDeGouvernanceController')->group(function () {
+                Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
 
-                    Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
+                    //Route::apiResource('{evaluation_de_gouvernance}/soumissions', 'SoumissionController', ['except' => ['update']])->names('soumissions');
 
+                    Route::controller('EvaluationDeGouvernanceController')->group(function () {
                         Route::get('{evaluation_de_gouvernance}/organisations', 'organisations')->name('organisations')->middleware('permission:voir-une-organisation');
+
+                        Route::get('{evaluation_de_gouvernance}/formulaires-de-gouvernance', 'formulaires_de_gouvernance')->name('formulaires_de_gouvernance')->middleware('permission:voir-un-formulaire-de-gouvernance');
+                        Route::get('{evaluation_de_gouvernance}/formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')->middleware('permission:voir-formulaire-factuel');
+                        Route::get('{evaluation_de_gouvernance}/formulaire-factuel-de-gouvernance', 'formulaire_factuel_de_gouvernance')->name('formulaire_factuel_de_gouvernance')->middleware('permission:voir-formulaire-factuel');
+                        Route::get('{evaluation_de_gouvernance}/rappel-soumission', 'rappel_soumission')->name('rappel_soumission')->middleware('permission:envoyer-un-rappel-soumission');
+
+                        Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants')->middleware('permission:envoyer-une-invitation');
                     });
+
                 });
             });
         });

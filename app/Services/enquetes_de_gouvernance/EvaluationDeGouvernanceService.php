@@ -5,8 +5,9 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Http\Resources\gouvernance\CategoriesDeGouvernanceResource;
 use App\Http\Resources\enquetes_de_gouvernance\EvaluationsDeGouvernanceResource;
+use App\Http\Resources\enquetes_de_gouvernance\formulaires_de_gouvernance_de_perception\ListFormulaireDeGouvernanceDePerceptionResource;
+use App\Http\Resources\enquetes_de_gouvernance\formulaires_de_gouvernance_factuel\ListFormulaireDeGouvernanceFactuelResource;
 use App\Http\Resources\enquetes_de_gouvernance\OrganisationsEnqueteResource;
-use App\Http\Resources\enquetes_de_gouvernance\SoumissionsFactuelResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
@@ -271,7 +272,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      *
      * return JsonResponse
      */
-    public function soumissions_enquete($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    public function soumissions_enquete($evaluationDeGouvernance): JsonResponse
     {
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
@@ -929,7 +930,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => FormulairesDeGouvernanceResource::collection($evaluationDeGouvernance->formulaires_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => [new ListFormulaireDeGouvernanceFactuelResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance), new ListFormulaireDeGouvernanceDePerceptionResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance)], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -940,7 +941,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      *
      * return JsonResponse
      */
-    public function formulaire_factuel($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    public function formulaire_factuel($evaluationDeGouvernance): JsonResponse
     {
         try {
 
@@ -951,9 +952,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 return response()->json(['statut' => 'error', 'message' => "Unknown", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             }
 
-
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
-
 
             if ($evaluationDeGouvernance->statut == 1) {
 
@@ -986,7 +985,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      *
      * return JsonResponse
      */
-    public function formulaire_factuel_de_gouvernance($token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    public function formulaire_factuel_de_gouvernance($token): JsonResponse
     {
         try {
             ///if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
@@ -1014,14 +1013,15 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                         return response()->json(['statut' => 'success', 'message' => "Soumission deja valider", 'data' => ['terminer' => $terminer, 'idEvaluation' => $evaluationDeGouvernance->secure_id, 'idSoumission' => $soumission->secure_id], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
                     } else {
-                        $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
+                        $formulaire_factuel_de_gouvernance = new SoumissionFactuelService($soumission->formulaireDeGouvernance, true, $soumission->id);
                     }
                 }
                 /*$formulaire_factuel_de_gouvernance = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->load("questions_de_gouvernance.reponses", function ($query) use ($evaluationDeGouvernance, $token) {
                     $query->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($evaluationDeGouvernance, $token) {
                         $query->where('evaluationId', $evaluationDeGouvernance->id)->where('organisationId', $evaluationDeGouvernance->organisations()->wherePivot('token', $token)->first()->id);
                     });
-                });*/ else {
+                });*/
+                else {
                     $formulaire_factuel_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
                 }
             } else {
@@ -1079,13 +1079,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $terminer = true;
                         $formulaire_de_perception_de_gouvernance = false;
                     } else {
-                        $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($soumission->formulaireDeGouvernance, true, $soumission->id);
+                        $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission->formulaireDeGouvernance, true, $soumission->id);
                     }
                 } else {
-                    $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
+                    $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
                 }
             } else {
-                $formulaire_de_perception_de_gouvernance = new FormulairesDeGouvernanceResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
+                $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => [
