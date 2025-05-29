@@ -22,7 +22,7 @@ class SoumissionDePerceptionRequest extends FormRequest
      */
     public function authorize()
     {
-        return !auth()->check() && $this->evaluation_de_gouvernance->statut == 0;
+        return !auth()->check();
     }
 
     /**
