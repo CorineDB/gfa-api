@@ -49,7 +49,7 @@ class UpdateRequest extends FormRequest
             'contact_point_focal'   => ['sometimes', 'numeric','digits_between:8,24'/* , Rule::unique('organisations', 'contact_point_focal')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at') */],
 
             'sigle'                 => ['nullable','string','max:255', Rule::unique('organisations', 'sigle')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at')],
-            'code'                  => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'numeric', "min:2", Rule::unique('organisations', 'code')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at') ],
+            'code'                  => [Rule::requiredIf((request()->user()->type === 'unitee-de-gestion' || get_class(request()->user()->profilable) == UniteeDeGestion::class)), 'sometimes','numeric', "min:2", Rule::unique('organisations', 'code')->where("programmeId", request()->user()->programmeId)->ignore($this->organisation)->whereNull('deleted_at') ],
 
             'type'                  => 'sometimes|string|in:osc_partenaire,osc_fosir,autre_osc,acteurs,structure_etatique',  // Ensures the value is either 'osc' or 'osc_fosir'
 
