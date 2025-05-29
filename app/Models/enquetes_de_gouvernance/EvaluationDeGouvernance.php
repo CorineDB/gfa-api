@@ -564,7 +564,7 @@ class EvaluationDeGouvernance extends Model
     public function getTotalSoumissionsDePerceptionNonDemarrerAttribute()
     {
 
-        if(count($this->total_participants_evaluation_de_perception)){
+        if($this->total_participants_evaluation_de_perception>0){
             return $this->total_participants_evaluation_de_perception - $this->soumissionsDePerception()->count();
         }
         return 0;
