@@ -75,6 +75,7 @@ class SoumissionFactuelRequest extends FormRequest
                 'distinct',
                 new HashValidatorRule(new QuestionFactuelDeGouvernance()),
                 function ($attribute, $value, $fail) {
+                    dd("cool questionId");
                     if ($this->formulaireCache) {
                         $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($value)->exists();
                         if (!$question) {
@@ -85,12 +86,12 @@ class SoumissionFactuelRequest extends FormRequest
                 }
             ],
             'factuel.response_data.*.optionDeReponseId'             => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
-                dd($this->formulaireCache);
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  *
                  * If the provided optionDeReponseId is not valid, fail the validation
                  */
+                dd("cool optionDeReponseId");
                 if ($this->formulaireCache) {
                     if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                         $fail('The selected option is invalid for the given formulaire.');
