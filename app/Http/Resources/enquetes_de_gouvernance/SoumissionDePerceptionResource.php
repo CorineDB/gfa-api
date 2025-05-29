@@ -72,7 +72,7 @@ class SoumissionDePerceptionResource extends JsonResource
                     'nom' => $question->question_operationnelle->nom
                 ] : null,
 
-                'reponse_de_la_collecte' => $reponse ? new ReponsesDeLaCollecteDePerceptionResource($reponse) : null
+                //'reponse_de_la_collecte' => $reponse ? new ReponsesDeLaCollecteDePerceptionResource($reponse) : null
             ];
         });
     }
