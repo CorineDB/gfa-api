@@ -102,7 +102,6 @@ class UpdateRequest extends FormRequest
 
             $formulaires = $this->input("formulaires_de_gouvernance");
 
-            dd($formulaires);
             if ($formulaires) {
 
                 if (count($formulaires) > 1) {
@@ -187,6 +186,8 @@ class UpdateRequest extends FormRequest
         else if ($this->evaluation_de_gouvernance->statut == 0) {
 
             $formulaires = $this->input("formulaires_de_gouvernance");
+
+            dd($formulaires);
             if ($formulaires) {
 
                 if (count($formulaires) > 1) {
