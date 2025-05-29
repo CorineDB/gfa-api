@@ -37,24 +37,19 @@ class SoumissionDePerceptionResource extends JsonResource
     {
         return $categories->map(function($sousCategorieDeGouvernance){
 
-            $subCategories = [];
             $questions = [];
-
-            if($sousCategorieDeGouvernance->categories_de_gouvernance->count()){
-                $subCategories = ['categories_de_gouvernance' =>  $this->sections($sousCategorieDeGouvernance->categories_de_gouvernance)];
-            }
 
             if($sousCategorieDeGouvernance->questions_de_gouvernance->count()){
                 $questions = ['questions_de_gouvernance' =>  $this->questions_reponses($sousCategorieDeGouvernance->questions_de_gouvernance)];
             }
 
-            return array_merge(array_merge([
+            return array_merge([
                 'id' => $sousCategorieDeGouvernance->secure_id,
                 'nom' => $sousCategorieDeGouvernance->categorieable->nom,
                 'categorieableId' => $sousCategorieDeGouvernance->categorieable->secure_id,
                 'position' => $sousCategorieDeGouvernance->position,
                 'categorieDeGouvernanceId' => optional($sousCategorieDeGouvernance->categorieDeGouvernanceParent)->secure_id
-            ], $subCategories), $questions);
+            ], $questions);
         });
     }
 
