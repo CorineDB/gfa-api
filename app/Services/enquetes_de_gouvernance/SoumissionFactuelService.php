@@ -129,7 +129,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             $soumission  = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireFactuelId", $formulaireDeGouvernance->id)->first();
 
 
-            dd($soumission);
             if ($soumission == null) {
                 $soumission = $this->repository->create($attributs);
             } else {
@@ -168,7 +167,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
                     }
 
-                    $pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
+                    $pivot = $option->formulaires_factuel_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
                     //$pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
 
                     if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
