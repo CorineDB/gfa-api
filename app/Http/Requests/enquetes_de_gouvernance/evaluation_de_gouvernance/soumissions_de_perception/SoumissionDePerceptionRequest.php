@@ -45,6 +45,8 @@ class SoumissionDePerceptionRequest extends FormRequest
                 $this->organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
                 if($this->organisation == null) $fail('Token inconnu.');
 
+                dd($this->organisation->id);
+
                 $this->merge([
                     'organisationId' => $this->organisation->id, // Add or update the key-value pair
                 ]);
