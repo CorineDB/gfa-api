@@ -1142,6 +1142,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     ]);
 
 
+            Route::apiResource('evaluations-de-gouvernance', 'EvaluationDeGouvernanceController')->names('evaluations-de-gouvernance')
+                ->parameters([
+                    'evaluations-de-gouvernance' => 'evaluation_de_gouvernance',
+                ]);
+
             });
         });
     });

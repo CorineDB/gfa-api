@@ -4,7 +4,7 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
 use App\Http\Resources\gouvernance\CategoriesDeGouvernanceResource;
-use App\Http\Resources\gouvernance\EvaluationsDeGouvernanceResource;
+use App\Http\Resources\enquetes_de_gouvernance\EvaluationsDeGouvernanceResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
 use App\Http\Resources\gouvernance\FormulairesDeGouvernanceResource;
 use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
