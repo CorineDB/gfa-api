@@ -1128,7 +1128,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('options-de-reponse-gouvernance-factuel', 'options_factuel')->name('options-factuel')->middleware('permission:voir-une-option-de-reponse');
                     Route::get('options-de-reponse-gouvernance-de-perception', 'options_de_perception')->name('options-de-perception')->middleware('permission:voir-une-option-de-reponse');
-
                 });
 
                 Route::apiResource('formulaires-de-perception-de-gouvernance', 'FormulaireDePerceptionDeGouvernanceController')->names('formulaires-de-perception-de-gouvernance')
@@ -1142,11 +1141,18 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     ]);
 
 
-            Route::apiResource('evaluations-de-gouvernance', 'EvaluationDeGouvernanceController')->names('evaluations-de-gouvernance')
-                ->parameters([
-                    'evaluations-de-gouvernance' => 'evaluation_de_gouvernance',
-                ]);
+                Route::apiResource('evaluations-de-gouvernance', 'EvaluationDeGouvernanceController')->names('evaluations-de-gouvernance')
+                    ->parameters([
+                        'evaluations-de-gouvernance' => 'evaluation_de_gouvernance',
+                    ]);
 
+                Route::controller('EvaluationDeGouvernanceController')->group(function () {
+
+                    Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
+
+                        Route::get('{evaluation_de_gouvernance}/organisations', 'organisations')->name('organisations')->middleware('permission:voir-une-organisation');
+                    });
+                });
             });
         });
     });
