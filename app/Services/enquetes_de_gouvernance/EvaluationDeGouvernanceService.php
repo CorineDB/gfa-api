@@ -990,7 +990,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             ///if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            dd($token);
             if (!($evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
             })->with(["organisations" => function ($query) use ($token) {
