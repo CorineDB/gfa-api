@@ -1081,11 +1081,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $organisation = $evaluationDeGouvernance->organisations->first();
             $terminer = false;
 
+            dump($organisation);
+
             if ($organisation != null) {
 
                 /* if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $organisation->pivot->nbreParticipants){
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 } */
+            dd(($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first()));
 
                 if (($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())) {
 
@@ -1096,9 +1099,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission->formulaireDeGouvernance, true, $soumission->id);
                     }
                 } else {
-
-                    dd( "HERE");
-
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
                         'formulaireDePerceptionId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
@@ -1106,11 +1106,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'programmeId' => $evaluationDeGouvernance->programmeId,
                         'identifier_of_participant' => $paricipant_id
                     ];
-                    dd($attributs);
 
                     $soumission = $evaluationDeGouvernance->soumissionsDePerception()->create($attributs);
-
-                    dd($soumission);
 
                     $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
                 }
