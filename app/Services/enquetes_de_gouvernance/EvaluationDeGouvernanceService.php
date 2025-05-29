@@ -963,8 +963,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $terminer = false;
 
-            dd($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
-
             if ($organisation != null) {
                 if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
                     if ($soumission->statut === true) {
@@ -1001,6 +999,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if ($evaluationDeGouvernance->statut == 1) {
                 return response()->json(['statut' => 'success', 'message' => "Lien expire", 'data' => null, 'statutCode' => Response::HTTP_NO_CONTENT], Response::HTTP_NO_CONTENT);
             }
+
+
+            dd($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
 
             $organisation = $evaluationDeGouvernance->organisations->first();
             $terminer = false;
