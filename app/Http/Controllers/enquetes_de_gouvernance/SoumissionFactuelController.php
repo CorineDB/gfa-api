@@ -70,9 +70,6 @@ class SoumissionFactuelController extends Controller
      */
     public function store(SoumissionFactuelRequest $request, $evaluationId)
     {
-
-        dd($evaluationId);
-
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
         return $this->soumissionFactuelService->create($atttributs);
