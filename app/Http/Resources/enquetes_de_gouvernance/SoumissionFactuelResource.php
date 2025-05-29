@@ -28,7 +28,7 @@ class SoumissionFactuelResource extends JsonResource
                     'point'                 => $option->pivot->point
                 ];
             }),
-
+            'comite_members' => $this->comite_members,
             'categories_de_gouvernance' => $this->when($this->formulaireDeGouvernance->categories_de_gouvernance->count(), $this->sections($this->formulaireDeGouvernance->categories_de_gouvernance)),
         ];
     }
