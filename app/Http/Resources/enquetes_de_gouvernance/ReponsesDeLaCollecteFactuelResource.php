@@ -26,9 +26,6 @@ class ReponsesDeLaCollecteFactuelResource extends JsonResource
             "optionDeReponseId" => $this->option_de_reponse->secure_id,
             "questionId" => $this->question->secure_id,
             "soumissionId" => $this->soumission->secure_id,
-            'programmeId' => $this->programme->secure_id,
-            'created_at' => Carbon::parse($this->created_at)->format("Y-m-d H:i:s"),
-            'updated_at' => Carbon::parse($this->updated_at)->format("Y-m-d H:i:s"),
             'preuves' => FichierResource::collection($this->preuves_de_verification)
         ];
     }
