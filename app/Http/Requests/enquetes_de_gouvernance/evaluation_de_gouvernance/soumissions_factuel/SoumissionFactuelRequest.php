@@ -82,7 +82,7 @@ class SoumissionFactuelRequest extends FormRequest
                             $fail("Cet Indicateur n'existe pas.");
                         }
                     }
-                    dd("cool questionId");
+                    dd("cool questionId", $this->formulaireCache);
                 }
             ],
             'factuel.response_data.*.optionDeReponseId'             => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
