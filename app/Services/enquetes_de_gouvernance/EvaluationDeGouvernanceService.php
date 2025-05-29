@@ -1005,8 +1005,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($organisation != null) {
 
-                dd($evaluationDeGouvernance->soumissionFactuel($organisation->id)->first());
-
                 if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
 
                     if ($soumission->statut === true) {
@@ -1024,6 +1022,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     });
                 });*/
                 else {
+
+                    $attributs = [
+                        'evaluationId' => $evaluationDeGouvernance->id,
+                        'formulaireFactuelId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id,
+                        'organisationId' => $organisation->id,
+                        'programmeId' => $evaluationDeGouvernance->programmeId,
+                    ];
+
+                    $soumission = $evaluationDeGouvernance->soumissionsFactuel->create($attributs);
+
                     $formulaire_factuel_de_gouvernance = new ListFormulaireDeGouvernanceFactuelResource($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
                 }
             } else {
