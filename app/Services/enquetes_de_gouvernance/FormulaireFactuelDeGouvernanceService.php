@@ -129,7 +129,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                         throw new Exception( "Ce type de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                     }
 
-                        $position = isset($type_de_gouvernance['position']) ? $type_de_gouvernance['position'] : 0;
+                        $position = isset($type_de_gouvernance['position']) ? $type_de_gouvernance['position'] : $formulaireDeGouvernance->categories_de_gouvernance->count();
 
                         $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => null, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
@@ -140,7 +140,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                             throw new Exception( "Ce principe de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                         }
 
-                            $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : 0;
+                            $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $typeDeGouvernanceCategorie->categories_de_gouvernance->count();
                             $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
                         foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
@@ -149,7 +149,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                             {
                                 throw new Exception( "Ce critere de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                             }
-                                $position = isset($critere_de_gouvernance['position']) ? $critere_de_gouvernance['position'] : 0;
+                                $position = isset($critere_de_gouvernance['position']) ? $critere_de_gouvernance['position'] : $principeDeGouvernanceCategorie->categories_de_gouvernance->count();
                                 $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
                             foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
@@ -159,7 +159,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                                     throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                 }
 
-                                $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : 0;
+                                $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : $critereDeGouvernanceCategorie->questions_de_gouvernance->count();
 
                                 $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurFactuelDeGouvernanceId' => $indicateurDeGouvernance->id]);
 
@@ -245,7 +245,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                         })->first();
 
                         if(!$typeDeGouvernanceCategorie){
-                            $position = isset($type_de_gouvernance['position']) ? $type_de_gouvernance['position'] : 0;
+                            $position = isset($type_de_gouvernance['position']) ? $type_de_gouvernance['position'] : $formulaireDeGouvernance->categories_de_gouvernance->count();;
                             $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => null, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
                         }
 
@@ -263,7 +263,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                             })->first();
 
                             if(!$principeDeGouvernanceCategorie){
-                                $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : 0;
+                                $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $typeDeGouvernanceCategorie->categories_de_gouvernance->count();
                                 $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
                             }
 
@@ -282,7 +282,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                                 if(!$critereDeGouvernanceCategorie){
 
-                                    $position = isset($critere_de_gouvernance['position']) ? $critere_de_gouvernance['position'] : 0;
+                                    $position = isset($critere_de_gouvernance['position']) ? $critere_de_gouvernance['position'] : $principeDeGouvernanceCategorie->categories_de_gouvernance->count();
                                     $critereDeGouvernanceCategorie = $critereDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $principeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
                                 }
 
@@ -311,7 +311,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                                     })->first();
 
                                     if(!$questionDeGouvernance){
-                                        $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : 0;
+                                        $position = isset($indicateur_de_gouvernance['position']) ? $indicateur_de_gouvernance['position'] : $critereDeGouvernanceCategorie->questions_de_gouvernance->count();
                                         $questionDeGouvernance = $critereDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireFactuelId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'indicateurFactuelDeGouvernanceId' => $indicateurDeGouvernance->id]);
                                     }
 
