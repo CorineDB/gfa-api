@@ -49,7 +49,7 @@ class SoumissionFactuelRequest extends FormRequest
                 function ($attribute, $value, $fail) {
 
                     // Check if formulaireDeGouvernanceId exists within the related formulaire_factuel_de_gouvernance
-                    $formulaire = $this->evaluation_de_gouvernance->formulaires_factuel_de_gouvernance()
+                    $formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()
                         ->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
                         ->first();
 
