@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\enquetes_de_gouvernance;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_factuel\SoumissionDePerceptionRequest;
-use App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_factuel\SoumissionDePerceptionValidationRequest;
+use App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_de_perception\SoumissionDePerceptionRequest;
+use App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_de_perception\SoumissionDePerceptionValidationRequest;
 use Core\Services\Interfaces\enquetes_de_gouvernance\SoumissionDePerceptionServiceInterface;
 use Illuminate\Http\Request;
 
