@@ -194,17 +194,19 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                 $options = [];
 
-                foreach ($attributs['perception']["options_de_reponse"] as $key => $option_de_reponse) {
+                if(isset($attributs['perception']["options_de_reponse"])) {
+                    foreach ($attributs['perception']["options_de_reponse"] as $key => $option_de_reponse) {
 
-                    $option = app(OptionDeReponseGouvernanceRepository::class)->findById($option_de_reponse['id']);
+                        $option = app(OptionDeReponseGouvernanceRepository::class)->findById($option_de_reponse['id']);
 
-                    if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+                        if(!$option && $option->programmeId == $programmeId) throw new Exception( "Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
 
+                    }
+
+                    $formulaireDeGouvernance->options_de_reponse()->sync($options);
                 }
-
-                $formulaireDeGouvernance->options_de_reponse()->sync($options);
 
                     $categories_de_gouvernance = [];
 
