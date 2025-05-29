@@ -120,16 +120,16 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
 
-            dd($organisation);
-
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
-                if (($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut) {
-                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
-                }
+            if (($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut) {
+                return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => $soumission], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
+            }
 
-                $soumission  = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireFactuelId", $formulaireDeGouvernance->id)->first();
+            $soumission  = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireFactuelId", $formulaireDeGouvernance->id)->first();
 
+
+            dd($soumission);
             if ($soumission == null) {
                 $soumission = $this->repository->create($attributs);
             } else {
@@ -184,7 +184,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                             // On suppose que $preuve est un fichier de type UploadedFile
                             $filenameWithExt = $preuve->getClientOriginalName();
-                            $filename = strtolower(str_replace(' ', '-',time() . '-'. $filenameWithExt));
+                            $filename = strtolower(str_replace(' ', '-', time() . '-' . $filenameWithExt));
 
                             // Vérifie si le fichier existe déjà pour cette réponse
                             $alreadyExists = $reponseDeLaCollecte->preuves_de_verification()
