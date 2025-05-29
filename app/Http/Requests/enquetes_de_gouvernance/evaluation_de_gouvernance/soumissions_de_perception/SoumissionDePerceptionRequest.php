@@ -45,8 +45,6 @@ class SoumissionDePerceptionRequest extends FormRequest
                 $this->organisation = $this->evaluation_de_gouvernance->organisations(null,request()->input('token'))->first();
                 if($this->organisation == null) $fail('Token inconnu.');
 
-                dd($this->organisation->id);
-
                 $this->merge([
                     'organisationId' => $this->organisation->id, // Add or update the key-value pair
                 ]);
@@ -65,6 +63,7 @@ class SoumissionDePerceptionRequest extends FormRequest
 
                     $this->formulaireCache = $formulaire;
 
+                    dd($this->formulaireCache);
                     if (($soumission = $this->evaluation_de_gouvernance->soumissionsDePerception->where('organisationId', $this->organisation->id)->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDePerceptionId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true) {
                         $fail('La soumission a déjà été validée.');
                     }
