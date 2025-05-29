@@ -18,7 +18,6 @@ use App\Jobs\AppJob;
 use App\Jobs\SendInvitationJob;
 use App\Mail\InvitationEnqueteDeCollecteEmail;
 use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance as EnqueteEvaluationDeGouvernance;
-use App\Models\EvaluationDeGouvernance;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\OrganisationRepository;
@@ -1065,10 +1064,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
      *
      * return JsonResponse
      */
-    public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token): JsonResponse
     {
         try {
-            if (!($evaluationDeGouvernance = EvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
+            if (!($evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
             })->with(["organisations" => function ($query) use ($token) {
                 $query->wherePivot('token', $token);
@@ -1097,9 +1096,23 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission->formulaireDeGouvernance, true, $soumission->id);
                     }
                 } else {
-                    $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
+
+                    $attributs = [
+                        'evaluationId' => $evaluationDeGouvernance->id,
+                        'formulaireFactuelId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
+                        'organisationId' => $organisation->id,
+                        'programmeId' => $evaluationDeGouvernance->programmeId,
+                        'submitted_at' => now(),
+                        'identifier_of_participant' => $paricipant_id
+                    ];
+
+                    $soumission = $evaluationDeGouvernance->soumissionsDePerception()->create($attributs);
+
+                    $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
                 }
             } else {
+                return response()->json(['statut' => 'success', 'message' => "Organisation inconnu du programme", 'data' => null, 'statutCode' => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
+
                 $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
             }
 
