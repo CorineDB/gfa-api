@@ -138,6 +138,8 @@ class StoreRequest extends FormRequest
                     ->pluck('principe_id')
                     ->toArray();
 
+                dd($perceptionPrincipesIds, $factuelPrincipesIds, $formulaireFactuel->principeIds());
+
                 // Step 3: Compare perception IDs across forms
                 //if (array_diff($perceptionPrincipesIds, $factuelPrincipesIds) || array_diff($factuelPrincipesIds, $perceptionPrincipesIds)) {
                 if (!empty(array_diff($perceptionPrincipesIds, $factuelPrincipesIds)) || !empty(array_diff($factuelPrincipesIds, $perceptionPrincipesIds))) {
