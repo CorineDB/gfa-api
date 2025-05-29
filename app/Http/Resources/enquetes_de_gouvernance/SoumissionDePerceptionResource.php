@@ -41,9 +41,9 @@ class SoumissionDePerceptionResource extends JsonResource
 
             $questions = [];
 
-            /* if($sousCategorieDeGouvernance->questions_de_gouvernance->count()){
+            if($sousCategorieDeGouvernance->questions_de_gouvernance->count()){
                 $questions = ['questions_de_gouvernance' =>  $this->questions_reponses($sousCategorieDeGouvernance->questions_de_gouvernance)];
-            } */
+            }
 
             return array_merge([
                 'id' => $sousCategorieDeGouvernance->secure_id,
@@ -61,7 +61,7 @@ class SoumissionDePerceptionResource extends JsonResource
             $reponse = $question->reponse($this->id)->first();
             return [
                 'id' => $question->secure_id,
-                'nom' => $question->indicateur_de_gouvernance->nom,
+                'nom' => $question->question_operationnelle->nom,
                 'position' => $question->position,
 
                 'question_operationnelle' => $question->question_operationnelle ? [
