@@ -169,7 +169,6 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
 
             if ($soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null) {
 
-                dd("Here");
                 $soumission->refresh();
 
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()->whereHas('reponses')->count();
