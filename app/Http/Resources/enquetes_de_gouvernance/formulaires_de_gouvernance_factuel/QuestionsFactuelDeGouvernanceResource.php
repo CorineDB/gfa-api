@@ -22,8 +22,7 @@ class QuestionsFactuelDeGouvernanceResource extends JsonResource
             'indicateur_de_gouvernance' => $this->indicateur_de_gouvernance ? [
                 'id' => $this->indicateur_de_gouvernance->secure_id,
                 'nom' => $this->indicateur_de_gouvernance->nom
-            ] : null,
-            'formulaireDeGouvernanceId' => $this->formulaire_de_gouvernance->secure_id
+            ] : null
         ];
     }
 }
