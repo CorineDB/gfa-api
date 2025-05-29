@@ -49,7 +49,7 @@ class UpdateRequest extends FormRequest
             'perception.principes_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new PrincipeDeGouvernancePerception())],
             'perception.principes_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:1"],
             'perception.principes_de_gouvernance.*.questions_operationnelle' => ["required", "array", "min:1"],
-            //'perception.principes_de_gouvernance.*.questions_operationnelle.*' => ["sometimes", new DistinctAttributeRule(), new HashValidatorRule(new QuestionOperationnelle())],
+            'perception.principes_de_gouvernance.*.questions_operationnelle.*' => ["sometimes", new DistinctAttributeRule(), new HashValidatorRule(new QuestionOperationnelle())],
             'perception.principes_de_gouvernance.*.questions_operationnelle.*.id' => ["sometimes", new DistinctAttributeRule(), new HashValidatorRule(new QuestionOperationnelle())],
             'perception.principes_de_gouvernance.*.questions_operationnelle.*.position' => ["sometimes", new DistinctAttributeRule(), "min:1"],
         ];
