@@ -45,7 +45,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
     {
         try {
             if ((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == 'App\\Models\\Administrateur')) {
-                $formulaires_factuel_de_gouvernance = Auth::user()->programme->formulaires_factuel_de_gouvernance;
+                $formulaires_factuel_de_gouvernance =  $this->repository->all();
             } else {
                 $formulaires_factuel_de_gouvernance = Auth::user()->programme->formulaires_factuel_de_gouvernance;
             }

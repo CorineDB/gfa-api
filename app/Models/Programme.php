@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Models\enquetes_de_gouvernance\CritereDeGouvernanceFactuel;
+use App\Models\EvaluationDeGouvernance;
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance as EnqueteDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
 use App\Models\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuel;
@@ -653,6 +655,11 @@ class Programme extends Model
     public function evaluations_de_gouvernance()
     {
         return $this->hasMany(EvaluationDeGouvernance::class, 'programmeId');
+    }
+
+    public function enquetes_de_gouvernance()
+    {
+        return $this->hasMany(EnqueteDeGouvernance::class, 'programmeId');
     }
 
     /**

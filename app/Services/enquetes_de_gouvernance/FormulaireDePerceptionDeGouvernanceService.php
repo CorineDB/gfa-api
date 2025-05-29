@@ -47,7 +47,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
             $programme = Auth::user()->programme;
 
             if((Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == 'App\\Models\\Administrateur')){
-                $formulaires_de_perception_de_gouvernance = $programme->formulaires_de_perception_gouvernance;
+                $formulaires_de_perception_de_gouvernance = $this->repository->all();
             }
             else{
                 $formulaires_de_perception_de_gouvernance = $programme->formulaires_de_perception_gouvernance;
