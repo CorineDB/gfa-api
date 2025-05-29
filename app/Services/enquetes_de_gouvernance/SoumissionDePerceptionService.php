@@ -155,7 +155,7 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
 
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    $pivot = $option->formulaire_de_perception_de_gouvernance()->wherePivot("formulaireDePerceptionId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
+                    $pivot = $option->formulaires_de_perception_de_gouvernance()->wherePivot("formulaireDePerceptionId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
 
                     if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDePerceptionId' => $soumission->formulaireDeGouvernance->id, 'questionId' => $questionDeGouvernance->id, 'optionDeReponseId' => $option->id, 'programmeId' => $programme->id, 'point' => $pivot->point]));
