@@ -989,15 +989,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function formulaire_factuel_de_gouvernance($token): JsonResponse
     {
         try {
-            ///if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
-            $evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
-                $query->where('evaluation_organisations.token', $token);
-                //$query->where('evaluation_organisations.token', $token);pivot_token
-            })->with(["organisations" => function($query) use ($token) {
-                $query->where('evaluation_organisations.token', $token);
-            }])->first();
-
-            dd($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
 
             $evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
@@ -1010,7 +1001,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if ($evaluationDeGouvernance->statut == 1) {
                 return response()->json(['statut' => 'success', 'message' => "Lien expire", 'data' => null, 'statutCode' => Response::HTTP_NO_CONTENT], Response::HTTP_NO_CONTENT);
             }
-
 
             dd($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
 
