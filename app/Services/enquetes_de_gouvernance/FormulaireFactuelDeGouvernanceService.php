@@ -204,8 +204,6 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                     }
                 }
 
-                if ($formulaireDeGouvernance->type == 'factuel') {
-
                     $formulaireDeGouvernance->options_de_reponse()->sync($options);
 
                     $categories_de_gouvernance = [];
@@ -305,7 +303,6 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
                     //$formulaireDeGouvernance->categorie_de_gouvernance()->sync($categories_de_gouvernance);
-                }
             }
 
             $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
