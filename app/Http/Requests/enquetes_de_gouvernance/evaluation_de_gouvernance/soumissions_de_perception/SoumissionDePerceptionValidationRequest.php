@@ -57,7 +57,7 @@ class SoumissionDePerceptionValidationRequest extends FormRequest
 
                     $this->formulaireCache = $formulaire;
 
-                    if(($soumission = $this->evaluation_de_gouvernance->soumissions->where('organisation', $this->organisation->id)->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+                    if(($soumission = $this->evaluation_de_gouvernance->soumissionsDePerception->where('organisation', $this->organisation->id)->where('identifier_of_participant', request()->input('identifier_of_participant'))->where('formulaireDeGouvernanceId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
                         $fail('La soumission a déjà été validée.');
                     }
                 }
