@@ -22,10 +22,6 @@ class SoumissionDePerceptionController extends Controller
     public function __construct(SoumissionDePerceptionServiceInterface $soumissionDePerceptionServiceInterface)
     {
         $this->middleware('permission:voir-une-soumission')->only(['index', 'show']);
-        $this->middleware('permission:creer-une-soumission')->only(['store']);
-        $this->middleware('permission:supprimer-une-soumission')->only(['destroy']);
-        $this->middleware('permission:signaler-une-action-a-mener-est-realise')->only(['notifierActionAMenerEstTerminer']);
-        $this->middleware('permission:valider-une-soumission')->only(['validated']);
 
         $this->soumissionDePerceptionService = $soumissionDePerceptionServiceInterface;
     }
