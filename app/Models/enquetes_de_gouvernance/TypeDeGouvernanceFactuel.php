@@ -44,35 +44,19 @@ class TypeDeGouvernanceFactuel extends Model
 
     public function categories_de_gouvernance($annee_exercice = null)
     {
-        $categories_de_gouvernance = $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
-
-        if($annee_exercice){
-            $categories_de_gouvernance = $categories_de_gouvernance->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
-                $query->where('annee_exercice', $annee_exercice);
-            });
-        }
-
-        return $categories_de_gouvernance;
+        return $this->morphMany(CategorieDeGouvernance::class, 'categorieable');
     }
 
     public function sous_categories_de_gouvernance($annee_exercice = null)
     {
-        $sous_categories = $this->hasManyThrough(
+        return $this->hasManyThrough(
             CategorieDeGouvernance::class,// Final Model
             CategorieDeGouvernance::class,// Intermediate Model
             'categorieable_id',
             'categorieFactuelDeGouvernanceId',
             'id',
             'id'
-        );//->where("categorieable_type", get_class(new PrincipeDeGouvernance));
-
-        if($annee_exercice){
-            $sous_categories = $sous_categories->whereHas("formulaire_de_gouvernance", function($query) use ($annee_exercice){
-                $query->where('annee_exercice', $annee_exercice);
-            });
-        }
-
-        return $sous_categories;
+        );
     }
 
     public function principes_de_gouvernance($annee_exercice = null)
