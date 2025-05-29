@@ -963,6 +963,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $terminer = false;
 
+            dd($evaluationDeGouvernance->formulaires_factuel_de_gouvernance);
+
             if ($organisation != null) {
                 if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
                     if ($soumission->statut === true) {
