@@ -82,7 +82,6 @@ class SoumissionFactuelRequest extends FormRequest
                             $fail("Cet Indicateur n'existe pas.");
                         }
                     }
-                    dd("cool questionId", $this->formulaireCache);
                 }
             ],
             'factuel.response_data.*.optionDeReponseId'             => ['sometimes', new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
@@ -91,12 +90,12 @@ class SoumissionFactuelRequest extends FormRequest
                  *
                  * If the provided optionDeReponseId is not valid, fail the validation
                  */
-                dd("cool optionDeReponseId");
                 if ($this->formulaireCache) {
                     if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                         $fail('The selected option is invalid for the given formulaire.');
                     }
                 }
+                dd("cool optionDeReponseId");
             }],
 
             'factuel.response_data.*.sourceDeVerificationId'        => ['nullable', new HashValidatorRule(new SourceDeVerification())],
