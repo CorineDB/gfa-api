@@ -1023,6 +1023,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 });*/
                 else {
 
+                    dd($evaluationDeGouvernance->formulaire_factuel_de_gouvernance());
+
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
                         'formulaireFactuelId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id,
@@ -1032,7 +1034,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $soumission = $evaluationDeGouvernance->soumissionsFactuel->create($attributs);
 
-                    dd($soumission);
 
                     $formulaire_factuel_de_gouvernance = new SoumissionFactuelResource($soumission);
                 }
