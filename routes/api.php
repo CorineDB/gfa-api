@@ -1153,9 +1153,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::apiResource('{evaluation_de_gouvernance}/soumissions-factuel', 'SoumissionFactuelController', ['except' => ['update']])->names('soumissions');
                     Route::post('{evaluation_de_gouvernance}/validate-soumission-factuel', 'SoumissionFactuelController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
 
-                    Route::apiResource('{evaluation_de_gouvernance}/soumissions-de-perception', 'SoumissionDePerceptionController', ['except' => ['update']])->names('soumissions');
-                    Route::post('{evaluation_de_gouvernance}/validate-soumission-de-perception', 'SoumissionDePerceptionController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
-
                     Route::controller('EvaluationDeGouvernanceController')->group(function () {
                         Route::get('{evaluation_de_gouvernance}/organisations', 'organisations')->name('organisations')->middleware('permission:voir-une-organisation');
 
@@ -1164,8 +1161,14 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::get('{evaluation_de_gouvernance}/rappel-soumission', 'rappel_soumission')->name('rappel_soumission')->middleware('permission:envoyer-un-rappel-soumission');
                         Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants')->middleware('permission:envoyer-une-invitation');
                     });
-
                 });
+            });
+
+            Route::get('evaluations-de-gouvernance-perception/{participantId}/{token}', 'EvaluationDeGouvernanceController@formulaire_de_perception_de_gouvernance');
+
+            Route::group(['prefix' =>  'evaluations-de-gouvernance-de-perception', 'as' => 'evaluations-de-gouvernance.'], function () {
+                Route::apiResource('{evaluation_de_gouvernance}/soumissions-de-perception', 'SoumissionDePerceptionController', ['except' => ['update']])->names('soumissions');
+                Route::post('{evaluation_de_gouvernance}/validate-soumission-de-perception', 'SoumissionDePerceptionController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
             });
         });
     });
