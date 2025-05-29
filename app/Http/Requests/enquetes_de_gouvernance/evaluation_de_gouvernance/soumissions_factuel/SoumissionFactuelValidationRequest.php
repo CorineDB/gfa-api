@@ -49,10 +49,11 @@ class SoumissionFactuelValidationRequest extends FormRequest
             'soumissionId'   => ['nullable', new HashValidatorRule(new SoumissionFactuel())],
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireFactuelDeGouvernance()), function ($attribute, $value, $fail) {
-                    // Check if formulaireDeGouvernanceId exists within the related formulaires_de_gouvernance
-                    $formulaire = $this->evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()
-                                        ->wherePivot('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
-                                        ->first();
+
+                    // Check if formulaireDeGouvernanceId exists within the related formulaire_factuel_de_gouvernance
+                    $formulaire = $this->evaluation_de_gouvernance->formulaires_factuel_de_gouvernance()
+                        ->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
+                        ->first();
 
                     if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
 
