@@ -66,7 +66,7 @@ class SoumissionDePerceptionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(SoumissionDePerceptionValidationRequest $request, $evaluationId)
+    public function store(SoumissionDePerceptionRequest $request, $evaluationId)
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
