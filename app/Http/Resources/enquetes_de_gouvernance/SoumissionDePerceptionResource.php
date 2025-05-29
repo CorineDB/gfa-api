@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Resources\gouvernance;
+namespace App\Http\Resources\enquetes_de_gouvernance;
 
 use App\Http\Resources\enquetes_de_gouvernance\ReponsesDeLaCollecteFactuelResource;
 use Illuminate\Http\Resources\Json\JsonResource;
