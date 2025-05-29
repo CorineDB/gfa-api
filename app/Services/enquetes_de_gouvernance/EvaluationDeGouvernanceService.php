@@ -1099,7 +1099,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
-                        'formulaireFactuelId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
+                        'formulaireDePerceptionId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
                         'organisationId' => $organisation->id,
                         'programmeId' => $evaluationDeGouvernance->programmeId,
                         'identifier_of_participant' => $paricipant_id
