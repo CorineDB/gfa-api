@@ -2,6 +2,7 @@
 
 namespace App\Services\enquetes_de_gouvernance;
 
+use App\Http\Resources\enquetes_de_gouvernance\SoumissionFactuelResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Jobs\AppJob;
 use App\Models\Organisation;
@@ -59,7 +60,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 $soumissions = Auth::user()->programme->soumissions_factuel;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => SoumissionsResource::collection($soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SoumissionFactuelResource::collection($soumissions), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
