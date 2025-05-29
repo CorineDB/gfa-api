@@ -133,7 +133,6 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                         $typeDeGouvernanceCategorie = $typeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => null, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
-                        dump($typeDeGouvernanceCategorie);
                     foreach ($type_de_gouvernance["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
 
                         if(!(($principeDeGouvernance = app(PrincipeDeGouvernanceFactuelRepository::class)->findById($principe_de_gouvernance['id'])) && $principeDeGouvernance->programmeId == $programmeId))
@@ -144,7 +143,6 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                             $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : 0;
                             $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieFactuelDeGouvernanceId' => $typeDeGouvernanceCategorie->id, 'formulaireFactuelId' => $formulaireDeGouvernance->id]);
 
-                            dd($principeDeGouvernanceCategorie);
                         foreach ($principe_de_gouvernance["criteres_de_gouvernance"] as $key => $critere_de_gouvernance) {
 
                             if(!(($critereDeGouvernance = app(CritereDeGouvernanceFactuelRepository::class)->findById($critere_de_gouvernance['id'])) && $critereDeGouvernance->programmeId == $programmeId))
