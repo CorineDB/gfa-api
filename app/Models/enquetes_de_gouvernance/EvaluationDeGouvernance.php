@@ -552,13 +552,22 @@ class EvaluationDeGouvernance extends Model
         // Calculate total soumissionsFactuel count
         $totalSoumissionsFactuel = $this->soumissionsFactuel()->count();
 
-        // Return the difference
-        return $totalOrganisations - $totalSoumissionsFactuel;
+        if($totalOrganisations){
+
+            // Return the difference
+            return $totalOrganisations - $totalSoumissionsFactuel;
+
+        }
+        return 0;
     }
 
     public function getTotalSoumissionsDePerceptionNonDemarrerAttribute()
     {
-        return $this->total_participants_evaluation_de_perception - $this->soumissionsDePerception()->count();
+
+        if(count($this->total_participants_evaluation_de_perception)){
+            return $this->total_participants_evaluation_de_perception - $this->soumissionsDePerception()->count();
+        }
+        return 0;
     }
 
     public function getTotalSoumissionsFactuelTerminerAttribute()
