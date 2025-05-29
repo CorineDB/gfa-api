@@ -25,8 +25,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
      */
     public function authorize()
     {
-        if(is_string($this->evaluation_de_gouvernance))
-        {
+        if (is_string($this->evaluation_de_gouvernance)) {
             $this->evaluation_de_gouvernance = EvaluationDeGouvernance::findByKey($this->evaluation_de_gouvernance);
         }
 
@@ -48,18 +47,21 @@ class SoumissionFactuelValidationRequest extends FormRequest
             'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
             'soumissionId'   => ['nullable', new HashValidatorRule(new SoumissionFactuel())],
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
-            'formulaireDeGouvernanceId'   => ["required", new HashValidatorRule(new FormulaireFactuelDeGouvernance()), function ($attribute, $value, $fail) {
+            'formulaireDeGouvernanceId'   => [
+                "required",
+                new HashValidatorRule(new FormulaireFactuelDeGouvernance()),
+                function ($attribute, $value, $fail) {
 
                     // Check if formulaireDeGouvernanceId exists within the related formulaire_factuel_de_gouvernance
                     $formulaire = $this->evaluation_de_gouvernance->formulaires_factuel_de_gouvernance()
                         ->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))
                         ->first();
 
-                    if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
+                    if ($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
 
                     $this->formulaireCache = $formulaire;
 
-                    if(($soumission = $this->evaluation_de_gouvernance->soumissionsFactuel->where('organisationId', request()->input('organisationId') ?? auth()->user()->profilable->id)->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true){
+                    if (($soumission = $this->evaluation_de_gouvernance->soumissionsFactuel->where('organisationId', request()->input('organisationId') ?? auth()->user()->profilable->id)->where('formulaireFactuelId', request()->input('formulaireDeGouvernanceId'))->first()) && $soumission->statut === true) {
                         $fail('La soumission a déjà été validée.');
                     }
                 }
@@ -70,19 +72,24 @@ class SoumissionFactuelValidationRequest extends FormRequest
             'factuel.comite_members'                => ['required', 'array', 'min:1'],
             'factuel.comite_members.*.nom'          => ['required', 'string'],
             'factuel.comite_members.*.prenom'       => ['required', 'string'],
-            'factuel.comite_members.*.contact'      => ['required', 'distinct', 'numeric','digits_between:8,24'],
-            'factuel.response_data'                 => ["required", 'array', function($attribute, $value, $fail) {
+            'factuel.comite_members.*.contact'      => ['required', 'distinct', 'numeric', 'digits_between:8,24'],
+            'factuel.response_data'                 => [
+                "required",
+                'array',
+                function ($attribute, $value, $fail) {
 
                     if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
                     }
                 }
             ],
-            'factuel.response_data.*.questionId'      => ["required", 'distinct',
+            'factuel.response_data.*.questionId'      => [
+                "required",
+                'distinct',
                 new HashValidatorRule(new QuestionFactuelDeGouvernance()),
-                function($attribute, $value, $fail) {
+                function ($attribute, $value, $fail) {
 
-                    if($this->formulaireCache){
+                    if ($this->formulaireCache) {
                         $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($value)->exists();
                         if (!$question) {
                             // Fail validation if no response options are available
@@ -91,28 +98,29 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     }
                 }
             ],
-            'factuel.response_data.*.optionDeReponseId'   => ["required", new HashValidatorRule(new OptionDeReponseGouvernance()), function($attribute, $value, $fail) {
+            'factuel.response_data.*.optionDeReponseId'   => ["required", new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
                 /**
                  * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
                  *
                  * If the provided optionDeReponseId is not valid, fail the validation
                  */
-                if($this->formulaireCache){
+                if ($this->formulaireCache) {
                     if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
                         $fail('The selected option is invalid for the given formulaire.');
                     }
                 }
             }],
             'factuel.response_data.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())],
-            'factuel.response_data.*.sourceDeVerification'          => [ Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+            'factuel.response_data.*.sourceDeVerification'          => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
 
 
-            'factuel.response_data.*.preuves'                       => [ Rule::requiredIf(request()->input('soumissionId') == null),
-                function($attribute, $value, $fail) {
+            'factuel.response_data.*.preuves'                       => [
+                Rule::requiredIf(request()->input('soumissionId') == null),
+                function ($attribute, $value, $fail) {
 
-                    if(request()->input('soumissionId') != null){
+                    if (request()->input('soumissionId') != null) {
 
-                        if($this->formulaireCache){
+                        if ($this->formulaireCache) {
 
                             // Step 1: Use preg_match to extract the index
                             preg_match('/factuel.response_data\.(\d+)\.preuves/', $attribute, $matches);
@@ -123,8 +131,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             // Step 3: Retrieve the questionId from the request input based on the index
                             if ($index !== null) {
                                 $questionId = request()->input('factuel.response_data.*.questionId')[$index] ?? null;
-                            }
-                            else{
+                            } else {
                                 $fail("La question introuvable.");
                             }
 
@@ -137,25 +144,30 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
-                            if(!$reponse || !($reponse->preuves_de_verification()->count() == 0 && $reponse->preuveIsRequired)){
+                            if ($reponse) {
+                                if ((!$reponse->preuves_de_verification()->count() || empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
+                                    $fail("La preuve est required.");
+                                }
+                            } else {
                                 $fail("La preuve est required.");
                             }
-                        }
-                        else{
+                        } else {
                             $fail("La preuve est required.");
                         }
                     }
-
-                }, "array", "min:1"],
+                },
+                "array",
+                "min:1"
+            ],
             'factuel.response_data.*.preuves.*'                     => ["file", "mimes:doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv", /* "mimetypes:application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png,audio/mpeg,audio/wav,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska", */ "max:20480"],
         ];
     }
 
     /**
-    * Get the error messages for the defined validation rules.
-    *
-    * @return array
-    */
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
     public function messages()
     {
         return [
@@ -235,7 +247,8 @@ class SoumissionFactuelValidationRequest extends FormRequest
      *
      * @return int
      */
-    private function getCountOfQuestionsOfAFormular(){
+    private function getCountOfQuestionsOfAFormular()
+    {
         return $this->formulaireCache->questions_de_gouvernance->count();
     }
 }
