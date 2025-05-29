@@ -1107,6 +1107,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $soumission = $evaluationDeGouvernance->soumissionsDePerception()->create($attributs);
 
+                    dd($soumission);
+
                     $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
                 }
             } else {
