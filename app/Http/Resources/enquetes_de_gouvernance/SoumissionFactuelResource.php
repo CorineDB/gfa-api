@@ -17,12 +17,12 @@ class SoumissionFactuelResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->formulaireDeGouvernance->secure_id,
-            'libelle' => $this->formulaireDeGouvernance->libelle,
-            'description' => $this->formulaireDeGouvernance->description,
-            'statut' => $this->statut,
-            'pourcentage_evolution' => $this->pourcentage_evolution,
-            'options_de_reponse' => $this->formulaireDeGouvernance->options_de_reponse->map(function($option){
+            'id' => $this?->formulaireDeGouvernance?->secure_id,
+            'libelle' => $this?->formulaireDeGouvernance?->libelle,
+            'description' => $this?->formulaireDeGouvernance?->description,
+            'statut' => $this?->statut,
+            'pourcentage_evolution' => $this?->pourcentage_evolution,
+            'options_de_reponse' => $this?->formulaireDeGouvernance?->options_de_reponse->map(function($option){
                 return [
                     "id"                    => $option->secure_id,
                     'libelle'               => $option->libelle,
@@ -30,8 +30,8 @@ class SoumissionFactuelResource extends JsonResource
                     'point'                 => $option->pivot->point
                 ];
             }),
-            'comite_members' => $this->comite_members,
-            'categories_de_gouvernance' => $this->when($this->formulaireDeGouvernance->categories_de_gouvernance->count(), $this->sections($this->formulaireDeGouvernance->categories_de_gouvernance)),
+            'comite_members' => $this?->comite_members,
+            'categories_de_gouvernance' => $this->when($this?->formulaireDeGouvernance?->categories_de_gouvernance->count(), $this->sections($this?->formulaireDeGouvernance?->categories_de_gouvernance)),
         ];
     }
 
