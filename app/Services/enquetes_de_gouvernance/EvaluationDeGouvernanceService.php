@@ -1014,8 +1014,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($organisation != null) {
 
-                dd($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first());
-
                 if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
 
                     if ($soumission->statut === true) {
@@ -1041,6 +1039,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'programmeId' => $evaluationDeGouvernance->programmeId,
                         'submitted_at' => now()
                     ];
+
+                    dd($attributs);
 
                     $soumission = $evaluationDeGouvernance->soumissionsFactuel()->create($attributs);
 
