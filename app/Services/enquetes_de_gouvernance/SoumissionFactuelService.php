@@ -174,7 +174,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => ""]);
                     } */
 
-                    dd($item);
                     $pivot = $option->formulaires_factuel_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
                     //$pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
 
