@@ -71,7 +71,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     {
         try {
             if (!is_object($soumission)) {
-                $soumission = SoumissionFactuel::findByKey($soumission)->first;
+                $soumission = SoumissionFactuel::findByKey($soumission)->first();
             }
 
             if (!$soumission) throw new Exception("Soumission de gouvernance inconnue.", 500);
