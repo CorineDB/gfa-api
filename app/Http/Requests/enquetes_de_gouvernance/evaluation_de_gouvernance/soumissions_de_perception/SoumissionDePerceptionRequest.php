@@ -6,8 +6,6 @@ use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\QuestionDePerceptionDeGouvernance;
 use App\Models\EvaluationDeGouvernance;
-use App\Models\OptionDeReponse;
-use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 
