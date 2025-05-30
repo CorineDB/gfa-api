@@ -45,10 +45,10 @@ class GenerateResultatsForValidatedSoumission extends Command
     public function handle()
     {
         EvaluationGouvernance::where("statut", 0)
-            ->where(function ($query) {
+            /* ->where(function ($query) {
                 $query->whereHas("soumissionsFactuel")
                     ->orWhereHas("soumissionsDePerception");
-            })/* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance) {
+            }) *//* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance) {
                 $this->evaluationDeGouvernance = $evaluationDeGouvernance;
                 $this->generateResultForEnquete($evaluationDeGouvernance);
                 //$this->generateResultForEvaluation($evaluationDeGouvernance);
