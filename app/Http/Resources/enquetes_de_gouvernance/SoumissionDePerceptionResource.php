@@ -20,6 +20,7 @@ class SoumissionDePerceptionResource extends JsonResource
             'libelle' => $this->formulaireDeGouvernance->libelle,
             'description' => $this->formulaireDeGouvernance->description,
             'statut' => $this->statut,
+            'pourcentage_evolution' => $this->pourcentage_evolution,
             'options_de_reponse' => $this->formulaireDeGouvernance->options_de_reponse->map(function($option){
                 return [
                     "id"                    => $option->secure_id,
