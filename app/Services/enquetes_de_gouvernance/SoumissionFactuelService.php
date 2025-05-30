@@ -76,7 +76,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
             if (!$soumission) throw new Exception("Soumission de gouvernance inconnue.", 500);
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => ($soumission), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionFactuelResource($soumission), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
