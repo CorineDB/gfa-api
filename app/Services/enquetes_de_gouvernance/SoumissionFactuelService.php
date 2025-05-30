@@ -69,7 +69,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     public function findById($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            dd($this->repository->findByKey($soumission));
             if (!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ($soumission), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

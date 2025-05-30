@@ -18,7 +18,7 @@ use Illuminate\Support\Str;
 class BaseRepository implements EloquentRepositoryInterface {
 
     use FilterTrait; // Use the trait
-    
+
     /**
      * @var Model
      */
@@ -131,7 +131,7 @@ class BaseRepository implements EloquentRepositoryInterface {
 
         // Initialize the query from the model
         $query = $this->model->query();
-    
+
         // Format the filters using the trait
         $filters = $this->formatFilters($filtres);
 
@@ -143,7 +143,7 @@ class BaseRepository implements EloquentRepositoryInterface {
             $attribute = $filter[0];
             $operator = $filter[1];
             $value = $filter[2] ?? null;
-    
+
             // Check if the attribute is a valid column
             if (in_array($attribute, $validAttributes)) {
 

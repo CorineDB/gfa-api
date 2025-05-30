@@ -51,7 +51,7 @@ interface EloquentRepositoryInterface {
      * @param array $relations
      */
     public function paginate();
-    
+
     /**
      * Récupérer toutes les occurences de données existantes d'une table.
      *
