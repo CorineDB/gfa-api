@@ -168,7 +168,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         }
 
                         $item = array_merge($item, ['sourceDeVerificationId' => $sourceDeVerification->id, 'sourceDeVerification' => null]);
-                    } else if (isset($item['sourceDeVerification']) && !empty($item['sourceDeVerification'])) {
+                    } else if (isset($item['sourceDeVerification'])) {
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
                     } else {
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => ""]);
