@@ -1167,7 +1167,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants')->middleware('permission:envoyer-une-invitation');
 
 
-                        Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions')->name('soumissions')->middleware('permission:voir-une-soumission');
+                        Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions_enquete')->name('soumissions_enquete')->middleware('permission:voir-une-soumission');
 
                         Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese')->middleware('permission:voir-une-fiche-de-synthese');
                         Route::get('{evaluation_de_gouvernance}/resultats-syntheses', 'resultats_syntheses')->name('resultats_syntheses')->middleware('permission:voir-resultats-evaluation');
