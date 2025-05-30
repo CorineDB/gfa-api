@@ -559,7 +559,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'contact_point_focal'   => $organisation->contact_point_focal,
                     'profile_de_gouvernance'   => $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? []
 
-                ], $fiches_de_synthese->toArray());
+                ], $fiches_de_synthese);
             } else {
                 $rapportsEvaluationParOrganisation = $evaluationDeGouvernance->fiches_de_synthese->groupBy(['organisationId', 'type']);
 
@@ -580,7 +580,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'prenom_point_focal'    => $organisation->prenom_point_focal,
                         'contact_point_focal'   => $organisation->contact_point_focal,
                         'profile_de_gouvernance'   => optional($organisation->profiles($evaluationDeGouvernance->id)->first())->resultat_synthetique ?? []
-                    ], $fiches_de_synthese->toArray());
+                    ], $fiches_de_synthese);
                 })->values();
             }
 
