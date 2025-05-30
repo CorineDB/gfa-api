@@ -299,9 +299,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         }
                     ]);
 
-                   $tool = ['factuel' => $evaluationDeGouvernance->soumissionsFactuel->first(), 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)];
 
-                   dd($tool);
+                $formFactuel = $evaluationDeGouvernance->soumissionsFactuel->first();
 
                 $group_soumissions = array_merge([
                     "id"                    => $organisation->secure_id,
@@ -313,7 +312,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'contact_point_focal'   => $organisation->contact_point_focal,
 
                     'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance),
-                ], ['factuel' => new SoumissionFactuelResource($evaluationDeGouvernance->soumissionsFactuel->first()), 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
+                ], ['factuel' => $formFactuel ? new SoumissionFactuelResource($formFactuel) : null, 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
             } else {
                 $group_soumissions = $evaluationDeGouvernance->organisations()
                     ->with(['sousmissions_enquete_factuel', 'sousmissions_enquete_de_perception'])
