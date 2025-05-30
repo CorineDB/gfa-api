@@ -44,7 +44,7 @@ class GenerateResultatsForValidatedSoumission extends Command
         EvaluationDeGouvernance::where("statut", 0)/* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance) {
             $this->evaluationDeGouvernance = $evaluationDeGouvernance;
             $this->generateResultForEnquete($evaluationDeGouvernance);
-            $this->generateResultForEvaluation($evaluationDeGouvernance);
+            //$this->generateResultForEvaluation($evaluationDeGouvernance);
         });
 
         $this->info("Generated result for soumissions");
