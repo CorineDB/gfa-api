@@ -54,8 +54,10 @@ class GenerateResultatsForValidatedSoumission extends Command
     {
         $evaluationDeGouvernance->organisations->map(function ($organisation) use ($evaluationDeGouvernance) {
 
-            $result = collect([]);
-            $groups_soumissions = $result;
+            $groups_soumissions['factuel'] = $organisation->sousmissions_enquete_factuel()->where("evaluationId", $evaluationDeGouvernance->id)->get();
+
+            $groups_soumissions['perception'] = $organisation->sousmissions_enquete_de_perception()->where("evaluationId", $evaluationDeGouvernance->id)->get();
+
             $profile = null;
             $organisationId = $organisation->id;
 
@@ -64,6 +66,8 @@ class GenerateResultatsForValidatedSoumission extends Command
             }
 
             $evaluationOrganisationId = $evaluationOrganisationId->id;
+
+            dd([$groups_soumissions, $profile, $organisationId, $evaluationOrganisationId, $evaluationOrganisationId]);
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
 
