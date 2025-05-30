@@ -15,19 +15,47 @@ class UpdateFichesDeSyntheseTable extends Migration
     {
         Schema::dropIfExists('fiches_de_synthese');
 
-        Schema::table('fiches_de_synthese', function (Blueprint $table) {
+        if(!Schema::hasTable('fiches_de_synthese')){
+            Schema::create('fiches_de_synthese', function (Blueprint $table) {
+                $table->id();
 
-                if(Schema::hasColumn('fiches_de_synthese', 'formulaireDeGouvernanceId')){
-                    // Step 1: Drop foreign key constraint
-                    $table->dropForeign(['formulaireDeGouvernanceId']);
-
-                    // Step 2: Drop old column
-                    $table->dropColumn('formulaireDeGouvernanceId');
+                if (!Schema::hasColumn('fiches_de_synthese', 'indice_de_gouvernance')) {
+                    $table->float('indice_de_gouvernance')->default(0);
+                }
+                if (!Schema::hasColumn('fiches_de_synthese', 'resultats')) {
+                    $table->jsonb("resultats")->nullable();
                 }
 
-            // Step 3: Add polymorphic columns
-            $table->morphs('formulaireDeGouvernance', 'formulaire');
-        });
+                $table->enum('type', ['factuel', 'perception']);
+                $table->jsonb("synthese");
+                $table->dateTime('evaluatedAt')->default(now());
+
+
+                if(!Schema::hasColumn('fiches_de_synthese', 'evaluationDeGouvernanceId')){
+                    $table->bigInteger('evaluationDeGouvernanceId')->nullable()->unsigned();
+                    $table->foreign('evaluationDeGouvernanceId')->references('id')->on('evaluations_de_gouvernance')
+                        ->onDelete('cascade')
+                        ->onUpdate('cascade');
+                }
+
+                if(!Schema::hasColumn('fiches_de_synthese', 'organisationId')){
+                    $table->bigInteger('organisationId')->nullable()->unsigned();
+                    $table->foreign('organisationId')->references('id')->on('organisations')
+                        ->onDelete('cascade')
+                        ->onUpdate('cascade');
+                }
+
+                if(!Schema::hasColumn('fiches_de_synthese', 'programmeId')){
+                    $table->bigInteger('programmeId')->nullable()->unsigned();
+                    $table->foreign('programmeId')->references('id')->on('programmes')
+                        ->onDelete('cascade')
+                        ->onUpdate('cascade');
+                }
+
+                $table->timestamps();
+                $table->softDeletes();
+            });
+        }
     }
 
     /**
