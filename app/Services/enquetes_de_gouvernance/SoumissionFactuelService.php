@@ -5,6 +5,7 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\enquetes_de_gouvernance\SoumissionFactuelResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
 use App\Jobs\AppJob;
+use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceRepository;
@@ -69,8 +70,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     public function findById($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            if (!is_object($soumission) && !($soumission = $this->repository->findById($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            if (!is_object($soumission) && !($soumission = SoumissionFactuel::findByKey($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
+            dd($soumission);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ($soumission), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
