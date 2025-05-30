@@ -13,6 +13,8 @@ class UpdateFichesDeSyntheseTable extends Migration
      */
     public function up()
     {
+        Schema::dropIfExists('fiches_de_synthese');
+
         Schema::table('fiches_de_synthese', function (Blueprint $table) {
             // Step 1: Drop foreign key constraint
             $table->dropForeign(['formulaireDeGouvernanceId']);
