@@ -253,7 +253,7 @@ class Organisation extends Model
         $perceptionSubmissions = $this->sousmissions_de_perception()->where('evaluationId', $evaluationDeGouvernanceId)->get();
 
         // Fetch the number of expected participants for perception evaluation
-        $nbreOfParticipants = $this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first()?$this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first()->pivot?->nbreParticipants : 0;
+        $nbreOfParticipants = $this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first()->pivot->nbreParticipants;
 
         // Calculate perception submission completion (average of submissions)
         $perceptionSubmissionsCompletion = $perceptionSubmissions->count() > 0
@@ -292,8 +292,10 @@ class Organisation extends Model
         // Fetch all perception submissions for this organisation and evaluation
         $perceptionSubmissions = $this->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernanceId)->get();
 
+        $evaluationDeGouvernance = $this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first();
+
         // Fetch the number of expected participants for perception evaluation
-        $nbreOfParticipants = $this->evaluations_de_gouvernance()->where('evaluationDeGouvernanceId', $evaluationDeGouvernanceId)->first()->pivot->nbreParticipants;
+        $nbreOfParticipants = $evaluationDeGouvernance ? $evaluationDeGouvernance->pivot->nbreParticipants : 0;
 
         // Calculate perception submission completion (average of submissions)
         $perceptionSubmissionsCompletion = $perceptionSubmissions->count() > 0
