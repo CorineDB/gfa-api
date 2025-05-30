@@ -70,11 +70,11 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     public function findById($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            $soumission = SoumissionFactuel::select($columns)->findByKey($soumission);
+            if (!is_object($soumission)) {
+                $soumission = SoumissionFactuel::findByKey($soumission)->first;
+            }
 
-            dd($soumission);
-
-            if (!is_object($soumission) && !($soumission = SoumissionFactuel::findByKey($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            if (!$soumission) throw new Exception("Soumission de gouvernance inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ($soumission), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
@@ -208,21 +208,21 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 $soumission->refresh();
 
                 $responseCount = $soumission->formulaireDeGouvernance->questions_de_gouvernance()
-                ->whereHas('reponses', function ($query) use ($soumission) {
+                    ->whereHas('reponses', function ($query) use ($soumission) {
 
-                    $query->where('soumissionId', $soumission->id)
-                    ->where(function ($query) {
-                        $query->where(function ($query) {
-                            $query->where('preuveIsRequired', true)
-                                  ->whereHas('preuves_de_verification')
-                                  ->where(function ($query) {
-                                      $query->whereNotNull('sourceDeVerificationId')
-                                            ->orWhereNotNull('sourceDeVerification');
-                                  });
-                        })
-                        ->orWhere('preuveIsRequired', false);
-                    });
-                })->count();
+                        $query->where('soumissionId', $soumission->id)
+                            ->where(function ($query) {
+                                $query->where(function ($query) {
+                                    $query->where('preuveIsRequired', true)
+                                        ->whereHas('preuves_de_verification')
+                                        ->where(function ($query) {
+                                            $query->whereNotNull('sourceDeVerificationId')
+                                                ->orWhereNotNull('sourceDeVerification');
+                                        });
+                                })
+                                    ->orWhere('preuveIsRequired', false);
+                            });
+                    })->count();
 
                 if (($responseCount === $soumission->formulaireDeGouvernance->questions_de_gouvernance->count()) && (isset($attributs['validation']) && $attributs['validation'])) {
                     $soumission->submitted_at = now();
