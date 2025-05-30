@@ -41,10 +41,10 @@ class ProgrammeController extends Controller
         $this->middleware('permission:voir-une-categorie')->only(['categories']);
         $this->middleware('permission:voir-un-suivi-financier')->only(['suiviFinanciers']);
         $this->middleware('permission:voir-une-organisation')->only(['evaluations_organisations']);
-        $this->middleware('permission:voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps')->only(['scoresAuFilDuTemps']);        
+        $this->middleware('permission:voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps')->only(['scoresAuFilDuTemps']);
         $this->middleware('permission:voir-cadre-de-rendement')->only(['cadre_de_mesure_rendement']);
 
-        
+
 
         $this->programmeService = $programmeServiceInterface;
 
@@ -225,6 +225,11 @@ class ProgrammeController extends Controller
     public function evaluations_organisations(?string $id = null)
     {
         return $this->programmeService->evaluations_organisations();
+    }
+
+    public function stats_evaluations_de_gouvernance_organisations(?string $id = null)
+    {
+        return $this->programmeService->stats_evaluations_de_gouvernance_organisations();
     }
 
     public function suiviFinanciers($id)
