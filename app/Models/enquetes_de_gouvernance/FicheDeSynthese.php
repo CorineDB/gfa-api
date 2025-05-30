@@ -17,7 +17,7 @@ class FicheDeSynthese extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array('type', 'indice_de_gouvernance', 'resultats', 'synthese', 'evaluatedAt', 'organisationId', 'evaluationDeGouvernanceId', 'formulaireDeGouvernanceId', 'formulaireDeGouvernanceType', 'programmeId');
+    protected $fillable = array('type', 'indice_de_gouvernance', 'resultats', 'synthese', 'evaluatedAt', 'organisationId', 'evaluationDeGouvernanceId', 'formulaireDeGouvernance_id', 'formulaireDeGouvernance_type', 'programmeId');
 
     protected $casts = ['resultats' => 'array', 'synthese' => 'array', 'indice_de_gouvernance' => 'float', 'evaluatedAt' => 'datetime'];
 
@@ -40,7 +40,7 @@ class FicheDeSynthese extends Model
 /*
     public function formulaire_de_gouvernance()
     {
-        return $this->belongsTo(FormulaireDeGouvernance::class, 'formulaireDeGouvernanceId');
+        return $this->belongsTo(FormulaireDeGouvernance::class, 'formulaireDeGouvernance_id');
     } */
 
     public function programme()

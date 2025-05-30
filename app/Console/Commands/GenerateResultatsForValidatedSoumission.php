@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Http\Resources\gouvernance\FicheDeSyntheseEvaluationFactuelleResource;
+use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
 use App\Models\EvaluationDeGouvernance;
 use App\Models\FormulaireDeGouvernance;
@@ -75,9 +76,9 @@ class GenerateResultatsForValidatedSoumission extends Command
 
 
             if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'factuel')->first()) {
-                $fiche_de_synthese->update(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                $fiche_de_synthese->update(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
             } else {
-                app(FicheDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                app(FicheDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
             }
 
             if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
@@ -109,7 +110,43 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
             }
 
-            [$indice_factuel, $results, $synthese] = $this->generateResultForFactuelEvaluation($evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
+            [$indice_de_perception, $results, $synthese] = $this->generateResultForPerceptionEvaluation($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
+
+            if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
+                $fiche_de_synthese->update(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+            } else {
+                app(FicheDeSyntheseRepository::class)->create(['type' => 'perception', 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'programmeId' => $evaluationDeGouvernance->programmeId]);
+            }
+
+            if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
+
+                // Convert $profile->resultat_synthetique to an associative array for easy updating
+                $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
+
+                // Iterate over each item in $results to update or add to $resultat_synthetique
+                foreach ($results as $result) {
+                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                }
+
+                // Convert back to a regular array if needed
+                $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
+
+                $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
+            } else {
+
+                // Convert $results to an associative array for easy updating
+                $resultat_synthetique = collect($results)->keyBy('id');
+
+                // Iterate over each item in $results to update or add to $resultat_synthetique
+                foreach ($results as $result) {
+                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                }
+
+                // Convert back to a regular array if needed
+                $results = $resultat_synthetique->values()->toArray();
+
+                $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+            }
 
             /* foreach ($groups_soumissions as $group_soumission => $soumissions) {
 
@@ -577,6 +614,71 @@ class GenerateResultatsForValidatedSoumission extends Command
         return [$indice_de_perception, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
     }
 
+    public function generateResultForPerceptionEvaluation(FormulaireDePerceptionDeGouvernance $formulaireDeGouvernance, $organisationId)
+    {
+        $options_de_reponse = $formulaireDeGouvernance->options_de_reponse;
+        $principes_de_gouvernance = collect([]);
+
+        $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) use ($organisationId, $options_de_reponse, &$principes_de_gouvernance) {
+            $categorie_de_gouvernance->questions_de_gouvernance->load(['reponses' => function ($query) use ($organisationId) {
+                $query->whereHas("soumission", function ($query) use ($organisationId) {
+                    $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
+                });
+            }])->each(function ($question_de_gouvernance) use ($organisationId, $options_de_reponse) {
+
+                // Get the total number of responses for NBRE_R
+                $nbre_r = $question_de_gouvernance->reponses/* ()->where('type', 'question_operationnelle')->whereHas("soumission", function ($query) use ($organisationId) {
+                    $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
+                }) */->count();
+
+                // Initialize the weighted sum
+                $weighted_sum = 0;
+                $index = 0;
+                $question_de_gouvernance->options_de_reponse = collect([]);
+
+                $counts = $question_de_gouvernance->reponses()
+                    ->selectRaw('optionDeReponseId, COUNT(*) as count')
+                    ->groupBy('optionDeReponseId')
+                    ->pluck('count', 'optionDeReponseId');
+
+                foreach ($options_de_reponse as $key => $option_de_reponse) {
+                    //$reponses_count = $question_de_gouvernance->reponses()->where("optionDeReponseId", $option_de_reponse->id)->count();
+
+                    $reponses_count = $counts[$option_de_reponse->id] ?? 0;
+                    $optionPoint = $option_de_reponse->pivot->point;
+
+                    // Accumulate the weighted sum
+                    $weighted_sum += $moyenne_ponderee_i = $optionPoint * $reponses_count;
+
+                    $option = $option_de_reponse;
+
+                    $option->reponses_count = $reponses_count;
+
+                    $option->moyenne_ponderee_i = $moyenne_ponderee_i;
+
+                    $question_de_gouvernance->options_de_reponse[$key] = $option;
+                }
+
+                // Calculate the weighted average
+                if ($nbre_r > 0) {
+                    $question_de_gouvernance->moyenne_ponderee = round(($weighted_sum / $nbre_r), 2);
+                } else {
+                    $question_de_gouvernance->moyenne_ponderee = 0; // Avoid division by zero
+                }
+            });
+
+            // Now, calculate the 'indice_de_perception' for the category
+            $total_moyenne_ponderee = $categorie_de_gouvernance->questions_de_gouvernance->sum('moyenne_ponderee');
+            $nbre_questions_operationnelle = $categorie_de_gouvernance->questions_de_gouvernance->count();
+
+            // Check to avoid division by zero
+            $categorie_de_gouvernance->indice_de_perception = ($nbre_questions_operationnelle > 0) ? round(($total_moyenne_ponderee / $nbre_questions_operationnelle), 2) : 0;
+
+            $principes_de_gouvernance->push(['id' => $categorie_de_gouvernance->categorieable->id, 'nom' => $categorie_de_gouvernance->categorieable->nom, 'indice_de_perception' => $categorie_de_gouvernance->indice_de_perception]);
+        });
+        $indice_de_perception = round(($results_categories_de_gouvernance->sum('indice_de_perception') / $results_categories_de_gouvernance->count()), 2);
+        return [$indice_de_perception, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
+    }
 
     public function generateResultForFactuelEvaluation(FormulaireFactuelDeGouvernance $formulaireDeGouvernance, $organisationId)
     {
