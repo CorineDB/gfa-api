@@ -27,7 +27,7 @@ class FicheDeSyntheseResource extends JsonResource
                     'point'                 => $option->pivot->point
                 ];
             }),
-            'resultats'      => $this->when($this->type == 'factuel', $this->resultats),
+            //'resultats'      => $this->when($this->type == 'factuel', $this->resultats),
             //'synthese'      => $this->synthese,
             'evaluatedAt'   => Carbon::parse($this->evaluatedAt)->format("Y-m-d"),
             'formulaireDeGouvernanceId' => $this->formulaireDeGouvernance->secure_id,
