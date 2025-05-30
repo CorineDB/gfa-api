@@ -44,11 +44,15 @@ class GenerateResultatsForValidatedSoumission extends Command
      */
     public function handle()
     {
-        EvaluationGouvernance::where("statut", 0)->whereHas("")/* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance) {
-            $this->evaluationDeGouvernance = $evaluationDeGouvernance;
-            $this->generateResultForEnquete($evaluationDeGouvernance);
-            //$this->generateResultForEvaluation($evaluationDeGouvernance);
-        });
+        EvaluationGouvernance::where("statut", 0)
+            ->where(function ($query) {
+                $query->whereHas("soumissionsFactuel")
+                    ->orWhereHas("soumissionsDePerception");
+            })/* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance) {
+                $this->evaluationDeGouvernance = $evaluationDeGouvernance;
+                $this->generateResultForEnquete($evaluationDeGouvernance);
+                //$this->generateResultForEvaluation($evaluationDeGouvernance);
+            });
 
         $this->info("Generated result for soumissions");
         return 0; // Indicates successful execution
@@ -73,166 +77,89 @@ class GenerateResultatsForValidatedSoumission extends Command
 
             dump([$groups_soumissions, $profile, $organisationId, $evaluationOrganisationId]);
 
-            [$indice_factuel, $results, $synthese] = $this->generateResultForFactuelEvaluation($evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
+            if ($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()) {
 
 
-            if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'factuel')->first()) {
-                $fiche_de_synthese->update(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-            } else {
-                app(FicheDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-            }
 
-            if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
+                [$indice_factuel, $results, $synthese] = $this->generateResultForFactuelEvaluation($evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
 
-                // Convert $profile->resultat_synthetique to an associative array for easy updating
-                $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
 
-                // Iterate over each item in $results to update or add to $resultat_synthetique
-                foreach ($results as $result) {
-                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'factuel')->first()) {
+                    $fiche_de_synthese->update(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                } else {
+                    app(FicheDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
 
-                // Convert back to a regular array if needed
-                $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
+                if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
 
-                $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-            } else {
-                // Convert $results to an associative array for easy updating
-                $resultat_synthetique = collect($results)->keyBy('id');
+                    // Convert $profile->resultat_synthetique to an associative array for easy updating
+                    $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
 
-                // Iterate over each item in $results to update or add to $resultat_synthetique
-                foreach ($results as $result) {
-                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                }
-
-                // Convert back to a regular array if needed
-                $results = $resultat_synthetique->values()->toArray();
-
-                $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-            }
-
-            [$indice_de_perception, $results, $synthese] = $this->generateResultForPerceptionEvaluation($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
-
-            if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
-                $fiche_de_synthese->update(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-            } else {
-                app(FicheDeSyntheseRepository::class)->create(['type' => 'perception', 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'programmeId' => $evaluationDeGouvernance->programmeId]);
-            }
-
-            if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
-
-                // Convert $profile->resultat_synthetique to an associative array for easy updating
-                $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
-
-                // Iterate over each item in $results to update or add to $resultat_synthetique
-                foreach ($results as $result) {
-                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                }
-
-                // Convert back to a regular array if needed
-                $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
-
-                $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-            } else {
-
-                // Convert $results to an associative array for easy updating
-                $resultat_synthetique = collect($results)->keyBy('id');
-
-                // Iterate over each item in $results to update or add to $resultat_synthetique
-                foreach ($results as $result) {
-                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                }
-
-                // Convert back to a regular array if needed
-                $results = $resultat_synthetique->values()->toArray();
-
-                $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-            }
-
-            /* foreach ($groups_soumissions as $group_soumission => $soumissions) {
-
-                if ($group_soumission === "factuel") {
-
-                    [$indice_factuel, $results, $synthese] = $this->generateSyntheseForFactuelTool($evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
-
-                    if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, $group_soumission)->first()) {
-                        $fiche_de_synthese->update(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-                    } else {
-                        app(FicheDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                    // Iterate over each item in $results to update or add to $resultat_synthetique
+                    foreach ($results as $result) {
+                        $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
                     }
 
-                    if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
+                    // Convert back to a regular array if needed
+                    $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
 
-                        // Convert $profile->resultat_synthetique to an associative array for easy updating
-                        $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
+                    $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
+                } else {
+                    // Convert $results to an associative array for easy updating
+                    $resultat_synthetique = collect($results)->keyBy('id');
 
-                        // Iterate over each item in $results to update or add to $resultat_synthetique
-                        foreach ($results as $result) {
-                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                        }
-
-                        // Convert back to a regular array if needed
-                        $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
-
-                        $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-                    } else {
-                        // Convert $results to an associative array for easy updating
-                        $resultat_synthetique = collect($results)->keyBy('id');
-
-                        // Iterate over each item in $results to update or add to $resultat_synthetique
-                        foreach ($results as $result) {
-                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                        }
-
-                        // Convert back to a regular array if needed
-                        $results = $resultat_synthetique->values()->toArray();
-
-                        $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-                    }
-                }
-
-                if ($group_soumission === "perception") {
-
-                    [$indice_de_perception, $results, $synthese] = $this->generateSyntheseForPerceptionSoumission($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
-
-                    if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
-                        $fiche_de_synthese->update(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-                    } else {
-                        app(FicheDeSyntheseRepository::class)->create(['type' => 'perception', 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernanceId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                    // Iterate over each item in $results to update or add to $resultat_synthetique
+                    foreach ($results as $result) {
+                        $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
                     }
 
-                    if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
+                    // Convert back to a regular array if needed
+                    $results = $resultat_synthetique->values()->toArray();
 
-                        // Convert $profile->resultat_synthetique to an associative array for easy updating
-                        $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
-
-                        // Iterate over each item in $results to update or add to $resultat_synthetique
-                        foreach ($results as $result) {
-                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                        }
-
-                        // Convert back to a regular array if needed
-                        $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
-
-                        $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-                    } else {
-
-                        // Convert $results to an associative array for easy updating
-                        $resultat_synthetique = collect($results)->keyBy('id');
-
-                        // Iterate over each item in $results to update or add to $resultat_synthetique
-                        foreach ($results as $result) {
-                            $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                        }
-
-                        // Convert back to a regular array if needed
-                        $results = $resultat_synthetique->values()->toArray();
-
-                        $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-                    }
+                    $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
             }
 
+            if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
+                [$indice_de_perception, $results, $synthese] = $this->generateResultForPerceptionEvaluation($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
+
+                if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
+                    $fiche_de_synthese->update(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                } else {
+                    app(FicheDeSyntheseRepository::class)->create(['type' => 'perception', 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                }
+
+                if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
+
+                    // Convert $profile->resultat_synthetique to an associative array for easy updating
+                    $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
+
+                    // Iterate over each item in $results to update or add to $resultat_synthetique
+                    foreach ($results as $result) {
+                        $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                    }
+
+                    // Convert back to a regular array if needed
+                    $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
+
+                    $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
+                } else {
+
+                    // Convert $results to an associative array for easy updating
+                    $resultat_synthetique = collect($results)->keyBy('id');
+
+                    // Iterate over each item in $results to update or add to $resultat_synthetique
+                    foreach ($results as $result) {
+                        $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                    }
+
+                    // Convert back to a regular array if needed
+                    $results = $resultat_synthetique->values()->toArray();
+
+                    $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                }
+            }
+            /*
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
 
                 // Convert $profile->resultat_synthetique to an associative collection for easy updating
