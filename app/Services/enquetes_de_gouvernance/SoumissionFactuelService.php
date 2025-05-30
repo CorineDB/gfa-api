@@ -150,9 +150,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 $soumission->save();
                 $soumission->refresh();
 
-
-                dd($attributs);
-
                 foreach ($attributs['factuel']['response_data'] as $key => $item) {
 
                     if (!(($questionDeGouvernance = app(QuestionFactuelDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id)) {
@@ -205,6 +202,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     }
                 }
             }
+
+            dd($soumission);
 
             if ($soumission->comite_members !== null) {
 
