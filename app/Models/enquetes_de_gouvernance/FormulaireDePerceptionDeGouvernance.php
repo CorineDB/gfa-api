@@ -56,6 +56,10 @@ class FormulaireDePerceptionDeGouvernance extends Model
             }
         });
     }
+    public function fichesDeSynthese()
+    {
+        return $this->morphMany(FicheDeSynthese::class, 'formulaireDeGouvernance');
+    }
 
     public function categories_de_gouvernance()
     {
