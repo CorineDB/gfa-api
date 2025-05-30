@@ -16,9 +16,9 @@ class FicheDeSyntheseResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'                    => $this->secure_id,
-            'type'                  => $this->type,
-            'indice_de_gouvernance' => $this->indice_de_gouvernance,
+            'id'                    => $this?->secure_id,
+            'type'                  => $this?->type,
+            'indice_de_gouvernance' => $this?->indice_de_gouvernance,
             /* 'options_de_reponse'    => $this->formulaireDeGouvernance->options_de_reponse->map(function($option){
                 return [
                     "id"                    => $option->secure_id,
@@ -29,10 +29,10 @@ class FicheDeSyntheseResource extends JsonResource
             }), */
             //'resultats'      => $this->when($this->type == 'factuel', $this->resultats),
             //'synthese'      => $this->synthese,
-            'evaluatedAt'   => Carbon::parse($this->evaluatedAt)->format("Y-m-d"),
-            'formulaireDeGouvernanceId' => $this->formulaireDeGouvernance->secure_id,
-            'organisationId' => $this->organisation->secure_id,
-            'evaluationDeGouvernanceId' => $this->evaluation_de_gouvernance->secure_id
+            'evaluatedAt'   => Carbon::parse($this?->evaluatedAt)->format("Y-m-d"),
+            'formulaireDeGouvernanceId' => $this?->formulaireDeGouvernance->secure_id,
+            'organisationId' => $this?->organisation->secure_id,
+            'evaluationDeGouvernanceId' => $this?->evaluation_de_gouvernance->secure_id
             /*
             'soumission'    => [
                 'id'                    => $this->soumission->secure_id,
