@@ -16,11 +16,14 @@ class UpdateFichesDeSyntheseTable extends Migration
         Schema::dropIfExists('fiches_de_synthese');
 
         Schema::table('fiches_de_synthese', function (Blueprint $table) {
-            // Step 1: Drop foreign key constraint
-            $table->dropForeign(['formulaireDeGouvernanceId']);
 
-            // Step 2: Drop old column
-            $table->dropColumn('formulaireDeGouvernanceId');
+                if(Schema::hasColumn('fiches_de_synthese', 'formulaireDeGouvernanceId')){
+                    // Step 1: Drop foreign key constraint
+                    $table->dropForeign(['formulaireDeGouvernanceId']);
+
+                    // Step 2: Drop old column
+                    $table->dropColumn('formulaireDeGouvernanceId');
+                }
 
             // Step 3: Add polymorphic columns
             $table->morphs('formulaireDeGouvernance', 'formulaire');
