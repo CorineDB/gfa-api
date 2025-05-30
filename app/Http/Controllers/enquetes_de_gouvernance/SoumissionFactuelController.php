@@ -96,7 +96,6 @@ class SoumissionFactuelController extends Controller
      */
     public function show($evaluationId, $soumissionId)
     {
-        dd($soumissionId);
         return $this->soumissionFactuelService->findById($soumissionId);
     }
 
