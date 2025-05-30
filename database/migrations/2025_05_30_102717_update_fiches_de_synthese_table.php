@@ -21,7 +21,7 @@ class UpdateFichesDeSyntheseTable extends Migration
             $table->dropColumn('formulaireDeGouvernanceId');
 
             // Step 3: Add polymorphic columns
-            $table->morphs('formulaireDeGouvernance');
+            $table->morphs('formulaireDeGouvernance', 'formulaire');
         });
     }
 
