@@ -67,7 +67,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
             $evaluationOrganisationId = $evaluationOrganisationId->id;
 
-            dd([$groups_soumissions, $profile, $organisationId, $evaluationOrganisationId, $evaluationOrganisationId]);
+            dd([$groups_soumissions, $profile, $organisationId, $evaluationOrganisationId]);
 
             foreach ($groups_soumissions as $group_soumission => $soumissions) {
 
