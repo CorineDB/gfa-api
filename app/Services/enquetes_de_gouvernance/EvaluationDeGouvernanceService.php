@@ -1031,6 +1031,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     });
                 });*/
                 else {
+                    dd($evaluationDeGouvernance);
 
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
