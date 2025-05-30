@@ -90,7 +90,6 @@ class GenerateResultatsForValidatedSoumission extends Command
                     app(FichesDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
 
-                dump(($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())));
                 if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
 
                     // Convert $profile->resultat_synthetique to an associative array for easy updating
