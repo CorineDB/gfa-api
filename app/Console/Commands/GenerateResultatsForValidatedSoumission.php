@@ -119,7 +119,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
             }
-/*
+            /*
             if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
                 [$indice_de_perception, $results, $synthese] = $this->generateResultForPerceptionEvaluation($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
 
@@ -159,7 +159,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
             } */
-            /*
+
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
 
                 // Convert $profile->resultat_synthetique to an associative collection for easy updating
@@ -184,7 +184,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
 
                 $this->info("Generated result for soumissions" . $profile);
-            } */
+            }
         });
     }
 
