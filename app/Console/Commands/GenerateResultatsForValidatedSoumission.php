@@ -781,7 +781,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             // Recursively load sousCategoriesDeGouvernance
             $this->loadCategories($query, $organisationId);
         }, 'questions_de_gouvernance.reponses' => function ($query) use ($organisationId) {
-            $query->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($organisationId) {
+            $query->whereHas("soumission", function ($query) use ($organisationId) {
                 $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
             })->sum('point');
         }]);
@@ -797,7 +797,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             });
         } else {
             $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use (&$reponses, $organisationId) {
-                $reponses_de_collecte = $question_de_gouvernance->reponses()->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($organisationId) {
+                $reponses_de_collecte = $question_de_gouvernance->reponses()->whereHas("soumission", function ($query) use ($organisationId) {
                     $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
                 })->get()->toArray();
                 $reponses = array_merge($reponses, $reponses_de_collecte);
