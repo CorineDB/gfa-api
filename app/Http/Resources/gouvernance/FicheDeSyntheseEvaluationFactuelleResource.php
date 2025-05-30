@@ -31,6 +31,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
         $question = $question_de_gouvernance ? [
             'id' => $question_de_gouvernance->secure_id,
             'nom' => $type == 'factuel' ? $question_de_gouvernance->indicateur_de_gouvernance->nom : ($type == 'perception' ? $question_de_gouvernance->question_operationnelle->nom : "null"),
+
             //'type' => $question_de_gouvernance->type
             /*,
                 "moyenne_ponderee"             => $this->when(isset($question_de_gouvernance->moyenne_ponderee), $question_de_gouvernance->moyenne_ponderee),
@@ -45,6 +46,20 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
                 })
             */
         ] : null;
+
+        if($type == 'factuel'){
+            $question = [
+                'indicateur_de_gouvernance' => $question_de_gouvernance->indicateur_de_gouvernance ? [
+                    'id' => $question_de_gouvernance->indicateur_de_gouvernance->secure_id,
+                    'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom
+                ] : null];
+        } else if($type == 'perception'){
+            $question = [
+                'question_operationnelle' => $question_de_gouvernance->question_operationnelle ? [
+                    'id' => $question_de_gouvernance->question_operationnelle->secure_id,
+                    'nom' => $question_de_gouvernance->question_operationnelle->nom
+                ] : null];
+        }
 
         if($question != null){
             if(isset($question_de_gouvernance->moyenne_ponderee)){
@@ -61,7 +76,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
                 ]);
             }
 
-            if((isset($question_de_gouvernance->type) && $question_de_gouvernance->type === 'indicateur')){
+            if((isset($type) && $type === 'factuel')){
                 $question = array_merge($question, [
                     "reponse" => $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first())
                 ]);
