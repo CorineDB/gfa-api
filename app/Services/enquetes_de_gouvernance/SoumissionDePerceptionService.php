@@ -67,12 +67,13 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
     public function findById($soumissionDePerceptionId, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
+
             if (!is_object($soumissionDePerceptionId)) {
                 $soumission = SoumissionDePerception::findByKey($soumissionDePerceptionId)->first();
             }
 
             if (!$soumission) throw new Exception("Soumission de gouvernance inconnue.", 404);
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionDePerceptionResource($soumissionDePerceptionId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionDePerceptionResource($soumission), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
