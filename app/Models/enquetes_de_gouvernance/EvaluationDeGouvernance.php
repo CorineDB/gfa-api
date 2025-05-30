@@ -585,7 +585,7 @@ class EvaluationDeGouvernance extends Model
         // Sum the 'nbreParticipants' attribute from the pivot table
         if ((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class) {
             if (auth()->user()->profilable) {
-                return $this->organisations(optional(auth()->user()->profilable)->id)->count() ?? 0;
+                return $this->formulaire_factuel_de_gouvernance() ? ( $this->organisations(optional(auth()->user()->profilable)->id)->count() ?? 0) : 0;
             } else {
                 return 0;
             }
