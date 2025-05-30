@@ -70,9 +70,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     public function findById($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            $soumission = SoumissionFactuel::findByKey($soumission);
+            $soumission = SoumissionFactuel::findByKeyOrFail($soumission)->select($columns)->with($relations);
 
-            dd($soumission->get());
+            dd($soumission);
 
             if (!is_object($soumission) && !($soumission = SoumissionFactuel::findByKey($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
