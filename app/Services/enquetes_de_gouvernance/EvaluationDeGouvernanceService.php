@@ -1010,10 +1010,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $organisation = $evaluationDeGouvernance->organisations->first();
 
-            dd($organisation);
             $terminer = false;
 
             if ($organisation != null) {
+
+                dd($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first());
 
                 if ($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) {
 
