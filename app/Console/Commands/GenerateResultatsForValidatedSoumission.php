@@ -161,8 +161,6 @@ class GenerateResultatsForValidatedSoumission extends Command
                 }
             }
 
-            /*
-
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
 
                 // Convert $profile->resultat_synthetique to an associative collection for easy updating
@@ -187,7 +185,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
 
                 $this->info("Generated result for soumissions" . $profile);
-            } */
+            }
         });
     }
 
