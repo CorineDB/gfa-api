@@ -156,12 +156,12 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                     }
 
-                    dd($questionDeGouvernance);
-
                     //$option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId']);
 
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
+
+                    dd($option);
 
                     if (isset($item['sourceDeVerificationId']) && !empty($item['sourceDeVerificationId'])) {
 
