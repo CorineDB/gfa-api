@@ -78,8 +78,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
             if ($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()) {
 
-
-
                 [$indice_factuel, $results, $synthese] = $this->generateResultForFactuelEvaluation($evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
 
 
@@ -118,6 +116,8 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
+
+                dump($results);
             }
             /*
             if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
