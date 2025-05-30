@@ -80,8 +80,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                 [$indice_factuel, $results, $synthese] = $this->generateResultForFactuelEvaluation($evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
 
-                dump($results);
-
                 if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'factuel')->first()) {
                     $fiche_de_synthese->update(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 } else {
@@ -89,6 +87,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                     app(FichesDeSyntheseRepository::class)->create(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
 
+                dump(($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())));
                 if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
 
                     // Convert $profile->resultat_synthetique to an associative array for easy updating
@@ -117,8 +116,6 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
-
-                dump($results);
             }
 
             if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
@@ -159,7 +156,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
                     $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 }
-            }
+            }/*
 
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
 
@@ -185,7 +182,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
 
                 $this->info("Generated result for soumissions" . $profile);
-            }
+            } */
         });
     }
 
