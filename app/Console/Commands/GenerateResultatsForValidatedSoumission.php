@@ -68,9 +68,9 @@ class GenerateResultatsForValidatedSoumission extends Command
 
             $evaluationOrganisationId = $evaluationOrganisationId->id;
 
-            dd([$groups_soumissions, $profile, $organisationId, $evaluationOrganisationId]);
+            dump([$groups_soumissions, $profile, $organisationId, $evaluationOrganisationId]);
 
-            foreach ($groups_soumissions as $group_soumission => $soumissions) {
+            /* foreach ($groups_soumissions as $group_soumission => $soumissions) {
 
                 if ($group_soumission === "factuel") {
 
@@ -178,7 +178,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
 
                 $this->info("Generated result for soumissions" . $profile);
-            }
+            } */
         });
     }
 
