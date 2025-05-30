@@ -980,7 +980,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => [
                 'token' => $organisation->pivot->token,
-                'terminer' => $terminer
+                'terminer' => $terminer,
+                'exist' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance() ? true : false
             ], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
