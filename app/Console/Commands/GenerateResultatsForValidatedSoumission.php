@@ -75,6 +75,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             }
 
             $evaluationOrganisationId = $evaluationOrganisationId->id;
+            $results = [];
 
             if ($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()) {
 
