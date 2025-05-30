@@ -72,7 +72,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
         try {
             $soumission = SoumissionFactuel::findByKey($soumission);
 
-            dd($soumission);
+            dd($soumission->get());
 
             if (!is_object($soumission) && !($soumission = SoumissionFactuel::findByKey($soumission))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
