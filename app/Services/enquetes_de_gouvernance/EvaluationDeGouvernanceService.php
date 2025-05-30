@@ -315,8 +315,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->map(function ($organisation) use ($evaluationDeGouvernance, $url) {
 
                         // Fetch submissions for this organization
-                        $soumissionsFactuel = $organisation->sousmissions_enquete_factuel
-                            ->where('evaluationId', $evaluationDeGouvernance->id)
+                        $soumissionsFactuel = $organisation->sousmissions_enquete_factuel()
+                            ->where('evaluationId', $evaluationDeGouvernance->id)->get()
                             ->map(function ($soumissions) {
                                 return SoumissionFactuelResource::collection($soumissions);
                             }); // Group submissions by type
