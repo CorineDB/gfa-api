@@ -11,7 +11,7 @@ use App\Models\FormulaireDeGouvernance;
 use App\Models\ProfileDeGouvernance;
 use App\Models\Soumission;
 use App\Repositories\FicheDeSyntheseRepository;
-use App\Repositories\FicheDeSyntheseRepository as FichesDeSyntheseRepository;
+use App\Repositories\enquetes_de_gouvernance\FicheDeSyntheseRepository as FichesDeSyntheseRepository;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
