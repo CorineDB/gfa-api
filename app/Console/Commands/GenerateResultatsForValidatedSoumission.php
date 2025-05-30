@@ -603,7 +603,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             $principes_de_gouvernance->push(['id' => $categorie_de_gouvernance->categorieable->id, 'nom' => $categorie_de_gouvernance->categorieable->nom, 'indice_de_perception' => $categorie_de_gouvernance->indice_de_perception]);
         });
         $indice_de_perception = round(($results_categories_de_gouvernance->sum('indice_de_perception') / $results_categories_de_gouvernance->count()), 2);
-        return [$indice_de_perception, $principes_de_gouvernance, /* FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance) */ collect([])];
+        return [$indice_de_perception, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance) ];
     }
 
     public function generateResultForFactuelEvaluation(FormulaireFactuelDeGouvernance $formulaireDeGouvernance, $organisationId)
