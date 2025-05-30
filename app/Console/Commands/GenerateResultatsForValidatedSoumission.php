@@ -67,6 +67,11 @@ class GenerateResultatsForValidatedSoumission extends Command
 
             $groups_soumissions['perception'] = $organisation->sousmissions_enquete_de_perception()->where("evaluationId", $evaluationDeGouvernance->id)->get();
 
+            // Initialize result with all types
+            $result = new \Illuminate\Database\Eloquent\Collection(collect(["factuel", "perception"])->mapWithKeys(function ($type) use ($groups_soumissions) {
+                return [$type => new \Illuminate\Database\Eloquent\Collection()];
+            }));
+
             $profile = null;
             $organisationId = $organisation->id;
 
