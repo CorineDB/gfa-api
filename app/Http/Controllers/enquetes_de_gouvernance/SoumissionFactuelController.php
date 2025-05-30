@@ -83,6 +83,7 @@ class SoumissionFactuelController extends Controller
      */
     public function validated(SoumissionFactuelValidationRequest $request, $evaluationId)
     {
+        dd($request->all());
         $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
 
         return $this->soumissionFactuelService->create($atttributs);
