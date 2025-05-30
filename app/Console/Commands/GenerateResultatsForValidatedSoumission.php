@@ -6,6 +6,7 @@ use App\Http\Resources\gouvernance\FicheDeSyntheseEvaluationFactuelleResource;
 use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireFactuelDeGouvernance;
 use App\Models\EvaluationDeGouvernance;
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance as EvaluationGouvernance;
 use App\Models\FormulaireDeGouvernance;
 use App\Models\ProfileDeGouvernance;
 use App\Models\Soumission;
@@ -43,7 +44,7 @@ class GenerateResultatsForValidatedSoumission extends Command
      */
     public function handle()
     {
-        EvaluationDeGouvernance::where("statut", 0)/* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance) {
+        EvaluationGouvernance::where("statut", 0)/* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance) {
             $this->evaluationDeGouvernance = $evaluationDeGouvernance;
             $this->generateResultForEnquete($evaluationDeGouvernance);
             //$this->generateResultForEvaluation($evaluationDeGouvernance);
@@ -53,7 +54,7 @@ class GenerateResultatsForValidatedSoumission extends Command
         return 0; // Indicates successful execution
     }
 
-    protected function generateResultForEnquete(EvaluationDeGouvernance $evaluationDeGouvernance)
+    protected function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance)
     {
         $evaluationDeGouvernance->organisations->map(function ($organisation) use ($evaluationDeGouvernance) {
 
