@@ -1031,7 +1031,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     });
                 });*/
                 else {
-                    dd($evaluationDeGouvernance->formulaires_factuel_de_gouvernance);
+
+                    if(!$evaluationDeGouvernance->formulaire_factuel_de_gouvernance()){
+                        return response()->json(['statut' => 'success', 'message' => "Evaluation inexistant", 'data' => -1, 'statutCode' => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
+                    }
 
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
@@ -1040,8 +1043,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'programmeId' => $evaluationDeGouvernance->programmeId,
                         'submitted_at' => now()
                     ];
-
-                    dd($attributs);
 
                     $soumission = $evaluationDeGouvernance->soumissionsFactuel()->create($attributs);
 
