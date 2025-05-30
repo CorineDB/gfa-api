@@ -30,6 +30,7 @@ class UpdateFichesDeSyntheseTable extends Migration
                 $table->jsonb("synthese");
                 $table->dateTime('evaluatedAt')->default(now());
 
+                $table->morphs('formulaireDeGouvernance', 'formulaire');
 
                 if(!Schema::hasColumn('fiches_de_synthese', 'evaluationDeGouvernanceId')){
                     $table->bigInteger('evaluationDeGouvernanceId')->nullable()->unsigned();
