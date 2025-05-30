@@ -70,7 +70,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     public function findById($soumission, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            $soumission = SoumissionFactuel::findByKeyOrFail($soumission)->select($columns)->with($relations);
+            $soumission = SoumissionFactuel::findByKey($soumission)->select($columns)->with($relations);
 
             dd($soumission);
 
