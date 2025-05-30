@@ -11,6 +11,7 @@ use App\Http\Resources\enquetes_de_gouvernance\OrganisationsEnqueteResource;
 use App\Http\Resources\enquetes_de_gouvernance\SoumissionDePerceptionResource;
 use App\Http\Resources\enquetes_de_gouvernance\SoumissionFactuelResource;
 use App\Http\Resources\gouvernance\FicheDeSyntheseResource;
+use App\Http\Resources\gouvernance\FichesDeSyntheseResource;
 use App\Http\Resources\gouvernance\PrincipeDeGouvernanceResource;
 use App\Http\Resources\gouvernance\RecommandationsResource;
 use App\Http\Resources\gouvernance\SoumissionsResource;
@@ -549,7 +550,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()->where('organisationId', $organisation->id)
                     ->get()->groupBy(['type'])->map(function ($fiches_de_synthese, $type) {
-                        return ($fiches_de_synthese->first());
+                        return new FicheDeSyntheseResource ($fiches_de_synthese->first());
                     });
 
                 $fiches_de_synthese = array_merge([
