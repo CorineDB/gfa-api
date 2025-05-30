@@ -61,6 +61,9 @@ class GenerateResultatsForValidatedSoumission extends Command
 
     protected function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance)
     {
+
+        $results = [];
+
         $evaluationDeGouvernance->organisations->map(function ($organisation) use ($evaluationDeGouvernance) {
 
             $groups_soumissions['factuel'] = $organisation->sousmissions_enquete_factuel()->where("evaluationId", $evaluationDeGouvernance->id)->get();
@@ -158,7 +161,6 @@ class GenerateResultatsForValidatedSoumission extends Command
                 }
             }
 
-            dump($results);
             /*
 
             if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
