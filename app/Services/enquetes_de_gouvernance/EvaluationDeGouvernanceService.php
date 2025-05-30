@@ -340,7 +340,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'contact_point_focal'   => $organisation->contact_point_focal,
                             "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
-                        ], ['factuel' => $soumissionsFactuel->toArray(), 'perception' => $soumissionsDePerception->toArray()]);
+                        ], ['factuel' => $soumissionsFactuel, 'perception' => $soumissionsDePerception]);
                     });
             }
 
