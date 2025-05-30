@@ -30,6 +30,7 @@ class UpdateFichesDeSyntheseTable extends Migration
                 $table->jsonb("synthese");
                 $table->dateTime('evaluatedAt')->default(now());
 
+                $table->morphs('formulaireDeGouvernance', 'formulaire');
 
                 if(!Schema::hasColumn('fiches_de_synthese', 'evaluationDeGouvernanceId')){
                     $table->bigInteger('evaluationDeGouvernanceId')->nullable()->unsigned();
@@ -65,7 +66,8 @@ class UpdateFichesDeSyntheseTable extends Migration
      */
     public function down()
     {
-        Schema::table('fiches_de_synthese', function (Blueprint $table) {
+        Schema::dropIfExists('fiches_de_synthese');
+        /* Schema::table('fiches_de_synthese', function (Blueprint $table) {
             // Remove polymorphic columns
             $table->dropMorphs('formulaireDeGouvernance');
 
@@ -74,6 +76,6 @@ class UpdateFichesDeSyntheseTable extends Migration
             $table->foreign('formulaireDeGouvernanceId')
                 ->references('id')->on('formulaires_de_gouvernance') // or your original table
                 ->onDelete('cascade');
-        });
+        }); */
     }
 }
