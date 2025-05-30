@@ -41,9 +41,9 @@ class GenerateResultatsForValidatedSoumission extends Command
      */
     public function handle()
     {
-        EvaluationDeGouvernance::/* where("statut", 0)->where("debut",">=", now())->where("fin","<=", now())->get */all()->map(function ($evaluationDeGouvernance) {
+        EvaluationDeGouvernance::where("statut", 0)->where("debut",">=", now())->where("fin","<=", now())->get->map(function ($evaluationDeGouvernance) {
             $this->evaluationDeGouvernance = $evaluationDeGouvernance;
-            //$this->generateResultForEvaluation($evaluationDeGouvernance);
+            $this->generateResultForEvaluation($evaluationDeGouvernance);
         });
 
         $this->info("Generated result for soumissions");
@@ -335,7 +335,7 @@ class GenerateResultatsForValidatedSoumission extends Command
     }
 
     /**
-     * 
+     *
      */
     public function generateSyntheseForPerceptionSoumission(FormulaireDeGouvernance $formulaireDeGouvernance, $organisationId)
     {
@@ -437,7 +437,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                             return $item;
                         });
                     } else {
-                        // If the item doesn't exist push the new item                        
+                        // If the item doesn't exist push the new item
                         $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable_id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
                     }
                 } else {
@@ -492,7 +492,7 @@ class GenerateResultatsForValidatedSoumission extends Command
                             return $item;
                         });
                     } else {
-                        // If the item doesn't exist push the new item                        
+                        // If the item doesn't exist push the new item
                         $principes_de_gouvernance->push(['id' => $sous_categorie_de_gouvernance->categorieable_id, 'nom' => $sous_categorie_de_gouvernance->categorieable->nom, 'indice_factuel' => $sous_categorie_de_gouvernance->score_factuel]);
                     }
                 } else {
