@@ -4,6 +4,7 @@ namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\enquetes_de_gouvernance\SoumissionDePerceptionResource;
 use App\Jobs\AppJob;
+use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernanceRepository;
@@ -66,8 +67,11 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
     public function findById($soumissionDePerceptionId, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
         try {
-            if (!is_object($soumissionDePerceptionId) && !($soumissionDePerceptionId = $this->repository->findById($soumissionDePerceptionId))) throw new Exception("Soumission de perception inconnue.", 500);
+            if (!is_object($soumissionDePerceptionId)) {
+                $soumission = SoumissionDePerception::findByKey($soumissionDePerceptionId)->first();
+            }
 
+            if (!$soumission) throw new Exception("Soumission de gouvernance inconnue.", 404);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionDePerceptionResource($soumissionDePerceptionId), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
