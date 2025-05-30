@@ -546,7 +546,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()->where('organisationId', $organisation->id)
                     ->get()->groupBy(['type'])->map(function ($fiches_de_synthese, $type) {
-                        return new FicheDeSyntheseResource($fiches_de_synthese->first());
+                        return ($fiches_de_synthese->first());
                     });
 
                 $fiches_de_synthese = array_merge([
@@ -568,7 +568,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
                     $fiches_de_synthese = $rapportEvaluationParOrganisation->map(function ($fiches_de_synthese, $type) {
-                        return new FicheDeSyntheseResource($fiches_de_synthese->first());
+                        return new ($fiches_de_synthese->first());
                     });
 
                     return array_merge([
