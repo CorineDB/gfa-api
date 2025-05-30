@@ -686,6 +686,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('evolution-des-scores-au-fil-du-temps/{organisationId}', 'scoresAuFilDuTemps')->name('evolution-des-scores-au-fil-du-temps')->middleware('permission:voir-statistique-evolution-des-profiles-de-gouvernance-au-fil-du-temps');
                     Route::get('evaluations-organisations/{id?}', 'evaluations_organisations')->name('evaluations-organisations')->middleware('permission:voir-une-organisation');
+                    Route::get('evaluations-organisations-stats/{id?}', 'stats_evaluations_de_gouvernance_organisations')->name('evaluations-organisations')->middleware('permission:voir-une-organisation');
+
+
                 });
             });
 
@@ -1162,6 +1165,13 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::get('{evaluation_de_gouvernance}/formulaire-factuel', 'formulaire_factuel')->name('formulaire_factuel')->middleware('permission:voir-formulaire-factuel');
                         Route::get('{evaluation_de_gouvernance}/rappel-soumission', 'rappel_soumission')->name('rappel_soumission')->middleware('permission:envoyer-un-rappel-soumission');
                         Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants')->middleware('permission:envoyer-une-invitation');
+
+
+                        Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese')->middleware('permission:voir-une-fiche-de-synthese');
+                        Route::get('{evaluation_de_gouvernance}/resultats-syntheses', 'resultats_syntheses')->name('resultats_syntheses')->middleware('permission:voir-resultats-evaluation');
+                        Route::get('{evaluation_de_gouvernance}/voir-resultats-avec-classement-organisations', 'voir_resultats_syntheses_avec_classement_des_organisations')->name('voir_resultats_syntheses_avec_classement_des_organisations')->middleware('permission:voir-resultats-evaluation');
+
+                        Route::get('{evaluation_de_gouvernance}/fiches-de-synthese-with-organisations-classement', 'fiches_de_synthese_with_organisations_classement')->name('fiches_de_synthese_with_organisations_classement');
                     });
                 });
             });

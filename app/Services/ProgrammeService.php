@@ -11,6 +11,7 @@ use App\Http\Resources\bailleurs\BailleursResource;
 use App\Http\Resources\cadre_de_mesure_rendement\CadreDeMesureRendementResource;
 use App\Http\Resources\CategorieResource;
 use App\Http\Resources\EActiviteResource;
+use App\Http\Resources\enquetes_de_gouvernance\OrganisationsEnqueteResource;
 use App\Http\Resources\MaitriseOeuvreResource;
 use App\Http\Resources\mods\ModsResource;
 use App\Http\Resources\OrganisationResource;
@@ -564,7 +565,7 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                     $evaluations_scores = $programme->evaluations_de_gouvernance->mapWithKeys(function ($evaluationDeGouvernance) use ($organisation) {
                         // Key-value pairing for each year with scores
                         $results = $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? [];
-                        
+
                         return [$evaluationDeGouvernance->annee_exercice => $results];
                     });
 
@@ -604,6 +605,25 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    public function stats_evaluations_de_gouvernance_organisations() : JsonResponse
+    {
+        try
+        {
+            $programme = auth()->user()->programme;
+
+            $organisations = $programme->stats_evaluations_de_gouvernance_organisations();
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => OrganisationsEnqueteResource::collection($organisations), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
     public function suiviFinanciers($id) : JsonResponse
     {
