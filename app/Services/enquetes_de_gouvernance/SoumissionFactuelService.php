@@ -161,7 +161,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    if (isset($item['sourceDeVerificationId'])) {
+                    /* if (isset($item['sourceDeVerificationId'])) {
 
                         if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
                             throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
@@ -172,8 +172,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
                     } else {
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => ""]);
-                    }
+                    } */
 
+                    dd($item);
                     $pivot = $option->formulaires_factuel_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
                     //$pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
 
