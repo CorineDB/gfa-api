@@ -314,8 +314,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->get()
                     ->map(function ($organisation) use ($evaluationDeGouvernance, $url) {
 
+                        $soumissionsFactuel = SoumissionFactuelResource::collection($organisation->sousmissions_enquete_factuel);
+                        $soumissionsDePerception = SoumissionDePerceptionResource::collection($organisation->sousmissions_enquete_de_perception);
+
                         // Fetch submissions for this organization
-                        $soumissionsFactuel = $organisation->sousmissions_enquete_factuel()
+                        /* $soumissionsFactuel = $organisation->sousmissions_enquete_factuel()
                             ->where('evaluationId', $evaluationDeGouvernance->id)->get()
                             ->map(function ($soumissions) {
                                 return SoumissionFactuelResource::collection($soumissions);
@@ -325,7 +328,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             ->where('evaluationId', $evaluationDeGouvernance->id)
                             ->map(function ($soumissions) {
                                 return SoumissionDePerceptionResource::collection($soumissions);
-                            }); // Group submissions by type
+                            }); // Group submissions by type */
 
                         return array_merge([
                             "id"                    => $organisation->secure_id,
