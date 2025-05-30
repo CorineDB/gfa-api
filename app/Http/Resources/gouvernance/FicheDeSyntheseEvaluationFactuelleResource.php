@@ -22,16 +22,16 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             "indice_de_perception"       => $this->when(isset($this->indice_de_perception), $this->indice_de_perception),
             'categories_de_gouvernance'  => $this->when(($this->sousCategoriesDeGouvernance->count() && !$this->questions_de_gouvernance->count()), FicheDeSyntheseEvaluationFactuelleResource::collection($this->sousCategoriesDeGouvernance)),
             'questions_de_gouvernance'   => $this->when((!$this->sousCategoriesDeGouvernance->count() && $this->questions_de_gouvernance->count()), $this->questions_de_gouvernance->map(function($question_de_gouvernance){
-                return $this->question_de_gouvernance($question_de_gouvernance);
+                return $this->question_de_gouvernance($question_de_gouvernance, $this->type);
             }))
         ];
     }
-    
-    public function question_de_gouvernance($question_de_gouvernance){
+
+    public function question_de_gouvernance($question_de_gouvernance, $type){
         $question = $question_de_gouvernance ? [
             'id' => $question_de_gouvernance->secure_id,
-            'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom,
-            'type' => $question_de_gouvernance->type
+            'nom' => $type == 'factuel' ? $question_de_gouvernance->indicateur_de_gouvernance->nom : ($type == 'perception' ? $question_de_gouvernance->question_operationnelle->nom : "null"),
+            //'type' => $question_de_gouvernance->type
             /*,
                 "moyenne_ponderee"             => $this->when(isset($question_de_gouvernance->moyenne_ponderee), $question_de_gouvernance->moyenne_ponderee),
 
@@ -79,18 +79,18 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
         return $question;
     }
 
-    
+
     public function reponse_de_la_collecte($reponse){
         return $reponse ? [
             'id' => $reponse->id,
             'nom' => $reponse->option_de_reponse->libelle,
-            'type' => $reponse->type,
+            //'type' => $reponse->type,
             'point' => $reponse->point,
             'sourceDeVerification' => $reponse->source_de_verification ? $reponse->source_de_verification->intitule : $reponse->sourceDeVerification,
             'preuves' => $reponse->preuves_de_verification,
         ] : null;
     }
-    
+
     public function option_de_reponse($option_de_reponse){
         return $option_de_reponse ? [
             'id' => $option_de_reponse->secure_id,
@@ -98,7 +98,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'point' => $option_de_reponse->pivot->point,
             'moyenne_ponderee_i' => $option_de_reponse->moyenne_ponderee_i,
             'reponses_count' => $option_de_reponse->reponses_count
-            
+
         ] : null;
     }
 
