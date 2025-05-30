@@ -156,6 +156,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         throw new Exception("Question de gouvernance introuvable dans le programme.", Response::HTTP_NOT_FOUND);
                     }
 
+                    dd($questionDeGouvernance);
+
                     //$option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId']);
 
@@ -171,9 +173,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     } else if (isset($item['sourceDeVerification']) && !empty($item['sourceDeVerification'])) {
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
                     }
-
-
-                    dd($soumission);
 
                     $pivot = $option->formulaires_factuel_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
                     //$pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
