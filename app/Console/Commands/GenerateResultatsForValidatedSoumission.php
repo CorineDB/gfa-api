@@ -62,9 +62,9 @@ class GenerateResultatsForValidatedSoumission extends Command
     protected function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance)
     {
 
-        $results = [];
-
         $evaluationDeGouvernance->organisations->map(function ($organisation) use ($evaluationDeGouvernance) {
+
+            $results = [];
 
             $groups_soumissions['factuel'] = $organisation->sousmissions_enquete_factuel()->where("evaluationId", $evaluationDeGouvernance->id)->get();
 
