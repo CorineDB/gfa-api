@@ -1009,6 +1009,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }
 
             $organisation = $evaluationDeGouvernance->organisations->first();
+
+            dd($organisation);
             $terminer = false;
 
             if ($organisation != null) {
