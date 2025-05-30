@@ -686,6 +686,32 @@ class Programme extends Model
                 });
     }
 
+
+
+    /**
+     * Charger la liste des indicateurs de tous les criteres de gouvernance
+     */
+    public function stats_evaluations_de_gouvernance_organisations(?int $organisationId = null)
+    {
+        return $this->enquetes_de_gouvernance()->when($organisationId, function($query) use ($organisationId) {
+                $query->with(['organisations' => function ($query) use ($organisationId) {
+                    if ($organisationId) {
+                        $query->where('organisations.id', $organisationId);
+                    }
+                }]);
+            })->get()->flatMap(function ($evaluation) {
+                return $evaluation->organisations;
+            })
+            ->unique('id'); // Ensure only distinct organisations by their ID
+        return DB::table('evaluation_organisations')
+                ->join('evaluations_de_gouvernance', 'evaluations_de_gouvernance.id', '=', 'evaluation_organisations.evaluationDeGouvernanceId')
+                ->join('organisations', 'organisations.id', '=', 'evaluation_organisations.organisationId')
+                ->where('evaluations_de_gouvernance.programmeId', $this->id)
+                ->when($organisationId != null, function($query) use ($organisationId) {
+                    $query->where('organisations.id', $organisationId)->distinct();
+                });
+    }
+
     public function soumissions()
     {
         return $this->hasMany(Soumission::class, 'programmeId');
