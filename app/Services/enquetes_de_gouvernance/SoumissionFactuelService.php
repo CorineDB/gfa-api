@@ -161,18 +161,28 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                    /* if (isset($item['sourceDeVerificationId'])) {
+                    if (isset($item['sourceDeVerificationId'])) {
 
-                        if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
-                            throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
+                        if (!empty($item['sourceDeVerificationId'])) {
+
+
+                            if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
+                                throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
+                            }
+
+                            $item = array_merge($item, ['sourceDeVerificationId' => $sourceDeVerification->id, 'sourceDeVerification' => null]);
+                        }else {
+                            $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => null]);
                         }
-
-                        $item = array_merge($item, ['sourceDeVerificationId' => $sourceDeVerification->id, 'sourceDeVerification' => null]);
                     } else if (isset($item['sourceDeVerification'])) {
-                        $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
-                    } else {
-                        $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => null]);
-                    } */
+                        if (!empty($item['sourceDeVerification'])) {
+                            $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
+                        }
+                        else {
+                            $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => null]);
+                        }
+                    }
+
                     $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => null]);
 
                     $pivot = $option->formulaires_factuel_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
