@@ -26,7 +26,7 @@ class FicheDeSyntheseEvaluationPerceptionResource extends JsonResource
             }))
         ];
     }
-    
+
     public function question_de_gouvernance($question_de_gouvernance){
         $question = $question_de_gouvernance ? [
             'id' => $question_de_gouvernance->secure_id,
@@ -79,10 +79,10 @@ class FicheDeSyntheseEvaluationPerceptionResource extends JsonResource
         return $question;
     }
 
-    
+
     public function reponse_de_la_collecte($reponse){
         return $reponse ? [
-            'id' => $reponse->id,
+            'id' => $reponse->secure_id,
             'nom' => $reponse->option_de_reponse->libelle,
             'type' => $reponse->type,
             'point' => $reponse->point,
@@ -90,7 +90,7 @@ class FicheDeSyntheseEvaluationPerceptionResource extends JsonResource
             'preuves' => $reponse->preuves_de_verification,
         ] : null;
     }
-    
+
     public function option_de_reponse($option_de_reponse){
         return $option_de_reponse ? [
             'id' => $option_de_reponse->secure_id,
@@ -98,7 +98,7 @@ class FicheDeSyntheseEvaluationPerceptionResource extends JsonResource
             'point' => $option_de_reponse->pivot->point,
             'moyenne_ponderee_i' => $option_de_reponse->moyenne_ponderee_i,
             'reponses_count' => $option_de_reponse->reponses_count
-            
+
         ] : null;
     }
 
