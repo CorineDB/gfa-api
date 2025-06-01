@@ -19,6 +19,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
         return [
             'id'                         => $this->secure_id,
             'nom'                        => $this->categorieable->nom,
+            'type'                        => $type,
             "indice_factuel"             => $this->when(isset($this->indice_factuel), $this->indice_factuel),
             "score_factuel"              => $this->when(isset($this->score_factuel), $this->score_factuel),
             "indice_de_perception"       => $this->when(isset($this->indice_de_perception), $this->indice_de_perception),
