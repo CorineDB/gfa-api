@@ -14,6 +14,8 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
      */
     public function toArray($request)
     {
+        $type = isset($this->indice_factuel) || isset($this->score_factuel) ? 'factuel' : 'perception';
+
         return [
             'id'                         => $this->secure_id,
             'nom'                        => $this->categorieable->nom,
@@ -21,8 +23,8 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             "score_factuel"              => $this->when(isset($this->score_factuel), $this->score_factuel),
             "indice_de_perception"       => $this->when(isset($this->indice_de_perception), $this->indice_de_perception),
             'categories_de_gouvernance'  => $this->when(($this->sousCategoriesDeGouvernance->count() && !$this->questions_de_gouvernance->count()), FicheDeSyntheseEvaluationFactuelleResource::collection($this->sousCategoriesDeGouvernance)),
-            'questions_de_gouvernance'   => $this->when((!$this->sousCategoriesDeGouvernance->count() && $this->questions_de_gouvernance->count()), $this->questions_de_gouvernance->map(function($question_de_gouvernance){
-                return $this->question_de_gouvernance($question_de_gouvernance, $this->type);
+            'questions_de_gouvernance'   => $this->when((!$this->sousCategoriesDeGouvernance->count() && $this->questions_de_gouvernance->count()), $this->questions_de_gouvernance->map(function($question_de_gouvernance) use ($type){
+                return $this->question_de_gouvernance($question_de_gouvernance, $type);
             }))
         ];
     }
