@@ -1203,7 +1203,7 @@ function test_generation(){
 
     $results = [];
     $i = 0;
-    EvaluationGouvernance::where("statut", 0)->get()->map(function ($evaluationDeGouvernance)  use (&$results, &$i) {
+    $results = EvaluationGouvernance::where("statut", 0)->get()->map(function ($evaluationDeGouvernance)  use (&$results, &$i) {
         /* $this->evaluationDeGouvernance = $evaluationDeGouvernance;
         $results[$i] = $this->generateResultForEnquete($evaluationDeGouvernance);
         $i++; */
