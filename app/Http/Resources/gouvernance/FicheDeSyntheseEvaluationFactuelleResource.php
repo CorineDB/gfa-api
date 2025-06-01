@@ -51,19 +51,21 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             */
         ] : null;
 
-        /* if($type == 'factuel'){
-            $question['indicateur_de_gouvernance'] = $question_de_gouvernance->indicateur_de_gouvernance ? [
-                    'id' => $question_de_gouvernance->indicateur_de_gouvernance->secure_id,
-                    'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom
-                ] : null;
-        } else if($type == 'perception'){
-            $question['question_operationnelle'] = $question_de_gouvernance->question_operationnelle ? [
-                    'id' => $question_de_gouvernance->question_operationnelle->secure_id,
-                    'nom' => $question_de_gouvernance->question_operationnelle->nom
-                ] : null;
-        } */
-
         if ($question != null) {
+            if($type == 'factuel'){
+                $question['indicateur_de_gouvernance'] = $question_de_gouvernance->indicateur_de_gouvernance ? [
+                        'id' => $question_de_gouvernance->indicateur_de_gouvernance->secure_id,
+                        'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom
+                    ] : null;
+            }
+
+            if($type == 'perception'){
+                $question['question_operationnelle'] = $question_de_gouvernance->question_operationnelle ? [
+                        'id' => $question_de_gouvernance->question_operationnelle->secure_id,
+                        'nom' => $question_de_gouvernance->question_operationnelle->nom
+                    ] : null;
+            }
+
             if (isset($question_de_gouvernance->moyenne_ponderee)) {
                 $question = array_merge($question, [
                     "moyenne_ponderee" => $question_de_gouvernance->moyenne_ponderee
