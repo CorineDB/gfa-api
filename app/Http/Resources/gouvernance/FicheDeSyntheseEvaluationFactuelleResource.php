@@ -115,9 +115,16 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'nom' => $reponse->option_de_reponse->libelle,
             //'type' => $reponse->type,
             'point' => $reponse->point,
-            'sourceDeVerification' => $reponse->source_de_verification ? $reponse->source_de_verification->intitule : $reponse->sourceDeVerification,
+            'sourceDeVerification' => $reponse->source_de_verification ? $reponse->source_de_verification->intitule : ($reponse->sourceDeVerification ?? "N/D"),
             'preuves' => $reponse->preuves_de_verification,
-        ] : null;
+        ] : [
+            'id' => null,
+            'nom' => "N/D",
+            //'type' => $reponse->type,
+            'point' => "N/D",
+            'sourceDeVerification' => "N/D",
+            'preuves' => "N/D",
+        ];
     }
 
     public function option_de_reponse($option_de_reponse)
@@ -129,6 +136,12 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'moyenne_ponderee_i' => $option_de_reponse->moyenne_ponderee_i,
             'reponses_count' => $option_de_reponse->reponses_count
 
-        ] : null;
+        ] : [
+            'id' => $option_de_reponse->secure_id,
+            'nom' => $option_de_reponse->libelle,
+            'point' => $option_de_reponse->pivot->point,
+            'moyenne_ponderee_i' => $option_de_reponse->moyenne_ponderee_i,
+            'reponses_count' => $option_de_reponse->reponses_count
+        ];
     }
 }
