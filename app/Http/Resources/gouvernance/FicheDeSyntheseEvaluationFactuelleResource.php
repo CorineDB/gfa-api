@@ -121,6 +121,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'id' => null,
             'nom' => "N/D",
             //'type' => $reponse->type,
+            'sourceDeVerification' => "N/D",
             'point' => "N/D",
             'sourceDeVerification' => "N/D",
             'preuves' => "N/D",
