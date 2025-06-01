@@ -566,7 +566,8 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
 
                     $evaluations_scores = $programme->enquetes_de_gouvernance->mapWithKeys(function ($evaluationDeGouvernance) use ($organisation) {
                         // Key-value pairing for each year with scores
-                        $results = $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? [];
+                        //$results = $organisation->profiles($evaluationDeGouvernance->id)->first()->resultat_synthetique ?? [];
+                        $results = $organisation->profiles($evaluationDeGouvernance->id)->first();
 
                         return [$evaluationDeGouvernance->annee_exercice => $results];
                     });
