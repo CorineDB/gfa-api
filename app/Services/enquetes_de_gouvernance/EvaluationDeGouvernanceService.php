@@ -109,7 +109,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'statut' => -1]);
 
             $evaluationDeGouvernance = $this->repository->create($attributs);
 
