@@ -1180,10 +1180,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                         Route::get('{evaluation_de_gouvernance}/fiches-de-synthese-with-organisations-classement', 'fiches_de_synthese_with_organisations_classement')->name('fiches_de_synthese_with_organisations_classement');
                     });
+                });
 
-                    Route::get('result', function(){
-                        return $this->test_generation();
-                    });
+                Route::get('result', function(){
+                    return $this->test_generation();
                 });
             });
 
