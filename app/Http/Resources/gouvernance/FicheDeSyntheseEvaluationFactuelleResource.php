@@ -24,14 +24,16 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             'questions_de_gouvernance'   => $this->when((!$this->sousCategoriesDeGouvernance->count() && $this->questions_de_gouvernance->count()), $this->questions_de_gouvernance->map(function ($question_de_gouvernance) {
 
                 $type = null;
-                if($question_de_gouvernance->indicateur_de_gouvernance()->exists()){
+
+                if (method_exists($question_de_gouvernance, 'indicateur_de_gouvernance') &&
+                    $question_de_gouvernance->indicateur_de_gouvernance()->exists()) {
                     $type = 'factuel';
-                }
-                else if($question_de_gouvernance->question_operationnelle()->exists()){
-
+                } elseif (method_exists($question_de_gouvernance, 'question_operationnelle') &&
+                        $question_de_gouvernance->question_operationnelle()->exists()) {
                     $type = 'perception';
+                } else {
+                    $type = null;
                 }
-
                 return $this->question_de_gouvernance($question_de_gouvernance, $type);
             }))
         ];
