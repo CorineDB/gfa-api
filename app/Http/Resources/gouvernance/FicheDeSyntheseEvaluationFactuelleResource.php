@@ -61,7 +61,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
         ] : null;
 
         if ($question != null) {
-            /* if($type == 'factuel'){
+            if($type == 'factuel'){
                 $question['indicateur_de_gouvernance'] = $question_de_gouvernance->indicateur_de_gouvernance ? [
                         'id' => $question_de_gouvernance->indicateur_de_gouvernance->secure_id,
                         'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom
@@ -73,7 +73,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
                         'id' => $question_de_gouvernance->question_operationnelle->secure_id,
                         'nom' => $question_de_gouvernance->question_operationnelle->nom
                     ] : null;
-            } */
+            }
 
             if (isset($question_de_gouvernance->moyenne_ponderee)) {
                 $question = array_merge($question, [
@@ -91,10 +91,6 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
 
             if ((isset($type) && $type === 'factuel')) {
                 $question = array_merge($question, [
-                    "indicateur_de_gouvernance" => $question_de_gouvernance->indicateur_de_gouvernance ? [
-                        'id' => $question_de_gouvernance->indicateur_de_gouvernance->secure_id,
-                        'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom
-                    ] : null,
                     "reponse" => $this->reponse_de_la_collecte($question_de_gouvernance->reponses->first())
                 ]);
             }
