@@ -1207,6 +1207,8 @@ function test_generation(){
         /* $this->evaluationDeGouvernance = $evaluationDeGouvernance;
         $results[$i] = $this->generateResultForEnquete($evaluationDeGouvernance);
         $i++; */
+        return $this->generateResultForEnquete($evaluationDeGouvernance);
+
     });
 
     return $results;
