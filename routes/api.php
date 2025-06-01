@@ -1279,7 +1279,7 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
             if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
                 [$indice_de_perception, $results, $synthese] = generateResultForPerceptionEvaluation($evaluationDeGouvernance, $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
 
-                $resultats[$i]['perception'] = $synthese;
+                $resultats[$i . $organisation->user->nom]['perception'] = $synthese;
                 if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
                     $fiche_de_synthese->update(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
                 } else {
@@ -1339,8 +1339,8 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
 
                 // Update the profile with the modified array
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-
-                $this->info("Generated result for soumissions" . $profile);
+                $resultats[$i . $organisation->user->nom]['resultat_synthetique'] = $updated_resultat_synthetique;
+                $resultats[$i . $organisation->user->nom]['profile'] = $profile;
             }
 
         $i++;
