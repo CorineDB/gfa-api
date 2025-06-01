@@ -33,7 +33,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
     public function question_de_gouvernance($question_de_gouvernance, $type){
         $question = $question_de_gouvernance ? [
             'id' => $question_de_gouvernance->secure_id,
-            'nom' => $type == 'factuel' ? $question_de_gouvernance->load('indicateur_de_gouvernance')->nom : ($type == 'perception' ? $question_de_gouvernance->load('question_operationnelle')->nom : "null"),
+            //'nom' => $type == 'factuel' ? $question_de_gouvernance->load('indicateur_de_gouvernance')->nom : ($type == 'perception' ? $question_de_gouvernance->load('question_operationnelle')->nom : "null"),
 
             //'type' => $question_de_gouvernance->type
             /*,
@@ -50,7 +50,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
             */
         ] : null;
 
-        if($type == 'factuel'){
+        /* if($type == 'factuel'){
             $question = [
                 'indicateur_de_gouvernance' => $question_de_gouvernance->indicateur_de_gouvernance ? [
                     'id' => $question_de_gouvernance->indicateur_de_gouvernance->secure_id,
@@ -62,7 +62,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
                     'id' => $question_de_gouvernance->question_operationnelle->secure_id,
                     'nom' => $question_de_gouvernance->question_operationnelle->nom
                 ] : null];
-        }
+        } */
 
         if($question != null){
             if(isset($question_de_gouvernance->moyenne_ponderee)){
