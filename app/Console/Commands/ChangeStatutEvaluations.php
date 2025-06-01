@@ -76,7 +76,7 @@ class ChangeStatutEvaluations extends Command
                 // Your action code here, for example, sending an email, processing data, etc.
                 $this->starting_evaluations_notification($startingEvaluations, $url)
             ); // Optionally add additional delay at dispatch time
-            
+
             // Log success or perform other actions as needed
         } catch (\Exception $e) {
             // Handle the exception, log an error, or notify of failure
@@ -87,7 +87,7 @@ class ChangeStatutEvaluations extends Command
             ->where('statut', '==', 0)
             ->get();
 
-        // Change the status based on the date        
+        // Change the status based on the date
         DB::table('evaluations_de_gouvernance')
             ->whereIn('id', $endedEvaluations->pluck('id'))
             ->update(['statut' => 1]); // Assuming '1' indicates a finished evaluation
@@ -97,7 +97,7 @@ class ChangeStatutEvaluations extends Command
                 // Your action code here, for example, sending an email, processing data, etc.
                 $this->ended_evaluations_notification($endedEvaluations, $url)
             ); // Optionally add additional delay at dispatch time
-            
+
             // Log success or perform other actions as needed
         } catch (\Exception $e) {
             // Handle the exception, log an error, or notify of failure
@@ -128,7 +128,7 @@ class ChangeStatutEvaluations extends Command
 
                     // Create the notification instance with the required data
                     $notification = new EvaluationNotification($data, ['mail', 'database', 'broadcast']);
-                    
+
                     try {
                         $organisation->user->notify($notification);
                         // Log success or perform other actions as needed
@@ -149,6 +149,16 @@ class ChangeStatutEvaluations extends Command
                 )->delay(now()); // Optionally add additional delay at dispatch time->addMinutes(10)
             }
         }*/
+
+        $startingEvaluations = EvaluationDeGouvernance::
+            where('debut', '>', $today)
+            ->where('statut', '>=', 0)
+            ->get();
+
+        // Update their statut to -1 (not started)
+        DB::table('evaluations_de_gouvernance')
+            ->whereIn('id', $startingEvaluations->pluck('id'))
+            ->update(['statut' => -1]);
 
         return 0;
     }
@@ -178,7 +188,7 @@ class ChangeStatutEvaluations extends Command
 
                     // Create the notification instance with the required data
                     $notification = new EvaluationNotification($data, ['mail', 'database', 'broadcast']);
-                    
+
                     try {
                         $organisation->user->notify($notification);
                         // Log success or perform other actions as needed
@@ -193,9 +203,9 @@ class ChangeStatutEvaluations extends Command
             }
         }
     }
-    
+
     protected function ended_evaluations_notification($endedEvaluations, string $url){
-        
+
         foreach ($endedEvaluations as $key => $ended_evaluation) {
 
             foreach ($ended_evaluation->organisations as $key => $organisation) {
@@ -220,7 +230,7 @@ class ChangeStatutEvaluations extends Command
 
                     // Create the notification instance with the required data
                     $notification = new EvaluationNotification($data, ['mail', 'database', 'broadcast']);
-                    
+
                     try {
                         $organisation->user->notify($notification);
                         // Log success or perform other actions as needed

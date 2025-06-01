@@ -109,7 +109,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $programme = Auth::user()->programme;
 
-            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id, 'statut' => -1]);
 
             $evaluationDeGouvernance = $this->repository->create($attributs);
 
@@ -188,6 +188,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 if ($evaluationDeGouvernance->debut->after(today())) {
 
+                    $evaluationDeGouvernance->statut = -1;
+                    $evaluationDeGouvernance->save();
+                }
+                else{
                     $evaluationDeGouvernance->statut = 0;
                     $evaluationDeGouvernance->save();
                 }
