@@ -1183,7 +1183,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                 });
 
                 Route::get('result', function(){
-                    return $this->test_generation();
+                    return test_generation();
                 });
             });
 
