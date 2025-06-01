@@ -1239,7 +1239,7 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
 
             [$indice_factuel, $results, $synthese] = generateResultForFactuelEvaluation($evaluationDeGouvernance, $evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
 
-            $resultats[$organisation->load('user')->nom]['factuel'] = $synthese;
+            $resultats[$i . $organisation->user->nom]['factuel'] = $synthese;
             if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'factuel')->first()) {
                 $fiche_de_synthese->update(['type' => 'factuel', 'indice_de_gouvernance' => $indice_factuel, 'resultats' => $results, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
             } else {
