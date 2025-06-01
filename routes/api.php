@@ -1203,15 +1203,10 @@ function test_generation(){
 
     $results = [];
     $i = 0;
-    EvaluationGouvernance::where("statut", 0)
-    /* ->where(function ($query) {
-        $query->whereHas("soumissionsFactuel")
-            ->orWhereHas("soumissionsDePerception");
-    }) *//* ->where("debut",">=", now())->where("fin","<=", now()) */->get()->map(function ($evaluationDeGouvernance)  use (&$results, &$i) {
-        $this->evaluationDeGouvernance = $evaluationDeGouvernance;
+    EvaluationGouvernance::where("statut", 0)->get()->map(function ($evaluationDeGouvernance)  use (&$results, &$i) {
+        /* $this->evaluationDeGouvernance = $evaluationDeGouvernance;
         $results[$i] = $this->generateResultForEnquete($evaluationDeGouvernance);
-        $i++;
-        //$this->generateResultForEvaluation($evaluationDeGouvernance);
+        $i++; */
     });
 
     return $results;
