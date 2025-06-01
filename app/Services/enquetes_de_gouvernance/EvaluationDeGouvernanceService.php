@@ -188,6 +188,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 if ($evaluationDeGouvernance->debut->after(today())) {
 
+                    $evaluationDeGouvernance->statut = -1;
+                    $evaluationDeGouvernance->save();
+                }
+                else{
                     $evaluationDeGouvernance->statut = 0;
                     $evaluationDeGouvernance->save();
                 }
