@@ -111,7 +111,7 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
     public function reponse_de_la_collecte($reponse)
     {
         return $reponse ? [
-            'id' => $reponse->id,
+            'id' => $reponse->secure_id,
             'nom' => $reponse->option_de_reponse->libelle,
             //'type' => $reponse->type,
             'point' => $reponse->point,
