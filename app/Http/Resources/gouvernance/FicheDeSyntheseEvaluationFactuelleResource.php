@@ -53,13 +53,11 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
         ] : null;
 
         if($type == 'factuel'){
-            $question['indicateur'] = $question_de_gouvernance->indicateur_de_gouvernance;
             $question['indicateur_de_gouvernance'] = $question_de_gouvernance->indicateur_de_gouvernance ? [
                     'id' => $question_de_gouvernance->indicateur_de_gouvernance->secure_id,
                     'nom' => $question_de_gouvernance->indicateur_de_gouvernance->nom
                 ] : null;
         } else if($type == 'perception'){
-            $question['operationnelle'] = $question_de_gouvernance->question_operationnelle;
             $question['question_operationnelle'] = $question_de_gouvernance->question_operationnelle ? [
                     'id' => $question_de_gouvernance->question_operationnelle->secure_id,
                     'nom' => $question_de_gouvernance->question_operationnelle->nom
