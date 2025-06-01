@@ -34,7 +34,6 @@ class FicheDeSyntheseEvaluationFactuelleResource extends JsonResource
     {
         $question = $question_de_gouvernance ? [
             'id' => $question_de_gouvernance->secure_id,
-            'type' => $type,
             'nom' => $type == 'factuel' ? $question_de_gouvernance->indicateur_de_gouvernance->nom : ($type == 'perception' ? $question_de_gouvernance->question_operationnelle->nom : "null"),
 
             //'type' => $question_de_gouvernance->type
