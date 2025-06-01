@@ -1197,6 +1197,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
     });
 });
 
+$evaluationDeGouvernance;
+
 function test_generation(){
 
     $results = [];
