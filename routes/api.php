@@ -1237,7 +1237,7 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
 
         if ($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()) {
 
-            [$indice_factuel, $results, $synthese] = $this->generateResultForFactuelEvaluation($evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
+            [$indice_factuel, $results, $synthese] = generateResultForFactuelEvaluation($evaluationDeGouvernance, $evaluationDeGouvernance->formulaire_factuel_de_gouvernance(), $organisationId);
 
             $resultats[$i]['factuel'] = $synthese;
             if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'factuel')->first()) {
@@ -1277,72 +1277,74 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
             }
         }
 
-        if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
-            [$indice_de_perception, $results, $synthese] = $this->generateResultForPerceptionEvaluation($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
+        /*
+            if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
+                [$indice_de_perception, $results, $synthese] = $this->generateResultForPerceptionEvaluation($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
 
-            $resultats[$i]['perception'] = $synthese;
-            if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
-                $fiche_de_synthese->update(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
-            } else {
-                app(FichesDeSyntheseRepository::class)->create(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                $resultats[$i]['perception'] = $synthese;
+                if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
+                    $fiche_de_synthese->update(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                } else {
+                    app(FichesDeSyntheseRepository::class)->create(['type' => 'perception', 'indice_de_gouvernance' => $indice_de_perception, 'synthese' => $synthese, 'evaluatedAt' => now(), 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id, 'organisationId' => $organisationId, 'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()), 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                }
+
+                if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
+
+                    // Convert $profile->resultat_synthetique to an associative array for easy updating
+                    $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
+
+                    // Iterate over each item in $results to update or add to $resultat_synthetique
+                    foreach ($results as $result) {
+                        $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                    }
+
+                    // Convert back to a regular array if needed
+                    $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
+
+                    $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
+                } else {
+
+                    // Convert $results to an associative array for easy updating
+                    $resultat_synthetique = collect($results)->keyBy('id');
+
+                    // Iterate over each item in $results to update or add to $resultat_synthetique
+                    foreach ($results as $result) {
+                        $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                    }
+
+                    // Convert back to a regular array if needed
+                    $results = $resultat_synthetique->values()->toArray();
+
+                    $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                }
             }
 
-            if ($profile || ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first())) {
+            if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
 
-                // Convert $profile->resultat_synthetique to an associative array for easy updating
+                // Convert $profile->resultat_synthetique to an associative collection for easy updating
                 $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
 
                 // Iterate over each item in $results to update or add to $resultat_synthetique
                 foreach ($results as $result) {
-                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
+                    // Check if the entry exists in $resultat_synthetique
+                    if ($existing = $resultat_synthetique->get($result['id'])) {
+
+                        // Calculate indice_synthetique by summing indice_factuel and indice_de_perception
+                        $existing['indice_synthetique'] = $this->geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
+
+                        $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $existing);
+                    }
                 }
 
                 // Convert back to a regular array if needed
                 $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
 
+                // Update the profile with the modified array
                 $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-            } else {
 
-                // Convert $results to an associative array for easy updating
-                $resultat_synthetique = collect($results)->keyBy('id');
-
-                // Iterate over each item in $results to update or add to $resultat_synthetique
-                foreach ($results as $result) {
-                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $result);
-                }
-
-                // Convert back to a regular array if needed
-                $results = $resultat_synthetique->values()->toArray();
-
-                $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
+                $this->info("Generated result for soumissions" . $profile);
             }
-        }
-
-        if ($profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first()) {
-
-            // Convert $profile->resultat_synthetique to an associative collection for easy updating
-            $resultat_synthetique = collect($profile->resultat_synthetique)->keyBy('id');
-
-            // Iterate over each item in $results to update or add to $resultat_synthetique
-            foreach ($results as $result) {
-                // Check if the entry exists in $resultat_synthetique
-                if ($existing = $resultat_synthetique->get($result['id'])) {
-
-                    // Calculate indice_synthetique by summing indice_factuel and indice_de_perception
-                    $existing['indice_synthetique'] = $this->geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
-
-                    $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $existing);
-                }
-            }
-
-            // Convert back to a regular array if needed
-            $updated_resultat_synthetique = $resultat_synthetique->values()->toArray();
-
-            // Update the profile with the modified array
-            $profile->update(['resultat_synthetique' => $updated_resultat_synthetique]);
-
-            $this->info("Generated result for soumissions" . $profile);
-        }
+        */
 
         $i++;
     });
@@ -1416,19 +1418,21 @@ function generateResultForPerceptionEvaluation(FormulaireDePerceptionDeGouvernan
     return [$indice_de_perception, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance) ];
 }
 
-function generateResultForFactuelEvaluation(FormulaireFactuelDeGouvernance $formulaireDeGouvernance, $organisationId)
+function generateResultForFactuelEvaluation(EvaluationGouvernance $evaluation, FormulaireFactuelDeGouvernance $formulaireDeGouvernance, $organisationId)
 {
 
     $principes_de_gouvernance = collect([]);
 
-    $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) use ($organisationId) {
-        // Call the recursive function to load nested relationships
-        $this->loadCategories($query, $organisationId);
-    }])->get()->each(function ($categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
-        $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($organisationId, &$principes_de_gouvernance) {
-            $reponses = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
+    $evaluationId = $evaluation->id;
 
-            $indicateurs = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
+    $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with(['sousCategoriesDeGouvernance' => function ($query) use ($evaluationId, $organisationId) {
+        // Call the recursive function to load nested relationships
+        loadCategories($query, $evaluationId, $organisationId);
+    }])->get()->each(function ($categorie_de_gouvernance) use ($evaluationId, $organisationId, &$principes_de_gouvernance) {
+        $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use ($evaluationId, $organisationId, &$principes_de_gouvernance) {
+            $reponses = interpretData($sous_categorie_de_gouvernance, $evaluationId, $organisationId);
+
+            $indicateurs = getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
 
             // Calculate indice_factuel
             if (count($indicateurs) > 0 && $reponses->sum('point') > 0) {
@@ -1472,30 +1476,30 @@ function generateResultForFactuelEvaluation(FormulaireFactuelDeGouvernance $form
     return [$indice_factuel, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
 }
 
-function loadCategories($query, $organisationId)
+function loadCategories($query, $evaluationId, $organisationId)
 {
-    $query->with(['sousCategoriesDeGouvernance' => function ($query) use ($organisationId) {
+    $query->with(['sousCategoriesDeGouvernance' => function ($query) use ($evaluationId, $organisationId) {
         // Recursively load sousCategoriesDeGouvernance
-        $this->loadCategories($query, $organisationId);
-    }, 'questions_de_gouvernance.reponses' => function ($query) use ($organisationId) {
-        $query->whereHas("soumission", function ($query) use ($organisationId) {
-            $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
+        loadCategories($query, $evaluationId, $organisationId);
+    }, 'questions_de_gouvernance.reponses' => function ($query) use ($evaluationId, $organisationId) {
+        $query->whereHas("soumission", function ($query) use ($evaluationId, $organisationId) {
+            $query->where('evaluationId', $evaluationId)->where('organisationId', $organisationId);
         })->sum('point');
     }]);
 }
 
-function interpretData($categorie_de_gouvernance, $organisationId)
+function interpretData($categorie_de_gouvernance, $evaluationId, $organisationId)
 {
     $reponses = [];
     if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
-        $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$reponses, $organisationId) {
-            $reponses_data = $this->interpretData($sous_categorie_de_gouvernance, $organisationId);
+        $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$reponses, $evaluationId, $organisationId) {
+            $reponses_data = interpretData($sous_categorie_de_gouvernance, $evaluationId, $organisationId);
             $reponses = array_merge($reponses, $reponses_data->toArray());
         });
     } else {
-        $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use (&$reponses, $organisationId) {
-            $reponses_de_collecte = $question_de_gouvernance->reponses()->whereHas("soumission", function ($query) use ($organisationId) {
-                $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
+        $categorie_de_gouvernance->questions_de_gouvernance->each(function ($question_de_gouvernance) use (&$reponses, $evaluationId, $organisationId) {
+            $reponses_de_collecte = $question_de_gouvernance->reponses()->whereHas("soumission", function ($query) use ($evaluationId, $organisationId) {
+                $query->where('evaluationId', $evaluationId)->where('organisationId', $organisationId);
             })->get()->toArray();
             $reponses = array_merge($reponses, $reponses_de_collecte);
         });
@@ -1509,7 +1513,7 @@ function getIndicateurs($categorie_de_gouvernance, $organisationId)
     $indicateurs = [];
     if ($categorie_de_gouvernance->sousCategoriesDeGouvernance->count()) {
         $categorie_de_gouvernance->sousCategoriesDeGouvernance->each(function ($sous_categorie_de_gouvernance) use (&$indicateurs, $organisationId) {
-            $data = $this->getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
+            $data = getIndicateurs($sous_categorie_de_gouvernance, $organisationId);
 
             $indicateurs = array_merge($indicateurs, $data->toArray());
         });
