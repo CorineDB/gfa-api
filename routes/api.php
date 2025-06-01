@@ -1276,10 +1276,8 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
                 $profile = ProfileDeGouvernance::create(['resultat_synthetique' => $results, 'evaluationOrganisationId' => $evaluationOrganisationId, 'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id, 'organisationId' => $organisationId, 'programmeId' => $evaluationDeGouvernance->programmeId]);
             }
         }
-
-        /*
             if ($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
-                [$indice_de_perception, $results, $synthese] = $this->generateResultForPerceptionEvaluation($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
+                [$indice_de_perception, $results, $synthese] = generateResultForPerceptionEvaluation($evaluationDeGouvernance, $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance(), $organisationId);
 
                 $resultats[$i]['perception'] = $synthese;
                 if ($fiche_de_synthese = $evaluationDeGouvernance->fiches_de_synthese($organisationId, 'perception')->first()) {
@@ -1330,7 +1328,7 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
                     if ($existing = $resultat_synthetique->get($result['id'])) {
 
                         // Calculate indice_synthetique by summing indice_factuel and indice_de_perception
-                        $existing['indice_synthetique'] = $this->geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
+                        $existing['indice_synthetique'] = geometricMean([($existing['indice_factuel'] ?? 0), ($existing['indice_de_perception'] ?? 0)]);
 
                         $resultat_synthetique[$result['id']] = array_merge($resultat_synthetique->get($result['id'], []), $existing);
                     }
@@ -1344,7 +1342,6 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
 
                 $this->info("Generated result for soumissions" . $profile);
             }
-        */
 
         $i++;
     });
@@ -1352,15 +1349,17 @@ function generateResultForEnquete(EvaluationGouvernance $evaluationDeGouvernance
     return $resultats;
 }
 
-function generateResultForPerceptionEvaluation(FormulaireDePerceptionDeGouvernance $formulaireDeGouvernance, $organisationId)
+function generateResultForPerceptionEvaluation(EvaluationGouvernance $evaluation, FormulaireDePerceptionDeGouvernance $formulaireDeGouvernance, $organisationId)
 {
     $options_de_reponse = $formulaireDeGouvernance->options_de_reponse;
     $principes_de_gouvernance = collect([]);
 
-    $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) use ($organisationId, $options_de_reponse, &$principes_de_gouvernance) {
-        $categorie_de_gouvernance->questions_de_gouvernance->load(['reponses' => function ($query) use ($organisationId) {
-            $query->whereHas("soumission", function ($query) use ($organisationId) {
-                $query->where('evaluationId', $this->evaluationDeGouvernance->id)->where('organisationId', $organisationId);
+    $evaluationId = $evaluation->id;
+
+    $results_categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->with('questions_de_gouvernance.reponses')->get()->each(function ($categorie_de_gouvernance) use ($evaluationId, $organisationId, $options_de_reponse, &$principes_de_gouvernance) {
+        $categorie_de_gouvernance->questions_de_gouvernance->load(['reponses' => function ($query) use ($evaluationId, $organisationId) {
+            $query->whereHas("soumission", function ($query) use ($evaluationId, $organisationId) {
+                $query->where('evaluationId', $evaluationId)->where('organisationId', $organisationId);
             });
         }])->each(function ($question_de_gouvernance) use ($organisationId, $options_de_reponse) {
 
@@ -1474,6 +1473,29 @@ function generateResultForFactuelEvaluation(EvaluationGouvernance $evaluation, F
     $indice_factuel = round(($results_categories_de_gouvernance->sum('indice_factuel') / $results_categories_de_gouvernance->count()), 2);
 
     return [$indice_factuel, $principes_de_gouvernance, FicheDeSyntheseEvaluationFactuelleResource::collection($results_categories_de_gouvernance)];
+}
+
+function geometricMean(array $numbers): float
+{
+    // Filter out non-positive numbers, as geometric mean is undefined for them
+    $filteredNumbers = array_filter($numbers, fn($number) => $number > 0);
+
+    // If the filtered array is empty, return 0
+    if (empty($filteredNumbers)) {
+        return 0;
+    }
+
+    // Calculate the product of the numbers
+    $product = array_product($filteredNumbers);
+
+    // Count the number of elements
+    $n = count($filteredNumbers);
+
+    // Calculate the geometric mean
+    $geometricMean = pow($product, 1 / $n);
+
+    // Return the result rounded to 2 decimal places
+    return round($geometricMean, 2);
 }
 
 function loadCategories($query, $evaluationId, $organisationId)
