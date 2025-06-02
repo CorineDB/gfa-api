@@ -17,6 +17,7 @@ class SoumissionDePerceptionResource extends JsonResource
     {
         return [
             'id' => $this->formulaireDeGouvernance->secure_id,
+            'soumissionId' => $this->secure_id,
             'libelle' => $this->formulaireDeGouvernance->libelle,
             'description' => $this->formulaireDeGouvernance->description,
             'statut' => $this->statut,
