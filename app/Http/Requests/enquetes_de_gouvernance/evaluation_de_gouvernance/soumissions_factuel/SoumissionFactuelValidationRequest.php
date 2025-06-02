@@ -160,8 +160,8 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     }
                 }
             }],
-            'factuel.response_data.*.sourceDeVerification'          => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId')),
-            function ($attribute, $value, $fail) {
+            'factuel.response_data.*.sourceDeVerification'          => [
+            /* function ($attribute, $value, $fail) {
 
                 if (request()->input('soumissionId') != null) {
 
@@ -200,7 +200,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         $fail("La source de verification est requise.");
                     }
                 }
-            }],
+            } */],
 
 
             'factuel.response_data.*.preuves'                       => [
