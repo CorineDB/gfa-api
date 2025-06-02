@@ -110,7 +110,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     }
                 }
             }],
-            'factuel.response_data.*.sourceDeVerificationId'        => [new HashValidatorRule(new SourceDeVerification()),
+            'factuel.response_data.*.sourceDeVerificationId'        => [
             function ($attribute, $value, $fail) {
 
                 if (request()->input('soumissionId') != null) {
@@ -130,7 +130,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         if ($index !== null) {
                             $optionDeReponseId = request()->input('factuel.response_data.*.optionDeReponseId')[$index] ?? null;
 
-                            $formOption =$this->formulaireCache->options_de_reponse()->wherePivot('optionId', $optionDeReponseId)->first();
+                            $formOption = $this->formulaireCache->options_de_reponse()->wherePivot('optionId', $optionDeReponseId)->first();
 
                         } else {
                             $fail("La question introuvable.");
@@ -141,6 +141,9 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         if ($formOption) {
                             if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $formOption->pivot->preuveIsRequired == 1) {
                                 $fail("La source de verification est requise.");
+                            }
+                            else{
+                                new HashValidatorRule(new SourceDeVerification());
                             }
                         }
                     } else {
