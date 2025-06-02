@@ -156,8 +156,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                 if (request()->input('soumissionId') != null) {
 
-
-                    dd($attribute);
                     if ($this->formulaireCache) {
 
                         // Step 1: Use preg_match to extract the index
