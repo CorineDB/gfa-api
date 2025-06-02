@@ -489,6 +489,27 @@ class EvaluationDeGouvernance extends Model
 
     public function getPourcentageEvolutionAttribute()
     {
+
+        if($this->formulaire_de_perception_de_gouvernance() && $this->formulaire_factuel_de_gouvernance()){
+
+            // Avoid division by zero by checking that total participants are non-zero
+            if ($this->pourcentage_evolution_des_soumissions_factuel == 0 && $this->pourcentage_evolution_des_soumissions_de_perception == 0) {
+                return 0;
+            }
+
+            return round(($this->pourcentage_evolution_des_soumissions_factuel + $this->pourcentage_evolution_des_soumissions_de_perception) / 2, 2);
+
+        }
+        elseif($this->formulaire_de_perception_de_gouvernance()){
+
+            // Avoid division by zero by checking that total participants are non-zero
+            return $this->pourcentage_evolution_des_soumissions_de_perception;
+
+        }
+        elseif($this->formulaire_factuel_de_gouvernance()){
+            return $this->pourcentage_evolution_des_soumissions_factuel;
+        }
+
         // Avoid division by zero by checking that total participants are non-zero
         if ($this->pourcentage_evolution_des_soumissions_factuel == 0 && $this->pourcentage_evolution_des_soumissions_de_perception == 0) {
             return 0;
