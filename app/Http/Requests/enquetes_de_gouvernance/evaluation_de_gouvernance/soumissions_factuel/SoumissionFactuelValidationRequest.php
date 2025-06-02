@@ -110,8 +110,88 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     }
                 }
             }],
-            'factuel.response_data.*.sourceDeVerificationId'        => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerification')), new HashValidatorRule(new SourceDeVerification())],
-            'factuel.response_data.*.sourceDeVerification'          => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId'))],
+            'factuel.response_data.*.sourceDeVerificationId'        => [new HashValidatorRule(new SourceDeVerification()),
+            function ($attribute, $value, $fail) {
+
+                if (request()->input('soumissionId') != null) {
+
+                    if ($this->formulaireCache) {
+
+                        // Step 1: Use preg_match to extract the index
+                        preg_match('/factuel.response_data\.(\d+)\.sourceDeVerificationId/', $attribute, $matches);
+
+                        // Step 2: Check if the index is found
+                        $index = $matches[1] ?? null; // Get the index if it exists
+
+                        // Step 3: Retrieve the questionId from the request input based on the index
+                        if ($index !== null) {
+                            $questionId = request()->input('factuel.response_data.*.questionId')[$index] ?? null;
+                        } else {
+                            $fail("La question introuvable.");
+                        }
+
+                        $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($questionId)->first();
+
+                        if (!$question) {
+                            // Fail validation if no response options are available
+                            $fail("Cet Indicateur n'existe pas.");
+                        }
+
+                        $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
+
+                        $sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
+
+                        if ($reponse) {
+                            if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
+                                $fail("La source de verification est requise.");
+                            }
+                        }
+                    } else {
+                        $fail("La source de verification est requise.");
+                    }
+                }
+            }],
+            'factuel.response_data.*.sourceDeVerification'          => [Rule::requiredIf(!request()->input('factuel.response_data.*.sourceDeVerificationId')),
+            function ($attribute, $value, $fail) {
+
+                if (request()->input('soumissionId') != null) {
+
+                    if ($this->formulaireCache) {
+
+                        // Step 1: Use preg_match to extract the index
+                        preg_match('/factuel.response_data\.(\d+)\.sourceDeVerification/', $attribute, $matches);
+
+                        // Step 2: Check if the index is found
+                        $index = $matches[1] ?? null; // Get the index if it exists
+
+                        // Step 3: Retrieve the questionId from the request input based on the index
+                        if ($index !== null) {
+                            $questionId = request()->input('factuel.response_data.*.questionId')[$index] ?? null;
+                        } else {
+                            $fail("La question introuvable.");
+                        }
+
+                        $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($questionId)->first();
+
+                        if (!$question) {
+                            // Fail validation if no response options are available
+                            $fail("Cet Indicateur n'existe pas.");
+                        }
+
+                        $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
+
+                        $sourceDeVerificationId = request()->input('factuel.response_data.*.sourceDeVerificationId')[$index];
+
+                        if ($reponse) {
+                            if ((empty($sourceDeVerificationId) && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
+                                $fail("La source de verification est requise.");
+                            }
+                        }
+                    } else {
+                        $fail("La source de verification est requise.");
+                    }
+                }
+            }],
 
 
             'factuel.response_data.*.preuves'                       => [
