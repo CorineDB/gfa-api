@@ -130,7 +130,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         if ($index !== null) {
                             $optionDeReponseId = request()->input('factuel.response_data.*.optionDeReponseId')[$index] ?? null;
 
-                            $formOption =$this->formulaireCache->options_de_reponse->where('optionId', $optionDeReponseId)->first();
+                            $formOption =$this->formulaireCache->options_de_reponse/* ->where('optionId', $optionDeReponseId)->first() */;
 
                             dd($formOption);
                         } else {
