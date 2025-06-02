@@ -97,12 +97,12 @@ class ReponseDeLaCollecteFactuel extends Model
         //array('soumissionId', 'questionId', 'optionDeReponseId', 'programmeId');
         //array("point", 'sourceDeVerification', 'sourceDeVerificationId');
 
-        if ($this->sourceDeVerification || $this->sourceDeVerificationId) {
-            $donnees_collectees++;
-        }
-
         if ($this->preuveIsRequired) {
             if ($this->preuves_de_verification && $this->preuves_de_verification->count() > 0) {
+                $donnees_collectees++;
+            }
+
+            if ($this->sourceDeVerification || $this->sourceDeVerificationId) {
                 $donnees_collectees++;
             }
         }
