@@ -356,19 +356,19 @@ class Organisation extends Model
 
         $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
 
+        $weightFactual = 0; // 60%
+        $weightPerception = 0; // 60%
         if($evaluation_de_gouvernance){
             if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance()){
+                $weightPerception = 0.5; // 60%
 
             }
 
             if($evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
+                $weightFactual = 0.5; // 60%
 
             }
         }
-
-        // Define weightage
-        $weightFactual = 0.5; // 60%
-        $weightPerception = 0.5; // 40%
 
         // Final weighted completion percentage
         return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
