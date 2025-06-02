@@ -45,7 +45,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
     {
         return [
             'programmeId'   => [Rule::requiredIf(!auth()->check()), new HashValidatorRule(new Programme())],
-            'soumissionId'   => ['nullable', new HashValidatorRule(new SoumissionFactuel())],
+            'soumissionId'   => ['required', new HashValidatorRule(new SoumissionFactuel())],
             'organisationId'   => [Rule::requiredIf(request()->user()->hasRole("unitee-de-gestion")), new HashValidatorRule(new Organisation())],
             'formulaireDeGouvernanceId'   => [
                 "required",
