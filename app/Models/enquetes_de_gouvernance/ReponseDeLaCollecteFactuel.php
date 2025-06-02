@@ -90,19 +90,19 @@ class ReponseDeLaCollecteFactuel extends Model
 
         if ($this->preuveIsRequired) {
             $donnees_attendues = 7;
-        }/*  else {
-            $donnees_attendues = 6;
-        } */
+        }else {
+            $donnees_attendues = 5;
+        }
 
         //array('soumissionId', 'questionId', 'optionDeReponseId', 'programmeId');
         //array("point", 'sourceDeVerification', 'sourceDeVerificationId');
 
-        if ($this->sourceDeVerification || $this->sourceDeVerificationId) {
-            $donnees_collectees++;
-        }
-
         if ($this->preuveIsRequired) {
             if ($this->preuves_de_verification && $this->preuves_de_verification->count() > 0) {
+                $donnees_collectees++;
+            }
+
+            if ($this->sourceDeVerification || $this->sourceDeVerificationId) {
                 $donnees_collectees++;
             }
         }
