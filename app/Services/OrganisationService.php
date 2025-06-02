@@ -106,10 +106,10 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
             unset($attributs['code']);
 
             if(isset($attributs['longitude']) && empty($attributs['longitude'])){
-                $attributs['longitude'] = 2.90000;
+                $attributs['longitude'] = "2.90000";
             }
             if(isset($attributs['latitude']) && empty($attributs['latitude'])){
-                $attributs['latitude'] = 6.90000;
+                $attributs['latitude'] = "6.90000";
             }
 
             //dd(array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'profilable_type' => get_class($organisation), 'profilable_id' => $organisation->id]));
