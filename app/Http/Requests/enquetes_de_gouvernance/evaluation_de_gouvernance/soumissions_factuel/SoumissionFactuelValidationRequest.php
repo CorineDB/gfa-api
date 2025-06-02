@@ -123,28 +123,18 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         // Step 2: Check if the index is found
                         $index = $matches[1] ?? null; // Get the index if it exists
 
-
-                        $questionId = null;
                         $optionDeReponseId = null;
-                        $question = null;
                         $formOption = null;
 
                         // Step 3: Retrieve the questionId from the request input based on the index
                         if ($index !== null) {
-                            $questionId = request()->input('factuel.response_data.*.questionId')[$index] ?? null;
                             $optionDeReponseId = request()->input('factuel.response_data.*.optionDeReponseId')[$index] ?? null;
-
-                            $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($questionId)->first();
 
                             $formOption =$this->formulaireCache->options_de_reponse->where('optionId', $optionDeReponseId)->first();
 
+                            dd($formOption);
                         } else {
                             $fail("La question introuvable.");
-                        }
-
-                        if (!$question) {
-                            // Fail validation if no response options are available
-                            $fail("Cet Indicateur n'existe pas.");
                         }
 
                         $sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
