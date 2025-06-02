@@ -113,6 +113,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
             'factuel.response_data.*.sourceDeVerificationId'        => [new HashValidatorRule(new SourceDeVerification()),
             function ($attribute, $value, $fail) {
 
+                dd($attribute);
                 if (request()->input('soumissionId') != null) {
 
                     dd($attribute);
