@@ -356,12 +356,14 @@ class Organisation extends Model
 
         $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
 
-        if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance()){
+        if($evaluation_de_gouvernance){
+            if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance()){
 
-        }
+            }
 
-        if($evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
+            if($evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
 
+            }
         }
 
         // Define weightage
