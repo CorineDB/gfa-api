@@ -344,12 +344,12 @@ class Organisation extends Model
 
         //formulaire_de_perception_de_gouvernance
         //formulaire_factuel_de_gouvernance
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->formulaire_factuel_de_gouvernance()){
+        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_factuel_de_gouvernance()){
             $weightFactual = 0.5; // 60%
             $factualCompletion = $this->getFactuelSubmissionCompletionAttribute($evaluationDeGouvernanceId);
         }
 
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->formulaire_factuel_de_gouvernance()){
+        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_factuel_de_gouvernance()){
             $weightPerception = 0.5; // 40%
             $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId);
         }
@@ -372,12 +372,12 @@ class Organisation extends Model
 
         //formulaire_de_perception_de_gouvernance
         //formulaire_factuel_de_gouvernance
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->formulaire_factuel_de_gouvernance()){
+        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_factuel_de_gouvernance()){
             $weightFactual = 0.5; // 60%
             $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId);
         }
 
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->formulaire_de_perception_de_gouvernance()){
+        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_de_perception_de_gouvernance()){
             $weightPerception = 0.5; // 40%
             $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
         }
