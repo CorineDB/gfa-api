@@ -331,7 +331,7 @@ class Permissions extends Command
             'creer-une-soumission',
             'voir-une-fiche-de-synthese',
             'voir-un-profil-de-gouvernance',
-            
+
             'voir-une-recommandation',
             'creer-une-recommandation',
             'modifier-une-recommandation',
@@ -346,12 +346,12 @@ class Permissions extends Command
             'creer-une-enquete-individuelle',
             'modifier-une-enquete-individuelle',
             'supprimer-une-enquete-individuelle',
-            
+
             'voir-un-formulaire-individuel',
             'creer-un-formulaire-individuel',
             'modifier-un-formulaire-individuel',
             'supprimer-un-formulaire-individuel',
-            
+
             'voir-ptab',
             'voir-le-plan-de-decaissement-du-ptab',
             'voir-une-permission',
@@ -606,7 +606,7 @@ class Permissions extends Command
             'creer-une-evaluation-de-gouvernance',
             'modifier-une-evaluation-de-gouvernance',
             'supprimer-une-evaluation-de-gouvernance',
-            
+
             'voir-une-recommandation',
             'creer-une-recommandation',
             'modifier-une-recommandation',
@@ -621,7 +621,7 @@ class Permissions extends Command
             'creer-une-enquete-individuelle',
             'modifier-une-enquete-individuelle',
             'supprimer-une-enquete-individuelle',
-            
+
             'voir-un-formulaire-individuel',
             'creer-un-formulaire-individuel',
             'modifier-un-formulaire-individuel',
@@ -632,7 +632,7 @@ class Permissions extends Command
             'valider-une-soumission',
             'voir-une-fiche-de-synthese',
             'voir-un-profil-de-gouvernance',
-            
+
             'voir-ptab',
             'faire-revision-ptab',
             'voir-revision-ptab',
@@ -695,7 +695,7 @@ class Permissions extends Command
             "supprimer-une-reponse-enquete-individuelle"
         ];
 
-        /* 
+        /*
             $bailleurs = [
                 'voir-un-utilisateur',
                 'creer-un-utilisateur',
@@ -1057,7 +1057,7 @@ class Permissions extends Command
         }
 
         foreach($autres as $autre){
-            
+
             $permissions = Permission::where('slug', str_replace(' ', '-', $autre))->get();
 
             if(!count($permissions))
@@ -1251,14 +1251,14 @@ class Permissions extends Command
                 $role->permissions()->detach($ids);
 
                 $permissions = Permission::all();
-                
+
                 $controle = 1;
 
                 foreach($permissions as $permission)
                 {
                     foreach($uniteeDeGestion as $unitee)
                     {
-                        
+
                         if($unitee == $permission->slug)
                         {
                             $controle = 0;
@@ -1290,7 +1290,9 @@ class Permissions extends Command
                     {
                         $permission = Permission::where('slug', $ddc)->first();
 
-                        $role->permissions()->attach($permission->id);
+                        if($permission){
+                            $role->permissions()->attach($permission->id);
+                        }
                     }
                 }
             }
