@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Http\Resources\user\UserResource;
-use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
 use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
 use Exception;
@@ -333,26 +332,14 @@ class Organisation extends Model
         $factualCompletion = $factualSubmission ? $factualSubmission->pourcentage_evolution : 0; */
 
         // Calculate factual completion percentage
-        $factualCompletion = 0;
+        $factualCompletion = $this->getFactuelSubmissionCompletionAttribute($evaluationDeGouvernanceId);
 
         // Calculate perception completion using the helper method
-        $perceptionCompletion = 0;
+        $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId);
 
         // Define weightage
-        $weightFactual = 0; // 60%
-        $weightPerception = 0; // 40%
-
-        //formulaire_de_perception_de_gouvernance
-        //formulaire_factuel_de_gouvernance
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_factuel_de_gouvernance()){
-            $weightFactual = 0.5; // 60%
-            $factualCompletion = $this->getFactuelSubmissionCompletionAttribute($evaluationDeGouvernanceId);
-        }
-
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_de_perception_de_gouvernance()){
-            $weightPerception = 0.5; // 40%
-            $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId);
-        }
+        $weightFactual = 0.5; // 60%
+        $weightPerception = 0.5; // 40%
 
         // Final weighted completion percentage
         return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
@@ -360,27 +347,16 @@ class Organisation extends Model
 
     public function getSubmissionRateAttribute($evaluationDeGouvernanceId)
     {
+
         // Calculate factual completion percentage
-        $factualCompletion = 0;
+        $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId);
 
         // Calculate perception completion using the helper method
-        $perceptionCompletion = 0;
+        $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
 
         // Define weightage
-        $weightFactual = 0; // 60%
-        $weightPerception = 0; // 40%
-
-        //formulaire_de_perception_de_gouvernance
-        //formulaire_factuel_de_gouvernance
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_factuel_de_gouvernance()){
-            $weightFactual = 0.5; // 60%
-            $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId);
-        }
-
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_de_perception_de_gouvernance()){
-            $weightPerception = 0.5; // 40%
-            $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
-        }
+        $weightFactual = 0.5; // 60%
+        $weightPerception = 0.5; // 40%
 
         // Final weighted completion percentage
         return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
