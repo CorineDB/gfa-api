@@ -354,7 +354,7 @@ class Organisation extends Model
         // Calculate perception completion using the helper method
         $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
 
-        $this->evaluations_de_gouvernance;
+        $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
 
         // Define weightage
         $weightFactual = 0.5; // 60%
