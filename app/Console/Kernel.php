@@ -38,8 +38,8 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:demarrage')->everyMinute();
 
-       $schedule->command('command:rapport')->everyFifteenMinutes();
-       //$schedule->command('command:suivi')->everyFifteenMinutes();
+       //$schedule->command('command:rapport')->everyFifteenMinutes();
+       $schedule->command('command:suivi')->everyFifteenMinutes();
 
         $schedule->command('command:rappel')->everyMinute();
 
