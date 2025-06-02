@@ -132,7 +132,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             $formOption =$this->formulaireCache->options_de_reponse/* ->where('optionId', $optionDeReponseId)->first() */;
 
-                            dd($formOption);
+                            dd($optionDeReponseId, $formOption);
                         } else {
                             $fail("La question introuvable.");
                         }
