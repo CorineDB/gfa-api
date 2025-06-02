@@ -790,7 +790,6 @@ class EvaluationDeGouvernance extends Model
 
     public function getOptionsDeReponseGouvernanceStatsAttribute()
     {
-
         // Get all soumission IDs
         $soumissionIds = $this->soumissionsDePerception->pluck("id");
 
