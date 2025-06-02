@@ -349,7 +349,7 @@ class Organisation extends Model
             $factualCompletion = $this->getFactuelSubmissionCompletionAttribute($evaluationDeGouvernanceId);
         }
 
-        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_factuel_de_gouvernance()){
+        if($this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first()->formulaire_de_perception_de_gouvernance()){
             $weightPerception = 0.5; // 40%
             $perceptionCompletion = $this->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernanceId);
         }
