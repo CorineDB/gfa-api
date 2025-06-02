@@ -137,11 +137,12 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             $fail("Cet Indicateur n'existe pas.");
                         }
 
-                        dd($question);
 
                         $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
                         $sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
+
+                        dd($reponse->load('option_de_reponse'));
 
                         if ($reponse) {
                             if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
