@@ -359,19 +359,24 @@ class Organisation extends Model
         $weightFactual = 0; // 60%
         $weightPerception = 0; // 60%
         if($evaluation_de_gouvernance){
-            if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance()){
+            if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance() && $evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
+
                 $weightPerception = 0.5; // 60%
-
-            }
-
-            if($evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
                 $weightFactual = 0.5; // 60%
-
+                // Final weighted completion percentage
+                return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
+            }
+            elseif($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance()){
+                $weightPerception = 1; // 60%
+                // Final weighted completion percentage
+                return round(($perceptionCompletion * $weightPerception), 2);
+            }
+            elseif($evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
+                $weightFactual = 1; // 60%
+                // Final weighted completion percentage
+                return round(($factualCompletion * $weightFactual), 2);
             }
         }
-
-        // Final weighted completion percentage
-        return round((($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception)), 2);
     }
 
     public function actions_a_mener()
