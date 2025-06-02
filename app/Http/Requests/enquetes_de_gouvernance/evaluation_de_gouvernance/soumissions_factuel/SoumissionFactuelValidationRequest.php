@@ -123,29 +123,35 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         // Step 2: Check if the index is found
                         $index = $matches[1] ?? null; // Get the index if it exists
 
+
+                        $questionId = null;
+                        $optionDeReponseId = null;
+                        $question = null;
+                        $formOption = null;
+
                         // Step 3: Retrieve the questionId from the request input based on the index
                         if ($index !== null) {
                             $questionId = request()->input('factuel.response_data.*.questionId')[$index] ?? null;
+                            $optionDeReponseId = request()->input('factuel.response_data.*.optionDeReponseId')[$index] ?? null;
+
+                            $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($questionId)->first();
+
+                            $formOption =$this->formulaireCache->options_de_reponse->where('optionId', $optionDeReponseId)->first();
+
                         } else {
                             $fail("La question introuvable.");
                         }
-
-                        $question = QuestionFactuelDeGouvernance::where("formulaireFactuelId", $this->formulaireCache->id)->findByKey($questionId)->first();
 
                         if (!$question) {
                             // Fail validation if no response options are available
                             $fail("Cet Indicateur n'existe pas.");
                         }
 
-
-                        $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
-
                         $sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
 
-                        dd($reponse->load('option_de_reponse'));
-
-                        if ($reponse) {
-                            if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
+                        if ($formOption) {
+                            dd($formOption);
+                            if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $formOption['preuveIsRequired']) {
                                 $fail("La source de verification est requise.");
                             }
                         }
