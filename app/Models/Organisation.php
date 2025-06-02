@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Resources\user\UserResource;
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
 use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
 use Exception;
@@ -347,12 +348,13 @@ class Organisation extends Model
 
     public function getSubmissionRateAttribute($evaluationDeGouvernanceId)
     {
-
         // Calculate factual completion percentage
         $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId);
 
         // Calculate perception completion using the helper method
         $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
+
+        $this->evaluations_de_gouvernance;
 
         // Define weightage
         $weightFactual = 0.5; // 60%
