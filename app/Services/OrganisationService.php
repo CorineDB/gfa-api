@@ -101,16 +101,16 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             $password = strtoupper($this->hashId(4)); // Générer le mot de passe
 
-            $organisation = $this->repository->create($attributs);
-
-            unset($attributs['code']);
-
             if(isset($attributs['longitude']) && empty($attributs['longitude'])){
                 $attributs['longitude'] = "2.90000";
             }
             if(isset($attributs['latitude']) && empty($attributs['latitude'])){
                 $attributs['latitude'] = "6.90000";
             }
+
+            $organisation = $this->repository->create($attributs);
+
+            unset($attributs['code']);
 
             //dd(array_merge($attributs, ['password' => $password, 'type' => $role->slug, 'profilable_type' => get_class($organisation), 'profilable_id' => $organisation->id]));
 
