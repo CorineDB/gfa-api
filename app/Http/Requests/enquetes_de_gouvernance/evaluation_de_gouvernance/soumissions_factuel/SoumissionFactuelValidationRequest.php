@@ -115,7 +115,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                 if (request()->input('soumissionId') != null) {
 
-                    dd($attribute);
                     if ($this->formulaireCache) {
 
                         // Step 1: Use preg_match to extract the index
@@ -141,8 +140,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
                         $sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
-
-                        dump($question, $reponse);
 
                         if ($reponse) {
                             if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
