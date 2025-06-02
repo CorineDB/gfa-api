@@ -132,7 +132,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             $formOption =$this->formulaireCache->options_de_reponse()->wherePivot('optionId', $optionDeReponseId)->first();
 
-                            dd($optionDeReponseId, $formOption);
                         } else {
                             $fail("La question introuvable.");
                         }
@@ -140,8 +139,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         $sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
 
                         if ($formOption) {
-                            dd($formOption);
-                            if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $formOption['preuveIsRequired']) {
+                            if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $formOption->pivot->preuveIsRequired) {
                                 $fail("La source de verification est requise.");
                             }
                         }
