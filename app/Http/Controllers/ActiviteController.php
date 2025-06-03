@@ -143,7 +143,7 @@ class ActiviteController extends Controller
             'statut' => 'required|in:-1,0,1'
         ]);
 
-        return $this->activiteService->changeStatut($id);
+        return $this->activiteService->changeStatut($id, $request->all());
     }
 
     public function ajouterDuree(StoreDureeRequest $request, $id)
