@@ -101,10 +101,10 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
 
             $password = strtoupper($this->hashId(4)); // Générer le mot de passe
 
-            if(isset($attributs['longitude']) && empty($attributs['longitude'])){
+            if(isset($attributs['longitude']) && (empty($attributs['longitude']) || $attributs['longitude'] == null)){
                 $attributs['longitude'] = "2.90000";
             }
-            if(isset($attributs['latitude']) && empty($attributs['latitude'])){
+            if(isset($attributs['latitude']) && (empty($attributs['latitude']) || $attributs['latitude'] == null)){
                 $attributs['latitude'] = "6.90000";
             }
 
