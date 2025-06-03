@@ -371,9 +371,9 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
             if($activite)
             {
                 foreach ($activite->taches as $key => $tache) {
-                    if(isset($attributs['statut']) && $attributs['statut'] == 1){
+                    if(isset($attributs['statut']) && $attributs['statut'] == 2){
                         $tache->suivis()->create(['poidsActuel'=> 100]);
-                        $tache->statut = 1;
+                        $tache->statut = 2;
                         $tache->save();
                     }
 
@@ -392,7 +392,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
                     }
                 }
 
-                if(isset($attributs['statut']) && $attributs['statut'] == 1){
+                if(isset($attributs['statut']) && $attributs['statut'] == 2){
                     $activite->suivis()->create(['poidsActuel'=> 100]);
                 }
                 else if(isset($attributs['statut']) && $attributs['statut'] == -1){
