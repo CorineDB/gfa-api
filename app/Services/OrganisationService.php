@@ -108,7 +108,7 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
                 $attributs['latitude'] = "6.90000";
             }
 
-            dd($attributs['longitude']);
+            dd(isset($attributs['longitude']) && (empty($attributs['longitude']) || $attributs['longitude'] == null));
 
             $organisation = $this->repository->create($attributs);
 
