@@ -58,10 +58,10 @@ class SuiviService extends BaseService implements SuiviServiceInterface
         try
         {
             $suivis = [];
-            
+
             if(Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)){
                 $suivis = Auth::user()->profilable->projet->suivis();
-            } 
+            }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $suivis = Auth::user()->programme->suivis;
             }
@@ -121,11 +121,24 @@ class SuiviService extends BaseService implements SuiviServiceInterface
 
             $suivi = $tache->suivis()->create(array_merge($attributs, ['poidsActuel'=> $attributs['poidsActuel'], 'programmeId' => auth()->user()->programmeId, "commentaire" => "Etat actuel"]));
 
+            if($tache->activite->statut)
+
             //$tache->statuts()->create(['etat' => 2]);
 
             if($attributs["poidsActuel"] == 100){
 
                 $tache->statut = 2;
+            }
+
+            if($tache->statut < 0){
+
+                $tache->statut = 0;
+            }
+
+            if($tache->activite->statut < 0){
+
+                $tache->activite->statut = 0;
+                $tache->activite->save();
             }
 
             $tache->save();
