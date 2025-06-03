@@ -63,11 +63,11 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
     public function all(array $attributs = ['*'], array $relations = []): JsonResponse
     {
         try {
-            $activites = [];            
-            
+            $activites = [];
+
             if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
                 $activites = Auth::user()->profilable->projet->activites;
-            } 
+            }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $activites = Auth::user()->programme->activites;
             }
@@ -120,9 +120,9 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
         try {
             $activites = [];
-            
+
             if(isset($attributs['statut'])){
-                $activites = $this->repository->where("statut", $attributs['statut'])->get(); 
+                $activites = $this->repository->where("statut", $attributs['statut'])->get();
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => ActiviteResource::collection($activites), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
@@ -358,6 +358,61 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisResource::collection($activite->suivis->sortByDesc("created_at")), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function changeStatut($activiteId, $attributs): JsonResponse
+    {
+        try
+        {
+            $activite = $this->repository->findById($activiteId);
+
+            if($activite)
+            {
+                foreach ($activite->taches as $key => $tache) {
+                    if(isset($attributs['statut']) && $attributs['statut'] == 1){
+                        $tache->suivis()->create(['poidsActuel'=> 100]);
+                        $tache->statut = 1;
+                        $tache->save();
+                    }
+
+                    else if(isset($attributs['statut']) && $attributs['statut'] == -1){
+
+                        $tache->suivis()->create(['poidsActuel'=> 0]);
+                        $tache->statut = -1;
+                        $tache->save();
+                    }
+
+                    else if(isset($attributs['statut']) && $attributs['statut'] == 0){
+
+                        $tache->suivis()->create(['poidsActuel'=> 0]);
+                        $tache->statut = 0;
+                        $tache->save();
+                    }
+                }
+
+                if(isset($attributs['statut']) && $attributs['statut'] == 1){
+                    $activite->suivis()->create(['poidsActuel'=> 100]);
+                }
+                else if(isset($attributs['statut']) && $attributs['statut'] == -1){
+                    $activite->suivis()->create(['poidsActuel'=> 0]);
+                }
+                else if(isset($attributs['statut']) && $attributs['statut'] == 0){
+                    $activite->suivis()->create(['poidsActuel'=> 0]);
+                }
+
+                $activite->statut = $attributs['statut'];
+                $activite->save();
+                GenererPta::dispatch(Auth::user()->programme)->delay(5);
+                return response()->json(['statut' => 'success', 'message' => null, 'data' => new ActiviteResource($activite), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            }
+
+            else throw new Exception("Cette activite n'existe pas", 400);
+        }
+
+        catch (\Throwable $th)
+        {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
