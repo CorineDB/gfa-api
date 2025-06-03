@@ -11,6 +11,7 @@ use App\Http\Requests\duree\StoreDureeRequest;
 use App\Http\Requests\duree\UpdateDureeRequest;
 use App\Http\Requests\suiviFinancier\FiltreRequest;
 use Core\Services\Interfaces\ActiviteServiceInterface;
+use Illuminate\Http\Request;
 
 class ActiviteController extends Controller
 {
@@ -34,7 +35,7 @@ class ActiviteController extends Controller
         $this->middleware('permission:voir-une-tache')->only(['taches']);
         $this->middleware('permission:voir-un-suivi')->only(['suivis']);
         $this->middleware('permission:voir-un-suivi-financier')->only(['suivis_financier']);
-        
+
         $this->middleware('permission:voir-un-plan-de-decaissement')->only(['plansDeDecaissement']);
 
         $this->activiteService = $activiteServiceInterface;
@@ -133,6 +134,16 @@ class ActiviteController extends Controller
     public function taches($id)
     {
         return $this->activiteService->taches($id);
+    }
+
+    public function changeStatut(Request $request, $id)
+    {
+
+        $request->validate([
+            'statut' => 'required|in:-1,0,1'
+        ]);
+
+        return $this->activiteService->changeStatut($id);
     }
 
     public function ajouterDuree(StoreDureeRequest $request, $id)
