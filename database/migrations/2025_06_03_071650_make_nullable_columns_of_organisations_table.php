@@ -15,28 +15,28 @@ class MakeNullableColumnsOfOrganisationsTable extends Migration
     {
         if(Schema::hasTable('organisations')){
             Schema::table('organisations', function (Blueprint $table) {
-                if(!Schema::hasColumn('organisations', 'pays')){
+                if(Schema::hasColumn('organisations', 'pays')){
                     $table->string('pays')->default('Bénin')->nullable()->change();
                 }
-                if(!Schema::hasColumn('organisations', 'departement')){
+                if(Schema::hasColumn('organisations', 'departement')){
                     $table->string('departement')->default('Litoral')->nullable()->change();
                 }
-                if(!Schema::hasColumn('organisations', 'commune')){
+                if(Schema::hasColumn('organisations', 'commune')){
                     $table->string('commune')->default('Cotonou')->nullable()->change();
                 }
-                if(!Schema::hasColumn('organisations', 'arrondissement')){
+                if(Schema::hasColumn('organisations', 'arrondissement')){
                     $table->string('arrondissement')->default('Sènadé')->nullable()->change();
                 }
-                if(!Schema::hasColumn('organisations', 'quartier')){
+                if(Schema::hasColumn('organisations', 'quartier')){
                     $table->string('quartier')->default('Sènadé')->nullable()->change();
                 }
-                if(!Schema::hasColumn('organisations', 'secteurActivite')){
+                if(Schema::hasColumn('organisations', 'secteurActivite')){
                     $table->string('secteurActivite')->default('Environnement')->nullable()->change();
                 }
-                if(!Schema::hasColumn('organisations', 'longitude')){
+                if(Schema::hasColumn('organisations', 'longitude')){
                     $table->string('longitude')->nullable()->change();
                 }
-                if(!Schema::hasColumn('organisations', 'latitude')){
+                if(Schema::hasColumn('organisations', 'latitude')){
                     $table->string('latitude')->nullable()->change();
                 }
             });
