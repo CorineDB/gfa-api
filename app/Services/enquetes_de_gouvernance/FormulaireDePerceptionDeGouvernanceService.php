@@ -296,12 +296,12 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                         $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDePerceptionDeGouvernanceId', $principeDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
 
-                        $formulaireDeGouvernance->questions_de_gouvernance()->sync($questionsOp);
+                        $formulaireDeGouvernance->categorie_de_gouvernance()->sync($questionsOp);
                     }
 
                     $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
-                    $formulaireDeGouvernance->categories_de_gouvernance()->sync($principesOp);
+                    $formulaireDeGouvernance->categorie_de_gouvernance()->sync($principesOp);
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
                 }
             }
