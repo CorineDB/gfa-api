@@ -66,7 +66,8 @@ class CategorieDePerceptionDeGouvernance extends Model
 
     public function questions_de_gouvernance($formulaireDePerceptionId = null, $annee_exercice = null)
     {
-        $questions_de_gouvernance = $this->hasMany(QuestionDePerceptionDeGouvernance::class, 'categorieDePerceptionDeGouvernanceId');
+        $questions_de_gouvernance = $this->hasMany(QuestionDePerceptionDeGouvernance::class, 'categorieDePerceptionDeGouvernanceId')
+                                    ->orderBy('position','asc');
 
         if($formulaireDePerceptionId){
 
