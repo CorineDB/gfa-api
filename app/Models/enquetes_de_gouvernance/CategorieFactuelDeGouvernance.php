@@ -66,7 +66,8 @@ class CategorieFactuelDeGouvernance extends Model
 
     public function questions_de_gouvernance($formulaireFactuelId = null, $annee_exercice = null)
     {
-        $questions_de_gouvernance = $this->hasMany(QuestionFactuelDeGouvernance::class, 'categorieFactuelDeGouvernanceId');
+        $questions_de_gouvernance = $this->hasMany(QuestionFactuelDeGouvernance::class, 'categorieFactuelDeGouvernanceId')
+                                        ->orderBy('position','asc');
 
         if($formulaireFactuelId){
 
