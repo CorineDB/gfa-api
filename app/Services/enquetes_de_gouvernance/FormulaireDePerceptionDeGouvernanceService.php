@@ -216,6 +216,7 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                 if(isset($attributs['perception']["principes_de_gouvernance"]) && $attributs['perception']["principes_de_gouvernance"] !== null){
                     $categories_de_gouvernance = [];
+                    $principesOp = [];
 
                     foreach ($attributs['perception']["principes_de_gouvernance"] as $key => $principe_de_gouvernance) {
 
@@ -233,11 +234,21 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                             $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $formulaireDeGouvernance->categories_de_gouvernance->count() + 1;
 
                             $principeDeGouvernanceCategorie = $principeDeGouvernance->categories_de_gouvernance()->create(['programmeId' => $programmeId, "position" => $position, 'categorieDePerceptionDeGouvernanceId' => null, 'formulaireDePerceptionId' => $formulaireDeGouvernance->id]);
+                        }else{
+                            $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $principeDeGouvernanceCategorie->position;
                         }
 
                         $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
 
+                        // Fix: Make sure the ID is used as the key
+                        $principesOp[$principeDeGouvernanceCategorie->id] = [
+                            "position" => $position,
+                            //'formulaireDePerceptionId' => $formulaireDeGouvernance->id
+                            //'questionOperationnelleId' => $questionOperationnelle->id //principeDeGouvernanceCategorie
+                        ];
+
                         $questions = [];
+                        $questionsOp = [];
 
                         foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $question_operationnelle) {
 
@@ -264,22 +275,33 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                             $questions[] = $questionDeGouvernance->id;
 
+                            // Fix: Make sure the ID is used as the key
+                            $questionsOp[$questionOperationnelle->id] = [
+                                //'categorieDePerceptionDeGouvernanceId' => $principeDeGouvernanceCategorie->id,
+                                "position" => $position,
+                                //'questionOperationnelleId' => $questionOperationnelle->id
+                            ];
+
                             /*
                             // Fix: Make sure the ID is used as the key
                             $questions_de_gouvernance[$questionOperationnelle->id] = [
                                 'categorieDePerceptionDeGouvernanceId' => $principeDeGouvernanceCategorie->id,
                                 'type' => 'question_operationnelle',
                                 'programmeId' => $programmeId,
+                                "position" => $position,
                                 //'questionOperationnelleId' => $questionOperationnelle->id
                             ]; */
 
                         }
 
                         $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDePerceptionDeGouvernanceId', $principeDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
+
+                        $formulaireDeGouvernance->questions_de_gouvernance()->sync($questionsOp);
                     }
 
                     $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
 
+                    $formulaireDeGouvernance->categories_de_gouvernance()->sync($principesOp);
                     //$formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
                 }
             }
