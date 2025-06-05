@@ -243,7 +243,6 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
                         $categories_de_gouvernance[] = $principeDeGouvernanceCategorie->id;
 
                         $questions = [];
-                        $questionsOp = [];
 
                         foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $question_operationnelle) {
 
@@ -267,20 +266,13 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                                 $questionDeGouvernance = $principeDeGouvernanceCategorie->questions_de_gouvernance()->create(["position" => $position, 'formulaireDePerceptionId' => $formulaireDeGouvernance->id, 'programmeId' => $programmeId, 'questionOperationnelleId' => $questionOperationnelle->id]);
                             }else{
-                                $position = isset($principe_de_gouvernance['position']) ? $principe_de_gouvernance['position'] : $questionDeGouvernance->position;
+                                $position = isset($question_operationnelle['position']) ? $question_operationnelle['position'] : $questionDeGouvernance->position;
 
                                 $questionDeGouvernance->position = $position;
                                 $questionDeGouvernance->save();
                             }
 
                             $questions[] = $questionDeGouvernance->id;
-
-                            // Fix: Make sure the ID is used as the key
-                            $questionsOp[$questionOperationnelle->id] = [
-                                //'categorieDePerceptionDeGouvernanceId' => $principeDeGouvernanceCategorie->id,
-                                "position" => $position,
-                                //'questionOperationnelleId' => $questionOperationnelle->id
-                            ];
                         }
 
                         $formulaireDeGouvernance->questions_de_gouvernance()->where('categorieDePerceptionDeGouvernanceId', $principeDeGouvernanceCategorie->id)->whereNotIn('id', $questions)->delete();
