@@ -139,7 +139,13 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                         //if(!($indicateurDeGouvernance = app(QuestionOperationnelleRepository::class)->findById($question_operationnelle))) throw new Exception( "Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                        if(!(($questionOperationnelle = app(QuestionOperationnelleRepository::class)->findById($question_operationnelle))))
+                        $questionOperationnelleId = $question_operationnelle;
+                        if(isset($question_operationnelle['id']) ){
+
+                            $questionOperationnelleId = $question_operationnelle['id'];
+                        }
+
+                        if(!(($questionOperationnelle = app(QuestionOperationnelleRepository::class)->findById($questionOperationnelleId))))
                         {
                             throw new Exception( "Cette question operationnelle n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                         }
@@ -235,7 +241,12 @@ class FormulaireDePerceptionDeGouvernanceService extends BaseService implements 
 
                         foreach ($principe_de_gouvernance["questions_operationnelle"] as $key => $question_operationnelle) {
 
-                            if(!(($questionOperationnelle = app(QuestionOperationnelleRepository::class)->findById($question_operationnelle))))
+                            $questionOperationnelleId = $question_operationnelle;
+                            if(isset($question_operationnelle['id']) ){
+                                $questionOperationnelleId = $question_operationnelle['id'];
+                            }
+
+                            if(!(($questionOperationnelle = app(QuestionOperationnelleRepository::class)->findById($questionOperationnelleId))))
                             {
                                 throw new Exception( "Cette question operationnelle n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                             }
