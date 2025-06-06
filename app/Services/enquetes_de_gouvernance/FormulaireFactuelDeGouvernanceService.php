@@ -137,7 +137,13 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                             foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
 
-                                if (!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($indicateur_de_gouvernance)))) {
+                                $indicateurDeGouvernanceId = $indicateur_de_gouvernance;
+                                if(isset($indicateur_de_gouvernance['id']) ){
+
+                                    $indicateurDeGouvernanceId = $indicateur_de_gouvernance['id'];
+                                }
+
+                                if (!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($indicateurDeGouvernanceId)))) {
                                     throw new Exception("Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                 }
 
@@ -269,14 +275,20 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                                 $questions_de_gouvernance = [];
 
                                 foreach ($critere_de_gouvernance["indicateurs_de_gouvernance"] as $key => $indicateur_de_gouvernance) {
-
+/*
                                     if (is_array($indicateur_de_gouvernance)) {
                                         $id = $indicateur_de_gouvernance['id'];
                                     } else {
                                         $id = $indicateur_de_gouvernance;
+                                    } */
+
+
+                                    $indicateurDeGouvernanceId = $indicateur_de_gouvernance;
+                                    if(isset($indicateur_de_gouvernance['id']) ){
+                                        $indicateurDeGouvernanceId = $indicateur_de_gouvernance['id'];
                                     }
 
-                                    if (!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($id)))) {
+                                    if (!(($indicateurDeGouvernance = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($indicateurDeGouvernanceId)))) {
                                         throw new Exception("Cet indicateur de gouvernance n'est pas dans le programme", Response::HTTP_NOT_FOUND);
                                     }
 
