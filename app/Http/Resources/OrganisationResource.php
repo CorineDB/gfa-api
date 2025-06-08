@@ -21,6 +21,7 @@ class OrganisationResource extends JsonResource
             'nom'                   => optional($this->user)->nom ?? null,
             'sigle'                 => $this->when($this->sigle, $this->sigle),
             'code'                  => $this->when($this->code, $this->code),
+            'type'                  => $this->type,
             'nom_point_focal'       => $this->nom_point_focal,
             'prenom_point_focal'    => $this->prenom_point_focal,
             'contact_point_focal'   => $this->contact_point_focal,
