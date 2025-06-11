@@ -643,14 +643,38 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $indicateur->nom = $attributs['nom'];
             $indicateur->description = $attributs['description'];
-            $indicateur->type_de_variable = $attributs['type_de_variable'];
-            $indicateur->indice = $attributs['indice'];
-            $indicateur->uniteeMesureId = $attributs['uniteeMesureId'];
-            $indicateur->categorieId = $attributs['categorieId'];
-            $indicateur->methode_de_la_collecte = $attributs['methode_de_la_collecte'];
-            $indicateur->hypothese = $attributs['hypothese'];
-            $indicateur->frequence_de_la_collecte = $attributs['frequence_de_la_collecte'];
-            $indicateur->sources_de_donnee = $attributs['sources_de_donnee'];
+
+            if(isset($attributs['type_de_variable'])){
+                $indicateur->type_de_variable = $attributs['type_de_variable'];
+            }
+
+            if(isset($attributs['type_de_variable'])){
+                $indicateur->type_de_variable = $attributs['type_de_variable'];
+            }
+
+            if(isset($attributs['uniteeMesureId'])){
+                $indicateur->uniteeMesureId = $attributs['uniteeMesureId'];
+            }
+
+            if(isset($attributs['categorieId'])){
+                $indicateur->categorieId = $attributs['categorieId'];
+            }
+
+            if(isset($attributs['methode_de_la_collecte'])){
+                $indicateur->methode_de_la_collecte = $attributs['methode_de_la_collecte'];
+            }
+
+            if(isset($attributs['hypothese'])){
+                $indicateur->hypothese = $attributs['hypothese'];
+            }
+
+            if(isset($attributs['frequence_de_la_collecte'])){
+                $indicateur->frequence_de_la_collecte = $attributs['frequence_de_la_collecte'];
+            }
+
+            if(isset($attributs['sources_de_donnee'])){
+                $indicateur->sources_de_donnee = $attributs['sources_de_donnee'];
+            }
 
             $this->changeState(0);
 
