@@ -49,10 +49,12 @@ class Kernel extends ConsoleKernel
 
         $backupConfig = AlerteConfig::where('module', 'backup')->first();
 
-        $backupFrequence = $backupConfig->frequenceBackup;
+        if($backupConfig){
 
-        $schedule->command('backup:run')->$backupFrequence();
+            $backupFrequence = $backupConfig->frequenceBackup;
 
+            $schedule->command('backup:run')->$backupFrequence();
+        }
         $schedule->command('gauge:prune')->daily();
 
     }
