@@ -41,12 +41,12 @@ class AddAnneesCibleRequest extends FormRequest
                 // Get the index from the attribute name
                 preg_match('/anneesCible\.(\d+)\.valeurCible\.(\d+)\.keyId/', $attribute, $matches);
                 $index = $matches[1] ?? null; // Get the index if it exists
-                
+
                 // Ensure each keyId in valeurDeBase is one of the value_keys.id
-                if (!in_array(request()->input('anneesCible.*.valeurCible.*.keyId')[$index], collect(request()->input('value_keys.*.id'))->toArray())) {
+                if (!in_array(request()->input('anneesCible.*.valeurCible.*.keyId')[$index], $this->indicateur->valueKeys->pluck('indicateurValueKeyId'))) {
                     $fail("Le keyId n'est pas dans value_keys.");
                 }
-    
+
             }],
             'anneesCible.*.valeurCible.*.value'              => ['required'],
 
