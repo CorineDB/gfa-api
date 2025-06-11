@@ -85,7 +85,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 //});
             } elseif (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
                 $indicateurs = Auth::user()->profilable->indicateurs;
-            } 
+            }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
 
                 $indicateurs = Auth::user()->programme->indicateurs;
@@ -93,7 +93,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             // Ancien code
             /* else {
-                
+
                 $indicateurs = [];
                 $bailleurs = Auth::user()->programme->bailleurs->load('profilable')->pluck("profilable");
 
@@ -192,10 +192,10 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             if (!($indicateur = $this->repository->findById($indicateurId)))  throw new Exception("Cet indicateur n'existe pas", 500);
 
             $suivis = [];
-            
+
             if (Auth::user()->hasRole("organisation")) {
                 $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at");
-            } 
+            }
             else if(Auth::user()->hasRole("unitee-de-gestion")){
                 $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at");
             }
@@ -290,7 +290,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             //$indicateur = $this->repository->fill(array_merge($attributs, ["bailleurId" => $attributs['bailleurId'], "uniteeMesureId" => $attributs['uniteeMesureId'], "categorieId" => $attributs['categorieId']]));
             $valeursDeBase = null;
-            
+
             if (isset($attributs["valeurDeBase"]) && !is_null($attributs["valeurDeBase"])) {
                 $valeursDeBase = $attributs["valeurDeBase"];
                 unset($attributs["valeurDeBase"]);
@@ -403,7 +403,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if(isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])){
                 $responsables = [];
-            
+
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
                     if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
@@ -426,7 +426,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 foreach($attributs['sites'] as $id)
                 {
                     if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
-                    
+
                     array_push($sites, $site->id);
                 }
 
@@ -481,8 +481,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             else;
 
             $unitee = null;
-            
-            /* 
+
+            /*
 
             if (isset($attributs["uniteeMesureId"])) {
 
@@ -502,7 +502,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             unset($attributs["bailleurId"]);
 
             if($indicateur->suivis) unset($attributs['agreger']);
-                
+
             $oldValeursDeBase = null;
 
             if (isset($attributs['agreger']) && $indicateur->agreger != $attributs['agreger'] && $indicateur->suivi->count() == 0) {
@@ -515,9 +515,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             else {
                 unset($attributs['valeur_keys']);
             }
-            
+
             if(isset($attributs["valeurDeBase"])){
-                
+
                 $valeursDeBase = $attributs["valeurDeBase"];
 
                 unset($attributs["valeurDeBase"]);
@@ -526,9 +526,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                 }
                 else{
-                    
+
                 }
-                
+
                 $result = DB::table('indicateur_valeurs')
                     ->join('indicateur_value_keys_mapping', 'indicateur_valeurs.indicateurValueKeyMapId', '=', 'indicateur_value_keys_mapping.indicateurValueId')
                     ->where('indicateur_value_keys_mapping.indicateurId', $indicateur->id)
@@ -637,9 +637,20 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     $this->setIndicateurValeursCible($indicateur, $attributs["anneesCible"]);
 
                     $oldValeursCible->each->delete();
-                
-            } 
+
+            }
             */
+
+            $indicateur->nom = $attributs['nom'];
+            $indicateur->description = $attributs['description'];
+            $indicateur->type_de_variable = $attributs['type_de_variable'];
+            $indicateur->indice = $attributs['indice'];
+            $indicateur->uniteeMesureId = $attributs['uniteeMesureId'];
+            $indicateur->categorieId = $attributs['categorieId'];
+            $indicateur->methode_de_la_collecte = $attributs['methode_de_la_collecte'];
+            $indicateur->hypothese = $attributs['hypothese'];
+            $indicateur->frequence_de_la_collecte = $attributs['frequence_de_la_collecte'];
+            $indicateur->sources_de_donnee = $attributs['sources_de_donnee'];
 
             $this->changeState(0);
 
@@ -653,7 +664,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if(isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])){
                 $responsables = [];
-            
+
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
                     if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
@@ -676,7 +687,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 foreach($attributs['sites'] as $id)
                 {
                     if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
-                    
+
                     array_push($sites, $site->id);
                 }
 
@@ -703,7 +714,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-    
+
     public function addStrutureResponsable($indicateur, array $attributs): JsonResponse
     {
 
@@ -720,7 +731,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if(isset($attributs['responsables']['organisations'])){
                 $responsables = [];
-            
+
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
                     if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
@@ -747,7 +758,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
         }
 
     }
-    
+
     public function addAnneesCible($indicateur, array $attributs): JsonResponse
     {
 
@@ -788,7 +799,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             if(!is_object($indicateurId) && !($indicateurId = $this->repository->findById($indicateurId))) throw new Exception("Indicateur inconnu", 1);
 
             if($indicateurId->suivis->isNotEmpty()) throw new Exception("Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.",500);
-            
+
 
             $this->attachValueKeys($indicateurId, $attributs);
             /*
@@ -846,7 +857,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             if($indicateurId->suivis->isNotEmpty()) throw new Exception("Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.",500);
 
             $valueKeys = [];
-            
+
             foreach ($attributs['value_keys'] as $key => $value_key) {
 
                 $indicateurValueKey = IndicateurValueKey::find($value_key);
@@ -854,7 +865,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 if (!$indicateurValueKey) {
                     throw new Exception("Cle d'indicateur inconnue.", 404);
                 }
-                
+
                 array_push($valueKeys, $indicateurValueKey->id);
             }
 
@@ -892,10 +903,10 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
     /**
      * Attach value keys to indicateur
-     * 
+     *
      * @param Indicateur $indicateur
      * @param array $attributs
-     * 
+     *
      * @return void
      */
     protected function attachValueKeys(Indicateur $indicateur, array $attributs){
@@ -939,11 +950,11 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
     /**
      * Set Indicateur Value
-     * 
+     *
      * @param Indicateur $indicateur
      * @param array|id $valeursDeBase
      * @param array $valeurDeBase
-     * 
+     *
      * @return array
      */
     protected function setIndicateurValue(Indicateur $indicateur, Programme $programme, $valeursDeBase, array $valeurDeBase =[]){
@@ -972,11 +983,11 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
     /**
      * Set Indicateur Value
-     * 
+     *
      * @param Indicateur $indicateur
      * @param array|id $valeursDeBase
      * @param array $valeurDeBase
-     * 
+     *
      * @return array
      */
     protected function setIndicateurValeursCible(Indicateur $indicateur, Programme $programme, $annneesCible =[]){
@@ -1003,13 +1014,13 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                                 $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
                             }
                         }
-                        
+
                     }
-                    
+
                     else if (!$indicateur->agreger && !is_array($anneeCible["valeurCible"])) {
                         //dd($anneeCible["valeurCible"]);
                         $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id, 'programmeId' => $programme->id]);
-                        
+
                         $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
                         //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
                     }
@@ -1034,7 +1045,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
         $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($attributs, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur)]));
         $valeurCibleIndicateur->save();
         $valeurCibleIndicateur->refresh();
-        
+
         $valeurCible = [];
 
         if ($indicateur->agreger && is_array($attributs["valeurCible"])) {
@@ -1047,11 +1058,11 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
                 }
             }
-            
-        } 
+
+        }
         else if (!$indicateur->agreger && !is_array($attributs["valeurCible"])) {
             $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $attributs["valeurRealise"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
-            
+
             $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
             //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
         }
