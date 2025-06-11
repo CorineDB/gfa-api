@@ -43,7 +43,7 @@ class AddAnneesCibleRequest extends FormRequest
                 $index = $matches[1] ?? null; // Get the index if it exists
 
                 // Ensure each keyId in valeurDeBase is one of the value_keys.id
-                if (!in_array(request()->input('anneesCible.*.valeurCible.*.keyId')[$index], $this->indicateur->valueKeys->pluck('indicateurValueKeyId'))) {
+                if (!in_array(request()->input('anneesCible.*.valeurCible.*.keyId')[$index], $this->indicateur->valueKeys->pluck('indicateurValueKeyId')->toArray())) {
                     $fail("Le keyId n'est pas dans value_keys.");
                 }
 
