@@ -140,7 +140,7 @@ class ActiviteController extends Controller
     {
 
         $request->validate([
-            'statut' => 'required|in:-1,0,1'
+            'statut' => 'required|in:-1,0,1,2'
         ]);
 
         return $this->activiteService->changeStatut($id, $request->all());
