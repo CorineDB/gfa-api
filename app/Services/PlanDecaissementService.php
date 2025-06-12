@@ -106,9 +106,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
                 }
             } */
 
-
-
-            foreach ($activite->durees as $duree) {
+            /* foreach ($activite->durees as $duree) {
                 $debut = new DateTime($duree->debut);
                 $fin = new DateTime($duree->fin);
 
@@ -128,6 +126,35 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
                     if ($attributs['trimestre'] >= $trimestreDebut && $attributs['trimestre'] <= $trimestreFin) {
                         $trimestreValide = true;
                         break;
+                    }
+                }
+            } */
+
+
+            foreach ($activite->durees as $duree) {
+                $debut = new DateTime($duree->debut);
+                $fin = new DateTime($duree->fin);
+
+                $anneeDebut = (int) $debut->format('Y');
+                $anneeFin = (int) $fin->format('Y');
+
+                // Skip durations that don't overlap with the target year
+                if ($anneeDebut > $attributs['annee'] || $anneeFin < $attributs['annee']) {
+                    continue;
+                }
+
+                $controle = false;
+
+                // Limit start and end months to only the months within the target year
+                $startMonth = ($anneeDebut < $attributs['annee']) ? 1 : (int) $debut->format('m');
+                $endMonth = ($anneeFin > $attributs['annee']) ? 12 : (int) $fin->format('m');
+
+                $trimestreStart = ceil($startMonth / 3);
+                $trimestreEnd = ceil($endMonth / 3);
+
+                for ($t = $trimestreStart; $t <= $trimestreEnd; $t++) {
+                    if (!in_array($t, $validTrimestres)) {
+                        $validTrimestres[] = $t;
                     }
                 }
             }
