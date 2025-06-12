@@ -31,7 +31,7 @@ class StoreUserRequest extends FormRequest
         return [
             'nom' => 'required|string|max:255',
             'prenom' => 'required|string|max:255',
-            'contact'               => ['required', 'string','max:14', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'contact'               => ['required', 'max:14', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
             'email'               => ['required', 'email', 'string', Rule::unique('users', 'email')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'roles'  => 'required|array|min:1',
