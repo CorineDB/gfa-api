@@ -275,21 +275,30 @@ class Activite extends Model
     public function getDureeAttribute()
     {
 
-        $today = new DateTime(); // today
+        $today = new DateTime();
+        $nextDuree = null;
+        $nextStart = null;
 
         foreach ($this->durees as $duree) {
             $debut = new DateTime($duree->debut);
             $fin = new DateTime($duree->fin);
 
-            // Check if today is within the duration (inclusive)
+            // Check if currently active
             if ($today >= $debut && $today <= $fin) {
                 return $duree;
             }
+
+            // Otherwise, track next upcoming duree (starting after today)
+            if ($debut > $today) {
+                if ($nextStart === null || $debut < $nextStart) {
+                    $nextStart = $debut;
+                    $nextDuree = $duree;
+                }
+            }
         }
 
-        // If none are active today, you can return null or a fallback
-        return null;
-        // or return $this->durees->first();
+        // Return next upcoming duree if no active one found, or null if none
+        return $nextDuree;
 
         $duree = $this->durees->first();
         $min = strtotime($duree->debut) - strtotime('1970-01-01');
