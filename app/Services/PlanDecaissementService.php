@@ -72,7 +72,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
             if (!($activite = $this->activiteRepository->findById($attributs['activiteId']))) {
                 throw new Exception("Cette activité n'existe pas", 404);
             }
-    
+
             $attributs = array_merge($attributs, ['activiteId' => $activite->id]);
 
             $durees = $activite->durees;
@@ -82,18 +82,18 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
             foreach ($durees as $duree) {
                 $debutTab = explode('-', $duree->debut);
                 $finTab = explode('-', $duree->fin);
-    
+
                 if ($debutTab[0] <= $attributs['annee'] && $finTab[0] >= $attributs['annee']) {
                     $controle = 0;
-    
+
                     // Vérification du trimestre couvert par la durée
                     // Convert months to trimestres
                     $moisDebut = (int) $debutTab[1];
                     $moisFin = (int) $finTab[1];
-    
+
                     $trimestreDebut = ceil($moisDebut / 3);
                     $trimestreFin = ceil($moisFin / 3);
-    
+
                     for ($i = $trimestreDebut; $i <= $trimestreFin; $i++) {
                         $validTrimestres[] = $i;
                     }
@@ -101,7 +101,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
                     if ($attributs['trimestre'] >= $trimestreDebut && $attributs['trimestre'] <= $trimestreFin) {
                         $trimestreValide = true;
                     }
-                    //break;
+                    break;
                 }
             }
 
@@ -135,7 +135,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
                 else{
                     $max = max($trimestres->all());
                 }
-                    
+
                 if($nombreDeTrimestre == 0 && $attributs['trimestre'] > 1){
                     throw new Exception("Vous devez d'abord faire le plan du premier trimestre", 500);
                 }
