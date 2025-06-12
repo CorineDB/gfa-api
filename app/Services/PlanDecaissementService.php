@@ -111,7 +111,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
             }
 
             if (!$trimestreValide) {
-                throw new Exception("Le trimestre sélectionné ne correspond pas à la période d'exécution de l'activité " . json_encode($durees->pluck('fin')->toArray()), 500);
+                throw new Exception("Le trimestre sélectionné ne correspond pas à la période d'exécution de l'activité " . json_encode($durees->pluck(['debut', 'fin'])->toArray()), 500);
             }
 
             // Get registered trimestres for this activity in the selected year
