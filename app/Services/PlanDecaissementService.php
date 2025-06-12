@@ -189,7 +189,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
 
             // Allow only if the selected trimestre is within valid execution periods
             if (!in_array($attributs['trimestre'], $validTrimestres)) {
-                throw new Exception("L'activité ne peut pas être exécutée pour le trimestre {$attributs['trimestre']} $validTrimestres", 500);
+                throw new Exception("L'activité ne peut pas être exécutée pour le trimestre {$attributs['trimestre']} ". json_encode($validTrimestres), 500);
             }
 
             // Allow skipping trimestres if execution periods allow it
