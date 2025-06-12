@@ -1133,7 +1133,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                 Route::apiResource('options-de-reponse-gouvernance', 'OptionDeReponseGouvernanceController')->names('options-de-reponse-gouvernance')
                     ->parameters([
-                        'options-de-reponse-gouvernance' => 'option_de_reponse',
+                        'options-de-reponse-gouvernance' => 'option_de_reponse_gouvernance',
                     ]);
 
                 Route::controller('OptionDeReponseGouvernanceController')->group(function () {
