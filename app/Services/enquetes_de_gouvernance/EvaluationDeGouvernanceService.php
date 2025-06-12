@@ -1045,6 +1045,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         return response()->json(['statut' => 'success', 'message' => "Evaluation inexistant", 'data' => -1, 'statutCode' => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
                     }
 
+                    if($organisation->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernance->id)->count() >= 1){
+                        return response()->json(['statut' => 'success', 'message' => "Soumission factuel passer", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                    }
+
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
                         'formulaireFactuelId' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id,
