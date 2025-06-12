@@ -59,6 +59,7 @@ class OptionDeReponseGouvernanceController extends Controller
      */
     public function show($id)
     {
+        dd($id);
         return $this->optionDeReponseGouvernanceService->findById($id);
     }
 
