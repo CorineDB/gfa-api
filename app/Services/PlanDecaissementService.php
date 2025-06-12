@@ -11,6 +11,7 @@ use App\Repositories\PlanDecaissementRepository;
 use App\Traits\Helpers\LogActivity;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\PlanDecaissementServiceInterface;
+use DateTime;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
@@ -79,7 +80,7 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
             $trimestreValide = false;
             $validTrimestres = [];
 
-            foreach ($durees as $duree) {
+            /* foreach ($durees as $duree) {
                 $debutTab = explode('-', $duree->debut);
                 $finTab = explode('-', $duree->fin);
 
@@ -97,6 +98,32 @@ class PlanDecaissementService extends BaseService implements PlanDecaissementSer
                     for ($i = $trimestreDebut; $i <= $trimestreFin; $i++) {
                         $validTrimestres[] = $i;
                     }
+
+                    if ($attributs['trimestre'] >= $trimestreDebut && $attributs['trimestre'] <= $trimestreFin) {
+                        $trimestreValide = true;
+                        break;
+                    }
+                }
+            } */
+
+
+
+            foreach ($activite->durees as $duree) {
+                $debut = new DateTime($duree->debut);
+                $fin = new DateTime($duree->fin);
+
+                $anneeDebut = (int) $debut->format('Y');
+                $anneeFin = (int) $fin->format('Y');
+
+                if ($anneeDebut <= $attributs['annee'] && $anneeFin >= $attributs['annee']) {
+                    $controle = false;
+
+                    // Début et fin dans l’année ciblée
+                    $startMonth = ($anneeDebut < $attributs['annee']) ? 1 : (int) $debut->format('m');
+                    $endMonth = ($anneeFin > $attributs['annee']) ? 12 : (int) $fin->format('m');
+
+                    $trimestreDebut = ceil($startMonth / 3);
+                    $trimestreFin = ceil($endMonth / 3);
 
                     if ($attributs['trimestre'] >= $trimestreDebut && $attributs['trimestre'] <= $trimestreFin) {
                         $trimestreValide = true;
