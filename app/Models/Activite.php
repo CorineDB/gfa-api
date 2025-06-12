@@ -7,6 +7,7 @@ use App\Jobs\ChangementStatutJob;
 use App\Notifications\ChangementStatutNotification;
 use App\Traits\Helpers\HelperTrait;
 use App\Traits\Helpers\Pta;
+use DateTime;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -160,7 +161,7 @@ class Activite extends Model
 
         $pret = 0;
         $budgetNational = 0;
-        
+
         if($plans->count() > 0){
             $pret = $plans->sum('pret');
             $budgetNational = $plans->sum('budgetNational');
@@ -273,6 +274,23 @@ class Activite extends Model
 
     public function getDureeAttribute()
     {
+
+        $today = new DateTime(); // today
+
+        foreach ($this->durees as $duree) {
+            $debut = new DateTime($duree->debut);
+            $fin = new DateTime($duree->fin);
+
+            // Check if today is within the duration (inclusive)
+            if ($today >= $debut && $today <= $fin) {
+                return $duree;
+            }
+        }
+
+        // If none are active today, you can return null or a fallback
+        return null;
+        // or return $this->durees->first();
+
         $duree = $this->durees->first();
         $min = strtotime($duree->debut) - strtotime('1970-01-01');
 
