@@ -25,13 +25,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->option_de_reponse))
+        if(is_string($this->option_de_reponse_gouvernance))
         {
-            $this->option_de_reponse = OptionDeReponseGouvernance::findByKey($this->option_de_reponse);
+            $this->option_de_reponse_gouvernance = OptionDeReponseGouvernance::findByKey($this->option_de_reponse_gouvernance);
         }
 
         return [
-            'libelle'  => ['sometimes','max:255', Rule::unique('options_de_reponse_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->ignore($this->option_de_reponse)->whereNull('deleted_at')],
+            'libelle'  => ['sometimes','max:255', Rule::unique('options_de_reponse_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->ignore($this->option_de_reponse_gouvernance)->whereNull('deleted_at')],
 
             'type'          => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description' => 'sometimes|nullable|max:255'
