@@ -1108,9 +1108,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 /*if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $organisation->pivot->nbreParticipants){
                     return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 }*/
-                if($organisation->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernance->id)->count() == $organisation->pivot->nbreParticipants){
-                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-                }
 
                 if (($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())) {
 
@@ -1121,6 +1118,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
                     }
                 } else {
+
+                    if($organisation->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernance->id)->count() == $organisation->pivot->nbreParticipants){
+                        return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+                    }
+
                     $attributs = [
                         'evaluationId' => $evaluationDeGouvernance->id,
                         'formulaireDePerceptionId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
