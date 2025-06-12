@@ -316,7 +316,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal,
 
-                    'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance),
+                    'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
                 ], ['factuel' => $formFactuel ? new SoumissionFactuelResource($formFactuel) : null, 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
             } else {
                 $group_soumissions = $evaluationDeGouvernance->organisations()
@@ -348,7 +348,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'nom_point_focal'       => $organisation->nom_point_focal,
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
-                            'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance),
+                            'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
                             "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
                         ], ['factuel' => $soumissionsFactuel, 'perception' => $soumissionsDePerception]);
