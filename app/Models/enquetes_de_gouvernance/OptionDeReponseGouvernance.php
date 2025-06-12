@@ -49,7 +49,10 @@ class OptionDeReponseGouvernance extends Model
                 ]);
 
                 $option_de_reponse->indicateurs_de_gouvernance()->detach();
-                $option_de_reponse->formulaires_de_gouvernance()->detach();
+                //$option_de_reponse->formulaires_de_gouvernance()->detach();
+                $option_de_reponse->formulaires_factuel_de_gouvernance()->detach();
+                $option_de_reponse->formulaires_de_perception_de_gouvernance()->detach();
+
 
                 DB::commit();
             } catch (\Throwable $th) {
