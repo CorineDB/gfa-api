@@ -31,11 +31,11 @@ class UpdateUserRequest extends FormRequest
         {
             $this->utilisateur = User::findByKey($this->utilisateur);
         }
-        
+
         return [
             'nom' => 'sometimes|string|max:255',
             'prenom' => 'sometimes|string|max:255',
-            'contact'               => ['sometimes', 'string','max:12', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->ignore($this->utilisateur)->whereNull('deleted_at')],
+            'contact'               => ['sometimes', 'max:14', Rule::unique('users', 'contact')->where("programmeId", auth()->user()->programmeId)->ignore($this->utilisateur)->whereNull('deleted_at')],
             'email'               => ['sometimes', 'email', 'string', Rule::unique('users', 'email')->where("programmeId", auth()->user()->programmeId)->ignore($this->utilisateur)->whereNull('deleted_at')],
             'roles'  => 'sometimes|array|min:1',
             'roles.*'     => ['distinct', new HashValidatorRule(new Role())]
