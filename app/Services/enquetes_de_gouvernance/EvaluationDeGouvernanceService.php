@@ -1120,9 +1120,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     }
                 } else {
 
-
-                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'data' => [$organisation->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernance->id)->count(), $organisation->pivot->nbreParticipants], 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
                     if($organisation->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernance->id)->count() == $organisation->pivot->nbreParticipants){
                         return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                     }
