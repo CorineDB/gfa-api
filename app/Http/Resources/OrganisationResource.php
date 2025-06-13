@@ -34,6 +34,7 @@ class OrganisationResource extends JsonResource
             'departement'           => $this->departement,
             'pays'                  => $this->pays,
             'secteurActivite'       => $this->secteurActivite,
+            'fonds'                  => new FondsResource($this->fonds),
             'user'                  => $this->whenLoaded('user', new UserResource($this->user)),
             'projet'                => $this->whenLoaded("projet", new ProjetsResource($this->projet)),
             "created_at"            => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
