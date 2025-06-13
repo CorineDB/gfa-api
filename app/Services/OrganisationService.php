@@ -182,6 +182,8 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
                 $attributs['latitude'] = 6.90000;
             }
 
+            unset($attributs['type']);
+
             $organisation->user->fill($attributs)->save();
 
             if(isset($attributs['fondId'])){
