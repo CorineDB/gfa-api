@@ -355,6 +355,7 @@ class Programme extends Model
 
     public function mesure_rendement_projet($projetId)
     {
+        return $projetId;
         return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
             $query->orderBy('indice','asc')->with(['categories' => function($query){
                 $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
