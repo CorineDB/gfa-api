@@ -746,6 +746,9 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::post('{id}/tef', 'tef')->name('tef');
 
                     Route::get('{id}/statistiques', 'statistiques')->name('statistiques')->middleware('permission:voir-un-projet');
+
+                    Route::get('{id}/mesure-rendement', 'mesure_rendement')->name('mesure-rendement')->middleware('permission:voir-cadre-de-rendement');
+
                 });
             });
 
