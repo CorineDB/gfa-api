@@ -790,7 +790,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
         {
             if(!($projet = $this->repository->findById($id))) throw new Exception( "Ce projet n'existe pas", 500);
 
-            $mesure_rendement_projet = auth()->user()->programme->mesure_rendement_projet($projet->id);
+            $mesure_rendement_projet = auth()->user()->programme->mesure_rendement_projet($projet->id)->get();
 
             //return response()->json(['statut' => 'success', 'message' => null, 'data' => $mesure_rendement_projet, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $mesure_rendement_projet/*  MesureRendementProjetResource::collection($mesure_rendement_projet) */, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
