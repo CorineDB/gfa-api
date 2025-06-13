@@ -793,7 +793,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             $cadre_de_mesure_rendement = auth()->user()->programme->cadre_de_mesure_rendement($id);
 
             //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => MesureRendementProjetResource::collection($cadre_de_mesure_rendement), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement/*  MesureRendementProjetResource::collection() */, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         }
         catch (\Throwable $th)
