@@ -132,7 +132,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             else{
                 if(auth()->user()->type != 'unitee-de-gestion'){
                     throw new Exception("Vous n'avez pas les permissions pour effectuer cette action", 1);
-                    
+
                 }
 
                 $owner = auth()->user()->profilable;
@@ -144,6 +144,12 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             $projet = $projet->fresh();
 
+            if($organisation->fonds()->count()){
+                $organisationFond = $organisation->fonds->first()->pivot;
+                $organisationFond->budgetAllouer = $attributs['pret'];
+                $organisationFond->save();
+            }
+
             if(isset($attributs['sites'])){
 
                 $programme = Auth::user()->programme;
@@ -152,7 +158,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 foreach($attributs['sites'] as $id)
                 {
                     if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
-                    
+
                     array_push($sites, $site->id);
                 }
 
@@ -181,7 +187,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
             if(isset($attributs['fichier']))
             {
                 foreach ($attributs['fichier'] as $key => $file) {
-                    
+
                     $fichier = $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier');
 
                     if(array_key_exists('sharedId', $attributs))
@@ -314,6 +320,14 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             $projet->save();
 
+            $organisation = $projet->organisation;
+
+            if($organisation->fonds()->count()){
+                $organisationFond = $organisation->fonds->first()->pivot;
+                $organisationFond->budgetAllouer = $projet->pret;
+                $organisationFond->save();
+            }
+
             if(array_key_exists('statut', $attributs) && $attributs['statut'] === -1 ){
 
                 if(!Auth::user()->hasPermissionTo('validation')) throw new Exception( "Vous n'avez pas la permission de faire la validation", 500);
@@ -352,7 +366,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 $piecesJointes = $projet->fichiers();
                 foreach ($attributs['fichier'] as $key => $file) {
-                    
+
                     $fichier = $this->storeFile($file, 'projets/pieces_jointes', $projet, null, 'fichier');
 
                     if(array_key_exists('sharedId', $attributs))
@@ -382,11 +396,11 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 foreach ($piecesJointes as $key => $pieceJointe) {
                     if($pieceJointe != null){
-    
+
                         if(file_exists(public_path("storage/" . $pieceJointe->chemin)))
                         {
                             unlink(public_path("storage/" . $pieceJointe->chemin));
-    
+
                             if($pieceJointe){
                                 $pieceJointe->delete();
                             }
@@ -403,7 +417,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 foreach($attributs['sites'] as $id)
                 {
                     if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
-                    
+
                     $sites[$site->id] = ['programmeId' => $programme->id];
                 }
 
