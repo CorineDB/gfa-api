@@ -355,13 +355,13 @@ class Programme extends Model
 
     public function mesure_rendement_projet($projetId)
     {
-        return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
-            $query->orderBy('indice','asc')->with(['categories' => function($query){
-                $query->orderBy('indice','asc')->with(['indicateurs' => function($query){
+        return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query) use($projetId){
+            $query->orderBy('indice','asc')->with(['categories' => function($query) use($projetId){
+                $query->orderBy('indice','asc')->with(['indicateurs' => function($query) use($projetId){
                     $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
                     ->when(
                         auth()->check() &&
-                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) {
+                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class && auth()->user()->profilable->projet->id == $projetId)), function($query) {
                         //->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
@@ -370,11 +370,11 @@ class Programme extends Model
                             });
                         });
                 }]);
-            }, 'indicateurs' => function($query){
+            }, 'indicateurs' => function($query) use($projetId){
                     $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
                     ->when(
                         auth()->check() &&
-                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) {
+                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class && auth()->user()->profilable->projet->id == $projetId)), function($query) {
                         //->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
@@ -383,11 +383,11 @@ class Programme extends Model
                             });
                         });
                 }]);
-        }, 'indicateurs' => function($query){
+        }, 'indicateurs' => function($query) use($projetId){
                     $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
                     ->when(
                         auth()->check() &&
-                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) {
+                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class && auth()->user()->profilable->projet->id == $projetId)), function($query) {
                         //->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
                             // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
                             $query->whereHas('organisations_responsable', function($query) {
