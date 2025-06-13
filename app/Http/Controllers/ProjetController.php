@@ -32,7 +32,7 @@ class ProjetController extends Controller
         $this->middleware('permission:supprimer-un-projet')->only(['destroy']);
         $this->middleware('permission:modifier-un-projet')->only(['update']);
         $this->middleware('permission:prolonger-un-projet')->only(['prolonger']);
-        
+
 
         $this->projetService = $projetServiceInterface;
 
@@ -132,5 +132,10 @@ class ProjetController extends Controller
     public function tef(TefRequest $request, $id)
     {
         return $this->projetService->tef($id, $request->all());
+    }
+
+    public function mesure_rendement($id)
+    {
+        return $this->projetService->mesure_rendement($id);
     }
 }
