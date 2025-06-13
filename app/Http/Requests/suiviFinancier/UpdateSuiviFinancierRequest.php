@@ -39,8 +39,7 @@ class UpdateSuiviFinancierRequest extends FormRequest
             }],
 
             'annee'         => ['sometimes', Rule::requiredIf(!request('dateDeSuivi')), "integer", "digits:4", "date_format:Y", 'between:1900,' . now()->year, "gte:1940"], // Validates year between 1900 and the current year
-            'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateDeSuivi')), 'integer", "min:1", "max:4'],
-
+            'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateDeSuivi')), "integer", "min:1", "max:4"],
             'type' => 'sometimes|integer|in:fond-propre,budget-alloue',
             'commentaire'          => 'nullable'
         ];
