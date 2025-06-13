@@ -28,7 +28,7 @@ class Organisation extends Model
 
     protected $with = ['user'];
 
-    protected $default = ['type' => 'osc_partenaire'];
+    //protected $default = ['type' => 'osc_partenaire'];
 
     /**
      * The attributes that should be hidden for serialization.
