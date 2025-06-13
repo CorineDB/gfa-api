@@ -22,7 +22,7 @@ class Indicateur extends Model
     protected $dates = ["deleted_at"];
 
     protected $fillable = ["nom", "description", "indice", "type_de_variable", "agreger", "anneeDeBase", "valeurDeBase", "uniteeMesureId", "bailleurId", "categorieId", "programmeId", "hypothese", 'frequence_de_la_collecte', 'sources_de_donnee', 'methode_de_la_collecte', "kobo", "koboVersion", "valeurCibleTotal"];
-    
+
     protected static function boot() {
         parent::boot();
 
@@ -109,7 +109,7 @@ class Indicateur extends Model
         if ($this->categorieId !== null) {
             return $this->categorie->code . '.' . $this->indice;
         }
-        
+
         return $this->indice;
     }
 
@@ -245,7 +245,7 @@ class Indicateur extends Model
         $totals = [];
 
         $this->valeursCible->pluck("valeurCible")->each(function ($item) use (&$totals) {
-            
+
             foreach ($item as $key => $value) {
                 if (is_numeric($value)) {
                     if (!isset($totals[$key])) {
