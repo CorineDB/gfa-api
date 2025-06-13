@@ -17,7 +17,6 @@ class MesureRendementProjetResource extends JsonResource
     public function toArray($request)
     {
         return [
-
             "id" => $this->secure_id,
             "nom" => $this->nom,
             "type" => $this->type,

@@ -353,6 +353,63 @@ class Programme extends Model
         }]);
     }
 
+    public function mesure_rendement_projet($projetId)
+    {
+        return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query) use($projetId){
+            $query->orderBy('indice','asc')->with(['categories' => function($query) use($projetId){
+                $query->orderBy('indice','asc')->with(['indicateurs' => function($query) use($projetId){
+                    $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
+                    ->when(
+                        auth()->check() &&
+                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) use($projetId){
+                        //->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+                            // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
+                            $query->whereHas('organisations_responsable', function($query) use($projetId){
+                                $query->where('responsableable_type', get_class(auth()->user()->profilable));
+                                $query->where('responsableable_id', auth()->user()->profilable->id)
+                                    ->whereHas('projet', function($query) use($projetId){
+                                        $query->where('id', $projetId);
+                                    });
+                            });
+                        });
+                }]);
+            }, 'indicateurs' => function($query) use($projetId){
+                    $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
+                    ->when(
+                        auth()->check() &&
+                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) use($projetId){
+                        //->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+                            // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
+                            $query->whereHas('organisations_responsable', function($query) use($projetId){
+                                $query->where('responsableable_type', get_class(auth()->user()->profilable));
+                                $query->where('responsableable_id', auth()->user()->profilable->id)
+                                    ->whereHas('projet', function($query) use($projetId){
+                                        $query->where('id', $projetId);
+                                    });
+                            });
+                        });
+                }]);
+        }, 'indicateurs' => function($query) use($projetId){
+                    $query->orderBy('indice','asc')->with(['valeursCible', 'ug_responsable', 'organisations_responsable','sites'])
+                    ->when(
+                        auth()->check() &&
+                        (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) use($projetId){
+                        //->when((auth()->user()->type == 'organisation' || get_class(auth()->user()->profilable) == Organisation::class), function($query) {
+                            // Filter by organisation responsible using both 'responsableable_type' and 'responsableable_id'
+                            $query->whereHas('organisations_responsable', function($query) use($projetId){
+                                $query->where('responsableable_type', get_class(auth()->user()->profilable));
+                                $query->where('responsableable_id', auth()->user()->profilable->id)
+                                    ->whereHas('projet', function($query) use($projetId){
+                                        $query->where('id', $projetId);
+                                    });
+                            });
+                        });
+                }]);
+
+        return $this->hasMany(Categorie::class, 'programmeId')->whereNull('categorieId')->with(['categories' => function($query){
+            $query->orderBy('indice','asc')->loadCategories();
+        }]);
+    }
     public function scopeLoadCategories($query){
         return $query->with(['categories' => function($query){
             $query->orderBy('indice','asc')->loadCategories();
