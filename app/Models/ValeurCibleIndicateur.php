@@ -61,7 +61,16 @@ class ValeurCibleIndicateur extends Model
      */
     public function suivisIndicateur()
     {
-        return $this->hasMany(SuiviIndicateur::class, 'valeurCibleId');
+        return $this->hasMany(SuiviIndicateur::class, 'valeurCibleId')
+            ->when(
+                auth()->check() &&
+                (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) {
+                    // Filter by organisation responsible using both 'suivi_indicateurable_type' and 'suivi_indicateurable_id'
+                    $query->whereHas('suivi_indicateurable', function($query) {
+                        $query->where('suivi_indicateurable_type', get_class(auth()->user()->profilable))
+                            ->where('suivi_indicateurable_id', auth()->user()->profilable->id);
+                    });
+                });
     }
 
     /**
@@ -119,7 +128,7 @@ class ValeurCibleIndicateur extends Model
                 }
             }
         });
-        
+
         return $totals;
     }
 }
