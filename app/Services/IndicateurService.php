@@ -194,10 +194,10 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $suivis = [];
 
             if (Auth::user()->hasRole("organisation")) {
-                $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at");
+                $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->distinct('trimestre')->sortByDesc("created_at");
             }
             else if(Auth::user()->hasRole("unitee-de-gestion")){
-                $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at");
+                $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->distinct('trimestre')->sortByDesc("created_at");
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SuiviIndicateurResource::collection($suivis), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
