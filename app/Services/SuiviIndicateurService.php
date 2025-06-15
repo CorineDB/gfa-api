@@ -127,6 +127,17 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
             $suivisIndicateur = SuiviIndicateur::where('dateSuivie', $attributs['dateSuivie'])->get();
 
+
+            if (isset($attributs['annee']) && $attributs['annee'] != null) {
+                $suivisIndicateur = $suivisIndicateur->filter(function ($suiviIndicateur) use ($attributs) {
+                    return Carbon::parse($suiviIndicateur->created_at)->format("Y-m-d") >= Carbon::parse($attributs['annee'] . "-1-1")->format("Y-m-d");
+                });
+            }
+
+            if (isset($attributs['trimestre']) && $attributs['trimestre'] != null) {
+                $suivisIndicateur = $suivisIndicateur->where('trimestre', $attributs['trimestre']);
+            }
+
             if (isset($attributs['date_debut']) && $attributs['date_debut'] != null) {
                 $suivisIndicateur = $suivisIndicateur->filter(function ($suiviIndicateur) use ($attributs) {
                     return Carbon::parse($suiviIndicateur->created_at)->format("Y-m-d") >= Carbon::parse($attributs['date_debut'])->format("Y-m-d");
