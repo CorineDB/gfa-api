@@ -59,11 +59,11 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
         try {
 
-            $suivis_indicateurs = [];            
-            
+            $suivis_indicateurs = [];
+
             if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
-                $suivis_indicateurs = Auth::user()->profilable->suivis_indicateurs;
-            } 
+                $suivis_indicateurs = Auth::user()->profilable->suivis_indicateurs->unique('trimestre');
+            }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $suivis_indicateurs = Auth::user()->programme->suivis_indicateurs;
             }
@@ -202,7 +202,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($attributs, ["cibleable_id" => $indicateur->id, "cibleable_type" => get_class($indicateur)]));
                 $valeurCibleIndicateur->save();
                 $valeurCibleIndicateur->refresh();
-                
+
                 $valeurCible = [];
 
                 if ($indicateur->agreger && is_array($attributs["valeurCible"])) {
@@ -215,11 +215,11 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                             $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
                         }
                     }
-                    
-                } 
+
+                }
                 else if (!$indicateur->agreger && !is_array($attributs["valeurCible"])) {
                     $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $attributs["valeurRealise"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
-                    
+
                     $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
                     //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
                 }
@@ -288,21 +288,21 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                         //array_push($valeurRealise, ["key" => $key->key, "value" => $valeur->value]);
                     }
                 }
-                
-            } 
+
+            }
             else if (!$indicateur->agreger && !is_array($attributs["valeurRealise"])) {
                 $valeur = $suiviIndicateur->valeursRealiser()->create(["value" => $attributs["valeurRealise"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
                 $valeurRealise = array_merge($valeurRealise, ["{$indicateur->valueKey()->key}" => $valeur->value]);
 
                 //$valeurRealise = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
-                
+
             }
             else{
                 throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
             }
 
             $suiviIndicateur->valeurRealise = $valeurRealise;
-        
+
             $suiviIndicateur->save();
 
             if (isset($attributs['commentaire'])) {
@@ -422,7 +422,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
             } else {
                 $suiviIndicateur = $suiviIndicateur;
             }
-            
+
             unset($attributs['estValider']);
 
             if(!$suiviIndicateur->programmeId){
