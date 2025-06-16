@@ -62,7 +62,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
             $suivis_indicateurs = [];
 
             if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
-                $suivis_indicateurs = Auth::user()->profilable->suivis_indicateurs->unique('trimestre');
+                $suivis_indicateurs = Auth::user()->profilable->suivis_indicateurs;
             }
             else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
                 $suivis_indicateurs = Auth::user()->programme->suivis_indicateurs;
@@ -125,21 +125,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
         try {
 
-            //$suivisIndicateur = SuiviIndicateur::where('dateSuivie', $attributs['dateSuivie'])->get();
-
-            $suivisIndicateur = SuiviIndicateur::when((isset($attributs['dateSuivie']) && $attributs['dateSuivie']), function($query) use($attributs){
-                $query->where('dateSuivie', $attributs['dateSuivie']);
-            })->get();
-
-            dd($suivisIndicateur);
-
-            if (isset($attributs['annee']) && $attributs['annee'] != null) {
-                $suivisIndicateur = $suivisIndicateur->whereRaw('YEAR(created_at) = ?', [$attributs['annee']]);
-            }
-
-            if (isset($attributs['trimestre']) && $attributs['trimestre'] != null) {
-                $suivisIndicateur = $suivisIndicateur->where('trimestre', $attributs['trimestre']);
-            }
+            $suivisIndicateur = SuiviIndicateur::where('dateSuivie', $attributs['dateSuivie'])->get();
 
             if (isset($attributs['date_debut']) && $attributs['date_debut'] != null) {
                 $suivisIndicateur = $suivisIndicateur->filter(function ($suiviIndicateur) use ($attributs) {
