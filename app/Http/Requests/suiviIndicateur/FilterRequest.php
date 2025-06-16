@@ -30,10 +30,12 @@ class FilterRequest extends FormRequest
     public function rules()
     {
         return [
-            'dateSuivie'        => 'required|date',
+            'dateSuivie'        => [Rule::requiredIf(!request()->input('annee') || !request()->input('trimestre')), 'date'],
+            'annee'             => [Rule::requiredIf(!request()->input('dateSuivie') || !request()->input('trimestre'))],
+            'trimestre'         => [Rule::requiredIf(!request()->input('dateSuivie') || !request()->input('annee')), 'integer', 'min:1', 'max:4'],
             'indicateurId'      => ['sometimes', new HashValidatorRule(new Indicateur()) ],
-            'categorieId'      => ['sometimes',  new HashValidatorRule(new Categorie()) ],
-            'bailleurId'      => ['sometimes',  new HashValidatorRule(new Bailleur()) ]
+            'categorieId'       => ['sometimes',  new HashValidatorRule(new Categorie()) ],
+            'bailleurId'        => ['sometimes',  new HashValidatorRule(new Bailleur()) ]
         ];
     }
 
