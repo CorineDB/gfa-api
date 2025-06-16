@@ -125,12 +125,18 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
         try {
 
-            $suivisIndicateur = SuiviIndicateur::where('dateSuivie', $attributs['dateSuivie'])->get();
+            //$suivisIndicateur = SuiviIndicateur::where('dateSuivie', $attributs['dateSuivie'])->get();
+
+            $suivisIndicateur = SuiviIndicateur::get();
 
 
-            /* if (isset($attributs['annee']) && $attributs['annee'] != null) {
+            if (isset($attributs['dateSuivie']) && $attributs['dateSuivie'] != null) {
+                $suivisIndicateur = $suivisIndicateur->where('dateSuivie', $attributs['dateSuivie']);
+            }
+
+            if (isset($attributs['annee']) && $attributs['annee'] != null) {
                 $suivisIndicateur = $suivisIndicateur->whereRaw('YEAR(created_at) = ?', [$attributs['annee']]);
-            } */
+            }
 
             if (isset($attributs['trimestre']) && $attributs['trimestre'] != null) {
                 $suivisIndicateur = $suivisIndicateur->where('trimestre', $attributs['trimestre']);
