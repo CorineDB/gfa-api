@@ -34,7 +34,7 @@ class OrganisationResource extends JsonResource
             'departement'           => $this->departement,
             'pays'                  => $this->pays,
             'secteurActivite'       => $this->secteurActivite,
-            'fondId'                => $this->fonds->first()->secure_id,
+            'fondId'                => $this->fonds->first() ? $this->fonds->first()->secure_id : null,
             'fonds'                 => $this->fonds->map(fn($fond) => [
                 'id' => $fond->secure_id,
                 'nom_du_fond' => $fond->nom_du_fond,
