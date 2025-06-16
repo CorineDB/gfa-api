@@ -131,6 +131,8 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $query->where('dateSuivie', $attributs['dateSuivie']);
             })->get();
 
+            dd($suivisIndicateur);
+
             if (isset($attributs['annee']) && $attributs['annee'] != null) {
                 $suivisIndicateur = $suivisIndicateur->whereRaw('YEAR(created_at) = ?', [$attributs['annee']]);
             }
