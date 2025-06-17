@@ -26,7 +26,7 @@ class SuivisIndicateurResource extends JsonResource
             "estValider" => $this->estValider,
             "sources_de_donnee" => $this->sources_de_donnee,
             "valeurRealise" => $this->valeurRealise,
-            /*"cumul" => $this->cumul(),
+
             "valeurCible" => $this->valeurCible ? [
                 "id" => $this->valeurCible->secure_id,
                 "annee" => $this->valeurCible->annee,
@@ -40,7 +40,8 @@ class SuivisIndicateurResource extends JsonResource
             ] : null,
             "commentaire" => $this->commentaire,
             "commentaires" => CommentaireResource::collection($this->commentaires),
-            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s") */
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            /*"cumul" => $this->cumul(), */
         ];
     }
 }
