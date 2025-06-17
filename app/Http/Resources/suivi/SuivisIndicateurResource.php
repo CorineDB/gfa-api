@@ -20,18 +20,19 @@ class SuivisIndicateurResource extends JsonResource
     {
         return [
             "id" => $this->secure_id,
+            "annee" => $this->annee,
             "trimestre" => $this->trimestre,
             "dateSuivie" => Carbon::parse($this->dateSuivie)->format("Y-m-d"),
             "estValider" => $this->estValider,
             "sources_de_donnee" => $this->sources_de_donnee,
             "cumul" => $this->cumul(),
-            //"valeurRealise" => $this->valeurRealise,
-            /*"valeurCible" => $this->valeurCible ? [
+            "valeurRealise" => $this->valeurRealise,
+            "valeurCible" => $this->valeurCible ? [
                 "id" => $this->valeurCible->secure_id,
                 "annee" => $this->valeurCible->annee,
                 "valeurCible" => $this->valeurCible->valeurCible
-            ] : null,*/
-            //"indicateur" => new IndicateurResource($this->indicateur()),
+            ] : null,
+            "indicateur" => new IndicateurResource($this->indicateur()),
             "auteur" => $this->suivi_indicateurable ? [
                 "id" => $this->suivi_indicateurable->secure_id,
                 "nom" => $this->suivi_indicateurable->user->nom,
