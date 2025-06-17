@@ -18,6 +18,8 @@ class SuivisIndicateurResource extends JsonResource
      */
     public function toArray($request)
     {
+        $indicateur = $this->indicateur();
+        dump($indicateur);
         return [
             "id" => $this->secure_id,
             "annee" => $this->annee,
@@ -33,14 +35,14 @@ class SuivisIndicateurResource extends JsonResource
                 "annee" => $this->valeurCible->annee,
                 "valeurCible" => $this->valeurCible->valeurCible
             ] : null,
-            "indicateur" => $this->indicateur(),//new IndicateurResource($this->indicateur())
+            "indicateur" => $indicateur,//new IndicateurResource($this->indicateur())
             "auteur" => $this->suivi_indicateurable ? [
                 "id" => $this->suivi_indicateurable->secure_id,
                 "nom" => $this->suivi_indicateurable->user->nom,
                 "prenom" => $this->suivi_indicateurable->user->prenom,
             ] : null,
             "commentaire" => $this->commentaire,
-            //"commentaires" => CommentaireResource::collection($this->commentaires),
+            "commentaires" => CommentaireResource::collection($this->commentaires),
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
