@@ -114,7 +114,7 @@ class ValeurCibleIndicateur extends Model
 
     public function getValeurRealiserAttribute()
     {
-        return $totals = [];
+        $totals = [];
 
         //return $this->suivisIndicateur;
 
