@@ -36,9 +36,7 @@ class UpdateRequest extends FormRequest
             $this->suivi_indicateur = SuiviIndicateur::findByKey($this->suivi_indicateur);
         }
 
-        dd($this->suivi_indicateur->valeurCible->cibleable);
-
-        $nbreKeys = $this->suivi_indicateur->valeurCible->indicateur->valueKeys->count() ?? 1;
+        $nbreKeys = $this->suivi_indicateur->valeurCible->cibleable->valueKeys->count() ?? 1;
 
         return [
             'dateSuivie'    => ['sometimes', Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
@@ -54,11 +52,11 @@ class UpdateRequest extends FormRequest
 
 
 
-            'valeurCible'                  => ['sometimes', Rule::requiredIf($this->suivi_indicateur->valeurCible->where('cibleable_id', $this->indicateurId)->where('annee', $this->annee)->first() == null), $this->suivi_indicateur->valeurCible->indicateur->agreger ? "array" : "", function($attribute, $value, $fail){
-                if(!$this->suivi_indicateur->valeurCible->indicateur->agreger && (is_array(request()->input('valeurCible')))){
+            'valeurCible'                  => ['sometimes', Rule::requiredIf($this->suivi_indicateur->valeurCible->where('cibleable_id', $this->indicateurId)->where('annee', $this->annee)->first() == null), $this->suivi_indicateur->valeurCible->cibleable->agreger ? "array" : "", function($attribute, $value, $fail){
+                if(!$this->suivi_indicateur->valeurCible->cibleable->agreger && (is_array(request()->input('valeurCible')))){
                     $fail("La valeur cible de l'indicateur ne peut pas etre un array.");
                 }
-            }, $this->suivi_indicateur->valeurCible->indicateur->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->indicateur->agreger ? "min: ". $nbreKeys : ""],
+            }, $this->suivi_indicateur->valeurCible->cibleable->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->cibleable->agreger ? "min: ". $nbreKeys : ""],
 
             'valeurRealise' => 'sometimes|required|array|min:1',
             'commentaire' => 'sometimes',
