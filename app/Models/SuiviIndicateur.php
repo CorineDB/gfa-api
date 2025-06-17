@@ -95,7 +95,12 @@ class SuiviIndicateur extends Model
             {
                 if($suivi->indicateur()->id != $this->indicateur()->id) continue;
 
-                $total += $suivi->valeurRealise[$key];
+                // Vérifier l'existence de la clé
+                if (is_array($suivi->valeurRealise) && array_key_exists($key, $suivi->valeurRealise)) {
+                    $total += $suivi->valeurRealise[$key];
+                }
+
+                //$total += $suivi->valeurRealise[$key];
             }
 
             array_push($cumul, $total);
