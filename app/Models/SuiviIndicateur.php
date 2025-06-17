@@ -74,6 +74,7 @@ class SuiviIndicateur extends Model
         {
             return IndicateurMod::find($valeurCible->cibleable_id);
         }
+        else return null;
     }
 
     public function cumul()
