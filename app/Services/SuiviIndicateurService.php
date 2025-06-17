@@ -483,7 +483,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $data['auteurId'] = Auth::user()->id;
                 $notification = new CommentaireNotification($data);
 
-                $allUsers = User::where('programmeId', Auth::user()->programmeId);
+                $allUsers = User::where('programmeId', Auth::user()->programmeId)->get();
                 dd($allUsers);
                 foreach ($allUsers as $user) {
                     if ($user->hasPermissionTo('voir-un-commentaire')) {
