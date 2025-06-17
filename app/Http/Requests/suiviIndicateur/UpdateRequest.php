@@ -36,7 +36,7 @@ class UpdateRequest extends FormRequest
             $this->suivi_indicateur = SuiviIndicateur::findByKey($this->suivi_indicateur);
         }
 
-        dd($this->suivi_indicateur->indicateur);
+        dd($this->suivi_indicateur->valeurCible->cibleable);
 
         $nbreKeys = $this->suivi_indicateur->valeurCible->indicateur->valueKeys->count() ?? 1;
 
