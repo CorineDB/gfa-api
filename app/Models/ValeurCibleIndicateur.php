@@ -129,7 +129,6 @@ class ValeurCibleIndicateur extends Model
                     }
                 }
             }
-            else return $item;
         });
 
         return $totals;
