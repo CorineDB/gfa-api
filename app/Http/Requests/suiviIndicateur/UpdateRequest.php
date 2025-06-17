@@ -36,7 +36,9 @@ class UpdateRequest extends FormRequest
             $this->suivi_indicateur = SuiviIndicateur::findByKey($this->suivi_indicateur);
         }
 
-        $nbreKeys = $this->suivi_indicateur->valeurCible->indicateur->value_keys->count() ?? 1;
+        dd($this->suivi_indicateur->valeurCible);
+
+        $nbreKeys = $this->suivi_indicateur->valeurCible->indicateur->valueKeys->count() ?? 1;
 
         return [
             'dateSuivie'    => ['sometimes', Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
