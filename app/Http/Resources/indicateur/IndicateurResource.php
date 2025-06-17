@@ -35,9 +35,9 @@ class IndicateurResource extends JsonResource
             "unitee_mesure" => $this->when($this->unitee_mesure, [
                 "id" => $this->unitee_mesure->secure_id,
                 "nom" => $this->unitee_mesure->nom
-            ]),/*
+            ]),
             "anneeDeBase" => $this->anneeDeBase,
-            "valeurDeBase" => $this->valeurDeBase,
+            "valeurDeBase" => $this->valeurDeBase,/*
             "valeursCible" => $this->valeursCible ? $this->valeursCible->map(function($valeurCible){
                 return [
                     "id" => $valeurCible->secure_id,
