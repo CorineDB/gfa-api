@@ -88,6 +88,12 @@ class SuiviIndicateur extends Model
 
         $cumul = [];
 
+        // Vérification de type
+        if (!is_array($this->valeurRealise) && !is_object($this->valeurRealise)) {
+            Log::error("valeurRealise n’est pas un tableau : " . print_r($this->valeurRealise, true));
+            return [];
+        }
+
         foreach($this->valeurRealise as $key => $valeur)
         {
             $total = $valeur;
