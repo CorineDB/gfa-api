@@ -29,7 +29,7 @@ class ValeurCibleIndicateur extends Model
     * @var array
     */
     protected $appends = [
-        //'valeur_realiser'
+        'valeur_realiser'
     ];
 
     /* Les attributs qui sont assignés en masse */
@@ -114,7 +114,7 @@ class ValeurCibleIndicateur extends Model
 
     public function getValeurRealiserAttribute()
     {
-        $totals = [];
+        return $totals = [];
 
         //return $this->suivisIndicateur;
 
