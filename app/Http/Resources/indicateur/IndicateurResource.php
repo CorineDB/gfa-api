@@ -30,8 +30,8 @@ class IndicateurResource extends JsonResource
                 "id" => $this->categorie->secure_id,
                 "nom" => $this->categorie->nom
             ] : null,
-            "agreger" => $this->agreger,
-            //"value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
+            "agreger" => $this->agreger,/*
+            "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
             "unitee_mesure" => $this->when($this->unitee_mesure, [
                 "id" => $this->unitee_mesure->secure_id,
                 "nom" => $this->unitee_mesure->nom
@@ -48,17 +48,17 @@ class IndicateurResource extends JsonResource
             })  : null,
             "valeurCibleTotal" => $this->valeurCibleTotal(),
             "valeurRealiserTotal" => $this->valeurRealiserTotal(),
-            "taux_realisation" => $this->taux_realisation,
+            "taux_realisation" => $this->taux_realisation, */
             /*"bailleur" => [
                 "id" => $this->bailleur->secure_id,
                 "nom" => $this->bailleur->user->nom
             ],*/
-            "sources_de_donnee"         => $this->sources_de_donnee,
+            /* "sources_de_donnee"         => $this->sources_de_donnee,
             "methode_de_la_collecte"    => $this->methode_de_la_collecte,
             "frequence_de_la_collecte"  => $this->frequence_de_la_collecte,
             "ug_responsable"            => new UniteeGestionResource($this->ug_responsable->first()),
             "organisations_responsable" => OrganisationResource::collection($this->organisations_responsable),
-            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s") */
         ];
     }
 }
