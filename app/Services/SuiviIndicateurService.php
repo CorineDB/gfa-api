@@ -491,7 +491,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
                         $notification = $user->notifications->last();
 
-                        event(new NewNotification($this->formatageNotification($notification, $user)));
+                        //event(new NewNotification($this->formatageNotification($notification, $user)));
                     }
                 }
             }
