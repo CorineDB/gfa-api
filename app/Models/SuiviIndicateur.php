@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
@@ -99,6 +100,10 @@ class SuiviIndicateur extends Model
                 if (is_array($suivi->valeurRealise) && array_key_exists($key, $suivi->valeurRealise)) {
                     $total += $suivi->valeurRealise[$key];
                 }
+                else {
+                    Log::info("Clé $key absente dans le suivi ID {$suivi->id}");
+                }
+
 
                 //$total += $suivi->valeurRealise[$key];
             }
