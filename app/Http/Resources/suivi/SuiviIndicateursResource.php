@@ -23,13 +23,13 @@ class SuiviIndicateursResource extends JsonResource
             "dateSuivie" => $this->dateSuivie,
             "estValider" => $this->estValider,
             "sources_de_donnee" => $this->sources_de_donnee,
-            //"cumul" => $this->cumul(),
+            "cumul" => $this->cumul(),
             "valeurRealise" => $this->valeurRealise,
-            /* "valeurCible" => $this->valeurCible ? [
+            "valeurCible" => $this->valeurCible ? [
                 "id" => $this->valeurCible->secure_id,
                 "annee" => $this->valeurCible->annee,
                 "valeurCible" => $this->valeurCible->valeurCible
-            ] : null, */
+            ] : null,
 
 
             $this->mergeWhen(!$this->valeurCible, function(){
@@ -40,7 +40,7 @@ class SuiviIndicateursResource extends JsonResource
 
             $this->mergeWhen($this->valeurCible, function(){
                 return [
-                    "indicateur" => null//new IndicateurResource($this->indicateur()),
+                    "indicateur" => new IndicateurResource($this->indicateur()),
                 ];
             }),
             "auteur" => $this->suivi_indicateurable ? [
