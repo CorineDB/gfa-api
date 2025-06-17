@@ -19,7 +19,7 @@ class SuivisIndicateurResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->secure_id,
+            "id" => $this->secure_id,/*
             "annee" => $this->annee,
             "trimestre" => $this->trimestre,
             "dateSuivie" => Carbon::parse($this->dateSuivie)->format("Y-m-d"),
@@ -40,7 +40,7 @@ class SuivisIndicateurResource extends JsonResource
             ] : null,
             "commentaire" => $this->commentaire,
             "commentaires" => CommentaireResource::collection($this->commentaires),
-            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
+            "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s") */
         ];
     }
 }
