@@ -100,7 +100,7 @@ class SuiviIndicateur extends Model
                 if (is_array($suivi->valeurRealise) && array_key_exists($key, $suivi->valeurRealise)) {
                     $total += $suivi->valeurRealise[$key];
                 }
-                if (!array_key_exists($key, $suivi->valeurRealise)) {
+                else {
                     Log::info("Clé $key absente dans le suivi ID {$suivi->id}");
                 }
 
