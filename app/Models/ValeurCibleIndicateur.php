@@ -129,6 +129,9 @@ class ValeurCibleIndicateur extends Model
                     }
                 }
             }
+            else{
+                dump($item);
+            }
         });
 
         return $totals;

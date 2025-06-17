@@ -192,12 +192,14 @@ class Indicateur extends Model
         return $totals = [];
 
         $this->valeursCible->pluck("valeurCible")->each(function ($item) use (&$totals) {
-            foreach ($item as $key => $value) {
-                if (is_numeric($value)) {
-                    if (!isset($totals[$key])) {
-                        $totals[$key] = 0;
+            if (is_array($item)) {
+                foreach ($item as $key => $value) {
+                    if (is_numeric($value)) {
+                        if (!isset($totals[$key])) {
+                            $totals[$key] = 0;
+                        }
+                        $totals[$key] += $value;
                     }
-                    $totals[$key] += $value;
                 }
             }
         });
@@ -209,12 +211,14 @@ class Indicateur extends Model
         return $totals = [];
 
         $this->valeursCible->pluck("valeurRealiser")->each(function ($item) use (&$totals) {
-            foreach ($item as $key => $value) {
-                if (is_numeric($value)) {
-                    if (!isset($totals[$key])) {
-                        $totals[$key] = 0;
+            if (is_array($item)) {
+                foreach ($item as $key => $value) {
+                    if (is_numeric($value)) {
+                        if (!isset($totals[$key])) {
+                            $totals[$key] = 0;
+                        }
+                        $totals[$key] += $value;
                     }
-                    $totals[$key] += $value;
                 }
             }
         });
