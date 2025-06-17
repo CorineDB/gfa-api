@@ -488,7 +488,9 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                                     ]);
                                 }
 
-                                $valeurCible[$keyMap->key] = $valeurExistante->value;
+                                $valeurCible = array_merge($valeurCible, ["{$keyMap->key}" => $valeurExistante->value]);
+
+                                //$valeurCible[$keyMap->key] = $valeurExistante->value;
                             }
 
                         } else if (!$suiviIndicateur->valeurCible->cibleable->agreger && !is_array($attributs["valeurCible"])) {
@@ -513,7 +515,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                                 ]);
                             }
 
-                            $valeurCible[$keyMap->key] = $valeurExistante->value;
+                            $valeurCible = array_merge($valeurCible, ["{$keyMap->key}" => $valeurExistante->value]);
 
                         } else {
                             throw new Exception("Veuillez préciser la valeur cible dans le format adéquat pour la mise à jour.", 400);
