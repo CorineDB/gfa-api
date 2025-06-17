@@ -61,7 +61,7 @@ class SuiviIndicateur extends Model
 
     public function indicateur()
     {
-        $valeurCible = $this->valeurCible;
+        return $valeurCible = $this->valeurCible;
 
         if($valeurCible->cibleable_type == get_class(new Indicateur()))
         {
