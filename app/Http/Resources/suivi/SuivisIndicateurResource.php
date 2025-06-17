@@ -19,13 +19,13 @@ class SuivisIndicateurResource extends JsonResource
     public function toArray($request)
     {
         return [
-            "id" => $this->secure_id,/*
+            "id" => $this->secure_id,
             "annee" => $this->annee,
             "trimestre" => $this->trimestre,
             "dateSuivie" => Carbon::parse($this->dateSuivie)->format("Y-m-d"),
             "estValider" => $this->estValider,
             "sources_de_donnee" => $this->sources_de_donnee,
-            "cumul" => $this->cumul(),
+            /*"cumul" => $this->cumul(),
             "valeurRealise" => $this->valeurRealise,
             "valeurCible" => $this->valeurCible ? [
                 "id" => $this->valeurCible->secure_id,
