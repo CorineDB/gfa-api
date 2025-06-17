@@ -30,12 +30,12 @@ class IndicateurResource extends JsonResource
                 "id" => $this->categorie->secure_id,
                 "nom" => $this->categorie->nom
             ] : null,
-            "agreger" => $this->agreger,/*
+            "agreger" => $this->agreger,
             "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
             "unitee_mesure" => $this->when($this->unitee_mesure, [
                 "id" => $this->unitee_mesure->secure_id,
                 "nom" => $this->unitee_mesure->nom
-            ]),
+            ]),/*
             "anneeDeBase" => $this->anneeDeBase,
             "valeurDeBase" => $this->valeurDeBase,
             "valeursCible" => $this->valeursCible ? $this->valeursCible->map(function($valeurCible){
