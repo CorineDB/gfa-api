@@ -68,7 +68,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $suivis_indicateurs = Auth::user()->programme->suivis_indicateurs;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => /* SuivisIndicateurResource::collection */($suivis_indicateurs), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => SuivisIndicateurResource::collection($suivis_indicateurs), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             DB::rollBack();
