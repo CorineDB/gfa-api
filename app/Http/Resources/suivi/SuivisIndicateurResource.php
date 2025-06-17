@@ -18,7 +18,6 @@ class SuivisIndicateurResource extends JsonResource
      */
     public function toArray($request)
     {
-        $indicateur = $this->indicateur();
 
         return [
             "id" => $this->secure_id,
@@ -35,7 +34,7 @@ class SuivisIndicateurResource extends JsonResource
                 "annee" => $this->valeurCible->annee,
                 "valeurCible" => $this->valeurCible->valeurCible
             ] : null,
-            "indicateur" => new IndicateurResource($this->indicateur()),
+            "indicateur" => $this->indicateur(),//new IndicateurResource($this->indicateur()),
             "auteur" => $this->suivi_indicateurable ? [
                 "id" => $this->suivi_indicateurable->secure_id,
                 "nom" => $this->suivi_indicateurable->user->nom,
