@@ -45,9 +45,9 @@ class IndicateurResource extends JsonResource
                     "valeurCible" => $valeurCible->valeurCible,
                     "valeur_realiser" => $valeurCible->valeur_realiser
                 ];
-            })  : null,
+            })  : null, */
             "valeurCibleTotal" => $this->valeurCibleTotal(),
-            "valeurRealiserTotal" => $this->valeurRealiserTotal(), */
+            "valeurRealiserTotal" => $this->valeurRealiserTotal(),
             "taux_realisation" => $this->taux_realisation,
             /*"bailleur" => [
                 "id" => $this->bailleur->secure_id,
