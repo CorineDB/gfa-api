@@ -29,7 +29,7 @@ class SuivisIndicateurResource extends JsonResource
             "valeurCible" => $this->valeurCible ? [
                 "id" => $this->valeurCible->secure_id,
                 "annee" => $this->valeurCible->annee,
-                "valeurCible" => $this->valeurCible->valeurCible
+                //"valeurCible" => $this->valeurCible->valeurCible
             ] : null,
             "indicateur" => new IndicateurResource($this->indicateur()),
             "auteur" => $this->suivi_indicateurable ? [
