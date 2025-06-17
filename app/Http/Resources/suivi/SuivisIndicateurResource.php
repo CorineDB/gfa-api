@@ -32,7 +32,7 @@ class SuivisIndicateurResource extends JsonResource
                 "annee" => $this->valeurCible->annee,
                 "valeurCible" => $this->valeurCible->valeurCible
             ] : null,
-            //"indicateur" => new IndicateurResource($this->indicateur()),
+            "indicateur" => $this->indicateur(),//new IndicateurResource($this->indicateur())
             "auteur" => $this->suivi_indicateurable ? [
                 "id" => $this->suivi_indicateurable->secure_id,
                 "nom" => $this->suivi_indicateurable->user->nom,
@@ -41,7 +41,7 @@ class SuivisIndicateurResource extends JsonResource
             "commentaire" => $this->commentaire,
             "commentaires" => CommentaireResource::collection($this->commentaires),
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
-            /*"cumul" => $this->cumul(), */
+            "cumul" => 0,//$this->cumul(),
         ];
     }
 }
