@@ -25,7 +25,7 @@ class SuivisIndicateurResource extends JsonResource
             "estValider" => $this->estValider,
             "sources_de_donnee" => $this->sources_de_donnee,
             "cumul" => $this->cumul(),
-            "valeurRealise" => $this->valeurRealise,
+            //"valeurRealise" => $this->valeurRealise,
             "valeurCible" => $this->valeurCible ? [
                 "id" => $this->valeurCible->secure_id,
                 "annee" => $this->valeurCible->annee,
