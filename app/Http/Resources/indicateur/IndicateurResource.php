@@ -38,14 +38,14 @@ class IndicateurResource extends JsonResource
             ]),
             "anneeDeBase" => $this->anneeDeBase,
             "valeurDeBase" => $this->valeurDeBase,
-            "valeursCible" => $this->valeursCible/*  ? $this->valeursCible->map(function($valeurCible){
+            "valeursCible" => $this->valeursCible ? $this->valeursCible->map(function($valeurCible){
                 return [
                     "id" => $valeurCible->secure_id,
                     "annee" => $valeurCible->annee,
                     "valeurCible" => $valeurCible->valeurCible,
                     "valeur_realiser" => $valeurCible->valeur_realiser
                 ];
-            })  : null */,
+            })  : null,
             /*"valeurCibleTotal" => $this->valeurCibleTotal(),
             "valeurRealiserTotal" => $this->valeurRealiserTotal(),
             "taux_realisation" => $this->taux_realisation,*/
