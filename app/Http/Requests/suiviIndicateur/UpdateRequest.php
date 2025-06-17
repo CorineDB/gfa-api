@@ -36,6 +36,8 @@ class UpdateRequest extends FormRequest
             $this->suivi_indicateur = SuiviIndicateur::findByKey($this->suivi_indicateur);
         }
 
+        $nbreKeys = $this->suivi_indicateur->valeurCible->indicateur->valueKeys->count() ?? 1;
+
         return [
             'dateSuivie'    => ['sometimes', Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
                 $this->merge([
@@ -46,7 +48,16 @@ class UpdateRequest extends FormRequest
             'annee'         => ['sometimes', Rule::requiredIf(!request('dateSuivie')), "date_format:Y", "gte:1940"],
             'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateSuivie')), 'integer", "min:1", "max:4'],
 
-            'valeurCible' => ['sometimes', Rule::requiredIf($this->suivi_indicateur->valeurCible->where('cibleable_id', $this->indicateurId)->where('annee', $this->annee)->first() === null),'array','min:1'],
+            //'valeurCible' => ['sometimes', Rule::requiredIf($this->suivi_indicateur->valeurCible->where('cibleable_id', $this->indicateurId)->where('annee', $this->annee)->first() === null),'array','min:1'],
+
+
+
+            'valeurCible'                  => ['sometimes', Rule::requiredIf($this->suivi_indicateur->valeurCible->where('cibleable_id', $this->indicateurId)->where('annee', $this->annee)->first() == null), $this->suivi_indicateur->valeurCible->indicateur->agreger ? "array" : "", function($attribute, $value, $fail){
+                if(!$this->suivi_indicateur->valeurCible->indicateur->agreger && (is_array(request()->input('valeurCible')))){
+                    $fail("La valeur cible de l'indicateur ne peut pas etre un array.");
+                }
+            }, $this->suivi_indicateur->valeurCible->indicateur->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->indicateur->agreger ? "min: ". $nbreKeys : ""],
+
             'valeurRealise' => 'sometimes|required|array|min:1',
             'commentaire' => 'sometimes',
             'indicateurId'               => ['required', new HashValidatorRule(new Indicateur())]
