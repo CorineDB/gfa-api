@@ -38,11 +38,11 @@ class SuiviIndicateursResource extends JsonResource
                 ];
             }),
 
-            $this->mergeWhen($this->valeurCible, function(){
+            /* $this->mergeWhen($this->valeurCible, function(){
                 return [
                     "indicateur" => new IndicateurResource($this->indicateur()),
                 ];
-            }),
+            }), */
             "auteur" => $this->suivi_indicateurable ? [
                 "id" => $this->suivi_indicateurable->secure_id,
                 "nom" => $this->suivi_indicateurable->user->nom,
