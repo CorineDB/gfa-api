@@ -26,11 +26,11 @@ class SuivisIndicateurResource extends JsonResource
             "sources_de_donnee" => $this->sources_de_donnee,
             "cumul" => $this->cumul(),
             //"valeurRealise" => $this->valeurRealise,
-            "valeurCible" => $this->valeurCible ? [
+            /*"valeurCible" => $this->valeurCible ? [
                 "id" => $this->valeurCible->secure_id,
                 "annee" => $this->valeurCible->annee,
-                //"valeurCible" => $this->valeurCible->valeurCible
-            ] : null,
+                "valeurCible" => $this->valeurCible->valeurCible
+            ] : null,*/
             //"indicateur" => new IndicateurResource($this->indicateur()),
             "auteur" => $this->suivi_indicateurable ? [
                 "id" => $this->suivi_indicateurable->secure_id,
