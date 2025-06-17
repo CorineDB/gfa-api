@@ -189,7 +189,7 @@ class Indicateur extends Model
     public function valeurCibleTotal()
     {
 
-        return $totals = [];
+        $totals = [];
 
         $this->valeursCible->pluck("valeurCible")->each(function ($item) use (&$totals) {
             if (is_array($item)) {
@@ -208,7 +208,7 @@ class Indicateur extends Model
 
     public function valeurRealiserTotal()
     {
-        return $totals = [];
+        $totals = [];
 
         $this->valeursCible->pluck("valeurRealiser")->each(function ($item) use (&$totals) {
             if (is_array($item)) {
