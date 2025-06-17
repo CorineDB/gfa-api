@@ -102,19 +102,21 @@ class SuiviIndicateur extends Model
             {
                 if($suivi->indicateur()->id != $this->indicateur()->id) continue;
 
-                $valeurs = $suivi->valeurRealise;
-
                 // Vérifier l'existence de la clé
-
-                if (is_array($valeurs) && array_key_exists($key, $valeurs)) {
+                if (is_array($suivi->valeurRealise) && array_key_exists($key, $suivi->valeurRealise)) {
                     $total += $suivi->valeurRealise[$key];
                 }
                 else {
+                    $total += $suivi->valeurRealise;
                     Log::info("Clé $key absente dans le suivi ID {$suivi->id}");
                 }
+
+                //$total += $suivi->valeurRealise[$key];
             }
 
-            array_push($cumul, $total);
+            $cumul[$key] = $total; // mieux que array_push ici
+
+            //array_push($cumul, $total);
         }
 
         return $cumul;
