@@ -423,7 +423,6 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
         try {
 
-            dd($attributs);
             if (is_string($suiviIndicateur)) {
                 $suiviIndicateur = $this->repository->findById($suiviIndicateur);
             } else {
@@ -467,6 +466,8 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $suiviIndicateur->valeurRealise = $attributs['valeurRealise'];
             }
 
+
+            dd($attributs);
             $suiviIndicateur->save();
 
             $suiviIndicateur = $suiviIndicateur->fresh();
