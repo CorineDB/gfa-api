@@ -3,6 +3,7 @@
 namespace App\Http\Requests\suiviIndicateur;
 
 use App\Models\Indicateur;
+use App\Models\IndicateurValueKey;
 use App\Models\SuiviIndicateur;
 use App\Models\ValeurCibleIndicateur;
 use App\Rules\HashValidatorRule;
@@ -56,9 +57,31 @@ class UpdateRequest extends FormRequest
                 if(!$this->suivi_indicateur->valeurCible->cibleable->agreger && (is_array(request()->input('valeurCible')))){
                     $fail("La valeur cible de l'indicateur ne peut pas etre un array.");
                 }
-            }, /* $this->suivi_indicateur->valeurCible->cibleable->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->cibleable->agreger ? "min: ". $nbreKeys : "" */],
+            }, $this->suivi_indicateur->valeurCible->cibleable->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->cibleable->agreger ? "min: ". $nbreKeys : ""],
 
-            'valeurRealise' => 'sometimes|required|array|min:1',
+            'valeurCible.*.keyId'            => [Rule::requiredIf($this->suivi_indicateur->valeurCible->cibleable->agreger), 'distinct', new HashValidatorRule(new IndicateurValueKey()), function($attribute, $value, $fail){
+                if (!($this->suivi_indicateur->valeurCible->cibleable->valueKeys()->where('indicateurValueKeyId', request()->input($attribute))->exists())) {
+                    $fail('The selected keyId is not for the given Indicateur.');
+                }
+            }],
+
+            'valeurCible.*.value'          => [Rule::requiredIf($this->suivi_indicateur->valeurCible->cibleable->agreger)],
+
+
+            'valeurRealise'                  => ['required', $this->suivi_indicateur->valeurCible->cibleable->agreger ? "array" : "", function($attribute, $value, $fail){
+                if(!$this->suivi_indicateur->valeurCible->cibleable->agreger && (is_array(request()->input('valeurRealise')))){
+                    $fail("La valeur realiser pour cet indicateur ne peut pas etre un array.");
+                }
+            }, $this->suivi_indicateur->valeurCible->cibleable->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->cibleable->agreger ? "min: ". $nbreKeys : ""],
+            'valeurRealise.*.keyId'            => [Rule::requiredIf($this->suivi_indicateur->valeurCible->cibleable->agreger), 'distinct', new HashValidatorRule(new IndicateurValueKey()), function($attribute, $value, $fail){
+                if (!($this->suivi_indicateur->valeurCible->cibleable->valueKeys()->where('indicateurValueKeyId', request()->input($attribute))->exists())) {
+                    $fail('The selected keyId is not for the given Indicateur.');
+                }
+            }],
+            'valeurRealise.*.value'          => [Rule::requiredIf($this->suivi_indicateur->valeurCible->cibleable->agreger)],
+
+
+            //'valeurRealise' => 'sometimes|required|array|min:1',
             'commentaire' => 'sometimes',
             'indicateurId'               => ['required', new HashValidatorRule(new Indicateur())]
         ];
