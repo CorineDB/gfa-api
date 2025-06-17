@@ -118,7 +118,7 @@ class ValeurCibleIndicateur extends Model
 
         //return $this->suivisIndicateur;
 
-        $this->suivisIndicateur->pluck("valeurRealise")->each(function ($item) use (&$totals) {
+        $this->suivisIndicateur->pluck("valeurRealise")->each(function ($item, $index) use (&$totals) {
             if (is_array($item)) {
                 foreach ($item as $key => $value) {
                     if (is_numeric($value)) {
@@ -128,10 +128,10 @@ class ValeurCibleIndicateur extends Model
                         $totals[$key] += $value;
                     }
                 }
-            }
+            }/*
             else{
-                dump($item);
-            }
+                $totals[$index] += $item;
+            } */
         });
 
         return $totals;
