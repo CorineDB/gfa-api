@@ -119,12 +119,14 @@ class ValeurCibleIndicateur extends Model
         //return $this->suivisIndicateur;
 
         $this->suivisIndicateur->pluck("valeurRealise")->each(function ($item) use (&$totals) {
-            foreach ($item as $key => $value) {
-                if (is_numeric($value)) {
-                    if (!isset($totals[$key])) {
-                        $totals[$key] = 0;
+            if (is_array($item)) {
+                foreach ($item as $key => $value) {
+                    if (is_numeric($value)) {
+                        if (!isset($totals[$key])) {
+                            $totals[$key] = 0;
+                        }
+                        $totals[$key] += $value;
                     }
-                    $totals[$key] += $value;
                 }
             }
         });
