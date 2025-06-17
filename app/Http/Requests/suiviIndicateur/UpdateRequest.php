@@ -47,8 +47,9 @@ class UpdateRequest extends FormRequest
             }],
 
             'annee'         => ['sometimes', Rule::requiredIf(!request('dateSuivie')), "date_format:Y", "gte:1940"],
-            'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateSuivie'))/* , 'integer", "min:1", "max:4' */],
+            //'trimestre'     =>  ['sometimes', Rule::requiredIf(!request('dateSuivie'))/* , 'integer", "min:1", "max:4' */],
 
+            'trimestre'     =>  [Rule::requiredIf(!request('dateSuivie')), "integer", "min:1", "max:4"],
             //'valeurCible' => ['sometimes', Rule::requiredIf($this->suivi_indicateur->valeurCible->where('cibleable_id', $this->indicateurId)->where('annee', $this->annee)->first() === null),'array','min:1'],
 
 
