@@ -467,7 +467,6 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
             }
 
 
-            dd($attributs);
             $suiviIndicateur->save();
 
             $suiviIndicateur = $suiviIndicateur->fresh();
@@ -485,6 +484,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $notification = new CommentaireNotification($data);
 
                 $allUsers = User::where('programmeId', Auth::user()->programmeId);
+                dd($allUsers);
                 foreach ($allUsers as $user) {
                     if ($user->hasPermissionTo('voir-un-commentaire')) {
                         $user->notify($notification);
