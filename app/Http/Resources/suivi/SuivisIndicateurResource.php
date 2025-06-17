@@ -40,7 +40,7 @@ class SuivisIndicateurResource extends JsonResource
                 "prenom" => $this->suivi_indicateurable->user->prenom,
             ] : null,
             "commentaire" => $this->commentaire,
-            "commentaires" => CommentaireResource::collection($this->commentaires),
+            //"commentaires" => CommentaireResource::collection($this->commentaires),
             "created_at" => Carbon::parse($this->created_at)->format("Y-m-d h:i:s")
         ];
     }
