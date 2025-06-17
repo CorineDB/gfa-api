@@ -31,7 +31,7 @@ class IndicateurResource extends JsonResource
                 "nom" => $this->categorie->nom
             ] : null,
             "agreger" => $this->agreger,
-            "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
+            //"value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
             "unitee_mesure" => $this->when($this->unitee_mesure, [
                 "id" => $this->unitee_mesure->secure_id,
                 "nom" => $this->unitee_mesure->nom
@@ -46,9 +46,9 @@ class IndicateurResource extends JsonResource
                     "valeur_realiser" => $valeurCible->valeur_realiser
                 ];
             })  : null,
-            /* "valeurCibleTotal" => $this->valeurCibleTotal(),
+            "valeurCibleTotal" => $this->valeurCibleTotal(),
             "valeurRealiserTotal" => $this->valeurRealiserTotal(),
-            "taux_realisation" => $this->taux_realisation, */
+            "taux_realisation" => $this->taux_realisation,
             /*"bailleur" => [
                 "id" => $this->bailleur->secure_id,
                 "nom" => $this->bailleur->user->nom
