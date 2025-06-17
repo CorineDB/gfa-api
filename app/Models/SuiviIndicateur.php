@@ -85,7 +85,7 @@ class SuiviIndicateur extends Model
                                    where('id', '!=', $this->id)->
                                    get();
 
-        $cumul = [];
+        return $cumul = [];
 
         foreach($this->valeurRealise as $key => $valeur)
         {
