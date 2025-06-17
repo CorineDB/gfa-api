@@ -56,7 +56,7 @@ class UpdateRequest extends FormRequest
                 if(!$this->suivi_indicateur->valeurCible->cibleable->agreger && (is_array(request()->input('valeurCible')))){
                     $fail("La valeur cible de l'indicateur ne peut pas etre un array.");
                 }
-            }, $this->suivi_indicateur->valeurCible->cibleable->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->cibleable->agreger ? "min: ". $nbreKeys : ""],
+            }, /* $this->suivi_indicateur->valeurCible->cibleable->agreger ? "max: ". $nbreKeys : "", $this->suivi_indicateur->valeurCible->cibleable->agreger ? "min: ". $nbreKeys : "" */],
 
             'valeurRealise' => 'sometimes|required|array|min:1',
             'commentaire' => 'sometimes',
