@@ -145,7 +145,7 @@ class Indicateur extends Model
 
     public function valeursCible()
     {
-        return []; $this->morphMany(ValeurCibleIndicateur::class, 'cibleable');
+        return $this->morphMany(ValeurCibleIndicateur::class, 'cibleable');
     }
 
     public function valeursRealiser(){
