@@ -38,7 +38,7 @@ class IndicateurResource extends JsonResource
             ]),
             "anneeDeBase" => $this->anneeDeBase,
             "valeurDeBase" => $this->valeurDeBase,
-            "valeursCible" => $this->valeursCible ? $this->valeursCible->map(function($valeurCible){
+            /* "valeursCible" => $this->valeursCible ? $this->valeursCible->map(function($valeurCible){
                 return [
                     "id" => $valeurCible->secure_id,
                     "annee" => $valeurCible->annee,
@@ -46,7 +46,7 @@ class IndicateurResource extends JsonResource
                     "valeur_realiser" => $valeurCible->valeur_realiser
                 ];
             })  : null,
-            /* "valeurCibleTotal" => $this->valeurCibleTotal(),
+            "valeurCibleTotal" => $this->valeurCibleTotal(),
             "valeurRealiserTotal" => $this->valeurRealiserTotal(),
             "taux_realisation" => $this->taux_realisation, */
             /*"bailleur" => [
