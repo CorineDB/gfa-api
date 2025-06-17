@@ -63,7 +63,6 @@ class SuiviIndicateur extends Model
     {
         $valeurCible = $this->valeurCible;
 
-        dump($valeurCible);
 
         if($valeurCible->cibleable_type == get_class(new Indicateur()))
         {
