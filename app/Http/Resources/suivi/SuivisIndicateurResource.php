@@ -27,7 +27,7 @@ class SuivisIndicateurResource extends JsonResource
             "dateSuivie" => Carbon::parse($this->dateSuivie)->format("Y-m-d"),
             "estValider" => $this->estValider,
             "sources_de_donnee" => $this->sources_de_donnee,
-            "cumul" => 0,//$this->cumul(),
+            "cumul" => $this->cumul(),
             "valeurRealise" => $this->valeurRealise,
 
             "valeurCible" => $this->valeurCible ? [
