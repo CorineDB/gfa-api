@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\enquetes_de_gouvernance;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\recommandations\StoreRequest;
-use App\Http\Requests\recommandations\UpdateRequest;
+use App\Http\Requests\enquetes_de_gouvernance\recommandations\StoreRequest;
+use App\Http\Requests\enquetes_de_gouvernance\recommandations\UpdateRequest;
 use Core\Services\Interfaces\RecommandationServiceInterface;
 
 class RecommandationController extends Controller
