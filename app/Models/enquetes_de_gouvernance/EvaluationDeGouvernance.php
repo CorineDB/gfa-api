@@ -227,6 +227,7 @@ class EvaluationDeGouvernance extends Model
         return $this->hasMany(Recommandation::class, 'evaluationId')
         ->when((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)), function ($query) {
             // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+            dd(get_class(auth()->user()->profilable);
             $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
         });
         return $this->morphMany(Recommandation::class, "recommandationable");
