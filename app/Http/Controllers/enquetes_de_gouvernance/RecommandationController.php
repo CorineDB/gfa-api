@@ -46,6 +46,7 @@ class RecommandationController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        dd($request->all());
         return $this->recommandationService->create($request->all());
     }
 
