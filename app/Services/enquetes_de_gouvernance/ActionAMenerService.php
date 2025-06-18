@@ -3,13 +3,15 @@
 namespace App\Services\enquetes_de_gouvernance;
 
 use App\Http\Resources\gouvernance\ActionsAMenerResource;
+use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernancePerception;
 use App\Models\Organisation;
 use App\Models\enquetes_de_gouvernance\Recommandation;
 use App\Models\UniteeDeGestion;
 use App\Repositories\enquetes_de_gouvernance\ActionAMenerRepository;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
-use App\Repositories\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelRepository as IndicateurRepository;
-use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelRepository as PrincipeDeGouvernanceRepository;
+use App\Repositories\enquetes_de_gouvernance\IndicateurDeGouvernanceFactuelRepository;
+use App\Repositories\enquetes_de_gouvernance\QuestionOperationnelleRepository;
+use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernanceFactuelRepository;
 use App\Repositories\enquetes_de_gouvernance\RecommandationRepository;
 use App\Traits\Helpers\HelperTrait;
 use Core\Services\Contracts\BaseService;
@@ -126,7 +128,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
                 foreach($attributs['indicateurs'] as $id)
                 {
-                    if(!($indicateur = app(IndicateurRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
+                    if(!($indicateur = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
 
                     array_push($indicateurs, $indicateur->id);
                 }
@@ -135,18 +137,48 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
 
             }
 
-            if(isset($attributs['principes_de_gouvernance'])){
+            if(isset($attributs['questions_operationnelle'])){
 
-                $principes_de_gouvernance = [];
+                $questions_operationnelle = [];
 
-                foreach($attributs['principes_de_gouvernance'] as $id)
+                foreach($attributs['questions_operationnelle'] as $id)
                 {
-                    if(!($principe_de_gouvernance = app(PrincipeDeGouvernanceRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
+                    if(!($question_operationnelle = app(QuestionOperationnelleRepository::class)->findById($id))) throw new Exception("Question Operationnelle introuvable", Response::HTTP_NOT_FOUND);
 
-                    array_push($principes_de_gouvernance, $principe_de_gouvernance->id);
+                    array_push($questions_operationnelle, $question_operationnelle->id);
                 }
 
-                $action_a_mener->principes_de_gouvernance()->attach($principes_de_gouvernance, ["programmeId" => $attributs['programmeId']]);
+                $action_a_mener->questions_operationnelle()->attach($questions_operationnelle, ["programmeId" => $attributs['programmeId']]);
+
+            }
+
+            if(isset($attributs['principes_factuel_de_gouvernance'])){
+
+                $principes_factuel_de_gouvernance = [];
+
+                foreach($attributs['principes_factuel_de_gouvernance'] as $id)
+                {
+                    if(!($principe_factuel_de_gouvernance = app(PrincipeDeGouvernanceFactuelRepository::class)->findById($id))) throw new Exception("Principe factuel introuvable", Response::HTTP_NOT_FOUND);
+
+                    array_push($principes_factuel_de_gouvernance, $principe_factuel_de_gouvernance->id);
+                }
+
+                $action_a_mener->principes_factuel_de_gouvernance()->attach($principes_factuel_de_gouvernance, ["programmeId" => $attributs['programmeId']]);
+
+            }
+
+            if(isset($attributs['principes_de_perception_de_gouvernance'])){
+
+                $principes_de_perception_de_gouvernance = [];
+
+                foreach($attributs['principes_de_perception_de_gouvernance'] as $id)
+                {
+                    if(!($principe_de_perception_de_gouvernance = app(PrincipeDeGouvernancePerception::class)->findById($id))) throw new Exception("Principe de perception introuvable", Response::HTTP_NOT_FOUND);
+
+                    array_push($principes_de_perception_de_gouvernance, $principe_de_perception_de_gouvernance->id);
+                }
+
+                $action_a_mener->principes_de_perception_de_gouvernance()->attach($principes_de_perception_de_gouvernance, ["programmeId" => $attributs['programmeId']]);
 
             }
 
@@ -194,6 +226,66 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
             }
 
             $this->repository->update($action_a_mener->id, $attributs);
+
+            if(isset($attributs['indicateurs'])){
+
+                $indicateurs = [];
+
+                foreach($attributs['indicateurs'] as $id)
+                {
+                    if(!($indicateur = app(IndicateurDeGouvernanceFactuelRepository::class)->findById($id))) throw new Exception("Indicateur introuvable", Response::HTTP_NOT_FOUND);
+
+                    array_push($indicateurs, $indicateur->id);
+                }
+
+                $action_a_mener->indicateurs()->sync($indicateurs, ["programmeId" => $attributs['programmeId']]);
+
+            }
+
+            if(isset($attributs['questions_operationnelle'])){
+
+                $questions_operationnelle = [];
+
+                foreach($attributs['questions_operationnelle'] as $id)
+                {
+                    if(!($question_operationnelle = app(QuestionOperationnelleRepository::class)->findById($id))) throw new Exception("Question Operationnelle introuvable", Response::HTTP_NOT_FOUND);
+
+                    array_push($questions_operationnelle, $question_operationnelle->id);
+                }
+
+                $action_a_mener->questions_operationnelle()->sync($questions_operationnelle, ["programmeId" => $attributs['programmeId']]);
+
+            }
+
+            if(isset($attributs['principes_factuel_de_gouvernance'])){
+
+                $principes_factuel_de_gouvernance = [];
+
+                foreach($attributs['principes_factuel_de_gouvernance'] as $id)
+                {
+                    if(!($principe_factuel_de_gouvernance = app(PrincipeDeGouvernanceFactuelRepository::class)->findById($id))) throw new Exception("Principe factuel introuvable", Response::HTTP_NOT_FOUND);
+
+                    array_push($principes_factuel_de_gouvernance, $principe_factuel_de_gouvernance->id);
+                }
+
+                $action_a_mener->principes_factuel_de_gouvernance()->sync($principes_factuel_de_gouvernance, ["programmeId" => $attributs['programmeId']]);
+
+            }
+
+            if(isset($attributs['principes_de_perception_de_gouvernance'])){
+
+                $principes_de_perception_de_gouvernance = [];
+
+                foreach($attributs['principes_de_perception_de_gouvernance'] as $id)
+                {
+                    if(!($principe_de_perception_de_gouvernance = app(PrincipeDeGouvernancePerception::class)->findById($id))) throw new Exception("Principe de perception introuvable", Response::HTTP_NOT_FOUND);
+
+                    array_push($principes_de_perception_de_gouvernance, $principe_de_perception_de_gouvernance->id);
+                }
+
+                $action_a_mener->principes_de_perception_de_gouvernance()->sync($principes_de_perception_de_gouvernance, ["programmeId" => $attributs['programmeId']]);
+
+            }
 
             $action_a_mener->refresh();
 

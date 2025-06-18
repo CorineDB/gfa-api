@@ -9,6 +9,7 @@ use App\Models\User;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
@@ -223,13 +224,21 @@ class EvaluationDeGouvernance extends Model
 
     public function recommandations()
     {
-        return $this->hasMany(Recommandation::class, 'evaluationId');
+        return $this->hasMany(Recommandation::class, 'evaluationId')
+        ->when((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)), function ($query) {
+            // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+            $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
+        });
         return $this->morphMany(Recommandation::class, "recommandationable");
     }
 
     public function actions_a_mener()
     {
-        return $this->hasMany(ActionAMener::class, 'evaluationId');
+        return $this->hasMany(ActionAMener::class, 'evaluationId')
+        ->when((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)), function ($query) {
+            // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+            $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
+        });
         return $this->morphMany(ActionAMener::class, "actionable");
     }
 
