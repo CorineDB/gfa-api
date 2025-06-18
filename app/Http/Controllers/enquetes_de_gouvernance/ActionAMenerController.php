@@ -7,7 +7,7 @@ use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\StoreRequest;
 use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\UpdateRequest;
 use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\ActionAMenerTerminerRequest;
 use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\ValiderActionAMenerRequest;
-use Core\Services\Interfaces\ActionAMenerServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\ActionAMenerServiceInterface;
 
 class ActionAMenerController extends Controller
 {
