@@ -513,8 +513,6 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                         throw new Exception("Veuillez préciser la valeur cible dans le format adéquat pour la mise à jour.", 400);
                     }
 
-                    dump($valeurCible);
-
                     // ✅ Mise à jour finale de la structure JSON ou attribut équivalent
                     $valeurCibleIndicateur->valeurCible = $valeurCible;
 
