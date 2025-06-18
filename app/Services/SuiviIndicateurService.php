@@ -61,10 +61,9 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
             $suivis_indicateurs = [];
 
-            if(Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)){
+            if (Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)) {
                 $suivis_indicateurs = Auth::user()->profilable->suivis_indicateurs;
-            }
-            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+            } else if (Auth::user()->hasRole("unitee-de-gestion") || (get_class(auth()->user()->profilable) == UniteeDeGestion::class)) {
                 $suivis_indicateurs = Auth::user()->programme->suivis_indicateurs;
             }
 
@@ -125,11 +124,11 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
         try {
 
-            $suivisIndicateur = SuiviIndicateur::when((isset($attributs['dateSuivie']) && $attributs['dateSuivie']), function($query) use($attributs) {
+            $suivisIndicateur = SuiviIndicateur::when((isset($attributs['dateSuivie']) && $attributs['dateSuivie']), function ($query) use ($attributs) {
                 $query->where('dateSuivie', $attributs['dateSuivie']);
-            })->when((isset($attributs['annee']) && $attributs['annee']), function($query) use($attributs) {
+            })->when((isset($attributs['annee']) && $attributs['annee']), function ($query) use ($attributs) {
                 $query->whereRaw('YEAR(dateSuivie) = ?', [$attributs['annee']]);
-            })->when((isset($attributs['trimestre']) && $attributs['trimestre']), function($query) use($attributs) {
+            })->when((isset($attributs['trimestre']) && $attributs['trimestre']), function ($query) use ($attributs) {
                 $query->where('trimestre', $attributs['trimestre']);
             })->get();
 
@@ -221,15 +220,12 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                             $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
                         }
                     }
-
-                }
-                else if (!$indicateur->agreger && !is_array($attributs["valeurCible"])) {
+                } else if (!$indicateur->agreger && !is_array($attributs["valeurCible"])) {
                     $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $attributs["valeurRealise"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
 
                     $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
                     //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
-                }
-                else{
+                } else {
                     throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
                 }
 
@@ -276,7 +272,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
             $suiviIndicateur = $this->repository->fill(array_merge($attributs, ["valeurCibleId" => $valeurCibleIndicateur->id]));
 
-            if((auth()->user()->type==="organisation" || get_class(auth()->user()->profilable) == Organisation::class)){
+            if ((auth()->user()->type === "organisation" || get_class(auth()->user()->profilable) == Organisation::class)) {
                 $suiviIndicateur->estValider = false;
             }
 
@@ -294,16 +290,13 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                         //array_push($valeurRealise, ["key" => $key->key, "value" => $valeur->value]);
                     }
                 }
-
-            }
-            else if (!$indicateur->agreger && !is_array($attributs["valeurRealise"])) {
+            } else if (!$indicateur->agreger && !is_array($attributs["valeurRealise"])) {
                 $valeur = $suiviIndicateur->valeursRealiser()->create(["value" => $attributs["valeurRealise"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id]);
                 $valeurRealise = array_merge($valeurRealise, ["{$indicateur->valueKey()->key}" => $valeur->value]);
 
                 //$valeurRealise = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
 
-            }
-            else{
+            } else {
                 throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
             }
 
@@ -431,100 +424,105 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
             unset($attributs['estValider']);
 
-            if(!$suiviIndicateur->programmeId){
+            if (!$suiviIndicateur->programmeId) {
                 $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
             }
 
             if (array_key_exists('valeurCible', $attributs) && isset($attributs['valeurCible'])) {
-                $suiviIndicateur->valeurCible->valeurCible = $attributs['valeurCible'];
 
-                $suiviIndicateur->valeurCible->save();
-            }
+                if (array_key_exists('annee', $attributs) && isset($attributs['annee'])) {
+                    $annee = $suiviIndicateur->valeurCible->annee;
+                    if ($suiviIndicateur->valeurCible->annee != $attributs['annee']) {
+                        $annee = $attributs['annee'];
+                        $suiviIndicateur->valeurCible->annee = $annee;
+                    }
 
-            if (array_key_exists('annee', $attributs) && isset($attributs['annee'])) {
-                if ($suiviIndicateur->valeurCible->annee != $attributs['annee']) {
                     $valeurCible = [];
-                    if (!($valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->newInstance()->where("cibleable_id", $suiviIndicateur->valeurCible->cibleable_id)->where("annee", $attributs['annee'])->first())) {
+                    if (!($valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->newInstance()->where("cibleable_id", $suiviIndicateur->valeurCible->cibleable_id)->where("annee", $annee)->first())) {
 
-                        if (!array_key_exists('valeurCible', $attributs) || !isset($attributs['valeurCible'])) throw new Exception("Veuillez préciser la valeur cible de l'année {$attributs['annee']} de ce suivi.", 400);
+                        if (!array_key_exists('valeurCible', $attributs) || !isset($attributs['valeurCible'])) throw new Exception("Veuillez préciser la valeur cible de l'année {$annee} de ce suivi.", 400);
 
                         $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->fill(array_merge($attributs, ["cibleable_id" => $suiviIndicateur->valeurCible->cibleable_id, "cibleable_type" => "App\\Models\\Indicateur"]));
 
                         $valeurCibleIndicateur->save();
 
                         $suiviIndicateur->valeurCibleId = $valeurCibleIndicateur->id;
-
-                        $suiviIndicateur->save();
-
-                    } else {
+                    } /* else {
                         $suiviIndicateur->valeurCible->annee = $attributs['annee'];
                         $suiviIndicateur->valeurCible->save();
-                    }
+                    } */
 
-                        // 🔁 Mise à jour selon le type d’indicateur
-                        if ($suiviIndicateur->valeurCible->cibleable->agreger && is_array($attributs["valeurCible"])) {
 
-                            foreach ($attributs["valeurCible"] as $data) {
-                                $keyMap = $suiviIndicateur->valeurCible->cibleable->valueKeys()
-                                    ->where("indicateur_value_keys.id", $data['keyId'])
-                                    ->first();
+                    // 🔁 Mise à jour selon le type d’indicateur
+                    if ($suiviIndicateur->valeurCible->cibleable->agreger && is_array($attributs["valeurCible"])) {
 
-                                if (!$keyMap || !$keyMap->pivot) {
-                                    throw new Exception("Clé d'indicateur invalide ou non trouvée pour l'agrégation.", 400);
-                                }
-
-                                // Mise à jour ou création si absente
-                                $valeurExistante = $valeurCibleIndicateur->valeursCible()
-                                    ->where("indicateurValueKeyMapId", $keyMap->pivot->id)
-                                    ->first();
-
-                                if ($valeurExistante) {
-                                    $valeurExistante->value = $data["value"];
-                                    $valeurExistante->save();
-                                } else {
-                                    $valeurExistante = $valeurCibleIndicateur->valeursCible()->create([
-                                        "value" => $data["value"],
-                                        "indicateurValueKeyMapId" => $keyMap->pivot->id,
-                                    ]);
-                                }
-
-                                $valeurCible = array_merge($valeurCible, ["{$keyMap->key}" => $valeurExistante->value]);
-
-                                //$valeurCible[$keyMap->key] = $valeurExistante->value;
-                            }
-
-                        } else if (!$suiviIndicateur->valeurCible->cibleable->agreger && !is_array($attributs["valeurCible"])) {
-                            $keyMap = $suiviIndicateur->valeurCible->cibleable->valueKey();
+                        foreach ($attributs["valeurCible"] as $data) {
+                            $keyMap = $suiviIndicateur->valeurCible->cibleable->valueKeys()
+                                ->where("indicateur_value_keys.id", $data['keyId'])
+                                ->first();
 
                             if (!$keyMap || !$keyMap->pivot) {
-                                throw new Exception("Clé de valeur manquante pour l'indicateur non agrégé.", 400);
+                                throw new Exception("Clé d'indicateur invalide ou non trouvée pour l'agrégation.", 400);
                             }
 
-                            // Mise à jour ou création
+                            // Mise à jour ou création si absente
                             $valeurExistante = $valeurCibleIndicateur->valeursCible()
                                 ->where("indicateurValueKeyMapId", $keyMap->pivot->id)
                                 ->first();
 
                             if ($valeurExistante) {
-                                $valeurExistante->value = $attributs["valeurCible"];
+                                $valeurExistante->value = $data["value"];
                                 $valeurExistante->save();
                             } else {
                                 $valeurExistante = $valeurCibleIndicateur->valeursCible()->create([
-                                    "value" => $attributs["valeurCible"],
+                                    "value" => $data["value"],
                                     "indicateurValueKeyMapId" => $keyMap->pivot->id,
                                 ]);
                             }
 
                             $valeurCible = array_merge($valeurCible, ["{$keyMap->key}" => $valeurExistante->value]);
-                            //$valeurCible[$keyMap->key] = $valeurExistante->value;
 
-                        } else {
-                            throw new Exception("Veuillez préciser la valeur cible dans le format adéquat pour la mise à jour.", 400);
+                            //$valeurCible[$keyMap->key] = $valeurExistante->value;
                         }
+                    } else if (!$suiviIndicateur->valeurCible->cibleable->agreger && !is_array($attributs["valeurCible"])) {
+                        $keyMap = $suiviIndicateur->valeurCible->cibleable->valueKey();
+
+                        if (!$keyMap || !$keyMap->pivot) {
+                            throw new Exception("Clé de valeur manquante pour l'indicateur non agrégé.", 400);
+                        }
+
+                        // Mise à jour ou création
+                        $valeurExistante = $valeurCibleIndicateur->valeursCible()
+                            ->where("indicateurValueKeyMapId", $keyMap->pivot->id)
+                            ->first();
+
+                        if ($valeurExistante) {
+                            $valeurExistante->value = $attributs["valeurCible"];
+                            $valeurExistante->save();
+                        } else {
+                            $valeurExistante = $valeurCibleIndicateur->valeursCible()->create([
+                                "value" => $attributs["valeurCible"],
+                                "indicateurValueKeyMapId" => $keyMap->pivot->id,
+                            ]);
+                        }
+
+                        $valeurCible = array_merge($valeurCible, ["{$keyMap->key}" => $valeurExistante->value]);
+                        //$valeurCible[$keyMap->key] = $valeurExistante->value;
+
+                    } else {
+                        throw new Exception("Veuillez préciser la valeur cible dans le format adéquat pour la mise à jour.", 400);
+                    }
+
+                    dump($valeurCible);
 
                     // ✅ Mise à jour finale de la structure JSON ou attribut équivalent
                     $valeurCibleIndicateur->valeurCible = $valeurCible;
+
                     $valeurCibleIndicateur->save();
+
+                    $suiviIndicateur->valeurCible->valeurCible = $valeurCible;
+
+                    $suiviIndicateur->valeurCible->save();
                 }
             }
 
@@ -564,7 +562,6 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
                         $valeurRealise[$key->key] = $valeurExistante->value;
                     }
-
                 } else if (!$suiviIndicateur->valeurCible->cibleable->agreger && !is_array($attributs["valeurRealise"])) {
 
                     $key = $suiviIndicateur->valeurCible->cibleable->valueKey();
@@ -588,7 +585,6 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                     }
 
                     $valeurRealise[$key->key] = $valeurExistante->value;
-
                 } else {
                     throw new Exception("Veuillez préciser la valeur réalisée dans un format adéquat.", 400);
                 }
@@ -660,11 +656,11 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                 $suiviIndicateur = $suiviIndicateur;
             }
 
-            if(!Auth::user()->hasRole('unitee-de-gestion')){
+            if (!Auth::user()->hasRole('unitee-de-gestion')) {
                 return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
 
-            if($suiviIndicateur->estValider == true){
+            if ($suiviIndicateur->estValider == true) {
                 return response()->json(['statut' => 'error', 'message' => "Suivi deja valider", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             }
 
@@ -687,5 +683,4 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
-
 }
