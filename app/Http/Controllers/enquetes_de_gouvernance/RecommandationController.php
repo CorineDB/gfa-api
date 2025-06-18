@@ -5,7 +5,7 @@ namespace App\Http\Controllers\enquetes_de_gouvernance;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\enquetes_de_gouvernance\recommandations\StoreRequest;
 use App\Http\Requests\enquetes_de_gouvernance\recommandations\UpdateRequest;
-use Core\Services\Interfaces\RecommandationServiceInterface;
+use Core\Services\Interfaces\enquetes_de_gouvernance\RecommandationServiceInterface;
 
 class RecommandationController extends Controller
 {
@@ -46,7 +46,6 @@ class RecommandationController extends Controller
      */
     public function store(StoreRequest $request)
     {
-        dd($request->all());
         return $this->recommandationService->create($request->all());
     }
 
