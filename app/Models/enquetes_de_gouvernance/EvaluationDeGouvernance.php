@@ -230,7 +230,7 @@ class EvaluationDeGouvernance extends Model
             // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
             $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
 
-            dd($query->get());
+            dd(auth()->user()->profilable->id);
         });
         return $this->morphMany(Recommandation::class, "recommandationable");
     }
