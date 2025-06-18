@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\enquetes_de_gouvernance;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\actions_a_mener\StoreRequest;
-use App\Http\Requests\actions_a_mener\UpdateRequest;
-use App\Http\Requests\actions_a_mener\ActionAMenerTerminerRequest;
-use App\Http\Requests\actions_a_mener\ValiderActionAMenerRequest;
+use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\StoreRequest;
+use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\UpdateRequest;
+use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\ActionAMenerTerminerRequest;
+use App\Http\Requests\enquetes_de_gouvernance\actions_a_mener\ValiderActionAMenerRequest;
 use Core\Services\Interfaces\ActionAMenerServiceInterface;
 
 class ActionAMenerController extends Controller
