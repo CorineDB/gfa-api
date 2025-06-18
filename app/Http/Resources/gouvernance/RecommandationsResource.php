@@ -22,6 +22,7 @@ class RecommandationsResource extends JsonResource
             'recommandation' => $this->recommandation,
             'recommandationable' => $this->recommandationable,
             'evaluationId' => $this->evaluation->secure_id,
+            'organisationId' => $this->organisation->id,
             'organisation' => $this->when(((Auth::user()->type == 'unitee-de-gestion') || (get_class(auth()->user()->profilable) == UniteeDeGestion::class)), function(){
                 return [
                     "id"                    => $this->organisation->secure_id,
