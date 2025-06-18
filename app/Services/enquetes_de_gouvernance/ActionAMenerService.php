@@ -133,7 +133,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     array_push($indicateurs, $indicateur->id);
                 }
 
-                $action_a_mener->indicateurs()->attach($indicateurs, ["programmeId" => $attributs['programmeId']]);
+                $action_a_mener->indicateurs_factuel_de_gouvernance()->attach($indicateurs, ["programmeId" => $attributs['programmeId']]);
 
             }
 
@@ -238,7 +238,7 @@ class ActionAMenerService extends BaseService implements ActionAMenerServiceInte
                     array_push($indicateurs, $indicateur->id);
                 }
 
-                $action_a_mener->indicateurs()->sync($indicateurs, ["programmeId" => $attributs['programmeId']]);
+                $action_a_mener->indicateurs_factuel_de_gouvernance()->sync($indicateurs, ["programmeId" => $attributs['programmeId']]);
 
             }
 
