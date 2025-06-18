@@ -866,13 +866,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $feuille_de_route = [];
 
             if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
-                $feuille_de_route = $evaluationDeGouvernance->load(["recommandations" => function ($query) {
-                    $query/* ->where("organisationId", auth()->user()->profilable->id) */->with(["actions_a_mener" => function ($query) {
-                        $query/* ->where("organisationId", auth()->user()->profilable->id) */;
+                $feuille_de_route = $evaluationDeGouvernance->load(["recommandations", "actions_a_mener"])/* ->load(["recommandations" => function ($query) {
+                    $query->where("organisationId", auth()->user()->profilable->id)->with(["actions_a_mener" => function ($query) {
+                        $query->where("organisationId", auth()->user()->profilable->id);
                     }]);
                 }, "actions_a_mener" => function ($query) {
-                    $query/* ->where("organisationId", auth()->user()->profilable->id) */->whereDoesntHave("actionable");
-                }]);
+                    $query->where("organisationId", auth()->user()->profilable->id)->whereDoesntHave("actionable");
+                }]) */;
             } else {
                 $feuille_de_route = $evaluationDeGouvernance->actions_a_mener;
             }
