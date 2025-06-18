@@ -516,6 +516,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
                             }
 
                             $valeurCible = array_merge($valeurCible, ["{$keyMap->key}" => $valeurExistante->value]);
+                            //$valeurCible[$keyMap->key] = $valeurExistante->value;
 
                         } else {
                             throw new Exception("Veuillez préciser la valeur cible dans le format adéquat pour la mise à jour.", 400);
@@ -610,7 +611,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
                 $suiviIndicateur->commentaires()->create($attributsCommentaire);
 
-                $data['texte'] = "Un commentaire vient d'etre effectué pour un suivi indicateur";
+                /* $data['texte'] = "Un commentaire vient d'etre effectué pour un suivi indicateur";
                 $data['id'] = $suiviIndicateur->id;
                 $data['auteurId'] = Auth::user()->id;
                 $notification = new CommentaireNotification($data);
@@ -625,7 +626,7 @@ class SuiviIndicateurService extends BaseService implements SuiviIndicateurServi
 
                         //event(new NewNotification($this->formatageNotification($notification, $user)));
                     }
-                }
+                } */
             }
 
             DB::commit();
