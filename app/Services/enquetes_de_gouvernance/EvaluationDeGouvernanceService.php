@@ -867,18 +867,18 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             auth()->user()->profilable;
 
             if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
-                $feuille_de_route = []/* $evaluationDeGouvernance->load(["recommandations", "actions_a_mener"])->load(["recommandations" => function ($query) {
-                    $query->where("organisationId", auth()->user()->profilable->id)->with(["actions_a_mener" => function ($query) {
-                        $query->where("organisationId", auth()->user()->profilable->id);
+                $feuille_de_route = $evaluationDeGouvernance->load(["recommandations" => function ($query) {
+                    $query/* ->where("organisationId", auth()->user()->profilable->id) */->with(["actions_a_mener" => function ($query) {
+                        $query/* ->where("organisationId", auth()->user()->profilable->id) */;
                     }]);
                 }, "actions_a_mener" => function ($query) {
                     $query->where("organisationId", auth()->user()->profilable->id)->whereDoesntHave("actionable");
-                }]) */;
+                }]);
             } else {
                 $feuille_de_route = $evaluationDeGouvernance->actions_a_mener;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $evaluationDeGouvernance->load(['recommandations'])/* ['recommandations' => RecommandationsResource::collection($feuille_de_route->recommandations), 'actions_a_mener' => ActionsAMenerResource::collection($feuille_de_route->actions_a_mener)] */, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => ['recommandations' => RecommandationsResource::collection($feuille_de_route->recommandations), 'actions_a_mener' => ActionsAMenerResource::collection($feuille_de_route->actions_a_mener)], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
