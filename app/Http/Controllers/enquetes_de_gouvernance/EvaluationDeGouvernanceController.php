@@ -62,6 +62,7 @@ class EvaluationDeGouvernanceController extends Controller
      */
     public function store(StoreRequest $request)
     {
+        dd($request->all())
         return $this->evaluationDeGouvernanceService->create($request->all());
     }
 
