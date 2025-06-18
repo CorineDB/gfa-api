@@ -1178,6 +1178,11 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::get('{evaluation_de_gouvernance}/rappel-soumission', 'rappel_soumission')->name('rappel_soumission')->middleware('permission:envoyer-un-rappel-soumission');
                         Route::post('{evaluation_de_gouvernance}/envoi-mail-au-participants', 'envoi_mail_au_participants')->name('envoi_mail_au_participants')->middleware('permission:envoyer-une-invitation');
 
+                        Route::get('{evaluation_de_gouvernance}/recommandations', 'recommandations')->name('recommandations')->middleware('permission:voir-une-recommandation');
+                        Route::get('{evaluation_de_gouvernance}/actions-a-mener', 'actions_a_mener')->name('actions-a-mener')->middleware('permission:voir-une-action-a-mener');
+
+                        Route::get('{evaluation_de_gouvernance}/feuille-de-route', 'feuille_de_route')->name('feuille-de-route')->middleware('permission:voir-plan-action');
+                        Route::post('{evaluation_de_gouvernance}/ajouterObjectifAttenduParPrincipe', 'ajouterObjectifAttenduParPrincipe')->name('feuille-de-route')->middleware('permission:creer-une-evaluation-de-gouvernance');
 
                         Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions_enquete')->name('soumissions_enquete')->middleware('permission:voir-une-soumission');
 
@@ -1187,6 +1192,17 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                         Route::get('{evaluation_de_gouvernance}/fiches-de-synthese-with-organisations-classement', 'fiches_de_synthese_with_organisations_classement')->name('fiches_de_synthese_with_organisations_classement');
                     });
+                });
+
+                Route::apiResource('recommandations', 'RecommandationController')->names('recommandations');
+                Route::apiResource('actions-a-mener', 'ActionAMenerController')->names('actions-a-mener')
+                    ->parameters([
+                        'actions-a-mener' => 'action_a_mener',
+                    ]);
+
+                Route::controller('ActionAMenerController')->group(function () {
+                    Route::post('actions-a-mener/{action_a_mener}/valider', 'valider')->name('valider-action-a-mener')->middleware('permission:valider-une-action-a-mener');
+                    Route::post('actions-a-mener/{action_a_mener}/notifier-action-a-mener-terminer', 'notifierActionAMenerEstTerminer')->name('signaler-action-a-mener')->middleware('permission:signaler-une-action-a-mener-est-realise');
                 });
 
                 Route::get('result', function(){

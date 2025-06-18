@@ -86,17 +86,17 @@ class ActionAMener extends Model
     /**
      * Get all of the indicateurs that are assigned this site.
      */
-    public function indicateurs(): MorphToMany
+    public function indicateurs_factuel_de_gouvernance(): MorphToMany
     {
-        return $this->morphedByMany(IndicateurDeGouvernance::class, 'actionable');
+        return $this->morphedByMany(IndicateurDeGouvernanceFactuel::class, 'actionable');
     }
 
     /**
      * Get all of the indicateurs that are assigned this site.
      */
-    public function indicateurs_factuel_de_gouvernance(): MorphToMany
+    public function questions_operationnelle(): MorphToMany
     {
-        return $this->morphedByMany(IndicateurDeGouvernanceFactuel::class, 'actionable');
+        return $this->morphedByMany(QuestionOperationnelle::class, 'actionable');
     }
 
     /**
