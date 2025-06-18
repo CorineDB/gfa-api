@@ -877,7 +877,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $feuille_de_route = $evaluationDeGouvernance->actions_a_mener;
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $evaluationDeGouvernance->recommandations/* ['recommandations' => RecommandationsResource::collection($feuille_de_route->recommandations), 'actions_a_mener' => ActionsAMenerResource::collection($feuille_de_route->actions_a_mener)] */, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $evaluationDeGouvernance->load('recommandations')/* ['recommandations' => RecommandationsResource::collection($feuille_de_route->recommandations), 'actions_a_mener' => ActionsAMenerResource::collection($feuille_de_route->actions_a_mener)] */, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
