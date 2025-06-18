@@ -114,9 +114,9 @@ class SuiviIndicateur extends Model
                 //$total += $suivi->valeurRealise[$key];
             }
 
-            $cumul[$key] = $total; // mieux que array_push ici
+            //$cumul[$key] = $total; // mieux que array_push ici
 
-            //array_push($cumul, $total);
+            array_push($cumul, $total);
         }
 
         return $cumul;
