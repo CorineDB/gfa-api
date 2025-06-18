@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\enquetes_de_gouvernance;
+namespace App\Http\Controllers\enquetes_de_gouvernance;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\recommandations\StoreRequest;
