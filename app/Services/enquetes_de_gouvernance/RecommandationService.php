@@ -86,7 +86,7 @@ class RecommandationService extends BaseService implements RecommandationService
 
             $organisation = Auth::user()->profilable;
 
-            dump($organisation);;
+            dd($organisation);;
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id, 'programmeId' => $programme->id, 'statut' => -1]);
 
