@@ -76,12 +76,13 @@ class SoumissionFactuelValidationRequest extends FormRequest
             'factuel.response_data'                 => [
                 "required",
                 'array',
-                function ($attribute, $value, $fail) {
+                'min:'+$this->getCountOfQuestionsOfAFormular(),
+                /* function ($attribute, $value, $fail) {
 
                     if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
                     }
-                }
+                } */
             ],
             'factuel.response_data.*.questionId'      => [
                 "required",
