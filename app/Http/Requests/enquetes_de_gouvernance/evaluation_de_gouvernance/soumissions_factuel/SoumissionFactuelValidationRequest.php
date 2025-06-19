@@ -222,8 +222,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $fail("Cet Indicateur n'existe pas.");
                             }
 
-
-
                             $optionDeReponseId = null;
                             $formOption = null;
 
@@ -240,29 +238,26 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             //$sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
 
-                            dd($formOption);
                             if ($formOption) {
 
+                                if ($formOption->pivot_preuveIsRequired) {
 
-                                $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
+                                    $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
-                                if ($reponse) {
-                                    if ((!$reponse->preuves_de_verification()->count() && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
-                                        $fail("La preuve est required.");
+                                    if ($reponse) {
+                                        if ((!$reponse->preuves_de_verification()->count() && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
+                                            $fail("La preuve est required.");
+                                        }
+                                    } else {
+
+                                        if (empty(request()->input($attribute))) {
+                                            $fail("La preuve est required.");
+                                        }
                                     }
-                                } else {
-
-                                    if (empty(request()->input($attribute))) {
-                                        $fail("La preuve est required.");
-                                    }
                                 }
-
-                                if ((empty($sourceDeVerification) && empty(request()->input($attribute))) && $formOption->pivot->preuveIsRequired == 1) {
-                                    $fail("La source de verification est requise.");
-                                }
-                                else{
-                                    new HashValidatorRule(new SourceDeVerification());
-                                }
+                            }
+                            else{
+                                $fail("Option inconnu du formulaire.");
                             }
                         } else {
 
