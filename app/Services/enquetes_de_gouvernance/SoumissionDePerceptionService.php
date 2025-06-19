@@ -85,6 +85,8 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
 
         try {
 
+            dd($attributs);
+
             if (isset($attributs['evaluationId'])) {
                 if (!($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))) {
                     throw new Exception("Evaluation de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
