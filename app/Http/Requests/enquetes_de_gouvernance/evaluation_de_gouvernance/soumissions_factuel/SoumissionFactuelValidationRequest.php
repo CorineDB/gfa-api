@@ -238,7 +238,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             //$sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
 
-                            dd($formOption);
                             if ($formOption) {
 
                                 if ($formOption->pivot_preuveIsRequired) {
