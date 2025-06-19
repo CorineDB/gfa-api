@@ -222,6 +222,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $fail("Cet Indicateur n'existe pas.");
                             }
 
+                            dd(request()->input('soumissionId'));
                             $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
                             dd($reponse);
