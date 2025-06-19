@@ -2,10 +2,10 @@
 
 namespace App\Http\Requests\enquetes_de_gouvernance\evaluation_de_gouvernance\soumissions_de_perception;
 
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Models\enquetes_de_gouvernance\FormulaireDePerceptionDeGouvernance;
 use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\enquetes_de_gouvernance\QuestionDePerceptionDeGouvernance;
-use App\Models\EvaluationDeGouvernance;
 use App\Models\Programme;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -53,7 +53,7 @@ class SoumissionDePerceptionValidationRequest extends FormRequest
                                         ->where('formulaireDePerceptionId', request()->input('formulaireDeGouvernanceId'))
                                         ->first();
 
-                    if($formulaire == null) $fail('The selected formulaire de gouvernance ID is invalid or not associated with this evaluation.');
+                    if($formulaire == null) $fail('Formulaire de gouvernance de perception inconnu');
 
                     $this->formulaireCache = $formulaire;
 
@@ -75,10 +75,15 @@ class SoumissionDePerceptionValidationRequest extends FormRequest
             'perception.response_data.*.questionId'      => ['required', 'distinct',
                 new HashValidatorRule(new QuestionDePerceptionDeGouvernance()),
                 function($attribute, $value, $fail) {
-                    $question = QuestionDePerceptionDeGouvernance::where("formulaireDePerceptionId", $this->formulaireCache->id)->findByKey($value)->exists();
-                    if (!$question) {
-                        // Fail validation if no response options are available
-                        $fail("Cette question operationnelle n'existe pas.");
+                    if ($this->formulaireCache) {
+                        $question = QuestionDePerceptionDeGouvernance::where("formulaireDePerceptionId", $this->formulaireCache->id)->findByKey($value)->exists();
+                        if (!$question) {
+                            // Fail validation if no response options are available
+                            $fail("Cette question operationnelle n'existe pas.");
+                        }
+                    }
+                    else{
+                        $fail('Formulaire inconnu.');
                     }
                 }
             ],
@@ -89,8 +94,13 @@ class SoumissionDePerceptionValidationRequest extends FormRequest
                  *
                  * If the provided optionDeReponseId is not valid, fail the validation
                  */
-                if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
-                    $fail('The selected option is invalid for the given formulaire.');
+                if ($this->formulaireCache) {
+                    if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
+                        $fail('The selected option is invalid for the given formulaire.');
+                    }
+                }
+                else{
+                    $fail('Formulaire inconnu.');
                 }
             }],
 
