@@ -50,19 +50,19 @@ class UpdateRequest extends FormRequest
             'factuel.options_de_reponse.*.sourceIsRequired' => ["sometimes", "boolean:false"],
             'factuel.options_de_reponse.*.descriptionIsRequired' => ["sometimes", "boolean:false"],
 
-            'factuel.types_de_gouvernance' => ["sometimes","array", "min:1"],
+            'factuel.types_de_gouvernance' => ["sometimes","array", "min:0"],
             'factuel.types_de_gouvernance.*.id' => ["required", "distinct", new HashValidatorRule(new TypeDeGouvernanceFactuel())],
-            'factuel.types_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance' => ["required", "array", "min:1"],
+            'factuel.types_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:0"],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance' => ["required", "array", "min:0"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new PrincipeDeGouvernanceFactuel())],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance' => ["required", "array", "min:1"],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:0"],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance' => ["required", "array", "min:0"],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.id' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new CritereDeGouvernanceFactuel())],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:1"],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:1"],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.position' => ["sometimes", new DistinctAttributeRule(), "min:0"],
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance' => ["required", "array", "min:0"],
             //'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*' => ["required", new DistinctAttributeRule(), new HashValidatorRule(new IndicateurDeGouvernanceFactuel())],
             'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.id' => ["sometimes", new DistinctAttributeRule(), new HashValidatorRule(new IndicateurDeGouvernanceFactuel())],
-            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.position' => ["sometimes", 'numeric', new DistinctAttributeRule(), "min:1"]
+            'factuel.types_de_gouvernance.*.principes_de_gouvernance.*.criteres_de_gouvernance.*.indicateurs_de_gouvernance.*.position' => ["sometimes", 'numeric', new DistinctAttributeRule(), "min:0"]
         ];
     }
 
