@@ -62,16 +62,21 @@ class SoumissionDePerceptionValidationRequest extends FormRequest
                     }
                 }
             ],
-            'perception'                              => ['required', 'array', function($attribute, $value, $fail) {
+            'perception'                              => ['required', 'array', 'min:4', 'max: 5'],
+            'perception.categorieDeParticipant'       => ['required', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
+            'perception.sexe'                         => ['required', 'in:masculin,feminin'],
+            'perception.age'                          => ['required', 'in:<35,>35'],
+
+            'perception.response_data'                 => [
+                "required",
+                'array',
+                function ($attribute, $value, $fail) {
+
                     if (count($value) < $this->getCountOfQuestionsOfAFormular()) {
                         $fail("Veuillez remplir tout le formulaire.");
                     }
                 }
             ],
-            'perception.categorieDeParticipant'       => ['required', 'in:membre_de_conseil_administration,employe_association,membre_association,partenaire'],
-            'perception.sexe'                         => ['required', 'in:masculin,feminin'],
-            'perception.age'                          => ['required', 'in:<35,>35'],
-
             'perception.response_data.*.questionId'      => ['required', 'distinct',
                 new HashValidatorRule(new QuestionDePerceptionDeGouvernance()),
                 function($attribute, $value, $fail) {
