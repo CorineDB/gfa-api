@@ -174,6 +174,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => null]);
                     }
+
+
+                    dd($soumission);
                     $pivot = $option->formulaires_factuel_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
                     //$pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
 
@@ -204,8 +207,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     }
                 }
             }
-
-            dd($soumission);
 
             if ($soumission->comite_members !== null) {
 
