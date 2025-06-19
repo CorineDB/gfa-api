@@ -235,9 +235,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $fail("Option de reponse introuvable.");
                             }
 
-
-                            //$sourceDeVerification = request()->input('factuel.response_data.*.sourceDeVerification')[$index];
-
                             if ($formOption) {
 
                                 if ($formOption->pivot_preuveIsRequired) {
@@ -261,9 +258,11 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             }
                         } else {
 
-                            $fail("La preuve est required.");
+                            $fail("Formulaire factuel inconnu.");
                         }
                     }
+
+                    dd("Ici");
                 },
                 "array",
                 "min:1"
