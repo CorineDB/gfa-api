@@ -1,0 +1,8 @@
+voir-un-utilisateur
+creer-un-utilisateur
+modifier-un-utilisateur
+voir-un-role
+creer-un-role
+modifier-un-role
+voir-un-decaissement
+voir-un-projet
