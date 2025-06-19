@@ -77,6 +77,7 @@ class SoumissionDePerceptionController extends Controller
      */
     public function validated(SoumissionDePerceptionValidationRequest $request, $evaluationId)
     {
+        dd($request->all());
         $atttributs = array_merge(["evaluationId" => $evaluationId->id, 'validation' => true], $request->all());
 
         return $this->soumissionDePerceptionService->create($atttributs);
