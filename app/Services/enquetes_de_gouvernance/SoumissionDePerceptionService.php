@@ -157,12 +157,9 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
                     //$option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId']);
 
-                    dump($option);
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     $pivot = $option->formulaires_de_perception_de_gouvernance()->wherePivot("formulaireDePerceptionId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
-
-                    dump($pivot);
 
                     if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDePerceptionId' => $soumission->formulaireDeGouvernance->id, 'questionId' => $questionDeGouvernance->id, 'optionDeReponseId' => $option->id, 'programmeId' => $programme->id, 'point' => $pivot->point]));
@@ -171,10 +168,7 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
                         $reponseDeLaCollecte->fill(array_merge($item, ['formulaireDePerceptionId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'programmeId' => $programme->id, 'point' => $pivot->point]));
                         $reponseDeLaCollecte->save();
                     }
-                    dump($reponseDeLaCollecte);
                 }
-                $soumission->refresh();
-                dd($soumission->load(['reponses_de_la_collecte']));
             }
 
             if ($soumission->commentaire !== null && $soumission->sexe !== null && $soumission->age !== null && $soumission->categorieDeParticipant !== null) {
