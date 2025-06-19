@@ -222,10 +222,9 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $fail("Cet Indicateur n'existe pas.");
                             }
 
-                            dd(request()->input('soumissionId'));
                             $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
-                            dd($reponse);
+                            dd($question->reponses);
                             if ($reponse) {
                                 if ((!$reponse->preuves_de_verification()->count() && empty(request()->input($attribute))) && $reponse->preuveIsRequired) {
                                     $fail("La preuve est required.");
