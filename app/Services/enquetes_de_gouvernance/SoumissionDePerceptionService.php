@@ -84,9 +84,6 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
         DB::beginTransaction();
 
         try {
-
-            dd($attributs);
-
             if (isset($attributs['evaluationId'])) {
                 if (!($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId']))) {
                     throw new Exception("Evaluation de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
@@ -160,9 +157,12 @@ class SoumissionDePerceptionService extends BaseService implements SoumissionDeP
                     //$option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId']);
 
+                    dump($option);
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     $pivot = $option->formulaires_de_perception_de_gouvernance()->wherePivot("formulaireDePerceptionId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
+
+                    dd($pivot);
 
                     if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireDePerceptionId' => $soumission->formulaireDeGouvernance->id, 'questionId' => $questionDeGouvernance->id, 'optionDeReponseId' => $option->id, 'programmeId' => $programme->id, 'point' => $pivot->point]));
