@@ -137,7 +137,6 @@ class SoumissionDePerceptionValidationRequest extends FormRequest
      * @return int
      */
     private function getCountOfQuestionsOfAFormular(){
-        return 0;
         return $this->formulaireCache->questions_de_gouvernance->count();
     }
 }
