@@ -261,8 +261,6 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             $fail("Formulaire factuel inconnu.");
                         }
                     }
-
-                    dd("Ici");
                 },
                 "array",
                 "min:1"

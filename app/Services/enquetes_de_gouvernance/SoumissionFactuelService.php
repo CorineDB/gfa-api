@@ -133,6 +133,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
             $soumission  = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireFactuelId", $formulaireDeGouvernance->id)->first();
 
+            dd($soumission);
 
             if ($soumission == null) {
                 $soumission = $this->repository->create($attributs);
