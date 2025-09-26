@@ -38,16 +38,16 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('command:demarrage')->everyMinute();
 
-       //$schedule->command('command:rapport')->everyFifteenMinutes();
+       $schedule->command('command:rapport')->everyFifteenMinutes();
        $schedule->command('command:suivi')->everyFifteenMinutes();
 
-        $schedule->command('command:rappel')->everyMinute();
+        //$schedule->command('command:rappel')->everyMinute();
 
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
 
         $schedule->command('change-statut:action-a-mener')->dailyAt('00:00');
 
-        $backupConfig = AlerteConfig::where('module', 'backup')->first();
+       $backupConfig = AlerteConfig::where('module', 'backup')->first();
 
         if($backupConfig){
 

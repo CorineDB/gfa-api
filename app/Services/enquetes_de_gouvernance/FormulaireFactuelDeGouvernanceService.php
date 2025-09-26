@@ -331,10 +331,15 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                         }
                     }
 
-                    //$categories_de_gouvernance = $formulaireDeGouvernance->all_categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
+                    $categories_de_gouvernance = $formulaireDeGouvernance->all_categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
+
+		    \Illuminate\Support\Facades\Log::notice(json_encode($categories_de_gouvernance->get()->toArray()));
+		    
+                    //$categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
 
 
-                    $categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance)->delete();
+		    $categories_de_gouvernance->delete();
+
 
                     //$categories_de_gouvernance->delete();
                 }

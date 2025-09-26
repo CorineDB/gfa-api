@@ -299,7 +299,7 @@ class FormulaireDeGouvernanceService extends BaseService implements FormulaireDe
                     }
 
                 }
-
+		
                 if($formulaireDeGouvernance->type == 'factuel'){
 
                     $formulaireDeGouvernance->options_de_reponse()->sync($options);

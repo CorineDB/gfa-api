@@ -24,6 +24,7 @@ class ReponsesDeLaCollecteFactuelResource extends JsonResource
             "preuveIsRequired" => $this->preuveIsRequired,
             "sourceDeVerification" => $this->sourceDeVerificationId ? $this->source_de_verification->intitule : ($this->sourceDeVerification ?? null),
             "sourceDeVerificationId" => $this->source_de_verification ? $this->source_de_verification->secure_id : null,
+            "description" => $this->description,
             "optionDeReponseId" => $this->option_de_reponse->secure_id,
             "questionId" => $this->question->secure_id,
             "soumissionId" => $this->soumission->secure_id,

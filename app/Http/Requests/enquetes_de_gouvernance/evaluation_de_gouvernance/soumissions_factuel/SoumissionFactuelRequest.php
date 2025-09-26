@@ -97,7 +97,35 @@ class SoumissionFactuelRequest extends FormRequest
                 }
             }],
 
-            'factuel.response_data.*.sourceDeVerificationId'        => ['nullable', new HashValidatorRule(new SourceDeVerification())],
+            'factuel.response_data.*.sourceDeVerificationId'        => ['nullable',
+    function ($attribute, $value, $fail) {
+        // Step 1: Extraire l’index
+        preg_match('/factuel.response_data\.(\d+)\.sourceDeVerificationId/', $attribute, $matches);
+        $index = $matches[1] ?? null;
+
+        // Step 2: Si aucun index trouvé → fail
+        if ($index === null) {
+            return $fail("Impossible d’identifier la question liée.");
+        }
+
+        // Step 3: Vérifier si une valeur a été soumise
+        if ($value === null || $value === '' || $value === 'null') {
+            return; // nullable → on ignore la règle si null
+        }
+
+        // Step 4: Exécuter la règle HashValidatorRule manuellement
+        $rule = new HashValidatorRule(new SourceDeVerification());
+
+        if (!$rule->passes($attribute, $value)) {
+            return $fail("La source de vérification est invalide.");
+        }
+
+        // Step 5: Vérifier aussi si la source est trop courte
+        $sourceText = request()->input("factuel.response_data.$index.sourceDeVerification");
+        if (!empty($sourceText) && strlen($sourceText) < 10) {
+            return $fail("La source de vérification doit contenir au moins 10 caractères.");
+        }
+    }],
             'factuel.response_data.*.sourceDeVerification'          => ['nullable'],
             'factuel.response_data.*.preuves'                       => ['sometimes', "array", "min:0"],
             'factuel.response_data.*.preuves.*'                     => ["file", 'mimes:txt,doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv', /* 'mimetypes:text/plain,text/csv,application/pdf,application/msword,application/vnd.ms-excel,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,image/jpeg,image/png,image/gif,audio/mpeg,audio/wav,video/mp4,video/quicktime,video/x-msvideo,video/x-matroska', */ "max:20480"],

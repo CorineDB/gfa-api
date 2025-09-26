@@ -47,6 +47,7 @@ supprimer-un-suivi
 voir-une-cle-de-valeur-indicateur
 voir-une-option-de-reponse
 voir-une-source-de-verification
+voir-une-categorie-indicateur
 voir-un-indicateur-de-gouvernance
 voir-un-type-de-gouvernance
 voir-un-principe-de-gouvernance
@@ -61,6 +62,7 @@ voir-une-evaluation-de-gouvernance
 voir-une-soumission
 creer-une-soumission
 voir-une-fiche-de-synthese
+voir-un-profil-de-gouvernance
 voir-une-recommandation
 creer-une-recommandation
 modifier-une-recommandation
@@ -92,6 +94,7 @@ validation
 voir-details-projet
 exporter-un-suivi-indicateur
 exporter-un-decaissement
+exporter-un-plan-decaissement
 exporter-un-suivi-financier
 exporter-un-suivi-ptab
 importer-un-suivi-financier

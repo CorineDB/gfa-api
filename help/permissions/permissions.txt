@@ -42,6 +42,7 @@ creer-une-recommandation
 creer-une-action-a-mener
 creer-une-enquete-individuelle
 creer-un-formulaire-individuel
+creer-une-configuration-alerte
 modifier-un-utilisateur
 modifier-une-organisation
 modifier-un-ddc
@@ -86,6 +87,7 @@ modifier-une-recommandation
 modifier-une-action-a-mener
 modifier-une-enquete-individuelle
 modifier-un-formulaire-individuel
+modifier-une-configuration-alerte
 supprimer-un-utilisateur
 supprimer-une-organisation
 supprimer-un-ddc
@@ -130,6 +132,7 @@ supprimer-une-recommandation
 supprimer-une-action-a-mener
 supprimer-une-enquete-individuelle
 supprimer-un-formulaire-individuel
+supprimer-une-configuration-alerte
 voir-un-utilisateur
 voir-une-organisation
 voir-un-ddc
@@ -174,6 +177,7 @@ voir-une-recommandation
 voir-une-action-a-mener
 voir-une-enquete-individuelle
 voir-un-formulaire-individuel
+voir-une-configuration-alerte
 voir ptab
 faire revision ptab
 voir revision ptab

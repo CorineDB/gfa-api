@@ -117,6 +117,7 @@ class StoreRequest extends FormRequest
                     return;
                 }
 
+		/*
                 // Step 1: Retrieve Principe IDs from the 'perception' form
                 $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance')
                     ->where('formulaireDePerceptionId', $formulaireDePerception->id)
@@ -137,6 +138,34 @@ class StoreRequest extends FormRequest
                     ->distinct() // Ignore duplicates by selecting only unique perception IDs
                     ->pluck('principe_id')
                     ->toArray();
+		*/
+
+		$perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance as principes')
+                                          ->join('principes_de_gouvernance_de_perception as pgp', 'pgp.id', '=', 'principes.categorieable_id')
+    					  ->where('formulaireDePerceptionId', $formulaireDePerception->id)
+    					  ->whereNull('categorieDePerceptionDeGouvernanceId')
+    					  ->select('pgp.nom as principe_nom')
+   					  ->pluck('principe_nom')
+    					  ->map(fn($v) => $this->normalize_string($v))
+    			                  ->toArray();
+
+
+		$factuelPrincipesIds = DB::table('categories_factuel_de_gouvernance as types')
+                        ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
+                        ->join('principes_de_gouvernance_factuel as pgf', 'pgf.id', '=', 'principes.categorieable_id')
+			->where('types.formulaireFactuelId', $formulaireFactuel->id)
+    			->whereNull('types.categorieFactuelDeGouvernanceId')
+    			->where('principes.formulaireFactuelId', $formulaireFactuel->id)
+    			->whereNotNull('principes.categorieFactuelDeGouvernanceId')
+    			->where('types.categorieable_type', get_class(new TypeDeGouvernanceFactuel()))
+    			->where('principes.categorieable_type', get_class(new PrincipeDeGouvernanceFactuel()))
+    			->select('pgf.nom as principe_nom')
+    			->distinct()
+    			->pluck('principe_nom')
+    			->map(fn($v) => $this->normalize_string($v))
+    			->toArray();
+
+                //dd($perceptionPrincipesIds, $factuelPrincipesIds);
 
                 // Step 3: Compare perception IDs across forms
                 //if (array_diff($perceptionPrincipesIds, $factuelPrincipesIds) || array_diff($factuelPrincipesIds, $perceptionPrincipesIds)) {
@@ -180,4 +209,16 @@ class StoreRequest extends FormRequest
             );
         }
     }
+
+  function normalize_string(string $str): string {
+    // 1. Supprime les espaces en début/fin
+    $str = trim($str);
+    // 2. Remplace les multiples espaces par un seul
+    $str = preg_replace('/\s+/', ' ', $str);
+    // 3. Met en minuscules
+    $str = mb_strtolower($str, 'UTF-8');
+    // 4. Normalise les accents
+    $str = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
+    return $str;
+}
 }

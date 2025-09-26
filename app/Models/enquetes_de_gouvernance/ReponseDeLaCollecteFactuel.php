@@ -19,7 +19,7 @@ class ReponseDeLaCollecteFactuel extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array("point", 'preuveIsRequired', 'sourceDeVerification', 'sourceDeVerificationId', 'optionDeReponseId', 'questionId', 'soumissionId', 'programmeId');
+    protected $fillable = array("point", 'preuveIsRequired', 'description', 'sourceDeVerification', 'sourceDeVerificationId', 'optionDeReponseId', 'questionId', 'soumissionId', 'programmeId');
 
     protected $casts = [
         "point" => 'float'

@@ -27,7 +27,7 @@ trait SmsTrait{
         ];
 
         $phoneNumbers = is_array($phoneNumbers) ? $phoneNumbers : [$phoneNumbers]; // ✅ Ensures it's always an array
-
+	Log::info("SMS Response: " . json_encode($phoneNumbers));
         // Prepare the data for SMS API
         $request_body = [
             "globals" => [
@@ -43,7 +43,7 @@ trait SmsTrait{
 
         try {
 
-            /* foreach ($phoneNumbers as $key => $phoneNumber) {
+            /*foreach ($phoneNumbers as $key => $phoneNumber) {
 
                 // Prepare the data for SMS API
                 $request_body = [
@@ -54,8 +54,7 @@ trait SmsTrait{
     
                 // Send the request (HTTP client)
                 $response = Http::withHeaders($headers)->post($endpoint, $request_body);
-            } */
-
+	    }*/
             // Send the request (HTTP client)
             $response = Http::withHeaders($headers)->post($endpoint, $request_body);
 
@@ -64,11 +63,10 @@ trait SmsTrait{
 
             // Handle the response
             if ($response->successful()) {
-
-                Log::info("SMS Response: " . $responseBody);
+		Log::info("SMS Response: " . json_encode($responseBody));
             } else {
-                Log::error('Failed to send SMS balance: ' . $responseBody);
-                throw new \Exception("Error Processing SMS Request: " . $responseBody, 1);
+		Log::error('Failed to send SMS balance: ' . json_encode($responseBody));
+                throw new \Exception("Error Processing SMS Request: " . json_encode($responseBody), 1);
             }
         } catch (\Exception $e) {
             Log::error('Error sending bulk SMS : ' . $e->getMessage());

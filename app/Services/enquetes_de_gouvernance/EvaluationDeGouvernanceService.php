@@ -201,6 +201,23 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             if ($evaluationDeGouvernance->statut <= 0) {
                 $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
+
+    // Vérifier si toutes les organisations ont un token
+    foreach ($evaluationDeGouvernance->organisations as $organisation) {
+        if (empty($organisation->pivot->token)) {
+            // Générer un nouveau token
+            $token = str_replace(['/', '\\', '.'], '', Hash::make(
+                Hash::make($evaluationDeGouvernance->secure_id . $organisation->secure_id) .
+                    Hash::make(strtotime(now()))
+            ));
+
+            // Mettre à jour le pivot
+            $evaluationDeGouvernance->organisations()->updateExistingPivot(
+                $organisation->id,
+                ['token' => $token]
+            );
+        }
+    }
             }
 
             if (isset($attributs['formulaires_de_gouvernance'])) {
@@ -1179,8 +1196,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             } else {
                 return response()->json(['statut' => 'error', 'message' => "Pas le droit", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
-
+    \Illuminate\Support\Facades\Log::notice("Inviation a envoyé immédiatement à ". json_encode($attributs));
             SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
+    \Illuminate\Support\Facades\Log::notice("Invitation envoyé immédiatement");
 
             return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
