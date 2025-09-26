@@ -143,7 +143,7 @@ class UserService extends BaseService implements UserServiceInterface
             $programmeId = Auth::user()->programme->id;
 
             $attributs = array_merge($attributs, ['programmeId' => $programmeId]);
-            
+
             $roles= [];
 
             foreach ($attributs['roles'] as $role) {
@@ -194,7 +194,6 @@ class UserService extends BaseService implements UserServiceInterface
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public function update($utilisateur, array $attributs): JsonResponse
@@ -221,7 +220,7 @@ class UserService extends BaseService implements UserServiceInterface
                         throw new Exception("Vous n'avez pas les permissions de suppresion de cet utilisateur inconnu", 40);
                     }
                 }
-                
+
                 array_push($roles, $role->id);
             }
 
@@ -302,7 +301,7 @@ class UserService extends BaseService implements UserServiceInterface
     public function createPhoto(array $attributs) : JsonResponse
     {
         DB::beginTransaction();
-        
+
         try {
 
             $user = Auth::user();

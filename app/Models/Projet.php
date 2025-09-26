@@ -38,7 +38,7 @@ class Projet extends Model
         'objectifGlobaux',
         'nombreEmpoie',
         'programmeId',
-        'pays',/* 
+        'pays',/*
         'commune',
         'arrondissement',
         'quartier', */

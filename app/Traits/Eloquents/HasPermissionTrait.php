@@ -9,7 +9,7 @@ trait HasPermissionTrait
 
     public function hasPermissionTo($permission)
     {
-        
+
         return $this->hasPermissionThroughRole($permission) || $this->hasPermission($permission);
     }
 
