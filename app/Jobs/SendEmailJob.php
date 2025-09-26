@@ -21,7 +21,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
-class SendEmailJob implements ShouldQueue
+class SendEmailJob /*implements ShouldQueue*/
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -51,7 +51,7 @@ class SendEmailJob implements ShouldQueue
     public function handle()
     {
         try {
-
+\Illuminate\Support\Facades\Log::notice("HERE - SEND MAIL");
             $details = [];
             $data = [];
 
@@ -120,7 +120,9 @@ class SendEmailJob implements ShouldQueue
 
             Log::notice($this->user->email);
             
-            Mail::to($this->user->email)->later($when, $mailer);
+           // Mail::to($this->user->email)->later($when, $mailer);
+            Mail::to($this->user->email)->send($mailer);
+ \Illuminate\Support\Facades\Log::notice("Email envoyé immédiatement à {$this->user->email}");
         } catch (\Throwable $th) {
             Log::error($details['subject'] . ' : ' . $th->getMessage());
             throw new Exception("Error Processing Request : ". json_encode($details['subject']. " : ". $th->getMessage()), 1);

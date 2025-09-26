@@ -88,6 +88,7 @@ class StoreRequest extends FormRequest
 
     private function validatePrincipesCount($validator)
     {
+	dd($this->input("formulaires_de_gouvernance"));
         if ($this->input("formulaires_de_gouvernance")) {
             $formulaires = $this->input("formulaires_de_gouvernance");
 
@@ -150,7 +151,7 @@ class StoreRequest extends FormRequest
                     ->distinct() // Ignore duplicates by selecting only unique perception IDs
                     ->pluck('perception_id')
                     ->toArray();
-
+		dd($perceptionIds, $form2TypesWithPerceptionIds);
                 // Step 3: Compare perception IDs across forms
                 if (array_diff($perceptionIds, $form2TypesWithPerceptionIds) || array_diff($form2TypesWithPerceptionIds, $perceptionIds)) {
 

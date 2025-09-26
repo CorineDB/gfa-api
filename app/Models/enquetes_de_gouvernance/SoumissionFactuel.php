@@ -25,7 +25,8 @@ class SoumissionFactuel extends Model
     protected $casts = [
         "comite_members" => "json",
         "statut" => "boolean",
-        "submitted_at" => "datetime"
+        "submitted_at" => "datetime",
+	"created_at"	=> "datetime"
     ];
 
     protected $appends = ['pourcentage_evolution'];

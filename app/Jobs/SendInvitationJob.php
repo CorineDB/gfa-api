@@ -54,20 +54,20 @@ class SendInvitationJob implements ShouldQueue
 
             if ($this->type == "invitation-enquete-de-collecte") {
                 $participants = [];
-
+    \Illuminate\Support\Facades\Log::notice("Invitation Data" . json_encode($this->data) );
                 if (($evaluationOrganisation = $this->evaluationDeGouvernance->organisations($this->data["organisationId"])->first())) {
-
+    \Illuminate\Support\Facades\Log::notice("Invitation Data" . $evaluationOrganisation);
                     // Decode and merge participants from the organisation's pivot data
                     $participants = array_merge($participants, $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : []);
-
+    \Illuminate\Support\Facades\Log::notice("Invitation Data" . json_encode($participants) );
                     // Filter participants for those with "email" contact type
                     $emailParticipants = array_filter($this->data["participants"], function ($participant) {
                         return $participant["type_de_contact"] === "email";
                     });
-
+    \Illuminate\Support\Facades\Log::notice("Invitation Data" . json_encode($emailParticipants) );
                     // Extract email addresses for Mail::to()
                     $emailAddresses = array_column($emailParticipants, 'email');
-
+    \Illuminate\Support\Facades\Log::notice("Invitation Data" . json_encode($emailAddresses) );
 
                     // Filter participants for those with "email" contact type
                     $phoneNumberParticipants = array_filter($this->data["participants"], function ($participant) {
@@ -83,7 +83,7 @@ class SendInvitationJob implements ShouldQueue
                     if (strpos($url, 'localhost') == false) {
                         $url = config("app.organisation_url");
                     }
-
+			
                     // Send the email if there are any email addresses
                     if (!empty($emailAddresses)) {
 
@@ -92,7 +92,7 @@ class SendInvitationJob implements ShouldQueue
                         $details['content'] = [
                             "greeting" => "Salut, Monsieur/Madame!",
                             "introduction" => "Vous êtes invité(e) à participer à l'enquête d' auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} - annee d'exercice {$this->evaluationDeGouvernance->annee_exercice}.",
-                            "lien" => $url . "/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}",
+                            "lien" => $url . "/tools-perception/{$evaluationOrganisation->pivot->token}",
                         ];
 
                         // Create the email instance
@@ -100,7 +100,7 @@ class SendInvitationJob implements ShouldQueue
 
                         // Send the email later after a delay
                         $when = now()->addSeconds(5);
-                        Mail::to($emailAddresses)->later($when, $mailer);
+                        Mail::to($emailAddresses)->send($mailer);
 
                         // Remove duplicates based on the "email" field (use email as the unique key)
                         $participants = $this->removeDuplicateParticipants(array_merge($participants, $this->data["participants"]));
@@ -114,8 +114,9 @@ class SendInvitationJob implements ShouldQueue
                             $message = "Bonjour,\n" .
                                         "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
                                         "Participez des maintenant : " .
-                                        "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
+                                        "{$url}/tools-perception/{$evaluationOrganisation->pivot->token}\n" .
                                         "Merci !";
+                            Log::info('Error sending SMS invitation : ' . json_encode($phoneNumbers));
 
                             $this->sendSms($message, $phoneNumbers);
 

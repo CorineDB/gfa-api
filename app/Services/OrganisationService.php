@@ -134,6 +134,8 @@ class OrganisationService extends BaseService implements OrganisationServiceInte
             $utilisateur->save();
 
             DB::commit();
+		\Illuminate\Support\Facades\Log::notice("HERE - ICI");
+\Illuminate\Support\Facades\Log::notice("HERE - BEFore END MAIL");
 
             //Envoyer les identifiants de connexion à l'utilisateur via son email
             dispatch(new SendEmailJob($organisation->user, "confirmation-de-compte", $password))->delay(now()->addSeconds(15));
