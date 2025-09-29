@@ -31,6 +31,8 @@ class IndicateurResource extends JsonResource
                 "nom" => $this->categorie->nom
             ] : null,
             "agreger" => $this->agreger,
+            "type_de_variable" => $this->type_de_variable,
+            "hypothese" => $this->hypothese,
             "value_keys" => IndicateurValueKeyResource::collection($this->valueKeys),
             "unitee_mesure" => $this->when($this->unitee_mesure, [
                 "id" => $this->unitee_mesure->secure_id,
