@@ -83,10 +83,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     ->where('bailleurId', Auth::user()->profilable->id)
                     ->get();
                 //});
-            } elseif (Auth::user()->hasRole('organisation') || ( get_class(auth()->user()->profilable) == Organisation::class)) {
+            } elseif (Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)) {
                 $indicateurs = Auth::user()->profilable->indicateurs;
-            }
-            else if(Auth::user()->hasRole("unitee-de-gestion") || ( get_class(auth()->user()->profilable) == UniteeDeGestion::class)){
+            } else if (Auth::user()->hasRole("unitee-de-gestion") || (get_class(auth()->user()->profilable) == UniteeDeGestion::class)) {
 
                 $indicateurs = Auth::user()->programme->indicateurs;
             }
@@ -195,8 +194,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if (Auth::user()->hasRole("organisation")) {
                 $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at");
-            }
-            else if(Auth::user()->hasRole("unitee-de-gestion")){
+            } else if (Auth::user()->hasRole("unitee-de-gestion")) {
                 $suivis = $indicateur->suivis->pluck("suivisIndicateur")->collapse()->sortByDesc("created_at");
             }
 
@@ -280,7 +278,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     throw new Exception("L'année de base doit être une date postérieure ou égale à ".$attributs['anneeDeBase'].".", 422);
                 } */
                 if (Carbon::parse($programme->debut)->year > $anneeDeBase && $anneeDeBase > Carbon::parse($programme->fin)->year) {
-                    throw new Exception("L'année de base doit être une date postérieure ou égale à ".$attributs['anneeDeBase'].".", 422);
+                    throw new Exception("L'année de base doit être une date postérieure ou égale à " . $attributs['anneeDeBase'] . ".", 422);
                 }
             }
 
@@ -337,7 +335,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             //$indicateurKeys = $indicateur->valueKeys()->whereIn("indicateur_value_keys.id", collect($valeursDeBase)->pluck('key')->toArray())->get();
 
-            if(isset($attributs['value_keys'])){
+            if (isset($attributs['value_keys'])) {
 
                 // Check if the number of items in 'value_keys' exceeds the number of items in 'valeursDeBase'
                 if (count($attributs['value_keys']) > count($valeursDeBase)) {
@@ -356,7 +354,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     // The message explains that the base values must correspond to all the value keys for the indicator
                     throw new Exception("La demande n'a pas pu être traitée : les valeurs de chaque clé de l'indicateur doivent être précisées dans la valeur de base. Veuillez vérifier les données fournies.", 1);
                 }
-
             }
 
             if (!is_null($valeursDeBase)) {
@@ -397,16 +394,16 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $this->changeState(1);
 
-            if(isset($attributs['responsables']['ug']) && !is_null($attributs['responsables']['ug'])){
+            if (isset($attributs['responsables']['ug']) && !is_null($attributs['responsables']['ug'])) {
                 $indicateur->ug_responsable()->attach([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $programme->id, "created_at" => now(), "updated_at" => now()]]);
             }
 
-            if(isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])){
+            if (isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])) {
                 $responsables = [];
 
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
-                    if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+                    if (!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
 
                     // Add directly to the array with the expected format
                     $responsables[$organisation->id] = [
@@ -420,18 +417,16 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $indicateur->organisations_responsable()->attach($responsables);
             }
 
-            if(isset($attributs['sites'])){
+            if (isset($attributs['sites'])) {
 
                 $sites = [];
-                foreach($attributs['sites'] as $id)
-                {
-                    if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
+                foreach ($attributs['sites'] as $id) {
+                    if (!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
 
                     array_push($sites, $site->id);
                 }
 
                 $indicateur->sites()->attach($sites, ["programmeId" => $attributs['programmeId']]);
-
             }
 
             $indicateur->refresh();
@@ -644,35 +639,39 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $indicateur->nom = $attributs['nom'];
             $indicateur->description = $attributs['description'];
 
-            if(isset($attributs['type_de_variable'])){
+            if (isset($attributs['type_de_variable'])) {
                 $indicateur->type_de_variable = $attributs['type_de_variable'];
             }
 
-            if(isset($attributs['indice'])){
-                $indicateur->indice = $attributs['indice'];
-            }
-
-            if(isset($attributs['uniteeMesureId'])){
-                $indicateur->uniteeMesureId = $attributs['uniteeMesureId'];
-            }
-
-            if(isset($attributs['categorieId'])){
-                $indicateur->categorieId = $attributs['categorieId'];
-            }
-
-            if(isset($attributs['methode_de_la_collecte'])){
-                $indicateur->methode_de_la_collecte = $attributs['methode_de_la_collecte'];
-            }
-
-            if(isset($attributs['hypothese'])){
+            if (isset($attributs['hypothese'])) {
                 $indicateur->hypothese = $attributs['hypothese'];
             }
 
-            if(isset($attributs['frequence_de_la_collecte'])){
+            if (isset($attributs['indice'])) {
+                $indicateur->indice = $attributs['indice'];
+            }
+
+            if (isset($attributs['uniteeMesureId'])) {
+                $indicateur->uniteeMesureId = $attributs['uniteeMesureId'];
+            }
+
+            if (isset($attributs['categorieId'])) {
+                $indicateur->categorieId = $attributs['categorieId'];
+            }
+
+            if (isset($attributs['methode_de_la_collecte'])) {
+                $indicateur->methode_de_la_collecte = $attributs['methode_de_la_collecte'];
+            }
+
+            if (isset($attributs['hypothese'])) {
+                $indicateur->hypothese = $attributs['hypothese'];
+            }
+
+            if (isset($attributs['frequence_de_la_collecte'])) {
                 $indicateur->frequence_de_la_collecte = $attributs['frequence_de_la_collecte'];
             }
 
-            if(isset($attributs['sources_de_donnee'])){
+            if (isset($attributs['sources_de_donnee'])) {
                 $indicateur->sources_de_donnee = $attributs['sources_de_donnee'];
             }
 
@@ -682,16 +681,16 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $this->changeState(1);
 
-            if(isset($attributs['responsables']['ug']) && !is_null($attributs['responsables']['ug'])){
+            if (isset($attributs['responsables']['ug']) && !is_null($attributs['responsables']['ug'])) {
                 $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => $programme->id, "created_at" => now(), "updated_at" => now()]]);
             }
 
-            if(isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])){
+            if (isset($attributs['responsables']['organisations']) && !is_null($attributs['responsables']['organisations'])) {
                 $responsables = [];
 
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
-                    if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+                    if (!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
 
                     // Add directly to the array with the expected format
                     $responsables[$organisation->id] = [
@@ -705,18 +704,16 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $indicateur->organisations_responsable()->sync($responsables);
             }
 
-            if(isset($attributs['sites'])){
+            if (isset($attributs['sites'])) {
 
                 $sites = [];
-                foreach($attributs['sites'] as $id)
-                {
-                    if(!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
+                foreach ($attributs['sites'] as $id) {
+                    if (!($site = app(SiteRepository::class)->findById($id))) throw new Exception("Site introuvable", Response::HTTP_NOT_FOUND);
 
                     array_push($sites, $site->id);
                 }
 
                 $indicateur->sites()->sync($sites, ["programmeId" => $attributs['programmeId']]);
-
             }
 
             $indicateur->refresh();
@@ -746,19 +743,19 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         try {
 
-            if(!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
+            if (!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
 
 
-            if(isset($attributs['responsables']['ug'])){
+            if (isset($attributs['responsables']['ug'])) {
                 $indicateur->ug_responsable()->sync([$attributs['responsables']['ug'] => ["responsableable_type" => UniteeDeGestion::class, "programmeId" => auth()->user()->programmeId, "created_at" => now(), "updated_at" => now()]]);
             }
 
-            if(isset($attributs['responsables']['organisations'])){
+            if (isset($attributs['responsables']['organisations'])) {
                 $responsables = [];
 
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
-                    if(!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
+                    if (!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
 
                     // Add directly to the array with the expected format
                     $responsables[$organisation->id] = [
@@ -780,7 +777,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     public function addAnneesCible($indicateur, array $attributs): JsonResponse
@@ -790,7 +786,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         try {
 
-            if(!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
+            if (!is_object($indicateur) && !($indicateur = $this->repository->findById($indicateur))) throw new Exception("Indicateur inconnu", 1);
 
             $this->setIndicateurValeursCible($indicateur, auth()->user()->programme, $attributs["anneesCible"]);
 
@@ -804,7 +800,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     /**
@@ -820,9 +815,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         try {
 
-            if(!is_object($indicateurId) && !($indicateurId = $this->repository->findById($indicateurId))) throw new Exception("Indicateur inconnu", 1);
+            if (!is_object($indicateurId) && !($indicateurId = $this->repository->findById($indicateurId))) throw new Exception("Indicateur inconnu", 1);
 
-            if($indicateurId->suivis->isNotEmpty()) throw new Exception("Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.",500);
+            if ($indicateurId->suivis->isNotEmpty()) throw new Exception("Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.", 500);
 
 
             $this->attachValueKeys($indicateurId, $attributs);
@@ -876,9 +871,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         try {
 
-            if(!is_object($indicateurId) && !($indicateurId = $this->repository->findById($indicateurId))) throw new Exception("Indicateur inconnu", 1);
+            if (!is_object($indicateurId) && !($indicateurId = $this->repository->findById($indicateurId))) throw new Exception("Indicateur inconnu", 1);
 
-            if($indicateurId->suivis->isNotEmpty()) throw new Exception("Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.",500);
+            if ($indicateurId->suivis->isNotEmpty()) throw new Exception("Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.", 500);
 
             $valueKeys = [];
 
@@ -933,7 +928,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      *
      * @return void
      */
-    protected function attachValueKeys(Indicateur $indicateur, array $attributs){
+    protected function attachValueKeys(Indicateur $indicateur, array $attributs)
+    {
 
         if (isset($attributs["value_keys"])) {
             foreach ($attributs["value_keys"] as $key => $value_key) {
@@ -963,8 +959,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 if (!($unitee = Unitee::find($attributs['uniteeMesureId']))) {
                     throw new Exception("Unitee de mesure inconnue", 404);
                 }
-            }
-            else{
+            } else {
                 $unitee = $indicateur->unitee_mesure;
             }
 
@@ -981,7 +976,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      *
      * @return array
      */
-    protected function setIndicateurValue(Indicateur $indicateur, Programme $programme, $valeursDeBase, array $valeurDeBase =[]){
+    protected function setIndicateurValue(Indicateur $indicateur, Programme $programme, $valeursDeBase, array $valeurDeBase = [])
+    {
 
         if (is_array($valeursDeBase)) {
             foreach ($valeursDeBase as $key => $item) {
@@ -1014,7 +1010,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      *
      * @return array
      */
-    protected function setIndicateurValeursCible(Indicateur $indicateur, Programme $programme, $annneesCible =[]){
+    protected function setIndicateurValeursCible(Indicateur $indicateur, Programme $programme, $annneesCible = [])
+    {
         if (is_array($annneesCible)) {
             foreach ($annneesCible as $key => $anneeCible) {
 
@@ -1038,17 +1035,13 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                                 $valeurCible = array_merge($valeurCible, ["{$key->key}" => $valeur->value]);
                             }
                         }
-
-                    }
-
-                    else if (!$indicateur->agreger && !is_array($anneeCible["valeurCible"])) {
+                    } else if (!$indicateur->agreger && !is_array($anneeCible["valeurCible"])) {
                         //dd($anneeCible["valeurCible"]);
                         $valeur = $valeurCibleIndicateur->valeursCible()->create(["value" => $anneeCible["valeurCible"], "indicateurValueKeyMapId" => $indicateur->valueKey()->pivot->id, 'programmeId' => $programme->id]);
 
                         $valeurCible = array_merge($valeurCible, ["{$indicateur->valueKey()->key}" => $valeur->value]);
                         //$valeurCible = ["key" => $indicateur->valueKey()->key, "value" => $valeur->value];
-                    }
-                    else{
+                    } else {
                         throw new Exception("Veuillez préciser la valeur cible dans le format adequat.", 400);
                     }
 
@@ -1056,7 +1049,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                     $valeurCibleIndicateur->save();
                 }
-
             }
         }
     }
@@ -1100,4 +1092,292 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
         $valeurCibleIndicateur->save();
     }*/
+
+
+
+    /**
+     * Modifie les valeurs cibles d'un indicateur
+     * Gère les indicateurs agrégés et non agrégés avec leurs clés de valeurs
+     *
+     * @param mixed $indicateur ID ou instance de l'indicateur
+     * @param array $attributs Données des valeurs cibles à modifier
+     * @return JsonResponse
+     */
+    public function updateValeursCibles($indicateur, array $attributs): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            // Récupération de l'indicateur
+            if (is_string($indicateur)) {
+                $indicateur = $this->repository->findById($indicateur);
+            }
+
+            if (!$indicateur) {
+                throw new Exception("Indicateur inconnu", 404);
+            }
+
+            // Vérification que l'utilisateur a les droits de modification
+            $programme = Auth::user()->programme;
+
+            if ($indicateur->programmeId !== $programme->id) {
+                throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
+            }
+
+            // Validation des données d'entrée
+            if (!isset($attributs['anneesCible']) || !is_array($attributs['anneesCible'])) {
+                throw new Exception("Les années cibles doivent être fournies sous forme de tableau", 422);
+            }
+
+            // Traitement de chaque année cible
+            foreach ($attributs['anneesCible'] as $anneeCible) {
+
+                // Validation des données de l'année
+                if (!isset($anneeCible['annee'])) {
+                    throw new Exception("L'année doit être spécifiée pour chaque valeur cible", 422);
+                }
+
+                if (!isset($anneeCible['valeurCible'])) {
+                    throw new Exception("La valeur cible doit être spécifiée pour l'année {$anneeCible['annee']}", 422);
+                }
+
+                // Validation de l'année dans la période du programme
+                $annee = (int)$anneeCible['annee'];
+                $anneeDebut = Carbon::parse($programme->debut)->year;
+                $anneeFin = Carbon::parse($programme->fin)->year;
+
+                if ($annee < $anneeDebut || $annee > $anneeFin) {
+                    throw new Exception("L'année {$annee} doit être comprise entre {$anneeDebut} et {$anneeFin}", 422);
+                }
+
+                // Recherche ou création de la valeur cible pour cette année
+                $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository
+                    ->newInstance()
+                    ->where("cibleable_id", $indicateur->id)
+                    ->where("cibleable_type", get_class($indicateur))
+                    ->where("annee", $annee)
+                    ->first();
+
+                // Si la valeur cible n'existe pas, on la crée
+                if (!$valeurCibleIndicateur) {
+                    $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository->create([
+                        "annee" => $annee,
+                        "cibleable_id" => $indicateur->id,
+                        "cibleable_type" => get_class($indicateur),
+                        "programmeId" => $programme->id,
+                        "valeurCible" => [] // Sera mis à jour ci-dessous
+                    ]);
+                }
+
+                // Gestion selon le type d'indicateur (agrégé ou simple)
+                $valeurCible = [];
+
+                if ($indicateur->agreger) {
+                    // Indicateur agrégé - les valeurs sont un tableau avec des clés
+                    if (!is_array($anneeCible["valeurCible"])) {
+                        throw new Exception("Pour un indicateur agrégé, les valeurs cibles doivent être un tableau avec les clés correspondantes pour l'année {$annee}", 422);
+                    }
+
+                    // Validation que toutes les clés de l'indicateur ont une valeur
+                    $indicateurKeys = $indicateur->valueKeys->pluck('id')->toArray();
+                    $valeursKeys = collect($anneeCible["valeurCible"])->pluck('keyId')->toArray();
+
+                    $missingKeys = array_diff($indicateurKeys, $valeursKeys);
+                    if (!empty($missingKeys)) {
+                        throw new Exception("Les clés d'indicateur suivantes sont manquantes dans les valeurs cibles pour l'année {$annee}: " . implode(', ', $missingKeys), 422);
+                    }
+
+                    // Suppression des anciennes valeurs pour cette année
+                    $valeurCibleIndicateur->valeursCible()->delete();
+
+                    // Création des nouvelles valeurs
+                    foreach ($anneeCible["valeurCible"] as $data) {
+                        if (!isset($data['keyId']) || !isset($data['value'])) {
+                            throw new Exception("Chaque valeur cible doit contenir 'keyId' et 'value' pour l'année {$annee}", 422);
+                        }
+
+                        // Vérification que la clé existe dans l'indicateur
+                        $valueKey = $indicateur->valueKeys()->where("indicateur_value_keys.id", $data['keyId'])->first();
+
+                        if (!$valueKey) {
+                            throw new Exception("La clé {$data['keyId']} n'est pas associée à cet indicateur", 422);
+                        }
+
+                        // Validation que la valeur est numérique si l'unité de mesure l'exige
+                        if ($valueKey->pivot->type !== 'text' && !is_numeric($data['value'])) {
+                            throw new Exception("La valeur pour la clé '{$valueKey->key}' doit être numérique pour l'année {$annee}", 422);
+                        }
+
+                        // Création de la valeur cible
+                        $valeur = $valeurCibleIndicateur->valeursCible()->create([
+                            "value" => $data["value"],
+                            "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                            "programmeId" => $programme->id
+                        ]);
+
+                        $valeurCible["{$valueKey->key}"] = $valeur->value;
+                    }
+                } else {
+                    // Indicateur simple - une seule valeur
+                    if (is_array($anneeCible["valeurCible"])) {
+                        throw new Exception("Pour un indicateur simple, la valeur cible doit être une valeur unique pour l'année {$annee}", 422);
+                    }
+
+                    // Validation que la valeur est numérique si nécessaire
+                    $valueKey = $indicateur->valueKey();
+                    if (!$valueKey) {
+                        throw new Exception("Aucune clé de valeur trouvée pour cet indicateur", 500);
+                    }
+
+                    if ($valueKey->pivot->type !== 'text' && !is_numeric($anneeCible["valeurCible"])) {
+                        throw new Exception("La valeur cible doit être numérique pour l'année {$annee}", 422);
+                    }
+
+                    // Suppression de l'ancienne valeur
+                    $valeurCibleIndicateur->valeursCible()->delete();
+
+                    // Création de la nouvelle valeur
+                    $valeur = $valeurCibleIndicateur->valeursCible()->create([
+                        "value" => $anneeCible["valeurCible"],
+                        "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                        "programmeId" => $programme->id
+                    ]);
+
+                    $valeurCible["{$valueKey->key}"] = $valeur->value;
+                }
+
+                // Mise à jour de la valeur cible consolidée
+                $valeurCibleIndicateur->valeurCible = $valeurCible;
+                $valeurCibleIndicateur->save();
+            }
+
+            // Rafraîchissement de l'indicateur pour obtenir les nouvelles données
+            $indicateur->refresh();
+
+            // Logging de l'activité
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+            $message = Str::ucfirst($acteur) . " a modifié les valeurs cibles de l'indicateur " . $indicateur->nom;
+
+            // LogActivity::addToLog("Modification valeurs cibles", $message, get_class($indicateur), $indicateur->id);
+
+            DB::commit();
+
+            // Nettoyage du cache
+            Cache::forget('indicateurs');
+            Cache::forget('indicateurs-' . $indicateur->id);
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => 'Valeurs cibles mises à jour avec succès',
+                'data' => new IndicateursResource($indicateur),
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Modifie une valeur cible spécifique pour une année donnée
+     *
+     * @param mixed $indicateur ID ou instance de l'indicateur
+     * @param int $annee Année de la valeur cible
+     * @param array $valeurCible Nouvelle valeur cible
+     * @return JsonResponse
+     */
+    public function updateValeurCibleAnnee($indicateur, int $annee, array $valeurCible): JsonResponse
+    {
+        return $this->updateValeursCibles($indicateur, [
+            'anneesCible' => [
+                [
+                    'annee' => $annee,
+                    'valeurCible' => $valeurCible
+                ]
+            ]
+        ]);
+    }
+
+    /**
+     * Supprime une valeur cible pour une année donnée
+     *
+     * @param mixed $indicateur ID ou instance de l'indicateur
+     * @param int $annee Année de la valeur cible à supprimer
+     * @return JsonResponse
+     */
+    public function deleteValeurCibleAnnee($indicateur, int $annee): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            // Récupération de l'indicateur
+            if (is_string($indicateur)) {
+                $indicateur = $this->repository->findById($indicateur);
+            }
+
+            if (!$indicateur) {
+                throw new Exception("Indicateur inconnu", 404);
+            }
+
+            // Vérification des droits
+            $programme = Auth::user()->programme;
+            if ($indicateur->programmeId !== $programme->id) {
+                throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
+            }
+
+            // Recherche de la valeur cible
+            $valeurCibleIndicateur = $this->valeurCibleIndicateurRepository
+                ->newInstance()
+                ->where("cibleable_id", $indicateur->id)
+                ->where("cibleable_type", get_class($indicateur))
+                ->where("annee", $annee)
+                ->first();
+
+            if (!$valeurCibleIndicateur) {
+                throw new Exception("Aucune valeur cible trouvée pour l'année {$annee}", 404);
+            }
+
+            // Vérification qu'il n'y a pas de suivis associés
+            if ($valeurCibleIndicateur->suivisIndicateur()->count() > 0) {
+                throw new Exception("Impossible de supprimer cette valeur cible car des suivis y sont associés", 422);
+            }
+
+            // Suppression des valeurs détaillées et de la valeur cible
+            $valeurCibleIndicateur->valeursCible()->delete();
+            $valeurCibleIndicateur->delete();
+
+            // Logging
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+            $message = Str::ucfirst($acteur) . " a supprimé la valeur cible de l'année {$annee} pour l'indicateur " . $indicateur->nom;
+
+            // LogActivity::addToLog("Suppression valeur cible", $message, get_class($indicateur), $indicateur->id);
+
+            DB::commit();
+
+            // Nettoyage du cache
+            Cache::forget('indicateurs');
+            Cache::forget('indicateurs-' . $indicateur->id);
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => "Valeur cible de l'année {$annee} supprimée avec succès",
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }
