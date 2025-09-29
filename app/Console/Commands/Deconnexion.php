@@ -341,6 +341,106 @@ class Deconnexion extends Command
                                             "activites" => $act]);
                         }
 
+                        $activites = $composante->activites;
+
+                        if(count($activites))
+                        {
+                            $activites = $this->triPta($activites);
+                            $sctab = [];
+                            $act = [];
+
+                            foreach($activites as $activite)
+                            {
+                                if($activite->statut < -1) continue;
+                                $controle = 1;
+
+                                    $durees = $activite->durees;
+                                    foreach($durees as $duree)
+                                    {
+                                        $debutTab = explode('-', $duree->debut);
+                                        $finTab = explode('-', $duree->fin);
+
+                                        if($debutTab[0] <= date('Y') && $finTab[0] >= date('Y'))
+                                        {
+                                            $controle = 0;
+                                            break;
+                                        }
+                                    }
+
+                                    if($controle)
+                                    {
+                                        continue;
+                                    }
+
+                                    $taches = $this->triPta($activite->taches);
+                                    $tachestab = [];
+                                    foreach($taches as $tache)
+                                    {
+                                        if($tache->statut < -1) continue;
+
+                                        $controle = 1;
+
+                                        $durees = $tache->durees;
+                                        foreach($durees as $duree)
+                                        {
+                                            $debutTab = explode('-', $duree->debut);
+                                            $finTab = explode('-', $duree->fin);
+
+                                            if($debutTab[0] <= date('Y') && $finTab[0] >= date('Y'))
+                                            {
+                                                $controle = 0;
+                                                break;
+                                            }
+                                        }
+
+                                        if($controle)
+                                        {
+                                            continue;
+                                        }
+
+                                        array_push($tachestab, [
+                                            "id" => $tache->secure_id,
+                                            "nom" => $tache->nom,
+                                            "code" => $tache->codePta,
+                                            "poids" => $tache->poids,
+                                            "poidsActuel" => optional($tache->suivis->last())->poidsActuel ?? 0,
+                                            "durees" => $this->dureePta($tache->durees->where('debut', '>=', date('Y').'-01-01')->where('fin', '<=', date('Y').'-12-31')->toArray())
+                                        ]);
+                                    }
+
+                                    array_push($act, ["id" => $activite->id,
+                                                  "nom" => $activite->nom,
+                                                  "code" => $activite->codePta,
+                                                  "budgetNational" => $activite->budgetNational,
+                                                  "pret" => $activite->pret,
+                                                  "trimestre1" => $activite->planDeDecaissement(1, date('Y')),
+                                                  "trimestre2" => $activite->planDeDecaissement(2, date('Y')),
+                                                  "trimestre3" => $activite->planDeDecaissement(3, date('Y')),
+                                                      "trimestre4" => $activite->planDeDecaissement(4, date('Y')),
+                                                      "budgetise" => $activite->planDeDecaissementParAnnee(date('Y')),
+                                                      "poids" => $activite->poids,
+                                                      "poidsActuel" => optional($activite->suivis->last())->poidsActuel ?? 0,
+                                                      "structureResponsable" => $activite->structureResponsable()->nom,
+                                                      "structureAssocie" => $activite->structureAssociee()->nom,
+                                                      "durees" => $this->dureePta($activite->durees->where('debut', '>=', date('Y').'-01-01')->where('fin', '<=', date('Y').'-12-31')->toArray()),
+                                                  "taches" => $tachestab]);
+                            }
+
+                            array_push($sctab, ["id" => 0,
+                                            "nom" => 0,
+                                            "code" => 0,
+                                            "budgetNational" => 0,
+                                            "pret" => 0,
+                                            "trimestre1" => 0,
+                                            "trimestre2" => 0,
+                                            "trimestre3" => 0,
+                                            "trimestre4" => 0,
+                                            "budgetise" => 0,
+                                            "poids" => 0,
+                                            "poidsActuel" => 0,
+                                            "activites" => $act]);
+                        }
+
                         array_push($composantestab, ["id" => $composante->secure_id,
                                                       "nom" => $composante->nom,
                                                       "code" => $composante->codePta,

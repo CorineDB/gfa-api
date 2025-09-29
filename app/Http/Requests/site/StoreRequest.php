@@ -36,18 +36,17 @@ class StoreRequest extends FormRequest
      */
     public function rules()
     {
-
         return [
 
             'nom'               => ['required', 'string', Rule::unique('sites', 'nom')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'quartier'          => 'nullable|string',
-            'arrondissement'    => 'required|string',
-            'commune'           => 'required|string',
-            'departement'       => 'required|string',
+            'arrondissement'    => 'nullable|string',
+            'commune'           => 'nullable|string',
+            'departement'       => 'nullable|string',
             'pays'              => 'required|string',
-            'latitude'          => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
-            'longitude'         => ['required', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'latitude'          => ['nullable', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
+            'longitude'         => ['nullable', 'numeric', 'regex:/^[-]?((1[0-7][0-9])|([1-9]?[0-9])|(180))(\.\d+)?$/'],
             'projetId' => ['sometimes', new HashValidatorRule(new Projet())],
             'indicateurId' => ['sometimes', new HashValidatorRule(new Indicateur())],
             /*
