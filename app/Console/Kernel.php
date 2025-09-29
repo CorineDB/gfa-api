@@ -30,13 +30,13 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly
-        $schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
+       /*$schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
 
-        $schedule->command('command:change-statut')->everyMinute();
+        $schedule->command('command:change-statut')->everyFifteenMinutes();
         $schedule->command('change-statut:evaluations')->everyMinute();//->dailyAt('00:00');
         $schedule->command('generate:report-for-validated-soumissions')->daily();
 
-        $schedule->command('command:demarrage')->everyMinute();
+       //$schedule->command('command:demarrage')->everyMinute();
 
        $schedule->command('command:rapport')->everyFifteenMinutes();
        $schedule->command('command:suivi')->everyFifteenMinutes();
@@ -56,6 +56,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('backup:run')->$backupFrequence();
         }
         $schedule->command('gauge:prune')->daily();
+      */
 
     }
 

@@ -169,7 +169,7 @@ class ActiviteService extends BaseService implements ActiviteServiceInterface
             }
 
             $suiviFinanciers = $activite->suiviFinanciers($attributs["annee"] ?? null)
-                ->when($attributs["annee"], function($query) use ($attributs) {
+                ->when(isset($attributs["trimestre"]) && $attributs["trimestre"], function($query) use ($attributs) {
                     return $query->where("trimestre", $attributs['trimestre']);
                 })
                 ->sortByDesc("created_at");

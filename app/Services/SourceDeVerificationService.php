@@ -109,7 +109,17 @@ class SourceDeVerificationService extends BaseService implements SourceDeVerific
 
         try {
 
-            if(!is_object($sourceDeVerification) && !($sourceDeVerification = $this->repository->findById($sourceDeVerification))) throw new Exception("Cette option de reponse n'existe pas", 500);
+	    throw new Exception($sourceDeVerification);
+            if(is_string($sourceDeVerification))
+            {
+                $sourceDeVerification = $this->repository->findById($sourceDeVerification);
+            }
+            else{
+                $sourceDeVerification = $sourceDeVerification;
+            }
+
+
+            //if(!is_object($sourceDeVerification) && !($sourceDeVerification = $this->repository->findById($sourceDeVerification))) throw new Exception("Cette option de reponse n'existe pas", 500);
 
             $this->repository->update($sourceDeVerification->id, $attributs);
 

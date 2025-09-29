@@ -78,7 +78,7 @@ class SiteService extends BaseService implements SiteServiceInterface
             $user = Auth::user();
             $programme = Programme::find($user->programmeId);
 
-            $attributs = array_merge($attributs, ['nom' => strtolower($attributs['nom'])]);
+            $attributs = array_merge($attributs, ['nom' => ucfirst(strtolower($attributs['nom']))]);
 
             $attributs = array_merge($attributs, ['programmeId' => Auth::user()->programme->id]);
 
@@ -148,7 +148,7 @@ class SiteService extends BaseService implements SiteServiceInterface
                 $site = $site;
             }
 
-            $attributs = array_merge($attributs, ['nom' => strtolower($attributs['nom'])]);
+            $attributs = array_merge($attributs, ['nom' => ucfirst(strtolower($attributs['nom']))]);
 
             $site = $site->fill($attributs);
 

@@ -648,8 +648,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $indicateur->type_de_variable = $attributs['type_de_variable'];
             }
 
-            if(isset($attributs['type_de_variable'])){
-                $indicateur->type_de_variable = $attributs['type_de_variable'];
+            if(isset($attributs['indice'])){
+                $indicateur->indice = $attributs['indice'];
             }
 
             if(isset($attributs['uniteeMesureId'])){
