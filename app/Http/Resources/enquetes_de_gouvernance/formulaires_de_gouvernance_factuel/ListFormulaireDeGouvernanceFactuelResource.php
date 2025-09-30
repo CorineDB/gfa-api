@@ -27,7 +27,10 @@ class ListFormulaireDeGouvernanceFactuelResource extends JsonResource
                     "id"                    => $option->secure_id,
                     'libelle'               => $option->libelle,
                     'slug'                  => $option->slug,
-                    'point'                 => $option->pivot->point
+                    'point'                 => $option->pivot->point,
+                    'preuveIsRequired'      => $option->pivot->preuveIsRequired,
+                    'sourceIsRequired'      => $option->pivot->sourceIsRequired,
+                    'descriptionIsRequired' => $option->pivot->descriptionIsRequired
                 ];
             }),
             'categories_de_gouvernance' => CategoriesFactuelDeGouvernanceResource::collection($this->categories_de_gouvernance)
