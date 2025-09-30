@@ -90,6 +90,9 @@ class ReponseDeLaCollecteFactuel extends Model
 
         if ($this->preuveIsRequired) {
             $donnees_attendues = 7;
+        }
+        elseif ($this->descriptionIsRequired) {
+            $donnees_attendues = 6;
         }else {
             $donnees_attendues = 5;
         }
@@ -103,6 +106,12 @@ class ReponseDeLaCollecteFactuel extends Model
             }
 
             if ($this->sourceDeVerification || $this->sourceDeVerificationId) {
+                $donnees_collectees++;
+            }
+        }
+        elseif ($this->descriptionIsRequired) {
+
+            if (!empty($this->description)) {
                 $donnees_collectees++;
             }
         }

@@ -100,9 +100,9 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                     if (!$option && $option->programmeId == $programmeId) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if (isset($option_de_reponse['preuveIsRequired'])) {
-                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired'], 'sourceIsRequired' => $option_de_reponse['preuveIsRequired'], 'descriptionIsRequired' => !$option_de_reponse['preuveIsRequired'], 'programmeId' => $programmeId];
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired'], 'sourceIsRequired' => $option_de_reponse['sourceIsRequired'], 'descriptionIsRequired' => isset($option_de_reponse['descriptionIsRequired']) ? $option_de_reponse['descriptionIsRequired'] : false, 'programmeId' => $programmeId];
                     } else {
-                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => false, 'sourceIsRequired' => false, 'descriptionIsRequired' => false, 'programmeId' => $programmeId];
+                        $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => false, 'sourceIsRequired' => false, 'descriptionIsRequired' => isset($option_de_reponse['descriptionIsRequired']) ? $option_de_reponse['descriptionIsRequired'] : false, 'programmeId' => $programmeId];
                     }
                 }
 
@@ -204,10 +204,16 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
 
                         if (!$option && $option->programmeId == $programmeId) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
-                        if (isset($option_de_reponse['preuveIsRequired'])) {
+                        /*if (isset($option_de_reponse['preuveIsRequired'])) {
                             $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId, 'preuveIsRequired' => $option_de_reponse['preuveIsRequired']];
                         } else {
                             $options[$option->id] = ['point' => $option_de_reponse['point'], 'programmeId' => $programmeId];
+                        }*/
+
+                        if (isset($option_de_reponse['preuveIsRequired'])) {
+                            $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => $option_de_reponse['preuveIsRequired'], 'sourceIsRequired' => $option_de_reponse['sourceIsRequired'], 'descriptionIsRequired' => isset($option_de_reponse['descriptionIsRequired']) ? $option_de_reponse['descriptionIsRequired'] : false, 'programmeId' => $programmeId];
+                        } else {
+                            $options[$option->id] = ['point' => $option_de_reponse['point'], 'preuveIsRequired' => false, 'sourceIsRequired' => false, 'descriptionIsRequired' => isset($option_de_reponse['descriptionIsRequired']) ? $option_de_reponse['descriptionIsRequired'] : false, 'programmeId' => $programmeId];
                         }
                     }
 
@@ -334,7 +340,7 @@ class FormulaireFactuelDeGouvernanceService extends BaseService implements Formu
                     $categories_de_gouvernance = $formulaireDeGouvernance->all_categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
 
 		    \Illuminate\Support\Facades\Log::notice(json_encode($categories_de_gouvernance->get()->toArray()));
-		    
+
                     //$categories_de_gouvernance = $formulaireDeGouvernance->categories_de_gouvernance()->whereNotIn('id', $categories_de_gouvernance);
 
 
