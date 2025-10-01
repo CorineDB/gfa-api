@@ -403,7 +403,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     ->first();
 
                 if (!$formOption) {
-                    $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire." . $decodedOptionId . " ". $resp['optionDeReponseId']);
+                    $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire. " . $decodedOptionId . " - ". $resp['optionDeReponseId']);
                     continue;
                 } else {
 
