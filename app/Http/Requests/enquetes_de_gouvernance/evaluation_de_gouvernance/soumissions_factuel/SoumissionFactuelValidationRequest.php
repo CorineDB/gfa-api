@@ -193,7 +193,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             if ($formOption) {
 
-                                if ($formOption->pivot_preuveIsRequired) {
+                                if ($formOption->pivot->preuveIsRequired) {
 
                                     $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
@@ -452,7 +452,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                 /**
                  * 🔎 Validation des preuves (logique déjà posée)
                  */
-                if ($formOption->pivot_preuveIsRequired) {
+                if ($formOption->pivot->preuveIsRequired) {
                     $reponse = $question->reponses()
                         ->where('soumissionId', request()->input('soumissionId'))
                         ->first();
@@ -499,6 +499,10 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     }
                 }
             }
+
+            throw_if($validator->errors()->isNotEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
+
+            throw_if($validator->errors()->isEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
         });
     }
 }
