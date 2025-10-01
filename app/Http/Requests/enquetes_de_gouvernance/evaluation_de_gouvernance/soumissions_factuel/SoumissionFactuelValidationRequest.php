@@ -193,7 +193,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             if ($formOption) {
 
-                                if ($formOption->pivot->preuveIsRequired) {
+                                if ($formOption->pivot_preuveIsRequired) {
 
                                     $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
@@ -453,7 +453,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                 /**
                  * 🔎 Validation des preuves (logique déjà posée)
                  */
-                if ($formOption->pivot->preuveIsRequired) {
+                if ($formOption->pivot_preuveIsRequired) {
                     $reponse = $question->reponses()
                         ->where('soumissionId', request()->input('soumissionId'))
                         ->first();
