@@ -370,7 +370,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                 if (!$question) {
                     $validator->errors()->add("factuel.response_data.$i.questionId", "Cet indicateur n'existe pas.");
-                    //continue;
+                    continue;
                 }
 
                 // Vérifier que optionDeReponseId est fourni
@@ -404,7 +404,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                 if (!$formOption) {
                     $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire.");
-                    //continue;
+                    continue;
                 } else {
 
                     /**
