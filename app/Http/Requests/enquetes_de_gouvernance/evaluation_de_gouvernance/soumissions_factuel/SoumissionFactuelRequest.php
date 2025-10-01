@@ -164,7 +164,7 @@ class SoumissionFactuelRequest extends FormRequest
             'factuel.response_data.*.optionDeReponseId.exists' => "L'option de réponse sélectionnée est invalide.",
             'factuel.response_data.*.description.required' => 'La description est requise.',
             'factuel.response_data.*.sourceDeVerificationId.required' => 'Veuillez sélectionner une source de vérification.',
-            'factuel.response_data.*.sourceDeVerification.required' => 'Le champ source de vérification est requis.'
+            'factuel.response_data.*.sourceDeVerification.required' => 'Le champ source de vérification est requis.',
 
             'factuel.response_data.*.preuves.array' => "Les preuves doivent être un tableau de fichiers.",
             'factuel.response_data.*.preuves.*.file' => "Chaque preuve doit être un fichier valide.",
