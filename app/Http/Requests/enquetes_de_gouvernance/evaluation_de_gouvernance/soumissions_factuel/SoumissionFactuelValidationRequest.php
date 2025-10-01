@@ -388,6 +388,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                 $formOption = $this->formulaireCache
                     ->options_de_reponse()
                     ->wherePivot('optionId', $resp['optionDeReponseId'] ?? null)
+                    ->withPivot('preuveIsRequired', 'sourceIsRequired', 'descriptionIsRequired')
                     ->first();
 
                 if (!$formOption) {
@@ -398,7 +399,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                 /**
                  * 🔎 Validation de la description
                  */
-                if ($formOption->pivot->descriptionIsRequired == 1) {
+                if ($formOption && $formOption->pivot_descriptionIsRequired == 1) {
                     $description = $resp['description'] ?? null;
 
                     if (empty($description)) {
@@ -417,7 +418,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                 /**
                  * 🔎 Validation de la sourceDeVerificationId
                  */
-                if ($formOption->pivot->preuveIsRequired == 1) {
+                if ($formOption && $formOption->pivot_preuveIsRequired == 1) {
                     $sourceDeVerification = $resp['sourceDeVerification'] ?? null;
                     $sourceDeVerificationId = $resp['sourceDeVerificationId'] ?? null;
 
