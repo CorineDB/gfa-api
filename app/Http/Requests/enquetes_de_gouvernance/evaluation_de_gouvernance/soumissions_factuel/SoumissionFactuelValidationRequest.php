@@ -395,6 +395,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire.");
                     //continue;
                 }
+                else{
 
                 /**
                  * 🔎 Validation de la description
@@ -498,7 +499,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             }
                         }
                     }
-                }
+                }}
             }
 
             throw_if($validator->errors()->isNotEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
