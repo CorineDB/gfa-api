@@ -182,7 +182,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                             if ($formOption) {
 
-                                if ($formOption->pivot_preuveIsRequired) {
+                                if ($formOption->pivot->preuveIsRequired) {
 
                                     $reponse = $question->reponses()->where('soumissionId', request()->input('soumissionId'))->first();
 
@@ -411,7 +411,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     /**
                      * 🔎 Validation de la description
                      */
-                    if ($formOption && $formOption->pivot_descriptionIsRequired == 1) {
+                    if ($formOption && $formOption->pivot->descriptionIsRequired == 1) {
                         $description = $resp['description'] ?? null;
 
                         if (empty($description)) {
@@ -430,7 +430,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     /**
                      * 🔎 Validation de la sourceDeVerificationId
                      */
-                    if ($formOption && $formOption->pivot_preuveIsRequired == 1) {
+                    if ($formOption && $formOption->pivot->preuveIsRequired == 1) {
                         $sourceDeVerification = $resp['sourceDeVerification'] ?? null;
                         $sourceDeVerificationId = $resp['sourceDeVerificationId'] ?? null;
 
@@ -465,7 +465,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     /**
                      * 🔎 Validation des preuves (logique déjà posée)
                      */
-                    if ($formOption->pivot_preuveIsRequired) {
+                    if ($formOption->pivot->preuveIsRequired) {
                         $reponse = $question->reponses()
                             ->where('soumissionId', request()->input('soumissionId'))
                             ->first();
