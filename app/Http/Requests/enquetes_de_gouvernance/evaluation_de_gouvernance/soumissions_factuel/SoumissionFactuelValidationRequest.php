@@ -375,7 +375,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
                 // Vérifier que optionDeReponseId est fourni
                 if (empty($resp['optionDeReponseId']) || $resp['optionDeReponseId'] === 'null') {
-                    $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "L'option de réponse est requise.");
+                    $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "L'option de réponse est requise. decodedOptionId " . " - ". $resp['optionDeReponseId']);
                     continue;
                 }
 
