@@ -402,7 +402,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     ->withPivot('preuveIsRequired', 'sourceIsRequired', 'descriptionIsRequired')
                     ->first();
 
-                $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire." . json_encode($formOption));
+                $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire.");
                 if (!$formOption) {
                     $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire.");
                     continue;
