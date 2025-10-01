@@ -449,6 +449,12 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                         "La source de vérification est invalide."
                                     );
                                 }
+                                else {
+                                    $validator->errors()->add(
+                                        "factuel.response_data.$i.sourceDeVerificationId",
+                                        "Veuillez preciser la source de verification."
+                                    );
+                                }
                             }
                             // Si une source textuelle est fournie → vérifier qu’elle est une string valide et min 10 caractères
                             elseif (!empty($sourceDeVerification)) {
@@ -458,6 +464,18 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                         "La source de vérification doit contenir au moins 10 caractères."
                                     );
                                 }
+                            }
+                            elseif (empty($sourceDeVerification)) {
+                                $validator->errors()->add(
+                                    "factuel.response_data.$i.sourceDeVerification",
+                                    "La source de vérification n'a pas ete renseigne."
+                                );
+                            }
+                            else {
+                                $validator->errors()->add(
+                                    "factuel.response_data.$i.sourceDeVerificationId",
+                                    "Veuillez preciser la source de verification."
+                                );
                             }
                         }
                     }
