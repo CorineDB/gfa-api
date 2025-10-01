@@ -752,7 +752,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             if (isset($attributs['responsables']['organisations'])) {
                 $responsables = [];
-
+                \Illuminate\Support\Facades\Log::notice("Log responsable organisation : " . json_encode($attributs['responsables']['organisations']));
                 foreach ($attributs['responsables']['organisations'] as $key => $organisation_responsable) {
 
                     if (!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) throw new Exception("Organisation inconnu", 1);
@@ -769,7 +769,13 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $indicateur->organisations_responsable()->attach($responsables);
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            $indicateur->refresh();
+
+            \Illuminate\Support\Facades\Log::notice("Log responsable organisation : " . json_encode($indicateur->organisations_responsable));
+
+            DB::commit(); // ⚠️ CORRECTION PRINCIPALE : Ajout du commit manquant
+
+            return response()->json(['statut' => 'success', 'message' => 'Structures responsables ajoutées avec succès', 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             DB::rollback();
@@ -792,7 +798,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             $indicateur->refresh();
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            DB::commit(); // ⚠️ CORRECTION : Ajout du commit manquant
+
+            return response()->json(['statut' => 'success', 'message' => 'Années cibles ajoutées avec succès', 'data' => new IndicateurResource($indicateur), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
 
             DB::rollback();
@@ -1124,6 +1132,20 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
             }
 
+            // Gérer le changement de type d'indicateur si nécessaire
+            if (isset($attributs['agreger']) && $indicateur->agreger !== (bool)$attributs['agreger']) {
+                // Déléguer le changement de type à la fonction spécialisée
+                $changeTypeResult = $this->changeIndicateurType($indicateur, $attributs);
+
+                // Si le changement a échoué, retourner l'erreur
+                if ($changeTypeResult->getStatusCode() !== 200) {
+                    return $changeTypeResult;
+                }
+
+                // Recharger l'indicateur après le changement de type
+                $indicateur->refresh();
+            }
+
             // Validation des données d'entrée
             if (!isset($attributs['anneesCible']) || !is_array($attributs['anneesCible'])) {
                 throw new Exception("Les années cibles doivent être fournies sous forme de tableau", 422);
@@ -1292,7 +1314,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
      * @param array $valeurCible Nouvelle valeur cible
      * @return JsonResponse
      */
-    public function updateValeurCibleAnnee($indicateur, int $annee, array $valeurCible): JsonResponse
+    public function updateValeurCibleAnnee($indicateur, int $annee, $valeurCible): JsonResponse
     {
         return $this->updateValeursCibles($indicateur, [
             'anneesCible' => [
@@ -1369,6 +1391,562 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 'message' => "Valeur cible de l'année {$annee} supprimée avec succès",
                 'statutCode' => Response::HTTP_OK
             ], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Change le type d'indicateur (agrégé ↔ simple) et restructure les valeurs cibles
+     *
+     * @param mixed $indicateur ID ou instance de l'indicateur
+     * @param array $attributs Données incluant le nouveau statut agrégé et les value_keys
+     * @return JsonResponse
+     */
+    public function changeIndicateurType($indicateur, array $attributs): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            // Récupération de l'indicateur
+            if (is_string($indicateur)) {
+                $indicateur = $this->repository->findById($indicateur);
+            }
+
+            if (!$indicateur) {
+                throw new Exception("Indicateur inconnu", 404);
+            }
+
+            // Vérification des droits
+            $programme = Auth::user()->programme;
+            if ($indicateur->programmeId !== $programme->id) {
+                throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
+            }
+
+            // Vérification qu'il n'y a pas de suivis
+            if ($indicateur->suivis->isNotEmpty()) {
+                throw new Exception("Impossible de changer le type d'un indicateur qui a déjà des suivis", 422);
+            }
+
+            $nouveauAgreger = isset($attributs['agreger']) ? (bool)$attributs['agreger'] : $indicateur->agreger;
+
+            // Si le type ne change pas, pas besoin de restructurer
+            if ($indicateur->agreger === $nouveauAgreger) {
+                return response()->json([
+                    'statut' => 'success',
+                    'message' => 'Aucun changement de type nécessaire',
+                    'data' => new IndicateursResource($indicateur),
+                    'statutCode' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+            }
+
+            $ancienAgreger = $indicateur->agreger;
+
+            // 1. Sauvegarder les anciennes valeurs cibles pour conversion
+            $anciensValeursCibles = $indicateur->valeursCible()->with('valeursCible')->get();
+
+            // 2. Mettre à jour le statut agrégé
+            $indicateur->agreger = $nouveauAgreger;
+
+            // 3. Gérer les value keys selon le nouveau type
+            if ($nouveauAgreger && isset($attributs['value_keys'])) {
+                // Passage de simple à agrégé : ajouter les nouvelles clés
+                $this->attachValueKeys($indicateur, $attributs);
+            } elseif (!$nouveauAgreger) {
+                // Passage d'agrégé à simple : garder seulement une clé (généralement 'moy')
+                $indicateurValueKey = IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first();
+
+                if (!$indicateurValueKey) {
+                    throw new Exception("Aucune clé d'indicateur disponible", 500);
+                }
+
+                // Supprimer les anciennes associations
+                DB::table('indicateur_value_keys_mapping')
+                    ->where('indicateurId', $indicateur->id)
+                    ->whereNull('deleted_at')
+                    ->update(['deleted_at' => now()]);
+
+                // Ajouter la clé unique
+                $unitee = $indicateur->unitee_mesure ?? Unitee::find($attributs['uniteeMesureId'] ?? null);
+                if (!$unitee) {
+                    throw new Exception("Unité de mesure requise pour indicateur simple", 422);
+                }
+
+                // Utiliser une insertion directe pour éviter les conflits avec la relation
+                DB::table('indicateur_value_keys_mapping')->insert([
+                    'indicateurId' => $indicateur->id,
+                    'indicateurValueKeyId' => $indicateurValueKey->id,
+                    'uniteeMesureId' => $unitee->id,
+                    'type' => $unitee->nom,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'deleted_at' => null
+                ]);
+            }
+
+            // 4. Restructurer les valeurs cibles existantes
+            if ($anciensValeursCibles->isNotEmpty()) {
+                $this->restructurerValeursCibles($indicateur, $anciensValeursCibles, $ancienAgreger, $nouveauAgreger, $programme);
+            }
+
+            // 5. Restructurer les valeurs de base
+            $this->restructurerValeursDeBase($indicateur, $ancienAgreger, $nouveauAgreger, $programme);
+
+            $indicateur->save();
+            $indicateur->refresh();
+
+            // Logging
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+            $typeText = $nouveauAgreger ? 'agrégé' : 'simple';
+            $message = Str::ucfirst($acteur) . " a changé l'indicateur '{$indicateur->nom}' vers le type {$typeText}";
+
+            DB::commit();
+
+            // Nettoyage du cache
+            Cache::forget('indicateurs');
+            Cache::forget('indicateurs-' . $indicateur->id);
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => "Type d'indicateur modifié avec succès vers " . $typeText,
+                'data' => new IndicateursResource($indicateur),
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Restructure les valeurs cibles lors du changement de type d'indicateur
+     *
+     * @param Indicateur $indicateur
+     * @param Collection $anciensValeursCibles
+     * @param bool $ancienAgreger
+     * @param bool $nouveauAgreger
+     * @param Programme $programme
+     */
+    protected function restructurerValeursCibles($indicateur, $anciensValeursCibles, $ancienAgreger, $nouveauAgreger, $programme)
+    {
+        foreach ($anciensValeursCibles as $ancienneValeurCible) {
+            // Supprimer l'ancienne structure
+            $ancienneValeurCible->valeursCible()->delete();
+
+            $nouvelleValeurCible = [];
+
+            if ($ancienAgreger && !$nouveauAgreger) {
+                // Agrégé → Simple : prendre la somme ou la moyenne des valeurs
+                $anciensValues = $ancienneValeurCible->valeurCible ?? [];
+                $valeurConvertie = is_array($anciensValues) ? array_sum($anciensValues) : 0;
+
+                $valueKey = $indicateur->valueKey();
+                if ($valueKey) {
+                    $valeur = $ancienneValeurCible->valeursCible()->create([
+                        "value" => $valeurConvertie,
+                        "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                        "programmeId" => $programme->id
+                    ]);
+
+                    $nouvelleValeurCible["{$valueKey->key}"] = $valeur->value;
+                }
+
+            } elseif (!$ancienAgreger && $nouveauAgreger) {
+                // Simple → Agrégé : répartir la valeur sur les nouvelles clés
+                $ancienneValeur = $ancienneValeurCible->valeurCible ?? [];
+                $valeurUnique = is_array($ancienneValeur) ? array_values($ancienneValeur)[0] ?? 0 : 0;
+
+                $valueKeys = $indicateur->valueKeys;
+                $nombreCles = $valueKeys->count();
+
+                if ($nombreCles > 0) {
+                    $valeurParCle = $nombreCles > 1 ? $valeurUnique / $nombreCles : $valeurUnique;
+
+                    foreach ($valueKeys as $valueKey) {
+                        $valeur = $ancienneValeurCible->valeursCible()->create([
+                            "value" => $valeurParCle,
+                            "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                            "programmeId" => $programme->id
+                        ]);
+
+                        $nouvelleValeurCible["{$valueKey->key}"] = $valeur->value;
+                    }
+                }
+            }
+
+            // Mettre à jour la valeur cible consolidée
+            $ancienneValeurCible->valeurCible = $nouvelleValeurCible;
+            $ancienneValeurCible->save();
+        }
+    }
+
+    /**
+     * Restructure les valeurs de base lors du changement de type d'indicateur
+     *
+     * @param Indicateur $indicateur
+     * @param bool $ancienAgreger
+     * @param bool $nouveauAgreger
+     * @param Programme $programme
+     */
+    protected function restructurerValeursDeBase($indicateur, $ancienAgreger, $nouveauAgreger, $programme)
+    {
+        $anciensValeursDeBase = $indicateur->valeursDeBase;
+
+        if ($anciensValeursDeBase->isEmpty()) {
+            return;
+        }
+
+        // Supprimer les anciennes valeurs de base
+        $anciensValeursDeBase->each->delete();
+
+        $nouvelleValeurDeBase = [];
+
+        if ($ancienAgreger && !$nouveauAgreger) {
+            // Agrégé → Simple : prendre la somme des valeurs de base
+            $anciennesValues = $indicateur->valeurDeBase ?? [];
+            $valeurConvertie = is_array($anciennesValues) ? array_sum($anciennesValues) : 0;
+
+            $valueKey = $indicateur->valueKey();
+            if ($valueKey) {
+                $valeur = $indicateur->valeursDeBase()->create([
+                    "value" => $valeurConvertie,
+                    "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                    "programmeId" => $programme->id
+                ]);
+
+                $nouvelleValeurDeBase["{$valueKey->key}"] = $valeur->value;
+            }
+
+        } elseif (!$ancienAgreger && $nouveauAgreger) {
+            // Simple → Agrégé : répartir la valeur sur les nouvelles clés
+            $ancienneValeur = $indicateur->valeurDeBase ?? [];
+            $valeurUnique = is_array($ancienneValeur) ? array_values($ancienneValeur)[0] ?? 0 : 0;
+
+            $valueKeys = $indicateur->valueKeys;
+            $nombreCles = $valueKeys->count();
+
+            if ($nombreCles > 0) {
+                $valeurParCle = $nombreCles > 1 ? $valeurUnique / $nombreCles : $valeurUnique;
+
+                foreach ($valueKeys as $valueKey) {
+                    $valeur = $indicateur->valeursDeBase()->create([
+                        "value" => $valeurParCle,
+                        "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                        "programmeId" => $programme->id
+                    ]);
+
+                    $nouvelleValeurDeBase["{$valueKey->key}"] = $valeur->value;
+                }
+            }
+        }
+
+        // Mettre à jour la valeur de base consolidée
+        $indicateur->valeurDeBase = $nouvelleValeurDeBase;
+    }
+
+    /**
+     * Modifie la valeur de base d'un indicateur
+     * Gère les indicateurs agrégés et non agrégés avec leurs clés de valeurs
+     *
+     * @param mixed $indicateur ID ou instance de l'indicateur
+     * @param array $attributs Données de la nouvelle valeur de base
+     * @return JsonResponse
+     */
+    public function updateValeurDeBase($indicateur, array $attributs): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            // Récupération de l'indicateur
+            if (is_string($indicateur)) {
+                $indicateur = $this->repository->findById($indicateur);
+            }
+
+            if (!$indicateur) {
+                throw new Exception("Indicateur inconnu", 404);
+            }
+
+            // Vérification des droits
+            $programme = Auth::user()->programme;
+            if ($indicateur->programmeId !== $programme->id) {
+                throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
+            }
+
+            // Vérification qu'il n'y a pas de suivis (optionnel selon les règles métier)
+            if ($indicateur->suivis->isNotEmpty()) {
+                throw new Exception("Impossible de modifier la valeur de base d'un indicateur qui a déjà des suivis", 422);
+            }
+
+            // Validation des données d'entrée
+            if (!isset($attributs['valeurDeBase'])) {
+                throw new Exception("La valeur de base doit être fournie", 422);
+            }
+
+            $nouvelleValeurDeBase = $attributs['valeurDeBase'];
+
+            // Validation selon le type d'indicateur
+            if ($indicateur->agreger) {
+                // Indicateur agrégé - les valeurs sont un tableau avec des clés
+                if (!is_array($nouvelleValeurDeBase)) {
+                    throw new Exception("Pour un indicateur agrégé, la valeur de base doit être un tableau avec les clés correspondantes", 422);
+                }
+
+                // Validation que toutes les clés de l'indicateur ont une valeur
+                $indicateurKeys = $indicateur->valueKeys->pluck('id')->toArray();
+                $valeursKeys = collect($nouvelleValeurDeBase)->pluck('keyId')->toArray();
+
+                $missingKeys = array_diff($indicateurKeys, $valeursKeys);
+                if (!empty($missingKeys)) {
+                    throw new Exception("Les clés d'indicateur suivantes sont manquantes dans la valeur de base: " . implode(', ', $missingKeys), 422);
+                }
+
+                // Suppression des anciennes valeurs de base
+                $indicateur->valeursDeBase()->delete();
+
+                $valeurDeBase = [];
+
+                // Création des nouvelles valeurs de base
+                foreach ($nouvelleValeurDeBase as $data) {
+                    if (!isset($data['keyId']) || !isset($data['value'])) {
+                        throw new Exception("Chaque valeur de base doit contenir 'keyId' et 'value'", 422);
+                    }
+
+                    // Vérification que la clé existe dans l'indicateur
+                    $valueKey = $indicateur->valueKeys()->where("indicateur_value_keys.id", $data['keyId'])->first();
+
+                    if (!$valueKey) {
+                        throw new Exception("La clé {$data['keyId']} n'est pas associée à cet indicateur", 422);
+                    }
+
+                    // Validation que la valeur est numérique si l'unité de mesure l'exige
+                    if ($valueKey->pivot->type !== 'text' && !is_numeric($data['value'])) {
+                        throw new Exception("La valeur pour la clé '{$valueKey->key}' doit être numérique", 422);
+                    }
+
+                    // Création de la valeur de base
+                    $valeur = $indicateur->valeursDeBase()->create([
+                        "value" => $data["value"],
+                        "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                        "programmeId" => $programme->id
+                    ]);
+
+                    $valeurDeBase["{$valueKey->key}"] = $valeur->value;
+                }
+
+            } else {
+                // Indicateur simple - une seule valeur
+                if (is_array($nouvelleValeurDeBase)) {
+                    throw new Exception("Pour un indicateur simple, la valeur de base doit être une valeur unique", 422);
+                }
+
+                // Validation que la valeur est numérique si nécessaire
+                $valueKey = $indicateur->valueKey();
+                if (!$valueKey) {
+                    throw new Exception("Aucune clé de valeur trouvée pour cet indicateur", 500);
+                }
+
+                if ($valueKey->pivot->type !== 'text' && !is_numeric($nouvelleValeurDeBase)) {
+                    throw new Exception("La valeur de base doit être numérique", 422);
+                }
+
+                // Suppression de l'ancienne valeur de base
+                $indicateur->valeursDeBase()->delete();
+
+                // Création de la nouvelle valeur de base
+                $valeur = $indicateur->valeursDeBase()->create([
+                    "value" => $nouvelleValeurDeBase,
+                    "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                    "programmeId" => $programme->id
+                ]);
+
+                $valeurDeBase["{$valueKey->key}"] = $valeur->value;
+            }
+
+            // Mise à jour de la valeur de base consolidée
+            $indicateur->valeurDeBase = $valeurDeBase;
+            $indicateur->save();
+
+            // Rafraîchissement de l'indicateur
+            $indicateur->refresh();
+
+            // Logging de l'activité
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+            $message = Str::ucfirst($acteur) . " a modifié la valeur de base de l'indicateur " . $indicateur->nom;
+
+            // LogActivity::addToLog("Modification valeur de base", $message, get_class($indicateur), $indicateur->id);
+
+            DB::commit();
+
+            // Nettoyage du cache
+            Cache::forget('indicateurs');
+            Cache::forget('indicateurs-' . $indicateur->id);
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => 'Valeur de base mise à jour avec succès',
+                'data' => new IndicateursResource($indicateur),
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Modifie complètement un indicateur avec valeurs de base, cibles et type
+     * Fonction complète qui peut changer le type d'indicateur et toutes ses valeurs
+     *
+     * @param mixed $indicateur ID ou instance de l'indicateur
+     * @param array $attributs Données complètes de l'indicateur
+     * @return JsonResponse
+     */
+    public function updateIndicateurComplet($indicateur, array $attributs): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            // Récupération de l'indicateur
+            if (is_string($indicateur)) {
+                $indicateur = $this->repository->findById($indicateur);
+            }
+
+            if (!$indicateur) {
+                throw new Exception("Indicateur inconnu", 404);
+            }
+
+            // Vérification des droits
+            $programme = Auth::user()->programme;
+            if ($indicateur->programmeId !== $programme->id) {
+                throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
+            }
+
+            // Gestion du changement de type d'indicateur si nécessaire
+            if (isset($attributs['agreger']) && $indicateur->agreger !== (bool)$attributs['agreger']) {
+                $changeTypeResult = $this->changeIndicateurType($indicateur, $attributs);
+
+                if ($changeTypeResult->getStatusCode() !== 200) {
+                    return $changeTypeResult;
+                }
+
+                $indicateur->refresh();
+            }
+
+            // Modification des attributs de base de l'indicateur
+            $champsModifiables = [
+                'nom', 'description', 'type_de_variable', 'hypothese', 'indice',
+                'uniteeMesureId', 'categorieId', 'methode_de_la_collecte',
+                'frequence_de_la_collecte', 'sources_de_donnee'
+            ];
+
+            foreach ($champsModifiables as $champ) {
+                if (isset($attributs[$champ])) {
+                    $indicateur->$champ = $attributs[$champ];
+                }
+            }
+
+            // Modification de la valeur de base si fournie
+            if (isset($attributs['valeurDeBase'])) {
+                $resultValeurBase = $this->updateValeurDeBase($indicateur, $attributs);
+                if ($resultValeurBase->getStatusCode() !== 200) {
+                    return $resultValeurBase;
+                }
+                $indicateur->refresh();
+            }
+
+            // Modification des valeurs cibles si fournies
+            if (isset($attributs['anneesCible'])) {
+                $resultValeursCibles = $this->updateValeursCibles($indicateur, $attributs);
+                if ($resultValeursCibles->getStatusCode() !== 200) {
+                    return $resultValeursCibles;
+                }
+                $indicateur->refresh();
+            }
+
+            // Modification des responsables si fournies
+            if (isset($attributs['responsables'])) {
+                if (isset($attributs['responsables']['ug'])) {
+                    $indicateur->ug_responsable()->sync([
+                        $attributs['responsables']['ug'] => [
+                            "responsableable_type" => UniteeDeGestion::class,
+                            "programmeId" => $programme->id,
+                            "created_at" => now(),
+                            "updated_at" => now()
+                        ]
+                    ]);
+                }
+
+                if (isset($attributs['responsables']['organisations'])) {
+                    $responsables = [];
+                    foreach ($attributs['responsables']['organisations'] as $organisation_responsable) {
+                        if (!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) {
+                            throw new Exception("Organisation inconnue", 404);
+                        }
+
+                        $responsables[$organisation->id] = [
+                            "responsableable_type" => Organisation::class,
+                            "programmeId" => $programme->id,
+                            "created_at" => now(),
+                            "updated_at" => now()
+                        ];
+                    }
+                    $indicateur->organisations_responsable()->sync($responsables);
+                }
+            }
+
+            // Modification des sites si fournis
+            if (isset($attributs['sites'])) {
+                $sites = [];
+                foreach ($attributs['sites'] as $id) {
+                    if (!($site = app(SiteRepository::class)->findById($id))) {
+                        throw new Exception("Site introuvable", 404);
+                    }
+                    array_push($sites, $site->id);
+                }
+                $indicateur->sites()->sync($sites, ["programmeId" => $programme->id]);
+            }
+
+            $indicateur->save();
+            $indicateur->refresh();
+
+            // Logging
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+            $message = Str::ucfirst($acteur) . " a modifié complètement l'indicateur " . $indicateur->nom;
+
+            DB::commit();
+
+            // Nettoyage du cache
+            Cache::forget('indicateurs');
+            Cache::forget('indicateurs-' . $indicateur->id);
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => 'Indicateur modifié avec succès',
+                'data' => new IndicateursResource($indicateur),
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+
         } catch (\Throwable $th) {
             DB::rollBack();
 

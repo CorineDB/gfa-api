@@ -875,13 +875,29 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::post('filtres', 'filtre')->name('filtre')->middleware('permission:voir-un-indicateur');
 
+                    // Gestion des clés de valeurs
                     Route::post('{indicateur}/addValueKeys', 'addValueKeys')->name('addValueKeys')->middleware('permission:ajouter-une-cle-de-valeur-indicateur');
-
                     Route::post('{indicateur}/removeValueKeys', 'removeValueKeys')->name('removeValueKeys')->middleware('permission:supprimer-une-cle-de-valeur-indicateur');
 
+                    // Gestion des structures responsables
+                    Route::post('{indicateur}/addStrutureResponsable', 'addStrutureResponsable')->name('addStrutureResponsable')->middleware('permission:creer-un-indicateur');
+
+                    // Gestion des années cibles
                     Route::post('{indicateur}/addAnneesCible', 'addAnneesCible')->name('addAnneesCible')->middleware('permission:creer-un-indicateur');
 
-                    Route::post('{indicateur}/addStrutureResponsable', 'addStrutureResponsable')->name('addStrutureResponsable')->middleware('permission:creer-un-indicateur');
+                    // Nouvelles fonctionnalités - Modification des valeurs cibles
+                    Route::put('{indicateur}/valeurs-cibles', 'updateValeursCibles')->name('updateValeursCibles')->middleware('permission:modifier-un-indicateur');
+                    Route::put('{indicateur}/valeurs-cibles/{annee}', 'updateValeurCibleAnnee')->name('updateValeurCibleAnnee')->middleware('permission:modifier-un-indicateur');
+                    Route::delete('{indicateur}/valeurs-cibles/{annee}', 'deleteValeurCibleAnnee')->name('deleteValeurCibleAnnee')->middleware('permission:supprimer-un-indicateur');
+
+                    // Modification de la valeur de base
+                    Route::put('{indicateur}/valeur-de-base', 'updateValeurDeBase')->name('updateValeurDeBase')->middleware('permission:modifier-un-indicateur');
+
+                    // Changement de type d'indicateur
+                    Route::put('{indicateur}/change-type', 'changeIndicateurType')->name('changeIndicateurType')->middleware('permission:modifier-un-indicateur');
+
+                    // Modification complète
+                    Route::put('{indicateur}/complet', 'updateIndicateurComplet')->name('updateIndicateurComplet')->middleware('permission:modifier-un-indicateur');
                 });
             });
 

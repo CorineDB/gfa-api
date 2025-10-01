@@ -9,6 +9,11 @@ use App\Http\Requests\indicateur\FiltreRequest;
 use App\Http\Requests\indicateur\RemoveValueKeysRequest;
 use App\Http\Requests\indicateur\StoreRequest;
 use App\Http\Requests\indicateur\UpdateRequest;
+use App\Http\Requests\indicateur\UpdateValeursCiblesRequest;
+use App\Http\Requests\indicateur\UpdateValeurDeBaseRequest;
+use App\Http\Requests\indicateur\ChangeIndicateurTypeRequest;
+use App\Http\Requests\indicateur\UpdateIndicateurCompletRequest;
+use Illuminate\Http\Request;
 use Core\Services\Interfaces\IndicateurServiceInterface;
 
 class IndicateurController extends Controller
@@ -26,12 +31,13 @@ class IndicateurController extends Controller
     {
         //$this->middleware('role:unitee-de-gestion')->only(['store','update', 'destroy']);
         $this->middleware('permission:voir-un-indicateur')->only(['index', 'show', 'filtre']);
-        $this->middleware('permission:modifier-un-indicateur')->only(['update']);
+        $this->middleware('permission:modifier-un-indicateur')->only(['update', 'updateValeursCibles', 'updateValeurDeBase', 'updateIndicateurComplet', 'updateValeurCibleAnnee']);
         $this->middleware('permission:creer-un-indicateur')->only(['store']);
-        $this->middleware('permission:supprimer-un-indicateur')->only(['destroy']);
+        $this->middleware('permission:supprimer-un-indicateur')->only(['destroy', 'deleteValeurCibleAnnee']);
         $this->middleware('permission:ajouter-une-cle-de-valeur-indicateur')->only(['addValueKeys']);
         $this->middleware('permission:supprimer-une-cle-de-valeur-indicateur')->only(['removeValueKeys']);
         $this->middleware('permission:voir-un-suivi-indicateur')->only(['suivis','checkSuivi']);
+        $this->middleware('permission:modifier-un-indicateur')->only(['changeIndicateurType']);
         
         $this->indicateurService = $indicateurServiceInterface;
 
@@ -171,5 +177,82 @@ class IndicateurController extends Controller
         //$request["bailleurId"] = ((array_key_exists("bailleurId", $request->all()) && isset($request["bailleurId"])) ? $request["bailleurId"] : Auth::user()->bailleur) ? Auth::user()->bailleur->id : $request["bailleurId"];
 
         return $this->indicateurService->removeValueKeys($idIndicateur, $request->all());
+    }
+
+    /**
+     * Modifier les valeurs cibles d'un indicateur
+     *
+     * @param UpdateValeursCiblesRequest $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateValeursCibles(UpdateValeursCiblesRequest $request, $idIndicateur)
+    {
+        return $this->indicateurService->updateValeursCibles($idIndicateur, $request->all());
+    }
+
+    /**
+     * Modifier une valeur cible pour une année spécifique
+     *
+     * @param Request $request
+     * @param int $idIndicateur
+     * @param int $annee
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateValeurCibleAnnee(Request $request, $idIndicateur, $annee)
+    {
+        $request->validate([
+            'valeurCible' => 'required'
+        ]);
+
+        return $this->indicateurService->updateValeurCibleAnnee($idIndicateur, $annee, $request->get('valeurCible'));
+    }
+
+    /**
+     * Supprimer une valeur cible pour une année donnée
+     *
+     * @param int $idIndicateur
+     * @param int $annee
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function deleteValeurCibleAnnee($idIndicateur, $annee)
+    {
+        return $this->indicateurService->deleteValeurCibleAnnee($idIndicateur, $annee);
+    }
+
+    /**
+     * Modifier la valeur de base d'un indicateur
+     *
+     * @param UpdateValeurDeBaseRequest $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateValeurDeBase(UpdateValeurDeBaseRequest $request, $idIndicateur)
+    {
+        return $this->indicateurService->updateValeurDeBase($idIndicateur, $request->all());
+    }
+
+    /**
+     * Changer le type d'indicateur (agrégé ↔ simple)
+     *
+     * @param ChangeIndicateurTypeRequest $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function changeIndicateurType(ChangeIndicateurTypeRequest $request, $idIndicateur)
+    {
+        return $this->indicateurService->changeIndicateurType($idIndicateur, $request->all());
+    }
+
+    /**
+     * Modifier complètement un indicateur
+     *
+     * @param UpdateIndicateurCompletRequest $request
+     * @param int $idIndicateur
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateIndicateurComplet(UpdateIndicateurCompletRequest $request, $idIndicateur)
+    {
+        return $this->indicateurService->updateIndicateurComplet($idIndicateur, $request->all());
     }
 }
