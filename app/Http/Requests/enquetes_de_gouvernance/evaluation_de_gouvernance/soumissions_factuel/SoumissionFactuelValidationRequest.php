@@ -92,18 +92,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     }
                 }
             ],
-            'factuel.response_data.*.optionDeReponseId'   => ["required", new HashValidatorRule(new OptionDeReponseGouvernance()), function ($attribute, $value, $fail) {
-                /**
-                 * Check if the given optionDeReponseId is part of the IndicateurDeGouvernance's options_de_reponse
-                 *
-                 * If the provided optionDeReponseId is not valid, fail the validation
-                 */
-                if ($this->formulaireCache) {
-                    if (!($this->formulaireCache->options_de_reponse()->where('optionId', request()->input($attribute))->exists())) {
-                        $fail('The selected option is invalid for the given formulaire.');
-                    }
-                }
-            }],
+            'factuel.response_data.*.optionDeReponseId'   => ["required"],
             'factuel.response_data.*.description'                   => ["nullable"],
             'factuel.response_data.*.sourceDeVerificationId'        => ["nullable"],
             'factuel.response_data.*.sourceDeVerification'          => [
@@ -384,122 +373,144 @@ class SoumissionFactuelValidationRequest extends FormRequest
                     //continue;
                 }
 
-                // Vérifier que l’option appartient bien au formulaire
+                // Vérifier que optionDeReponseId est fourni
+                if (empty($resp['optionDeReponseId']) || $resp['optionDeReponseId'] === 'null') {
+                    $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "L'option de réponse est requise.");
+                    continue;
+                }
+
+                // Valider avec HashValidatorRule et récupérer l'ID décodé
+                $hashRule = new HashValidatorRule(new OptionDeReponseGouvernance());
+                if (!$hashRule->passes("factuel.response_data.$i.optionDeReponseId", $resp['optionDeReponseId'])) {
+                    $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "L'option de réponse sélectionnée est invalide.");
+                    continue;
+                }
+
+                // Récupérer l'ID décodé et l'assigner à $resp
+                $optionModel = OptionDeReponseGouvernance::findByKey($resp['optionDeReponseId']);
+                if (!$optionModel) {
+                    $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "L'option de réponse sélectionnée est invalide.");
+                    continue;
+                }
+                $decodedOptionId = $optionModel->id;
+                $resp['optionDeReponseId'] = $decodedOptionId;
+
+                // Vérifier que l'option appartient bien au formulaire
                 $formOption = $this->formulaireCache
                     ->options_de_reponse()
-                    ->wherePivot('optionId', $resp['optionDeReponseId'] ?? null)
+                    ->wherePivot('optionId', $resp['optionDeReponseId'])
                     ->withPivot('preuveIsRequired', 'sourceIsRequired', 'descriptionIsRequired')
                     ->first();
 
                 if (!$formOption) {
                     $validator->errors()->add("factuel.response_data.$i.optionDeReponseId", "Option inconnue du formulaire.");
                     //continue;
-                }
-                else{
+                } else {
 
-                /**
-                 * 🔎 Validation de la description
-                 */
-                if ($formOption && $formOption->pivot_descriptionIsRequired == 1) {
-                    $description = $resp['description'] ?? null;
+                    /**
+                     * 🔎 Validation de la description
+                     */
+                    if ($formOption && $formOption->pivot_descriptionIsRequired == 1) {
+                        $description = $resp['description'] ?? null;
 
-                    if (empty($description)) {
-                        $validator->errors()->add(
-                            "factuel.response_data.$i.description",
-                            "La description est requise."
-                        );
-                    } elseif (!is_string($description) || mb_strlen(trim($description)) < 10) {
-                        $validator->errors()->add(
-                            "factuel.response_data.$i.description",
-                            "La description doit contenir au moins 10 caractères."
-                        );
-                    }
-                }
-
-                /**
-                 * 🔎 Validation de la sourceDeVerificationId
-                 */
-                if ($formOption && $formOption->pivot_preuveIsRequired == 1) {
-                    $sourceDeVerification = $resp['sourceDeVerification'] ?? null;
-                    $sourceDeVerificationId = $resp['sourceDeVerificationId'] ?? null;
-
-                    if (empty($sourceDeVerification) && empty($sourceDeVerificationId)) {
-                        $validator->errors()->add(
-                            "factuel.response_data.$i.sourceDeVerificationId",
-                            "La source de vérification est requise."
-                        );
-                    } else {
-                        // Vérifier que l’ID est valide
-                        if (!empty($sourceDeVerificationId) && $sourceDeVerificationId != 'null') {
-                            $rule = new HashValidatorRule(new SourceDeVerification());
-                            if (!$rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId)) {
-                                $validator->errors()->add(
-                                    "factuel.response_data.$i.sourceDeVerificationId",
-                                    "La source de vérification est invalide."
-                                );
-                            }
-                        }
-                        // Si une source textuelle est fournie → vérifier qu’elle est une string valide et min 10 caractères
-                        elseif (!empty($sourceDeVerification)) {
-                            if (!is_string($sourceDeVerification) || mb_strlen(trim($sourceDeVerification)) < 10) {
-                                $validator->errors()->add(
-                                    "factuel.response_data.$i.sourceDeVerification",
-                                    "La source de vérification doit contenir au moins 10 caractères."
-                                );
-                            }
-                        }
-                    }
-                }
-
-                /**
-                 * 🔎 Validation des preuves (logique déjà posée)
-                 */
-                if ($formOption->pivot_preuveIsRequired) {
-                    $reponse = $question->reponses()
-                        ->where('soumissionId', request()->input('soumissionId'))
-                        ->first();
-
-                    if ($reponse) {
-                        if (
-                            (!$reponse->preuves_de_verification()->count() && (empty($resp['preuves']) || !is_array($resp['preuves'])))
-                            && $reponse->preuveIsRequired
-                        ) {
-                            $validator->errors()->add("factuel.response_data.$i.preuves", "La preuve est requise.");
-                        }
-                    } else {
-                        if (empty($resp['preuves']) || !is_array($resp['preuves'])) {
-                            $validator->errors()->add("factuel.response_data.$i.preuves", "La preuve est requise.");
+                        if (empty($description)) {
+                            $validator->errors()->add(
+                                "factuel.response_data.$i.description",
+                                "La description est requise."
+                            );
+                        } elseif (!is_string($description) || mb_strlen(trim($description)) < 10) {
+                            $validator->errors()->add(
+                                "factuel.response_data.$i.description",
+                                "La description doit contenir au moins 10 caractères."
+                            );
                         }
                     }
 
+                    /**
+                     * 🔎 Validation de la sourceDeVerificationId
+                     */
+                    if ($formOption && $formOption->pivot_preuveIsRequired == 1) {
+                        $sourceDeVerification = $resp['sourceDeVerification'] ?? null;
+                        $sourceDeVerificationId = $resp['sourceDeVerificationId'] ?? null;
 
-                    // 🔹 Validation de chaque fichier de preuve fourni
-                    if (!empty($resp['preuves']) && is_array($resp['preuves'])) {
-                        foreach ($resp['preuves'] as $j => $preuve) {
-                            if (!($preuve instanceof \Illuminate\Http\UploadedFile)) {
-                                $validator->errors()->add(
-                                    "factuel.response_data.$i.preuves.$j",
-                                    "La preuve n°" . ($j + 1) . " doit être un fichier valide."
-                                );
-                            } else {
-                                // Taille max 20Mo (adapter si nécessaire)
-                                if ($preuve->getSize() > 20 * 1024 * 1024) {
+                        if (empty($sourceDeVerification) && empty($sourceDeVerificationId)) {
+                            $validator->errors()->add(
+                                "factuel.response_data.$i.sourceDeVerificationId",
+                                "La source de vérification est requise."
+                            );
+                        } else {
+                            // Vérifier que l’ID est valide
+                            if (!empty($sourceDeVerificationId) && $sourceDeVerificationId != 'null') {
+                                $rule = new HashValidatorRule(new SourceDeVerification());
+                                if (!$rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId)) {
                                     $validator->errors()->add(
-                                        "factuel.response_data.$i.preuves.$j",
-                                        "La preuve n°" . ($j + 1) . " ne doit pas dépasser 20 Mo."
+                                        "factuel.response_data.$i.sourceDeVerificationId",
+                                        "La source de vérification est invalide."
                                     );
                                 }
-                                // Extensions autorisées
-                                if (!in_array($preuve->getClientOriginalExtension(), ['doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pdf', 'jpg', 'jpeg', 'png', 'mp3', 'wav', 'mp4', 'mov', 'avi', 'mkv'])) {
+                            }
+                            // Si une source textuelle est fournie → vérifier qu’elle est une string valide et min 10 caractères
+                            elseif (!empty($sourceDeVerification)) {
+                                if (!is_string($sourceDeVerification) || mb_strlen(trim($sourceDeVerification)) < 10) {
                                     $validator->errors()->add(
-                                        "factuel.response_data.$i.preuves.$j",
-                                        "La preuve n°" . ($j + 1) . " doit être un fichier valide (doc, pdf, xls, jpg, png, mp4, etc.)."
+                                        "factuel.response_data.$i.sourceDeVerification",
+                                        "La source de vérification doit contenir au moins 10 caractères."
                                     );
                                 }
                             }
                         }
                     }
-                }}
+
+                    /**
+                     * 🔎 Validation des preuves (logique déjà posée)
+                     */
+                    if ($formOption->pivot_preuveIsRequired) {
+                        $reponse = $question->reponses()
+                            ->where('soumissionId', request()->input('soumissionId'))
+                            ->first();
+
+                        if ($reponse) {
+                            if (
+                                (!$reponse->preuves_de_verification()->count() && (empty($resp['preuves']) || !is_array($resp['preuves'])))
+                                && $reponse->preuveIsRequired
+                            ) {
+                                $validator->errors()->add("factuel.response_data.$i.preuves", "La preuve est requise.");
+                            }
+                        } else {
+                            if (empty($resp['preuves']) || !is_array($resp['preuves'])) {
+                                $validator->errors()->add("factuel.response_data.$i.preuves", "La preuve est requise.");
+                            }
+                        }
+
+
+                        // 🔹 Validation de chaque fichier de preuve fourni
+                        if (!empty($resp['preuves']) && is_array($resp['preuves'])) {
+                            foreach ($resp['preuves'] as $j => $preuve) {
+                                if (!($preuve instanceof \Illuminate\Http\UploadedFile)) {
+                                    $validator->errors()->add(
+                                        "factuel.response_data.$i.preuves.$j",
+                                        "La preuve n°" . ($j + 1) . " doit être un fichier valide."
+                                    );
+                                } else {
+                                    // Taille max 20Mo (adapter si nécessaire)
+                                    if ($preuve->getSize() > 20 * 1024 * 1024) {
+                                        $validator->errors()->add(
+                                            "factuel.response_data.$i.preuves.$j",
+                                            "La preuve n°" . ($j + 1) . " ne doit pas dépasser 20 Mo."
+                                        );
+                                    }
+                                    // Extensions autorisées
+                                    if (!in_array($preuve->getClientOriginalExtension(), ['doc', 'docx', 'xls', 'xlsx', 'csv', 'ppt', 'pdf', 'jpg', 'jpeg', 'png', 'mp3', 'wav', 'mp4', 'mov', 'avi', 'mkv'])) {
+                                        $validator->errors()->add(
+                                            "factuel.response_data.$i.preuves.$j",
+                                            "La preuve n°" . ($j + 1) . " doit être un fichier valide (doc, pdf, xls, jpg, png, mp4, etc.)."
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             throw_if($validator->errors()->isNotEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
