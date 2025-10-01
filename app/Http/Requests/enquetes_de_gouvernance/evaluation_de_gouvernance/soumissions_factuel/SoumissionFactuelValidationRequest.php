@@ -513,9 +513,9 @@ class SoumissionFactuelValidationRequest extends FormRequest
                 }
             }
 
-            throw_if($validator->errors()->isNotEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
+            //throw_if($validator->errors()->isNotEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
 
-            throw_if($validator->errors()->isEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
+            //throw_if($validator->errors()->isEmpty(), \Illuminate\Validation\ValidationException::withMessages($validator->errors()->toArray()));
         });
     }
 }
