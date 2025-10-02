@@ -167,6 +167,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         //$sourceDeVerification = SourceDeVerification::findByKey($item['sourceDeVerificationId']);
 
                         $sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId']);
+                            throw new Exception("Source de verification inconnue.", Response::HTTP_NOT_FOUND);
 
                         if($sourceDeVerification) {
                             throw new Exception("Source de verification inconnue.", Response::HTTP_NOT_FOUND);
