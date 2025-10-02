@@ -61,7 +61,7 @@ class SourceDeVerificationService extends BaseService implements SourceDeVerific
     {
         try
         {
-            throw new Exception("Error Processing Request " . $sourceDeVerification, 1);
+            // throw new Exception("Error Processing Request " . $sourceDeVerification, 1);
 
             if(!is_object($sourceDeVerification) && !($sourceDeVerification = $this->repository->findById($sourceDeVerification))) throw new Exception("Source de verification inconnue.", 500);
 
