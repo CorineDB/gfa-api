@@ -163,7 +163,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                     if (isset($item['sourceDeVerificationId']) && (!empty($item['sourceDeVerificationId'])) && $item['sourceDeVerificationId'] != 'null') {
 
-                        $sourceDeVerification = SourceDeVerification::findByKey($item['sourceDeVerificationId']);
+                        $sourceDeVerification = SourceDeVerification::findById($item['sourceDeVerificationId']);
 
                         throw new Exception("Error Processing Request" . json_encode($sourceDeVerification), 500);
 
