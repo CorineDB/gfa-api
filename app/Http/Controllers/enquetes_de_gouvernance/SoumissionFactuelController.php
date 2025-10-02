@@ -72,9 +72,6 @@ class SoumissionFactuelController extends Controller
     {
         $atttributs = array_merge(["evaluationId" => $evaluationId->id], $request->all());
 
-
-        throw new \Exception("Error Processing Request : " . json_encode(request()->all()), 1);
-
         return $this->soumissionFactuelService->create($atttributs);
     }
 

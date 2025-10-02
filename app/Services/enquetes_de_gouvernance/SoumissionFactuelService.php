@@ -144,6 +144,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 $soumission->refresh();
             }
 
+
+            throw new \Exception("Error Processing Request : " . $attributs, 1);
+
             if (isset($attributs['factuel']) && !empty($attributs['factuel'])) {
                 $soumission->fill($attributs['factuel']);
                 $soumission->save();
