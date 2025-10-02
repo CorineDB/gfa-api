@@ -291,10 +291,14 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             }
 
             // Récupérer la réponse de la collecte
-            $reponseDeLaCollecte = ReponseDeLaCollecteFactuel::find($preuve->fichiertable_id);
+            $reponseDeLaCollecte = ReponseDeLaCollecteFactuel::withTrashed()->find($preuve->fichiertable_id);
 
             if (!$reponseDeLaCollecte) {
-                throw new Exception("Réponse de la collecte introuvable (ID: " . $preuve->fichiertable_id . ").", Response::HTTP_NOT_FOUND);
+                throw new Exception("Réponse de la collecte introuvable (ID: " . $preuve->fichiertable_id . "). L'enregistrement n'existe pas dans la base de données.", Response::HTTP_NOT_FOUND);
+            }
+
+            if ($reponseDeLaCollecte->trashed()) {
+                throw new Exception("Réponse de la collecte supprimée (ID: " . $preuve->fichiertable_id . ").", Response::HTTP_NOT_FOUND);
             }
 
             // Récupérer la soumission
