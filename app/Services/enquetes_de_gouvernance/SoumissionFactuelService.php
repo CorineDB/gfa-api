@@ -293,7 +293,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             // Récupérer la réponse de la collecte
             $reponseDeLaCollecte = ReponseDeLaCollecteFactuel::find($preuve->fichiertable_id);
 
-            if (!$reponseDeLaCollecte) {
+            /*if (!$reponseDeLaCollecte) {
                 throw new Exception("Réponse de la collecte introuvable (ID: " . $preuve->fichiertable_id . ").", Response::HTTP_NOT_FOUND);
             }
 
@@ -319,7 +319,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             // Vérifier que la soumission n'est pas déjà validée
             if ($soumission->statut) {
                 throw new Exception("Impossible de supprimer une preuve d'une soumission déjà validée.", Response::HTTP_FORBIDDEN);
-            }
+            }*/
 
             // Supprimer le fichier physique
             if ($preuve->chemin && Storage::exists($preuve->chemin)) {
