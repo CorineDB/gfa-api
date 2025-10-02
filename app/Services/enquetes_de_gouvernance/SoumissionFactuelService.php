@@ -89,6 +89,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
         try {
 
+            throw new Exception("Error Processing Request" . json_encode($attributs), 1);
+
             $programme = Auth::user()->programme;
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
@@ -133,8 +135,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             }
 
             $soumission  = $this->repository->getInstance()->where("evaluationId", $evaluationDeGouvernance->id)->where("organisationId", $organisation->id)->where("formulaireFactuelId", $formulaireDeGouvernance->id)->first();
-
-            throw new Exception("Error Processing Request" . json_encode($attributs), 1);
 
             if ($soumission == null) {
                 $soumission = $this->repository->create($attributs);
