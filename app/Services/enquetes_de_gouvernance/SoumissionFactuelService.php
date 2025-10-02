@@ -24,6 +24,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
+use App\Models\Fichier;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Interface SoumissionFactuelServiceInterface
