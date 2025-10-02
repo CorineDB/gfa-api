@@ -61,6 +61,8 @@ class SourceDeVerificationService extends BaseService implements SourceDeVerific
     {
         try
         {
+            throw new Exception("Error Processing Request " . $sourceDeVerification, 1);
+
             if(!is_object($sourceDeVerification) && !($sourceDeVerification = $this->repository->findById($sourceDeVerification))) throw new Exception("Source de verification inconnue.", 500);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new SourcesDeVerificationResource($sourceDeVerification), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
