@@ -134,9 +134,6 @@ class SoumissionFactuelRequest extends FormRequest
                 $current = $model->id;
                 request()->merge($input);
 
-
-                throw new \Exception("Error Processing Request : " . json_encode(request()->all()), 1);
-
                 // Step 6: Vérifier aussi si la source est trop courte
                 /* $sourceText = request()->input("factuel.response_data.$index.sourceDeVerification");
         if (!empty($sourceText) && strlen($sourceText) < 10) {
