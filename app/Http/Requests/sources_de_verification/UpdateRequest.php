@@ -2,11 +2,7 @@
 
 namespace App\Http\Requests\sources_de_verification;
 
-use App\Models\CritereDeGouvernance;
-use App\Models\OptionDeReponse;
-use App\Models\Programme;
 use App\Models\SourceDeVerification;
-use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 

@@ -2,8 +2,6 @@
 
 namespace App\Http\Requests\sources_de_verification;
 
-use App\Models\Programme;
-use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,7 +13,7 @@ class StoreRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {        
+    {
         return request()->user()->hasPermissionTo("creer-une-source-de-verification") || request()->user()->hasRole("unitee-de-gestion");
     }
 
