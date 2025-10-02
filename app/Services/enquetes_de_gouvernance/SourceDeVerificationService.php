@@ -2,7 +2,7 @@
 
 namespace App\Services\enquetes_de_gouvernance;
 
-use App\Http\Resources\gouvernance\SourcesDeVerificationResource;
+use App\Http\Resources\enquetes_de_gouvernance\SourcesDeVerificationResource;
 use App\Repositories\enquetes_de_gouvernance\SourceDeVerificationRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\enquetes_de_gouvernance\SourceDeVerificationServiceInterface;
