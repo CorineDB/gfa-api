@@ -284,6 +284,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 throw new Exception("Preuve introuvable.", Response::HTTP_NOT_FOUND);
             }
 
+                throw new Exception("Preuve introuvable : " . $preuve, Response::HTTP_NOT_FOUND);
+
             // Vérifier que la preuve est liée à une réponse de la collecte factuel
             if ($preuve->fichiertable_type !== 'App\Models\enquetes_de_gouvernance\ReponseDeLaCollecteFactuel') {
                 throw new Exception("Cette preuve n'est pas associée à une soumission factuelle.", Response::HTTP_BAD_REQUEST);
