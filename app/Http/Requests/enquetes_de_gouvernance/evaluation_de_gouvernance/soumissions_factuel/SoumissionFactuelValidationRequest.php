@@ -10,6 +10,7 @@ use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
 use App\Models\Organisation;
 use App\Models\Programme;
 use App\Models\SourceDeVerification;
+use App\Models\enquetes_de_gouvernance\SourceDeVerification as EnqSourceDeVerification;
 use App\Rules\HashValidatorRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -441,7 +442,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                         } else {
                             // Vérifier que l’ID est valide
                             if (!empty($sourceDeVerificationId) && $sourceDeVerificationId != 'null') {
-                                $rule = new HashValidatorRule(new SourceDeVerification());
+                                $rule = new HashValidatorRule(new EnqSourceDeVerification());
                                 if (!$rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId)) {
                                     $validator->errors()->add(
                                         "factuel.response_data.$i.sourceDeVerificationId",

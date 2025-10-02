@@ -9,6 +9,7 @@ use App\Models\enquetes_de_gouvernance\QuestionFactuelDeGouvernance;
 use App\Models\Organisation;
 use App\Models\Programme;
 use App\Models\SourceDeVerification;
+use App\Models\enquetes_de_gouvernance\SourceDeVerification as EnqSourceDeVerification;
 use App\Rules\HashValidatorRule;
 use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -113,7 +114,7 @@ class SoumissionFactuelRequest extends FormRequest
                 }
 
                 // Step 4: Déhash et valider
-                $model = (new SourceDeVerification())->findByKey($value);
+                $model = (new EnqSourceDeVerification())->findByKey($value);
 
                 if ($model === null || $model instanceof \Illuminate\Database\Eloquent\Builder) {
                     return $fail("La source de vérification est invalide.");
