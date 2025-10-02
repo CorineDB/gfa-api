@@ -145,7 +145,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             }
 
 
-            throw new \Exception("Error Processing Request : " . $attributs, 1);
+            throw new \Exception("Error Processing Request : " . json_encode($attributs), 1);
 
             if (isset($attributs['factuel']) && !empty($attributs['factuel'])) {
                 $soumission->fill($attributs['factuel']);
