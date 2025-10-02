@@ -1161,6 +1161,12 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     Route::get('options-de-reponse-gouvernance-de-perception', 'options_de_perception')->name('options-de-perception')->middleware('permission:voir-une-option-de-reponse');
                 });
 
+
+                Route::apiResource('sources-de-verification', 'SourceDeVerificationController')->names('sources-de-verification')
+                    ->parameters([
+                        'sources-de-verification' => 'source_de_verification',
+                    ]);
+
                 Route::apiResource('formulaires-de-perception-de-gouvernance', 'FormulaireDePerceptionDeGouvernanceController')->names('formulaires-de-perception-de-gouvernance')
                     ->parameters([
                         'formulaires-de-perception-de-gouvernance' => 'formulaire_de_perception',
