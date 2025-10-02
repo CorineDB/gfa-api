@@ -111,13 +111,6 @@ class SoumissionFactuelRequest extends FormRequest
 
                     // Step 3: Vérifier si une valeur a été soumise
                     if ($value === null || $value === '' || $value === 'null') {
-
-                        // Step 5: Vérifier aussi si la source est trop courte
-                        $sourceText = request()->input("factuel.response_data.$index.sourceDeVerification");
-
-                        if (!empty($sourceText) && strlen($sourceText) < 10) {
-                            return $fail("La source de vérification doit contenir au moins 10 caractères.");
-                        }
                         return; // nullable → on ignore la règle si null
                     }
 
