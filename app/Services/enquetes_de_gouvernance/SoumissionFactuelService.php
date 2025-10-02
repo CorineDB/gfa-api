@@ -294,7 +294,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             $reponseDeLaCollecte = $preuve->fichiertable;
 
             if (!$reponseDeLaCollecte) {
-                throw new Exception("Réponse de la collecte introuvable.", Response::HTTP_NOT_FOUND);
+                throw new Exception("Réponse de la collecte introuvable. Type: " . $preuve->fichiertable_type . ", ID: " . $preuve->fichiertable_id, Response::HTTP_NOT_FOUND);
             }
 
             // Récupérer la soumission
