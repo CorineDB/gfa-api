@@ -13,10 +13,10 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 
-trait ExceptionTrait 
+trait ExceptionTrait
 {
     use ResponseJsonTrait;
-    
+
     public function apiExceptions($request,$e)
     {
 
@@ -91,14 +91,14 @@ trait ExceptionTrait
     protected function isTokenMismatch($e){
         return $e instanceof TokenMismatchException;
     }
-    
+
     protected function notAllowed($e)
     {
         return $e instanceof MethodNotAllowedHttpException;
     }
 
     protected function ModelResponse($e){
-        return $this->errorResponse('Aucun résultat trouvé dans les enrégistrement d\'' . strtolower(str_replace('App\\Models\\','',$e->getModel())), [], Response::HTTP_NOT_FOUND);
+        return $this->errorResponse('Aucun résultat trouvé dans les enrégistrement d\'' . strtolower(str_replace('App\\Models\\','',$e->getModel())), $e, Response::HTTP_NOT_FOUND);
     }
 
     protected function QueryResponse($e){
