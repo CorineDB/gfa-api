@@ -167,7 +167,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                         throw new Exception("Error Processing Request" . json_encode($sourceDeVerification), 500);
 
-                        if(!$sourceDeVerification){
+                        if(!$sourceDeVerification) {
                             throw new Exception("Source de verification inconnue.", Response::HTTP_NOT_FOUND);
                         }
 
@@ -179,10 +179,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                         $item = array_merge($item, ['sourceDeVerificationId' => $sourceDeVerification->id, 'sourceDeVerification' => null]);
                     } else if (isset($item['sourceDeVerification']) && (!empty($item['sourceDeVerification'])) && $item['sourceDeVerification'] != 'null') {
-
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => $item['sourceDeVerification']]);
                     } else {
-
                         $item = array_merge($item, ['sourceDeVerificationId' => null, 'sourceDeVerification' => null]);
                     }
 
