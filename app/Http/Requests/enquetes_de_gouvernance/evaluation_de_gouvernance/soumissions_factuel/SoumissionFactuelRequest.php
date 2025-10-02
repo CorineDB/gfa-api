@@ -120,6 +120,8 @@ class SoumissionFactuelRequest extends FormRequest
                     return $fail("La source de vérification est invalide.");
                 }
 
+                throw new Exception("Error Processing Request" . auth()->user()->programme, 1);
+
                 // Step 5: Mettre à jour le payload avec l'ID déhashé
                 /*$keys = explode('.', $attribute);
                 $input = request()->all();
