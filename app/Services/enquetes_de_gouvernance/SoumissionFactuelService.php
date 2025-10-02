@@ -291,9 +291,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             }
 
             // Récupérer la réponse de la collecte
-            $reponseDeLaCollecte = ReponseDeLaCollecteFactuel::find($preuve->fichiertable_id);
+            /*$reponseDeLaCollecte = ReponseDeLaCollecteFactuel::find($preuve->fichiertable_id);
 
-            /*if (!$reponseDeLaCollecte) {
+            if (!$reponseDeLaCollecte) {
                 throw new Exception("Réponse de la collecte introuvable (ID: " . $preuve->fichiertable_id . ").", Response::HTTP_NOT_FOUND);
             }
 
