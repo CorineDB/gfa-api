@@ -160,6 +160,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId']);
 
+                    throw new Exception("Error Processing Request : " . $item['optionDeReponseId'], 1);
+
+
                     if (!$option || $option->programmeId != $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if (isset($item['sourceDeVerificationId']) && (!empty($item['sourceDeVerificationId'])) && $item['sourceDeVerificationId'] != 'null') {
