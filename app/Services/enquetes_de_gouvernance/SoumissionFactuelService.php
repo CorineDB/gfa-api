@@ -142,6 +142,10 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 $soumission->refresh();
             }
 
+
+                    throw new Exception("Evaluation de gouvernance : ". json_encode($attributs) . ". Soumission : ". $soumission, 500);
+
+
             if (isset($attributs['factuel']) && !empty($attributs['factuel'])) {
                 $soumission->fill($attributs['factuel']);
                 $soumission->save();
