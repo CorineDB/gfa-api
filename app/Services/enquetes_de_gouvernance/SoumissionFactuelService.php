@@ -89,8 +89,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
         try {
 
-            throw new Exception("Error Processing Request" . json_encode($attributs), 1);
-
             $programme = Auth::user()->programme;
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
@@ -164,9 +162,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if (isset($item['sourceDeVerificationId']) && (!empty($item['sourceDeVerificationId'])) && $item['sourceDeVerificationId'] != 'null') {
-                        throw new Exception("Error Processing Request : " . $item['sourceDeVerificationId'], 1);
 
-                        $sourceDeVerification = SourceDeVerification::findById($item['sourceDeVerificationId']);
+                        $sourceDeVerification = SourceDeVerification::findByKey($item['sourceDeVerificationId']);
+                        throw new Exception("Error Processing Request : " . json_encode($sourceDeVerification), 1);
 
                         throw new Exception("Error Processing Request : " . json_encode($sourceDeVerification), 1);
                         if (!$sourceDeVerification && $sourceDeVerification->programmeId == $programme->id) throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
