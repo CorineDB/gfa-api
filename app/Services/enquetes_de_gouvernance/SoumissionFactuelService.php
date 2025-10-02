@@ -271,10 +271,11 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     /**
      * Supprimer une preuve de vérification
      *
+     * @param string $soumissionId L'ID de la soumission
      * @param string $preuveId L'ID de la preuve à supprimer
      * @return JsonResponse
      */
-    public function deletePreuve($preuveId): JsonResponse
+    public function deletePreuve($soumissionId, $preuveId): JsonResponse
     {
         DB::beginTransaction();
 
@@ -303,6 +304,11 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
             if (!$soumission) {
                 throw new Exception("Soumission introuvable.", Response::HTTP_NOT_FOUND);
+            }
+
+            // Vérifier que la preuve appartient bien à la soumission spécifiée
+            if ($soumission->id != $soumissionId) {
+                throw new Exception("Cette preuve n'appartient pas à la soumission spécifiée.", Response::HTTP_BAD_REQUEST);
             }
 
             // Vérifier les autorisations

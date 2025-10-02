@@ -116,8 +116,8 @@ class SoumissionFactuelController extends Controller
      * @param string $preuveId
      * @return \Illuminate\Http\Response
      */
-    public function deletePreuve($preuveId)
+    public function deletePreuve($soumissionId, $preuveId)
     {
-        return $this->soumissionFactuelService->deletePreuve($preuveId);
+        return $this->soumissionFactuelService->deletePreuve($soumissionId, $preuveId);
     }
 }
