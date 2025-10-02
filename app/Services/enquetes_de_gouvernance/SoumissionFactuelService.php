@@ -147,9 +147,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 $soumission->save();
                 $soumission->refresh();
 
-
-                throw new Exception("Evaluation de gouvernance : ". json_encode($attributs) . ". Soumission : ". $soumission, 500);
-
                 foreach ($attributs['factuel']['response_data'] as $key => $item) {
 
                     if (!(($questionDeGouvernance = app(QuestionFactuelDeGouvernanceRepository::class)->findById($item['questionId'])) && $questionDeGouvernance->programmeId == $programme->id)) {
@@ -185,7 +182,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     $pivot = $option->formulaires_factuel_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
                     //$pivot = $option->formulaires_de_gouvernance()->wherePivot("formulaireFactuelId", $soumission->formulaireDeGouvernance->id)->first()->pivot;
 
-                    throw new Exception("Evaluation de gouvernance : ". json_encode($attributs) . ". Soumission : ". $soumission . ". Piivot : " . $pivot, 500);
+                    //throw new Exception("Evaluation de gouvernance : ". json_encode($attributs) . ". Soumission : ". $soumission . ". Piivot : " . $pivot, 500);
 
                     if (!($reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->where(['programmeId' => $programme->id, 'questionId' => $questionDeGouvernance->id])->first())) {
                         $reponseDeLaCollecte = $soumission->reponses_de_la_collecte()->create(array_merge($item, ['formulaireFactuelId' => $soumission->formulaireDeGouvernance->id, 'optionDeReponseId' => $option->id, 'questionId' => $questionDeGouvernance->id, 'programmeId' => $programme->id, 'point' => $pivot->point, 'preuveIsRequired' => $pivot->preuveIsRequired]));
@@ -265,7 +262,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             DB::rollBack();
 
             //throw $th;
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => $th->getPrevious(), 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
