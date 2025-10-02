@@ -92,6 +92,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
             $programme = Auth::user()->programme;
 
+            throw new Exception("Error Processing Request" . json_encode($programme), 500);
+
+
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
             if (isset($attributs['evaluationId'])) {
