@@ -164,7 +164,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         //throw new Exception("Error Processing Request : " . $item['sourceDeVerificationId'], 1);
 
                         $sourceDeVerification = app(SourceDeVerificationRepository::class)->findByKey($item['sourceDeVerificationId']);
-                        throw new Exception("Error Processing Request : " . json_encode($sourceDeVerification), 1);
                         if (!$sourceDeVerification && $sourceDeVerification->programmeId == $programme->id) throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
 
                         /*if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
