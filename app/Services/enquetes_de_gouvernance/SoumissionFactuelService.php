@@ -194,14 +194,12 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                     if (isset($item['preuves']) && !empty($item['preuves'])) {
                         foreach ($item['preuves'] as $preuve) {
-
                             // On suppose que $preuve est un fichier de type UploadedFile
                             $filenameWithExt = $preuve->getClientOriginalName();
 
-                            // Vérifie si le fichier existe déjà pour cette réponse (par nom original et taille)
+                            // Vérifie si un fichier avec le même nom original existe déjà
                             $alreadyExists = $reponseDeLaCollecte->preuves_de_verification()
-                                ->where('nom_original', $filenameWithExt)
-                                ->where('taille', $preuve->getSize())
+                                ->where('nom', 'LIKE', '%' . $filenameWithExt)
                                 ->exists();
 
                             if (!$alreadyExists) {
