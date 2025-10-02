@@ -27,6 +27,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Artisan;
 use App\Models\Fichier;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Interface SoumissionFactuelServiceInterface
@@ -170,7 +171,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         //throw new Exception("Source de verification inconnue du programme. " . $key . " : " . $item['sourceDeVerificationId'], Response::HTTP_NOT_FOUND);
 
                         if (!$sourceDeVerification || $sourceDeVerification->programmeId != $programme->id) {
-                            throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
+                            throw ValidationException::withMessages(["factuel.response_data.$key.sourceDeVerificationId" =>"Source de verification inconnue du programme."], Response::HTTP_NOT_FOUND);
                         }
 
                         // throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
