@@ -109,4 +109,15 @@ class SoumissionFactuelController extends Controller
     {
         return $this->soumissionFactuelService->deleteById($id);
     }
+
+    /**
+     * Supprimer une preuve de vérification
+     *
+     * @param string $preuveId
+     * @return \Illuminate\Http\Response
+     */
+    public function deletePreuve($preuveId)
+    {
+        return $this->soumissionFactuelService->deletePreuve($preuveId);
+    }
 }

@@ -161,6 +161,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if (isset($item['sourceDeVerificationId']) && (!empty($item['sourceDeVerificationId'])) && $item['sourceDeVerificationId'] != 'null') {
+                        throw new Exception("Error Processing Request : " . $item['sourceDeVerificationId'], 1);
+
                         $sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId']);
                         if (!$sourceDeVerification && $sourceDeVerification->programmeId == $programme->id) throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
 
@@ -263,6 +265,86 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
             //throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => $th->getTrace(), 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Supprimer une preuve de vérification
+     *
+     * @param string $preuveId L'ID de la preuve à supprimer
+     * @return JsonResponse
+     */
+    public function deletePreuve($preuveId): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            // Trouver la preuve
+            $preuve = Fichier::findByKey($preuveId)->first();
+
+            if (!$preuve) {
+                throw new Exception("Preuve introuvable.", Response::HTTP_NOT_FOUND);
+            }
+
+            // Vérifier que la preuve est liée à une réponse de la collecte factuel
+            if ($preuve->fichiertable_type !== 'App\Models\enquetes_de_gouvernance\ReponseDeLaCollecteFactuel') {
+                throw new Exception("Cette preuve n'est pas associée à une soumission factuelle.", Response::HTTP_BAD_REQUEST);
+            }
+
+            // Récupérer la réponse de la collecte
+            $reponseDeLaCollecte = $preuve->fichiertable;
+
+            if (!$reponseDeLaCollecte) {
+                throw new Exception("Réponse de la collecte introuvable.", Response::HTTP_NOT_FOUND);
+            }
+
+            // Récupérer la soumission
+            $soumission = $reponseDeLaCollecte->soumission;
+
+            if (!$soumission) {
+                throw new Exception("Soumission introuvable.", Response::HTTP_NOT_FOUND);
+            }
+
+            // Vérifier les autorisations
+            $programme = Auth::user()->programme;
+
+            if (!$programme || $soumission->programmeId != $programme->id) {
+                throw new Exception("Vous n'avez pas l'autorisation de supprimer cette preuve.", Response::HTTP_FORBIDDEN);
+            }
+
+            // Vérifier que la soumission n'est pas déjà validée
+            if ($soumission->statut) {
+                throw new Exception("Impossible de supprimer une preuve d'une soumission déjà validée.", Response::HTTP_FORBIDDEN);
+            }
+
+            // Supprimer le fichier physique
+            if ($preuve->chemin && Storage::exists($preuve->chemin)) {
+                Storage::delete($preuve->chemin);
+            }
+
+            // Supprimer l'enregistrement de la base de données
+            $preuve->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => 'Preuve supprimée avec succès.',
+                'data' => null,
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            $statusCode = $th->getCode() >= 400 && $th->getCode() < 600 ? $th->getCode() : Response::HTTP_INTERNAL_SERVER_ERROR;
+
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => $statusCode
+            ], $statusCode);
         }
     }
 }

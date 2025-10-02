@@ -1183,6 +1183,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::apiResource('{evaluation_de_gouvernance}/soumissions-factuel', 'SoumissionFactuelController', ['except' => ['update']])->names('soumissions');
                     Route::post('{evaluation_de_gouvernance}/validate-soumission-factuel', 'SoumissionFactuelController@validated')->name('validate-soumission')->middleware('permission:valider-une-soumission');
+                    Route::delete('{evaluation_de_gouvernance}/soumissions-factuel/{soumission}/preuves/{preuve}', 'SoumissionFactuelController@deletePreuve')->name('delete-preuve')->middleware('permission:supprimer-une-preuve');
 
                     Route::apiResource('{evaluation_de_gouvernance}/soumissions-de-perception', 'SoumissionDePerceptionController', ['only' => ['index', 'show']])->names('soumissions-de-perception');
 
