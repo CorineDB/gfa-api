@@ -123,9 +123,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
 
-            throw new Exception("Evaluation de gouvernance : ". json_encode($attributs), 500);
-
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
+
+            throw new Exception("Evaluation de gouvernance : ". json_encode($attributs), 500);
 
             if (($soumission = $evaluationDeGouvernance->soumissionFactuel($organisation->id)->first()) && $soumission->statut) {
                 return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'soumission' => new SoumissionFactuelResource($soumission)], 'statutCode' => Response::HTTP_PARTIAL_CONTENT], Response::HTTP_PARTIAL_CONTENT);
