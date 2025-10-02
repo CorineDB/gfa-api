@@ -98,7 +98,7 @@ trait ExceptionTrait
     }
 
     protected function ModelResponse($e){
-        return $this->errorResponse('Aucun résultat trouvé dans les enrégistrement d\'' . strtolower(str_replace(['App\\Models\\', 'enquetes_de_gouvernance'],'',$e->getModel())), $e, Response::HTTP_NOT_FOUND);
+        return $this->errorResponse('Aucun résultat trouvé dans les enrégistrement d\'' . strtolower(str_replace(['App\\Models\\', 'enquetes_de_gouvernance\\'],'',$e->getModel())), $e, Response::HTTP_NOT_FOUND);
     }
 
     protected function QueryResponse($e){
