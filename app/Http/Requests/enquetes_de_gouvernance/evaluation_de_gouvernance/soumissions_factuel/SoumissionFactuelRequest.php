@@ -121,7 +121,7 @@ class SoumissionFactuelRequest extends FormRequest
                 }
 
                 // Step 5: Mettre à jour le payload avec l'ID déhashé
-                $keys = explode('.', $attribute);
+                /*$keys = explode('.', $attribute);
                 $input = request()->all();
                 $current = &$input;
 
@@ -133,7 +133,7 @@ class SoumissionFactuelRequest extends FormRequest
                 }
 
                 $current = $model->id;
-                request()->merge($input);
+                request()->merge($input);*/
 
             }],
             'factuel.response_data.*.sourceDeVerification'          => ['nullable'],
