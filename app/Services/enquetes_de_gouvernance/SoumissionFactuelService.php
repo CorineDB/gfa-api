@@ -5,6 +5,7 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\enquetes_de_gouvernance\SoumissionFactuelResource;
 use App\Jobs\AppJob;
 use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
+use App\Models\enquetes_de_gouvernance\SourceDeVerification;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceRepository;
@@ -161,9 +162,9 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if (isset($item['sourceDeVerificationId']) && (!empty($item['sourceDeVerificationId'])) && $item['sourceDeVerificationId'] != 'null') {
-                        //throw new Exception("Error Processing Request : " . $item['sourceDeVerificationId'], 1);
+                        throw new Exception("Error Processing Request : " . $item['sourceDeVerificationId'], 1);
 
-                        $sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId']);
+                        $sourceDeVerification = SourceDeVerification::findById($item['sourceDeVerificationId']);
 
                         throw new Exception("Error Processing Request : " . json_encode($sourceDeVerification), 1);
                         if (!$sourceDeVerification && $sourceDeVerification->programmeId == $programme->id) throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
