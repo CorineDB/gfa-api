@@ -98,13 +98,13 @@ class SoumissionFactuelRequest extends FormRequest
             }],
 
             'factuel.response_data.*.sourceDeVerificationId'        => ['nullable', function ($attribute, $value, $fail) {
-                // Step 1: Extraire l’index
+                // Step 1: Extraire l'index
                 preg_match('/factuel.response_data\.(\d+)\.sourceDeVerificationId/', $attribute, $matches);
                 $index = $matches[1] ?? null;
 
                 // Step 2: Si aucun index trouvé → fail
                 if ($index === null) {
-                    return $fail("Impossible d’identifier la question liée.");
+                    return $fail("Impossible d'identifier la question liée.");
                 }
 
                 // Step 3: Vérifier si une valeur a été soumise
@@ -112,14 +112,29 @@ class SoumissionFactuelRequest extends FormRequest
                     return; // nullable → on ignore la règle si null
                 }
 
-                // Step 4: Exécuter la règle HashValidatorRule manuellement
-                $rule = new HashValidatorRule(new SourceDeVerification());
+                // Step 4: Déhash et valider
+                $model = (new SourceDeVerification())->findByKey($value);
 
-                if (!$rule->passes($attribute, $value)) {
+                if ($model === null || $model instanceof \Illuminate\Database\Eloquent\Builder) {
                     return $fail("La source de vérification est invalide.");
                 }
 
-                // Step 5: Vérifier aussi si la source est trop courte
+                // Step 5: Mettre à jour le payload avec l'ID déhashé
+                $keys = explode('.', $attribute);
+                $input = request()->all();
+                $current = &$input;
+
+                foreach ($keys as $key) {
+                    if (!isset($current[$key])) {
+                        $current[$key] = [];
+                    }
+                    $current = &$current[$key];
+                }
+
+                $current = $model->id;
+                request()->merge($input);
+
+                // Step 6: Vérifier aussi si la source est trop courte
                 /* $sourceText = request()->input("factuel.response_data.$index.sourceDeVerification");
         if (!empty($sourceText) && strlen($sourceText) < 10) {
             return $fail("La source de vérification doit contenir au moins 10 caractères.");

@@ -5,7 +5,6 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\enquetes_de_gouvernance\SoumissionFactuelResource;
 use App\Jobs\AppJob;
 use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
-use App\Models\enquetes_de_gouvernance\SourceDeVerification;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceRepository;
@@ -164,12 +163,12 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     if (isset($item['sourceDeVerificationId']) && (!empty($item['sourceDeVerificationId'])) && $item['sourceDeVerificationId'] != 'null') {
                         //throw new Exception("Error Processing Request : " . $item['sourceDeVerificationId'], 1);
 
-                        //$sourceDeVerification = app(SourceDeVerificationRepository::class)->findByKey($item['sourceDeVerificationId']);
-                        //if (!$sourceDeVerification && $sourceDeVerification->programmeId == $programme->id) throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
+                        $sourceDeVerification = app(SourceDeVerificationRepository::class)->findByKey($item['sourceDeVerificationId']);
+                        if (!$sourceDeVerification && $sourceDeVerification->programmeId == $programme->id) throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
 
-                        if (!(($sourceDeVerification = SourceDeVerification::findByKey($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
+                        /*if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
                             throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
-                        }
+                        }*/
 
                         $item = array_merge($item, ['sourceDeVerificationId' => $sourceDeVerification->id, 'sourceDeVerification' => null]);
                     } else if (isset($item['sourceDeVerification']) && (!empty($item['sourceDeVerification'])) && $item['sourceDeVerification'] != 'null') {
