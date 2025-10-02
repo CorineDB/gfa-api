@@ -5,6 +5,7 @@ namespace App\Services\enquetes_de_gouvernance;
 use App\Http\Resources\enquetes_de_gouvernance\SoumissionFactuelResource;
 use App\Jobs\AppJob;
 use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
+use App\Models\enquetes_de_gouvernance\SourceDeVerification;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\enquetes_de_gouvernance\FormulaireFactuelDeGouvernanceRepository;
@@ -166,7 +167,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                         //$sourceDeVerification = app(SourceDeVerificationRepository::class)->findByKey($item['sourceDeVerificationId']);
                         //if (!$sourceDeVerification && $sourceDeVerification->programmeId == $programme->id) throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
 
-                        if (!(($sourceDeVerification = app(SourceDeVerificationRepository::class)->findByKey($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
+                        if (!(($sourceDeVerification = SourceDeVerification::findByKey($item['sourceDeVerificationId'])) && optional($sourceDeVerification)->programmeId == $programme->id)) {
                             throw new Exception("Source de verification inconnue du programme.", Response::HTTP_NOT_FOUND);
                         }
 
