@@ -45,7 +45,8 @@ class SourceDeVerificationService extends BaseService implements SourceDeVerific
 
             if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
-                $sourcesDeVerification = Auth::user()->programme->sources_de_verification;
+                //$sourcesDeVerification = Auth::user()->programme->sources_de_verification;
+                $sourcesDeVerification = Auth::user()->programme->enquete_sources_de_verification;
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => SourcesDeVerificationResource::collection($sourcesDeVerification), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

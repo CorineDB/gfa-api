@@ -14,6 +14,7 @@ use App\Models\enquetes_de_gouvernance\PrincipeDeGouvernancePerception;
 use App\Models\enquetes_de_gouvernance\QuestionOperationnelle;
 use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
 use App\Models\enquetes_de_gouvernance\SoumissionFactuel;
+use App\Models\enquetes_de_gouvernance\SourceDeVerification as EnqSourceDeVerification;
 use App\Models\enquetes_de_gouvernance\TypeDeGouvernanceFactuel;
 use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -698,6 +699,11 @@ class Programme extends Model
     public function sources_de_verification()
     {
         return $this->hasMany(SourceDeVerification::class, 'programmeId');
+    }
+
+    public function enquete_sources_de_verification()
+    {
+        return $this->hasMany(EnqSourceDeVerification::class, 'programmeId');
     }
 
     public function formulaires_de_gouvernance()
