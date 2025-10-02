@@ -55,6 +55,7 @@ class SourceDeVerificationController extends Controller
      */
     public function show($id)
     {
+            throw new \Exception("Error Processing Request " . $id, 1);
         return $this->sourceDeVerificationService->findById($id);
     }
 
