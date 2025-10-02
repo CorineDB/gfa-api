@@ -120,6 +120,14 @@ class SoumissionFactuelRequest extends FormRequest
                     return $fail("La source de vérification est invalide.");
                 }
 
+                if (!$model instanceof EnqSourceDeVerification) {
+                    return $fail("La source de vérification est invalide.");
+                }
+
+                if( $model->programmeId != (auth()->check() ? auth()->user()->programme->id : (request()->has('programmeId') ? Programme::findByKey(request()->input('programmeId'))->id : null)) ){
+                    return $fail("La source de vérification est invalide.");
+                }
+
                 throw new \Exception("Error Processing Request : Model :" . $model . " Auth: " . auth()->user()->programme, 1);
 
                 // Step 5: Mettre à jour le payload avec l'ID déhashé
