@@ -985,10 +985,10 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                     'options-de-reponse' => 'option_de_reponse',
                 ]);
 
-            Route::apiResource('sources-de-verification', 'SourceDeVerificationController')->names('sources-de-verification')
+            /*Route::apiResource('sources-de-verification', 'SourceDeVerificationController')->names('sources-de-verification')
                 ->parameters([
                     'sources-de-verification' => 'source_de_verification',
-                ]);
+                ]);*/
 
             Route::apiResource('fonds', 'FondController')->names('fonds')
                 ->parameters([
