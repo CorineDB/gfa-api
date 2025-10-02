@@ -90,8 +90,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
             $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
 
-            throw new Exception("Evaluation de gouvernance : ". json_encode($attributs), 500);
-
             if (isset($attributs['evaluationId'])) {
                 if (!(($evaluationDeGouvernance = app(EvaluationDeGouvernanceRepository::class)->findById($attributs['evaluationId'])) && $evaluationDeGouvernance->programmeId == $programme->id)) {
                     throw new Exception("Evaluation de gouvernance est introuvable dans le programme.", Response::HTTP_NOT_FOUND);
@@ -124,6 +122,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             } else {
                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
             }
+
+            throw new Exception("Evaluation de gouvernance : ". json_encode($attributs), 500);
 
             $attributs = array_merge($attributs, ['organisationId' => $organisation->id]);
 
