@@ -1185,7 +1185,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                 Route::get('evaluations-de-gouvernance-factuel/{token}', 'EvaluationDeGouvernanceController@formulaire_factuel_de_gouvernance')->middleware('permission:voir-formulaire-factuel');
 
-                Route::delete('soumissions-factuel/{soumission}/preuves/{preuve}', 'SoumissionFactuelController@deletePreuve')->name('delete-preuve')->middleware('permission:supprimer-une-preuve');
+                Route::delete('soumissions-factuel/{soumissionId}/preuves/{preuveId}', 'SoumissionFactuelController@deletePreuve')->name('delete-preuve')->middleware('permission:supprimer-une-preuve');
 
                 Route::group(['prefix' =>  'evaluations-de-gouvernance', 'as' => 'evaluations-de-gouvernance.'], function () {
 
