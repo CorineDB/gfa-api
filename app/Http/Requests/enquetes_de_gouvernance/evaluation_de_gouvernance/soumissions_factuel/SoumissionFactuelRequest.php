@@ -134,11 +134,6 @@ class SoumissionFactuelRequest extends FormRequest
                 $current = $model->id;
                 request()->merge($input);
 
-                // Step 6: Vérifier aussi si la source est trop courte
-                /* $sourceText = request()->input("factuel.response_data.$index.sourceDeVerification");
-        if (!empty($sourceText) && strlen($sourceText) < 10) {
-            return $fail("La source de vérification doit contenir au moins 10 caractères.");
-        } */
             }],
             'factuel.response_data.*.sourceDeVerification'          => ['nullable'],
             'factuel.response_data.*.preuves'                       => ['sometimes', "array", "min:0"],
