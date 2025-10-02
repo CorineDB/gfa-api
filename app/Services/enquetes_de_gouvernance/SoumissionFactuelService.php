@@ -157,16 +157,18 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     }
 
                     //$option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId'])->where("programmeId", $programme->id)->first();
-                    
+
                     $option = app(OptionDeReponseGouvernanceRepository::class)->findById($item['optionDeReponseId']);
 
                     if (!$option && $option->programmeId == $programme->id) throw new Exception("Cette option n'est pas dans le programme", Response::HTTP_NOT_FOUND);
 
                     if (isset($item['sourceDeVerificationId']) && (!empty($item['sourceDeVerificationId'])) && $item['sourceDeVerificationId'] != 'null') {
 
-                        $sourceDeVerification = SourceDeVerification::findByKey($item['sourceDeVerificationId']);
+                        //$sourceDeVerification = SourceDeVerification::findByKey($item['sourceDeVerificationId']);
 
-                        if(!$sourceDeVerification) {
+                        $sourceDeVerification = app(SourceDeVerificationRepository::class)->findById($item['sourceDeVerificationId']);
+
+                        if($sourceDeVerification) {
                             throw new Exception("Source de verification inconnue.", Response::HTTP_NOT_FOUND);
                         }
 
