@@ -264,7 +264,7 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             DB::rollBack();
 
             //throw $th;
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => $th->getTrace(), 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
