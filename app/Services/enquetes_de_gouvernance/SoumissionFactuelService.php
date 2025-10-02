@@ -286,12 +286,12 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
             }
 
             // Vérifier que la preuve est liée à une réponse de la collecte factuel
-            if ($preuve->fichiertable_type !== ReponseDeLaCollecteFactuel::class) {
+            /*if ($preuve->fichiertable_type !== ReponseDeLaCollecteFactuel::class) {
                 throw new Exception("Cette preuve n'est pas associée à une soumission factuelle.", Response::HTTP_BAD_REQUEST);
             }
 
             // Récupérer la réponse de la collecte
-            /*$reponseDeLaCollecte = ReponseDeLaCollecteFactuel::find($preuve->fichiertable_id);
+            $reponseDeLaCollecte = ReponseDeLaCollecteFactuel::find($preuve->fichiertable_id);
 
             if (!$reponseDeLaCollecte) {
                 throw new Exception("Réponse de la collecte introuvable (ID: " . $preuve->fichiertable_id . ").", Response::HTTP_NOT_FOUND);
