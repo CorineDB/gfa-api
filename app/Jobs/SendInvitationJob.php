@@ -83,7 +83,7 @@ class SendInvitationJob implements ShouldQueue
                     if (strpos($url, 'localhost') == false) {
                         $url = config("app.organisation_url");
                     }
-			
+
                     // Send the email if there are any email addresses
                     if (!empty($emailAddresses)) {
 
@@ -155,7 +155,7 @@ class SendInvitationJob implements ShouldQueue
                 }
             }
         } catch (\Throwable $th) {
-            throw new Exception("Error Processing Request : " . $details['subject'], 1);
+            throw new Exception("Error Processing Request : " . $details['subject'] . $th->getTrace(), 1);
         }
     }
 
