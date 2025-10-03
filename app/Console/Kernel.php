@@ -19,7 +19,8 @@ class Kernel extends ConsoleKernel
         Commands\ChangeStatutActionAMener::class,
         Commands\Demarrage::class,
         Commands\RappelCron::class,
-        Commands\Rapport::class
+        Commands\Rapport::class,
+        Commands\enquetes_de_gouvernance\GenerateResultatsForValidatedSoumission::class
     ];
     /**
      * Define the application's command schedule.
@@ -29,12 +30,14 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+
+        $schedule->command('gouvernance:generate-results')->daily();
         // $schedule->command('inspire')->hourly
        /*$schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
 
         $schedule->command('command:change-statut')->everyFifteenMinutes();
         $schedule->command('change-statut:evaluations')->everyMinute();//->dailyAt('00:00');
-        $schedule->command('generate:report-for-validated-soumissions')->daily();
+        // $schedule->command('generate:report-for-validated-soumissions')->daily();
 
        //$schedule->command('command:demarrage')->everyMinute();
 

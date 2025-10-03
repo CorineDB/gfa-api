@@ -268,7 +268,8 @@ class SoumissionService extends BaseService implements SoumissionServiceInterfac
 
                     AppJob::dispatch(
                         // Call the GenerateEvaluationResultats command with the evaluation ID
-                        Artisan::call('generate:report-for-validated-soumissions')
+                        // Artisan::call('generate:report-for-validated-soumissions')
+                        Artisan::call('gouvernance:generate-results')
                     )->delay(now()->addMinutes(3)); // Optionally add additional delay at dispatch time->addMinutes(10)
 
                 }

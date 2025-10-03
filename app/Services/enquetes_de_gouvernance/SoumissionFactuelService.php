@@ -74,14 +74,63 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
     {
         try {
             if (!is_object($soumission)) {
-                $soumission = SoumissionFactuel::findByKey($soumission)->first();
+                // Eager load toutes les relations nécessaires pour la resource
+                $defaultRelations = [
+                    // Formulaire avec options de réponse
+                    'formulaireDeGouvernance.options_de_reponse',
+
+                    // Catégories de niveau 1 avec leurs relations
+                    'formulaireDeGouvernance.categories_de_gouvernance.categorieable',
+                    'formulaireDeGouvernance.categories_de_gouvernance.questions_de_gouvernance.indicateur_de_gouvernance',
+
+                    // Catégories de niveau 2 (sous-catégories)
+                    'formulaireDeGouvernance.categories_de_gouvernance.categories_de_gouvernance.categorieable',
+                    'formulaireDeGouvernance.categories_de_gouvernance.categories_de_gouvernance.questions_de_gouvernance.indicateur_de_gouvernance',
+
+                    // Catégories de niveau 3 (sous-sous-catégories)
+                    'formulaireDeGouvernance.categories_de_gouvernance.categories_de_gouvernance.categories_de_gouvernance.categorieable',
+                    'formulaireDeGouvernance.categories_de_gouvernance.categories_de_gouvernance.categories_de_gouvernance.questions_de_gouvernance.indicateur_de_gouvernance',
+
+                    // Réponses de la collecte avec toutes leurs relations
+                    'reponses_de_la_collecte.option_de_reponse',
+                    'reponses_de_la_collecte.source_de_verification',
+                    'reponses_de_la_collecte.preuves_de_verification',
+                    'reponses_de_la_collecte.question',
+                ];
+
+                // Fusionner avec les relations personnalisées si fournies
+                $allRelations = array_unique(array_merge($defaultRelations, $relations));
+
+                // Charger la soumission avec toutes les relations
+                $soumission = SoumissionFactuel::with($allRelations)
+                    ->select($columns)
+                    ->findByKey($soumission)
+                    ->first();
             }
 
-            if (!$soumission) throw new Exception("Soumission de gouvernance inconnue.", 500);
+            if (!$soumission) {
+                throw new Exception("Soumission de gouvernance inconnue.", Response::HTTP_NOT_FOUND);
+            }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => new SoumissionFactuelResource($soumission), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            // Appliquer les appends supplémentaires si fournis
+            if (!empty($appends)) {
+                $soumission->append($appends);
+            }
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => null,
+                'data' => new SoumissionFactuelResource($soumission),
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+
         } catch (\Throwable $th) {
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -193,17 +242,25 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     }
 
                     if (isset($item['preuves']) && !empty($item['preuves'])) {
+                        $uploadedFilesInThisRequest = [];
+
                         foreach ($item['preuves'] as $preuve) {
                             // On suppose que $preuve est un fichier de type UploadedFile
                             $filenameWithExt = $preuve->getClientOriginalName();
 
-                            // Vérifie si un fichier avec le même nom original existe déjà
+                            // Vérifie si le fichier a déjà été uploadé dans cette requête
+                            if (in_array($filenameWithExt, $uploadedFilesInThisRequest)) {
+                                continue; // Skip les doublons dans la même requête
+                            }
+
+                            // Vérifie si un fichier avec le même nom original existe déjà en BDD
                             $alreadyExists = $reponseDeLaCollecte->preuves_de_verification()
                                 ->where('nom', 'LIKE', '%' . $filenameWithExt)
                                 ->exists();
 
                             if (!$alreadyExists) {
                                 $this->storeFile($preuve, 'soumissions/preuves', $reponseDeLaCollecte, null, 'preuves');
+                                $uploadedFilesInThisRequest[] = $filenameWithExt;
                             }
                         }
                     }
@@ -240,7 +297,8 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
 
                     AppJob::dispatch(
                         // Call the GenerateEvaluationResultats command with the evaluation ID
-                        Artisan::call('generate:report-for-validated-soumissions')
+                        // Artisan::call('generate:report-for-validated-soumissions')
+                        Artisan::call('gouvernance:generate-results')
                     )->delay(now()->addMinutes(3)); // Optionally add additional delay at dispatch time->addMinutes(10)
 
                 }

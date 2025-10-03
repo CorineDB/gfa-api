@@ -28,7 +28,10 @@ class SoumissionFactuelResource extends JsonResource
                     "id"                    => $option->secure_id,
                     'libelle'               => $option->libelle,
                     'slug'                  => $option->slug,
-                    'point'                 => $option->pivot->point
+                    'point'                 => $option->pivot->point,
+                    'preuveIsRequired'      => $option->pivot->preuveIsRequired,
+                    'sourceIsRequired'      => $option->pivot->sourceIsRequired,
+                    'descriptionIsRequired' => $option->pivot->descriptionIsRequired
                 ];
             }),
             'comite_members' => $this?->comite_members,
@@ -64,8 +67,16 @@ class SoumissionFactuelResource extends JsonResource
 
     public function questions_reponses($questions)
     {
-        return $questions->map(function($question){
-            $reponse = $question->reponse($this->id)->first();
+        // Créer un index des réponses par questionId pour accès O(1) - Évite les requêtes N+1
+        $reponsesIndexed = $this->reponses_de_la_collecte->keyBy('questionId');
+
+        return $questions->map(function($question) use ($reponsesIndexed) {
+            // ❌ ANCIENNE VERSION (Requête N+1) :
+            // $reponse = $question->reponse($this->id)->first();
+
+            // ✅ NOUVELLE VERSION (Utilise les données déjà chargées) :
+            $reponse = $reponsesIndexed->get($question->id);
+
             return [
                 'id' => $question->secure_id,
                 'nom' => $question->indicateur_de_gouvernance->nom,
