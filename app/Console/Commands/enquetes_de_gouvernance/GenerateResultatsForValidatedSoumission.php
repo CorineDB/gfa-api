@@ -279,11 +279,18 @@ class GenerateResultatsForValidatedSoumission extends Command
             ->get()
             ->each(function ($categorie) use ($organisationId, $options_de_reponse, &$principes_de_gouvernance) {
                 $this->processPerceptionCategory($categorie, $organisationId, $options_de_reponse);
-                $principes_de_gouvernance->push([
-                    'id' => $categorie->categorieable->id,
-                    'nom' => $categorie->categorieable->nom,
-                    'indice_de_perception' => $categorie->indice_de_perception
-                ]);
+
+                // ✅ Filtrer : Ne garder QUE les PrincipeDeGouvernance (exclure TypeDeGouvernance)
+                $categorieableType = get_class($categorie->categorieable);
+                $isPrincipe = str_contains($categorieableType, 'Principe');
+
+                if ($isPrincipe) {
+                    $principes_de_gouvernance->push([
+                        'id' => $categorie->categorieable->id,
+                        'nom' => $categorie->categorieable->nom,
+                        'indice_de_perception' => $categorie->indice_de_perception
+                    ]);
+                }
             });
 
         $indice_de_perception = $this->calculateAverageIndex($results_categories, 'indice_de_perception');
@@ -420,6 +427,14 @@ class GenerateResultatsForValidatedSoumission extends Command
 
     protected function updatePrincipesDeGouvernance(&$principes, $sous_categorie)
     {
+        // ✅ Filtrer : Ne traiter QUE les PrincipeDeGouvernance (exclure TypeDeGouvernance)
+        $categorieableType = get_class($sous_categorie->categorieable);
+        $isPrincipe = str_contains($categorieableType, 'Principe');
+
+        if (!$isPrincipe) {
+            return; // Ignorer les types de gouvernance
+        }
+
         $existing = $principes->firstWhere('id', $sous_categorie->categorieable_id);
 
         if ($existing) {
@@ -523,24 +538,30 @@ class GenerateResultatsForValidatedSoumission extends Command
         if ($formulaire = $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()) {
             $formulaire->categories_de_gouvernance()->get()->each(function ($categorie) use (&$principes, $hasFactuel, $hasPerception) {
                 if ($categorie->categorieable) {
-                    $principe = [
-                        'id' => $categorie->categorieable->id,
-                        'nom' => $categorie->categorieable->nom,
-                    ];
+                    // ✅ Filtrer : Ne garder QUE les PrincipeDeGouvernance (exclure TypeDeGouvernance)
+                    $categorieableType = get_class($categorie->categorieable);
+                    $isPrincipe = str_contains($categorieableType, 'Principe');
 
-                    // Only initialize indices for formulaires that exist
-                    if ($hasFactuel) {
-                        $principe['indice_factuel'] = 0;
-                    }
-                    if ($hasPerception) {
-                        $principe['indice_de_perception'] = 0;
-                    }
-                    // Only calculate synthetic if both exist
-                    if ($hasFactuel && $hasPerception) {
-                        $principe['indice_synthetique'] = 0;
-                    }
+                    if ($isPrincipe) {
+                        $principe = [
+                            'id' => $categorie->categorieable->id,
+                            'nom' => $categorie->categorieable->nom,
+                        ];
 
-                    $principes[$categorie->categorieable->id] = $principe;
+                        // Only initialize indices for formulaires that exist
+                        if ($hasFactuel) {
+                            $principe['indice_factuel'] = 0;
+                        }
+                        if ($hasPerception) {
+                            $principe['indice_de_perception'] = 0;
+                        }
+                        // Only calculate synthetic if both exist
+                        if ($hasFactuel && $hasPerception) {
+                            $principe['indice_synthetique'] = 0;
+                        }
+
+                        $principes[$categorie->categorieable->id] = $principe;
+                    }
                 }
             });
         }
@@ -549,7 +570,11 @@ class GenerateResultatsForValidatedSoumission extends Command
         if ($formulaire = $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()) {
             $formulaire->categories_de_gouvernance()->get()->each(function ($categorie) use (&$principes, $hasFactuel, $hasPerception) {
                 if ($categorie->categorieable) {
-                    if (!isset($principes[$categorie->categorieable->id])) {
+                    // ✅ Filtrer : Ne garder QUE les PrincipeDeGouvernance (exclure TypeDeGouvernance)
+                    $categorieableType = get_class($categorie->categorieable);
+                    $isPrincipe = str_contains($categorieableType, 'Principe');
+
+                    if ($isPrincipe && !isset($principes[$categorie->categorieable->id])) {
                         $principe = [
                             'id' => $categorie->categorieable->id,
                             'nom' => $categorie->categorieable->nom,
