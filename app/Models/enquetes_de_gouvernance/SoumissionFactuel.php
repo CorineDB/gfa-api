@@ -101,6 +101,7 @@ class SoumissionFactuel extends Model
 
     public function getPourcentageEvolutionAttribute()
     {
+        /* ========== ANCIEN CODE (COMMENTÉ - PERMETTAIT DES DOUBLONS ET POURCENTAGES > 100%) ==========
         $nombre_de_questions = $this->formulaireDeGouvernance->questions_de_gouvernance->count();
 
         $total_pourcentage_de_reponse = $this->reponses_de_la_collecte->sum(function ($reponse_de_la_collecte) {
@@ -115,5 +116,33 @@ class SoumissionFactuel extends Model
         }
 
         return round($pourcentage_global, 2);
+        ========== FIN ANCIEN CODE ========== */
+
+        // ========== NOUVEAU CODE (CORRIGÉ - ÉLIMINE LES DOUBLONS) ==========
+        $nombre_de_questions = $this->formulaireDeGouvernance->questions_de_gouvernance->count();
+
+        // Grouper les réponses par questionId pour détecter et gérer les doublons
+        $reponses_groupees = $this->reponses_de_la_collecte->groupBy('questionId');
+
+        // Ne prendre que la dernière réponse par question (la plus récente) en cas de doublon
+        $reponses_uniques = $reponses_groupees->map(function ($reponses_par_question) {
+            // Prendre la dernière réponse (created_at le plus récent) en cas de doublon
+            return $reponses_par_question->sortByDesc('created_at')->first();
+        });
+
+        // Calculer le total à partir des réponses uniques uniquement
+        $total_pourcentage_de_reponse = $reponses_uniques->sum(function ($reponse_de_la_collecte) {
+            return $reponse_de_la_collecte->pourcentage_evolution;
+        });
+
+        $pourcentage_global = 0;
+
+        // Eviter la division par zéro
+        if ($nombre_de_questions != 0) {
+            $pourcentage_global = $total_pourcentage_de_reponse / $nombre_de_questions;
+        }
+
+        // Limiter à 100% par sécurité (évite les valeurs aberrantes)
+        return round(min(100, $pourcentage_global), 2);
     }
 }
