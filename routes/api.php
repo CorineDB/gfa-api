@@ -1209,7 +1209,7 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
                         Route::post('{evaluation_de_gouvernance}/ajouterObjectifAttenduParPrincipe', 'ajouterObjectifAttenduParPrincipe')->name('feuille-de-route')->middleware('permission:creer-une-evaluation-de-gouvernance');
 
                         Route::get('{evaluation_de_gouvernance}/soumissions', 'soumissions_enquete')->name('soumissions_enquete')->middleware('permission:voir-une-soumission');
-                        Route::get('{evaluation_de_gouvernance}/soumissions-factuel', 'soumissions_enquete_factuel')->name('soumissions_enquete_factuel')->middleware('permission:voir-une-soumission');
+                        //Route::get('{evaluation_de_gouvernance}/soumissions-factuel', 'soumissions_enquete_factuel')->name('soumissions_enquete_factuel')->middleware('permission:voir-une-soumission');
                         Route::get('{evaluation_de_gouvernance}/soumissions-perception', 'soumissions_enquete_de_perception')->name('soumissions_enquete_de_perception')->middleware('permission:voir-une-soumission');
 
                         Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese')->middleware('permission:voir-une-fiche-de-synthese');
