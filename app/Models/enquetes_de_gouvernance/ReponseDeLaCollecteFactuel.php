@@ -83,6 +83,7 @@ class ReponseDeLaCollecteFactuel extends Model
 
     public function getPourcentageEvolutionAttribute()
     {
+        /* ========== ANCIEN CODE (COMMENTÉ - CAUSAIT DES POURCENTAGES > 100%) ==========
         $donnees_collectees = 0;
         $donnees_attendues = $pourcentage_collecte = 0;
 
@@ -122,5 +123,47 @@ class ReponseDeLaCollecteFactuel extends Model
         }
 
         return $pourcentage_collecte;
+        ========== FIN ANCIEN CODE ========== */
+
+        // ========== NOUVEAU CODE (CORRIGÉ) ==========
+        $donnees_collectees = 0;
+        $donnees_attendues = 5; // Base minimum: soumissionId, questionId, optionDeReponseId, programmeId, point
+
+        // Compter les données de base réellement présentes
+        // array('soumissionId', 'questionId', 'optionDeReponseId', 'programmeId', 'point')
+        if ($this->soumissionId) $donnees_collectees++;
+        if ($this->questionId) $donnees_collectees++;
+        if ($this->optionDeReponseId) $donnees_collectees++;
+        if ($this->programmeId) $donnees_collectees++;
+        if (isset($this->point)) $donnees_collectees++;
+
+        // Ajouter les données optionnelles selon les besoins
+        if ($this->preuveIsRequired) {
+            $donnees_attendues += 2; // sourceDeVerification + preuves_de_verification
+
+            if ($this->preuves_de_verification && $this->preuves_de_verification->count() > 0) {
+                $donnees_collectees++;
+            }
+
+            if ($this->sourceDeVerification || $this->sourceDeVerificationId) {
+                $donnees_collectees++;
+            }
+        }
+        elseif ($this->descriptionIsRequired) {
+            $donnees_attendues += 1; // description
+
+            if (!empty($this->description)) {
+                $donnees_collectees++;
+            }
+        }
+
+        $pourcentage_collecte = 0;
+
+        // Eviter la division par zéro et s'assurer que le pourcentage ne dépasse jamais 100%
+        if ($donnees_attendues != 0) {
+            $pourcentage_collecte = min(100, ($donnees_collectees / $donnees_attendues) * 100);
+        }
+
+        return round($pourcentage_collecte, 2);
     }
 }
