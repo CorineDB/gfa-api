@@ -35,6 +35,7 @@ class SoumissionFactuelResource extends JsonResource
                 ];
             }),
             'comite_members' => $this?->comite_members,
+            "categorieCount" => $this?->formulaireDeGouvernance?->categories_de_gouvernance->count(),
             'categories_de_gouvernance' => $this->when($this?->formulaireDeGouvernance?->categories_de_gouvernance->count(), $this->sections($this?->formulaireDeGouvernance?->categories_de_gouvernance)),
             'submitted_at' => $this->submitted_at,
 	    'created_at' => $this->created_at
