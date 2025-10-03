@@ -20,7 +20,8 @@ class Kernel extends ConsoleKernel
         Commands\Demarrage::class,
         Commands\RappelCron::class,
         Commands\Rapport::class,
-        Commands\enquetes_de_gouvernance\GenerateResultatsForValidatedSoumission::class
+        Commands\enquetes_de_gouvernance\GenerateResultatsForValidatedSoumission::class,
+        Commands\enquetes_de_gouvernance\UpdateEvaluationStatuses::class,
     ];
     /**
      * Define the application's command schedule.
