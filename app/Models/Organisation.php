@@ -348,19 +348,18 @@ class Organisation extends Model
 
     public function getSubmissionRateAttribute($evaluationDeGouvernanceId)
     {
+        /* ========== ANCIEN CODE (COMMENTÉ - CAUSAIT null ET POURCENTAGES > 100%) ==========
         $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
 
-        /*
-            // Calculate factual completion percentage
-            $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId);
+        // Calculate factual completion percentage
+        $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId);
 
-            // Calculate perception completion using the helper method
-            $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
+        // Calculate perception completion using the helper method
+        $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId);
 
 
-            $weightFactual = 0; // 60%
-            $weightPerception = 0; // 60%
-        */
+        $weightFactual = 0; // 60%
+        $weightPerception = 0; // 60%
 
         if($evaluation_de_gouvernance){
             if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance() && $evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
@@ -397,6 +396,50 @@ class Organisation extends Model
                 return round(($factualCompletion * $weightFactual), 2);
             }
         }
+        ========== FIN ANCIEN CODE ========== */
+
+        // ========== NOUVEAU CODE (CORRIGÉ) ==========
+        $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
+
+        // Si l'évaluation n'existe pas, retourner 0 au lieu de null
+        if(!$evaluation_de_gouvernance){
+            return 0;
+        }
+
+        // Cas 1: Les deux formulaires (factuel + perception)
+        if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance() && $evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
+            // Calculate factual completion percentage
+            $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId) ?? 0;
+
+            // Calculate perception completion using the helper method
+            $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId) ?? 0;
+
+            $weightPerception = 0.5; // 50% (corrigé)
+            $weightFactual = 0.5; // 50% (corrigé)
+            $percent = (($factualCompletion * $weightFactual) + ($perceptionCompletion * $weightPerception));
+
+            // Final weighted completion percentage (limité à 100%)
+            return round(min(100, $percent), 2);
+        }
+        // Cas 2: Formulaire de perception uniquement
+        elseif($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance()){
+            // Calculate perception completion using the helper method
+            $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId) ?? 0;
+
+            // Final weighted completion percentage (limité à 100%)
+            return round(min(100, $perceptionCompletion), 2);
+        }
+        // Cas 3: Formulaire factuel uniquement
+        elseif($evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
+            // Calculate factual completion percentage
+            $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId) ?? 0;
+
+            // Final weighted completion percentage (limité à 100%)
+            return round(min(100, $factualCompletion), 2);
+        }
+
+        // Cas 4: Aucun formulaire disponible
+        return 0;
     }
 
     public function actions_a_mener()
