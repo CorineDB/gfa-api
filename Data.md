@@ -1,0 +1,43 @@
+Informations general : 
+- Titre du projet : string 
+- DATE DÉBUT ÉTUDE : string
+- DATE FIN ÉTUDE : string
+- COÛT ESTIMATIF: float
+- DURÉE PRÉVUE : integer
+- Description somaire
+- identifiant_bip : Codification unique du projet
+- Zones d'intervention
+  - code
+  - longitude
+  - latitude
+- Cadre strategique
+  - Odds
+  - Cibles
+  - Informations du PND
+    - Orientations strategique du PND
+    - Objectifs strategique du PND
+  - Informations du PAG
+    - Piliers strategiques du PAG
+    - Axes du PAG
+- Informations sectorielles:
+  - code
+  - 
+- Evaluations
+  - Climatique
+    - Score climatique : float
+    - Criteres de l'evaluation climatique: 
+      - Nom du critere
+      - Notation
+      - La ponderation
+  - AMC
+    - Score amc : float
+    - Criteres de l'AMC:  
+      - Nom du critere
+      - Notation
+      - La ponderation
+  - Note conceptuelle
+    - Resume de la note conceptuelle
+    - Fichiers joints a la note conceptuelle
+    - Lien pour consulter/telecharger la note conceptuelle rediger
+    - Details de la decision de l'etude de profil
+
