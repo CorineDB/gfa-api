@@ -11,6 +11,8 @@ use Illuminate\Http\JsonResponse;
 interface EvaluationDeGouvernanceServiceInterface
 {
     public function soumissions($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse;
+    public function soumissions_enquete_factuel($evaluationDeGouvernance): JsonResponse;
+    public function soumissions_enquete_de_perception($evaluationDeGouvernance): JsonResponse;
     public function fiches_de_synthese($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse;
 
     public function organisations($evaluationDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse;

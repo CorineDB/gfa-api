@@ -114,6 +114,16 @@ class EvaluationDeGouvernanceController extends Controller
         return $this->evaluationDeGouvernanceService->soumissions_enquete($id);
     }
 
+    public function soumissions_enquete_factuel($id)
+    {
+        return $this->evaluationDeGouvernanceService->soumissions_enquete_factuel($id);
+    }
+
+    public function soumissions_enquete_de_perception($id)
+    {
+        return $this->evaluationDeGouvernanceService->soumissions_enquete_de_perception($id);
+    }
+
     public function recommandations($id)
     {
         return $this->evaluationDeGouvernanceService->recommandations($id);
