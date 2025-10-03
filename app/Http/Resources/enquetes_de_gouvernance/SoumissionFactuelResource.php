@@ -69,7 +69,8 @@ class SoumissionFactuelResource extends JsonResource
     public function questions_reponses($questions)
     {
         // Créer un index des réponses par questionId pour accès O(1) - Évite les requêtes N+1
-        $reponsesIndexed = $this->reponses_de_la_collecte->keyBy('questionId');
+        // $reponsesIndexed = $this->reponses_de_la_collecte->keyBy('questionId'); // ANCIEN (permettait les doublons)
+        $reponsesIndexed = $this->reponses_uniques->keyBy('questionId'); // NOUVEAU (sans doublons)
 
         return $questions->map(function($question) use ($reponsesIndexed) {
             // ❌ ANCIENNE VERSION (Requête N+1) :

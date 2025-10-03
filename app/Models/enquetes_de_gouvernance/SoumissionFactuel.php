@@ -29,7 +29,7 @@ class SoumissionFactuel extends Model
 	"created_at"	=> "datetime"
     ];
 
-    protected $appends = ['pourcentage_evolution'];
+    protected $appends = ['pourcentage_evolution', 'reponses_uniques'];
     protected $with = [];
 
     protected static function boot()
@@ -99,6 +99,21 @@ class SoumissionFactuel extends Model
         return $this->hasMany(ReponseDeLaCollecteFactuel::class, 'soumissionId');
     }
 
+    /**
+     * Retourne les réponses uniques (sans doublons) pour cette soumission
+     * Une question ne peut avoir qu'une seule réponse, on prend la plus récente en cas de doublon
+     */
+    public function getReponsesUniquesAttribute()
+    {
+        // Grouper les réponses par questionId
+        $reponses_groupees = $this->reponses_de_la_collecte->groupBy('questionId');
+
+        // Ne prendre que la dernière réponse par question (la plus récente)
+        return $reponses_groupees->map(function ($reponses_par_question) {
+            return $reponses_par_question->sortByDesc('created_at')->first();
+        })->values();
+    }
+
     public function getPourcentageEvolutionAttribute()
     {
         /* ========== ANCIEN CODE (COMMENTÉ - PERMETTAIT DES DOUBLONS ET POURCENTAGES > 100%) ==========
@@ -121,14 +136,9 @@ class SoumissionFactuel extends Model
         // ========== NOUVEAU CODE (CORRIGÉ - ÉLIMINE LES DOUBLONS) ==========
         $nombre_de_questions = $this->formulaireDeGouvernance->questions_de_gouvernance->count();
 
-        // Grouper les réponses par questionId pour détecter et gérer les doublons
-        $reponses_groupees = $this->reponses_de_la_collecte->groupBy('questionId');
-
-        // Ne prendre que la dernière réponse par question (la plus récente) en cas de doublon
-        $reponses_uniques = $reponses_groupees->map(function ($reponses_par_question) {
-            // Prendre la dernière réponse (created_at le plus récent) en cas de doublon
-            return $reponses_par_question->sortByDesc('created_at')->first();
-        });
+        // Utiliser les réponses uniques (sans doublons) via l'attribut reponses_uniques
+        // $reponses_groupees = $this->reponses_de_la_collecte->groupBy('questionId'); // ANCIEN
+        $reponses_uniques = $this->reponses_uniques; // NOUVEAU
 
         // Calculer le total à partir des réponses uniques uniquement
         $total_pourcentage_de_reponse = $reponses_uniques->sum(function ($reponse_de_la_collecte) {
