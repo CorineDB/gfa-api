@@ -22,6 +22,8 @@ class ReponsesDeLaCollecteFactuelResource extends JsonResource
             'pourcentage_evolution' => $this->pourcentage_evolution,
             'point' => $this->point,
             "preuveIsRequired" => $this->preuveIsRequired,
+            "sourceIsRequired" => $this->sourceIsRequired,
+            "descriptionIsRequired" => $this->descriptionIsRequired,
             "sourceDeVerification" => $this->sourceDeVerificationId ? $this->source_de_verification->intitule : ($this->sourceDeVerification ?? null),
             "sourceDeVerificationId" => $this->source_de_verification ? $this->source_de_verification->secure_id : null,
             "description" => $this->description,
