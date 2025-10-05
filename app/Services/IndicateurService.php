@@ -1865,7 +1865,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 // Création de la nouvelle valeur de base
                 $valeur = $indicateur->valeursDeBase()->create([
                     "value" => $nouvelleValeurDeBase,
-                    "indicateurValueKeyMapId" => $valueKey->pivot->id,
+                    "indicateurValueKeyMapId" => $indicateur->valueKey()?->pivot->id,
                     "programmeId" => $programme->id
                 ]);
 
