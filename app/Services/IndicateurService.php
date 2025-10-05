@@ -1797,7 +1797,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                         throw new Exception("La clé {$data['keyId']} n'est pas associée à cet indicateur", 422);
                     }
 
-                    throw  new Exception("La clé " . json_encode($valeurKey));
+                    throw  new Exception("La clé " . json_encode($valueKey));
 
                     // Validation que la valeur est numérique si l'unité de mesure l'exige
                     if ($valueKey->type !== 'text' && !is_numeric($data['value'])) {
