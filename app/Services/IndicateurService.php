@@ -1688,7 +1688,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
             // Vérification qu'il n'y a pas de suivis (optionnel selon les règles métier)
             if ($indicateur->suivis->isNotEmpty()) {
-                throw new Exception("Impossible de modifier la valeur de base d'un indicateur qui a déjà des suivis. Suivis : " . json_encode($indicateur->suivis), 422);
+                throw new Exception("Impossible de modifier la valeur de base d'un indicateur qui a déjà des suivis. Suivis : " . json_encode($indicateur->suivis->pluck("suivisIndicateur")->collapse()), 422);
             }
 
             // Validation des données d'entrée
