@@ -1832,7 +1832,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 if($valueKey->id !== $indicateur->valueKey()?->pivot->indicateurValueKeyId){
                     $indicateur->valueKeys()->attach([$valueKey->id => ["uniteeMesureId" => $valueKey->uniteeMesureId, "type" => $valueKey->type]]);
                     $indicateur->refresh();
-                    throw new Exception(" Keys : " . json_encode($indicateur->valueKeys));
                 }
 
                 throw new Exception(" Value Key : " . json_encode($indicateur->valueKey()));

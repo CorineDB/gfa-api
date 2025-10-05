@@ -182,6 +182,7 @@ class Indicateur extends Model
 
     public function valueKey()
     {
+        return $this->valueKeys()->latest()->first();
         return $this->valueKeys->first();
     }
 
