@@ -1798,7 +1798,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     }
 
                     // Validation que la valeur est numérique si l'unité de mesure l'exige
-                    if ($valueKey->pivot->type !== 'text' && !is_numeric($data['value'])) {
+                    if ($valueKey->type !== 'text' && !is_numeric($data['value'])) {
                         throw new Exception("La valeur pour la clé '{$valueKey->key}' doit être numérique", 422);
                     }
 
@@ -1827,7 +1827,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                  *  $unite = Unitee::firstOrCreate(["type" => nombre],["nom" => Nombre,"type" => nombre, 'programmeId' => $indicateur->programmeId])
                  * array('libelle' => "Moyenne", 'key' => moy, 'type' => $unite->type, 'description', 'uniteeMesureId' => $unite->id, 'programmeId'  => $indicateur->programmeId);
                  */
-                
+
                 $valueKey = IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first();
 
                 /* $unite = Unitee::firstOrCreate(
