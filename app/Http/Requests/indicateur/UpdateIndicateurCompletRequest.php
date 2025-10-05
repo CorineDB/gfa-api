@@ -143,8 +143,21 @@ class UpdateIndicateurCompletRequest extends FormRequest
             ],
             'anneesCible.*.valeurCible.*.keyId' => [
                 Rule::requiredIf(request()->input('agreger') && request()->has('anneesCible')),
-                'distinct',
-                new HashValidatorRule(new IndicateurValueKey())
+                new HashValidatorRule(new IndicateurValueKey()),
+                function ($attribute, $value, $fail) {
+                    // Vérifier que les keyId sont uniques au sein de chaque année
+                    preg_match('/anneesCible\.(\d+)\.valeurCible/', $attribute, $matches);
+                    $anneeIndex = $matches[1] ?? null;
+
+                    if ($anneeIndex !== null) {
+                        $valeursForThisYear = request()->input("anneesCible.{$anneeIndex}.valeurCible", []);
+                        $keyIds = collect($valeursForThisYear)->pluck('keyId')->filter()->all();
+
+                        if (count($keyIds) !== count(array_unique($keyIds))) {
+                            $fail("Les keyId doivent être uniques au sein de l'année.");
+                        }
+                    }
+                }
             ],
             'anneesCible.*.valeurCible.*.value' => [
                 Rule::requiredIf(request()->input('agreger') && request()->has('anneesCible'))
@@ -226,7 +239,6 @@ class UpdateIndicateurCompletRequest extends FormRequest
             'anneesCible.*.valeurCible.array' => 'La valeur cible doit être un tableau pour un indicateur agrégé.',
             'anneesCible.*.valeurCible.min' => 'Au moins une valeur cible doit être fournie.',
             'anneesCible.*.valeurCible.*.keyId.required' => 'Le keyId est obligatoire pour chaque valeur cible.',
-            'anneesCible.*.valeurCible.*.keyId.distinct' => 'Les keyId doivent être uniques dans les valeurs cibles.',
             'anneesCible.*.valeurCible.*.value.required' => 'La valeur est obligatoire pour chaque valeur cible.',
 
             'responsables.array' => 'Les responsables doivent être un tableau.',
