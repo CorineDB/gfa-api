@@ -1242,12 +1242,10 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     $indicateurKeys = $indicateur->valueKeys->pluck('id')->toArray();
                     $valeursKeys = collect($anneeCible["valeurCible"])->pluck('keyId')->toArray();
 
-                    throw new Exception("Les clés d'indicateur s " . json_encode($indicateurKeys));
-
-                    $missingKeys = array_diff($indicateurKeys, $valeursKeys);
+                    /* $missingKeys = array_diff($indicateurKeys, $valeursKeys);
                     if (!empty($missingKeys)) {
                         throw new Exception("Les clés d'indicateur suivantes sont manquantes dans les valeurs cibles pour l'année {$annee}: " . implode(', ', $missingKeys), 422);
-                    }
+                    } */
 
                     // Suppression des anciennes valeurs pour cette année
                     $valeurCibleIndicateur->valeursCible()->delete();
