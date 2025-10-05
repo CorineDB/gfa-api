@@ -138,11 +138,6 @@ class Indicateur extends Model
         return $this->belongsTo(Unitee::class, 'uniteeMesureId');
     }
 
-    public function suivisIndicateur()
-    {
-        return $this->suivis()->pluck("suivisIndicateur");
-    }
-
     public function suivis()
     {
         return $this->valeursCible()->with("suivisIndicateur");
