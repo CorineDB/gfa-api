@@ -140,7 +140,7 @@ class Indicateur extends Model
 
     public function suivisIndicateur()
     {
-        return $this->suivis()->pluck("suivisIndicateur")->collapse();
+        return $this->suivis()->pluck("suivisIndicateur");
     }
 
     public function suivis()
