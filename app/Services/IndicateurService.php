@@ -1834,8 +1834,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     $indicateur->refresh();
                 }
 
-                throw new Exception(" Value Key : " . json_encode($indicateur->valueKey()));
-
                 /* $unite = Unitee::firstOrCreate(
                     ["type" => "nombre"], // condition
                     ["nom" => "Nombre", "type" => "nombre", "programmeId" => $indicateur->programmeId] // valeurs si création
