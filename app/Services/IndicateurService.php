@@ -1829,9 +1829,9 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                  */
                 $valueKey = IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first();
 
-                throw new Exception(" Keys : " . json_encode($indicateur->valueKeys));
-                if($valueKey->id !== $indicateur->valueKey?->pivot->id){
+                if($valueKey->id !== $indicateur->valueKey?->pivot->indicateurValueKeyId){
                     $indicateur->valueKeys()->attach([$valueKey->id]);
+                    $indicateur->refresh();
                     throw new Exception(" Keys : " . json_encode($indicateur->valueKeys));
                 }
 
