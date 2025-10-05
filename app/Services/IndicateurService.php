@@ -1430,7 +1430,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
             }
 
-            $suivisIndicateur = $indicateur->suivis()->pluck("suivisIndicateur")->collapse();
+            $suivisIndicateur = $indicateur->suivis->pluck("suivisIndicateur")->collapse();
 
             // Vérification qu'il n'y a pas de suivis
             if ($suivisIndicateur->isNotEmpty()) {
@@ -1688,7 +1688,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
             }
 
-            $suivisIndicateur = $indicateur->suivis()->pluck("suivisIndicateur")->collapse();
+            $suivisIndicateur = $indicateur->suivis->pluck("suivisIndicateur")->collapse();
 
             // Vérification qu'il n'y a pas de suivis (optionnel selon les règles métier)
             //if ($indicateur->suivis->isNotEmpty()) {
