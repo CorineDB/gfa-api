@@ -74,7 +74,7 @@ class UpdateIndicateurCompletRequest extends FormRequest
             'value_keys' => [
                 Rule::requiredIf(request()->input('agreger')),
                 request()->input('agreger') ? "array" : "",
-                function($attribute, $value, $fail) {
+                function($_, $__, $fail) {
                     if (!request()->input('agreger') && is_array(request()->input('value_keys'))) {
                         $fail("Champ non requis pour un indicateur non agrégé.");
                     }
@@ -97,7 +97,7 @@ class UpdateIndicateurCompletRequest extends FormRequest
             'valeurDeBase' => [
                 'sometimes',
                 request()->input('agreger') ? "array" : "",
-                function($attribute, $value, $fail) {
+                function($_, $value, $fail) {
                     $isAgreger = request()->input('agreger');
                     if ($isAgreger && !is_array($value)) {
                         $fail("Pour un indicateur agrégé, la valeur de base doit être un tableau.");
@@ -106,25 +106,12 @@ class UpdateIndicateurCompletRequest extends FormRequest
                         $fail("Pour un indicateur simple, la valeur de base doit être une valeur unique.");
                     }
                 },
-                request()->input('agreger') ? "min:" . count(request()->input('value_keys', [])) : "",
-                request()->input('agreger') ? "max:" . count(request()->input('value_keys', [])) : ""
+                request()->input('agreger') ? "min:1" : ""
             ],
             'valeurDeBase.*.keyId' => [
                 Rule::requiredIf(request()->input('agreger') && request()->has('valeurDeBase')),
                 'distinct',
-                new HashValidatorRule(new IndicateurValueKey()),
-                function ($attribute, $value, $fail) {
-                    // Ensure each keyId in valeurDeBase is one of the value_keys.id
-                    preg_match('/valeurDeBase\.(\d+)\.keyId/', $attribute, $matches);
-                    $index = $matches[1] ?? null;
-
-                    $valueKeysIds = collect(request()->input('value_keys', []))->pluck('id')->toArray();
-                    $keyId = request()->input('valeurDeBase.*.keyId')[$index] ?? $value;
-
-                    if (!empty($valueKeysIds) && !in_array($keyId, $valueKeysIds)) {
-                        $fail("Le keyId n'est pas dans value_keys.");
-                    }
-                }
+                new HashValidatorRule(new IndicateurValueKey())
             ],
             'valeurDeBase.*.value' => [
                 Rule::requiredIf(request()->input('agreger') && request()->has('valeurDeBase'))
@@ -143,7 +130,7 @@ class UpdateIndicateurCompletRequest extends FormRequest
             'anneesCible.*.valeurCible' => [
                 'required_with:anneesCible',
                 request()->input('agreger') ? "array" : "",
-                function($attribute, $value, $fail) {
+                function($_, $value, $fail) {
                     $isAgreger = request()->input('agreger');
                     if ($isAgreger && !is_array($value)) {
                         $fail("Pour un indicateur agrégé, la valeur cible doit être un tableau.");
@@ -152,24 +139,12 @@ class UpdateIndicateurCompletRequest extends FormRequest
                         $fail("Pour un indicateur simple, la valeur cible doit être une valeur unique.");
                     }
                 },
-                request()->input('agreger') ? "min:" . count(request()->input('value_keys', [])) : "",
-                request()->input('agreger') ? "max:" . count(request()->input('value_keys', [])) : ""
+                request()->input('agreger') ? "min:1" : ""
             ],
             'anneesCible.*.valeurCible.*.keyId' => [
                 Rule::requiredIf(request()->input('agreger') && request()->has('anneesCible')),
                 'distinct',
-                new HashValidatorRule(new IndicateurValueKey()),
-                function ($attribute, $value, $fail) {
-                    // Ensure each keyId in valeurCible is one of the value_keys.id
-                    preg_match('/anneesCible\.(\d+)\.valeurCible\.(\d+)\.keyId/', $attribute, $matches);
-                    $anneeIndex = $matches[1] ?? null;
-
-                    $valueKeysIds = collect(request()->input('value_keys', []))->pluck('id')->toArray();
-
-                    if (!empty($valueKeysIds) && !in_array($value, $valueKeysIds)) {
-                        $fail("Le keyId n'est pas dans value_keys.");
-                    }
-                }
+                new HashValidatorRule(new IndicateurValueKey())
             ],
             'anneesCible.*.valeurCible.*.value' => [
                 Rule::requiredIf(request()->input('agreger') && request()->has('anneesCible'))
@@ -235,8 +210,7 @@ class UpdateIndicateurCompletRequest extends FormRequest
             'value_keys.*.id.distinct' => 'Les identifiants des clés doivent être uniques.',
 
             'valeurDeBase.array' => 'La valeur de base doit être un tableau pour un indicateur agrégé.',
-            'valeurDeBase.min' => 'Toutes les clés doivent avoir une valeur de base.',
-            'valeurDeBase.max' => 'Le nombre de valeurs de base ne peut pas excéder le nombre de clés.',
+            'valeurDeBase.min' => 'Au moins une valeur de base doit être fournie.',
             'valeurDeBase.*.keyId.required' => 'Le keyId est obligatoire pour chaque valeur de base.',
             'valeurDeBase.*.keyId.distinct' => 'Les keyId doivent être uniques dans les valeurs de base.',
             'valeurDeBase.*.value.required' => 'La valeur est obligatoire pour chaque valeur de base.',
@@ -250,8 +224,7 @@ class UpdateIndicateurCompletRequest extends FormRequest
             'anneesCible.*.annee.before_or_equal' => 'L\'année cible doit être antérieure ou égale à la fin du programme.',
             'anneesCible.*.valeurCible.required_with' => 'La valeur cible est obligatoire.',
             'anneesCible.*.valeurCible.array' => 'La valeur cible doit être un tableau pour un indicateur agrégé.',
-            'anneesCible.*.valeurCible.min' => 'Toutes les clés doivent avoir une valeur cible.',
-            'anneesCible.*.valeurCible.max' => 'Le nombre de valeurs cibles ne peut pas excéder le nombre de clés.',
+            'anneesCible.*.valeurCible.min' => 'Au moins une valeur cible doit être fournie.',
             'anneesCible.*.valeurCible.*.keyId.required' => 'Le keyId est obligatoire pour chaque valeur cible.',
             'anneesCible.*.valeurCible.*.keyId.distinct' => 'Les keyId doivent être uniques dans les valeurs cibles.',
             'anneesCible.*.valeurCible.*.value.required' => 'La valeur est obligatoire pour chaque valeur cible.',
