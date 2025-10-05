@@ -28,6 +28,17 @@ class UpdateIndicateurCompletRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * IMPORTANT - Comportement des années cibles (anneesCible):
+     * - Si anneesCible = [] : Supprime toutes les valeurs cibles existantes
+     * - Si anneesCible contient des années :
+     *   * Met à jour les années présentes dans la requête
+     *   * Supprime les années qui ne sont PAS dans la requête
+     *
+     * Exemple: Si l'indicateur a [2024, 2025, 2026] et vous soumettez [2024, 2027]:
+     * - 2024 sera mise à jour
+     * - 2027 sera créée
+     * - 2025 et 2026 seront supprimées
+     *
      * @return array
      */
     public function rules()
@@ -117,8 +128,8 @@ class UpdateIndicateurCompletRequest extends FormRequest
                 Rule::requiredIf(request()->input('agreger') && request()->has('valeurDeBase'))
             ],
 
-            // Valeurs cibles
-            'anneesCible' => ['sometimes', 'nullable', "array", request()->input('anneesCible') ? "min:1" : ""],
+            // Valeurs cibles (un tableau vide [] supprimera toutes les valeurs cibles)
+            'anneesCible' => ['sometimes', 'nullable', "array"],
             'anneesCible.*.annee' => [
                 'required_with:anneesCible',
                 'distinct',
@@ -228,8 +239,7 @@ class UpdateIndicateurCompletRequest extends FormRequest
             'valeurDeBase.*.keyId.distinct' => 'Les keyId doivent être uniques dans les valeurs de base.',
             'valeurDeBase.*.value.required' => 'La valeur est obligatoire pour chaque valeur de base.',
 
-            'anneesCible.array' => 'Les années cibles doivent être un tableau.',
-            'anneesCible.min' => 'Au moins une année cible doit être fournie.',
+            'anneesCible.array' => 'Les années cibles doivent être un tableau (envoyez un tableau vide [] pour supprimer toutes les valeurs cibles).',
             'anneesCible.*.annee.required_with' => 'L\'année est obligatoire.',
             'anneesCible.*.annee.distinct' => 'Les années doivent être uniques.',
             'anneesCible.*.annee.date_format' => 'L\'année doit être au format YYYY.',

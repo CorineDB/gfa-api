@@ -1173,6 +1173,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
                 $message = Str::ucfirst($acteur) . " a supprimé toutes les valeurs cibles de l'indicateur " . $indicateur->nom;
 
+                // LogActivity::addToLog("Suppression valeurs cibles", $message, get_class($indicateur), $indicateur->id);
+
                 DB::commit();
 
                 // Nettoyage du cache
@@ -1307,6 +1309,21 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 // Mise à jour de la valeur cible consolidée
                 $valeurCibleIndicateur->valeurCible = $valeurCible;
                 $valeurCibleIndicateur->save();
+            }
+
+            // Supprimer les années cibles qui ne sont plus présentes dans la requête
+            $anneesSoumises = collect($attributs['anneesCible'])->pluck('annee')->map(fn($a) => (int)$a)->toArray();
+
+            $valeursCiblesASupprimer = $this->valeurCibleIndicateurRepository
+                ->newInstance()
+                ->where("cibleable_id", $indicateur->id)
+                ->where("cibleable_type", get_class($indicateur))
+                ->whereNotIn("annee", $anneesSoumises)
+                ->get();
+
+            foreach ($valeursCiblesASupprimer as $valeurCibleASupprimer) {
+                $valeurCibleASupprimer->valeursCible()->delete();
+                $valeurCibleASupprimer->delete();
             }
 
             // Rafraîchissement de l'indicateur pour obtenir les nouvelles données
@@ -1770,13 +1787,24 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     throw new Exception("Pour un indicateur agrégé, la valeur de base doit être un tableau avec les clés correspondantes", 422);
                 }
 
-                // Validation que toutes les clés de l'indicateur ont une valeur
-                $indicateurKeys = $indicateur->valueKeys->pluck('id')->toArray();
-                $valeursKeys = collect($nouvelleValeurDeBase)->pluck('keyId')->toArray();
+                // Si tableau vide, supprimer toutes les valeurs de base
+                if (empty($nouvelleValeurDeBase)) {
+                    $indicateur->valeursDeBase()->delete();
+                    $indicateur->valeurDeBase = null;
+                    $indicateur->save();
+                    $indicateur->refresh();
 
-                $missingKeys = array_diff($indicateurKeys, $valeursKeys);
-                if (!empty($missingKeys)) {
-                    throw new Exception("Les clés d'indicateur suivantes sont manquantes dans la valeur de base: " . implode(', ', $missingKeys), 422);
+                    DB::commit();
+
+                    Cache::forget('indicateurs');
+                    Cache::forget('indicateurs-' . $indicateur->id);
+
+                    return response()->json([
+                        'statut' => 'success',
+                        'message' => 'Valeur de base supprimée avec succès',
+                        'data' => new IndicateursResource($indicateur),
+                        'statutCode' => Response::HTTP_OK
+                    ], Response::HTTP_OK);
                 }
 
                 // Suppression des anciennes valeurs de base
@@ -1784,7 +1812,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
 
                 $valeurDeBase = [];
 
-                // Création des nouvelles valeurs de base
+                // Création des nouvelles valeurs de base (mise à jour complète)
                 foreach ($nouvelleValeurDeBase as $data) {
                     if (!isset($data['keyId']) || !isset($data['value'])) {
                         throw new Exception("Chaque valeur de base doit contenir 'keyId' et 'value'", 422);
