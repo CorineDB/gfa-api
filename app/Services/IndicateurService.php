@@ -1869,8 +1869,6 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     "programmeId" => $programme->id
                 ]);
 
-                throw new Exception(json_encode($valeur));
-
                 $valeurDeBase["{$valueKey->key}"] = $valeur->value;
             }
 
