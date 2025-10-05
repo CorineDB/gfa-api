@@ -1242,6 +1242,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     $indicateurKeys = $indicateur->valueKeys->pluck('id')->toArray();
                     $valeursKeys = collect($anneeCible["valeurCible"])->pluck('keyId')->toArray();
 
+                    throw new Exception("Les clés d'indicateur s " . json_encode($indicateurKeys));
+
                     $missingKeys = array_diff($indicateurKeys, $valeursKeys);
                     if (!empty($missingKeys)) {
                         throw new Exception("Les clés d'indicateur suivantes sont manquantes dans les valeurs cibles pour l'année {$annee}: " . implode(', ', $missingKeys), 422);
@@ -1846,43 +1848,59 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     throw new Exception("Pour un indicateur simple, la valeur de base doit être une valeur unique", 422);
                 }
 
-                // Validation que la valeur est numérique si nécessaire
+                // Si la valeur est null ou vide, supprimer la valeur de base
+                if (is_null($nouvelleValeurDeBase) || $nouvelleValeurDeBase === '') {
+                    $indicateur->valeursDeBase()->delete();
+                    $indicateur->valeurDeBase = null;
+                    $indicateur->save();
+                    $indicateur->refresh();
+
+                    DB::commit();
+
+                    Cache::forget('indicateurs');
+                    Cache::forget('indicateurs-' . $indicateur->id);
+
+                    return response()->json([
+                        'statut' => 'success',
+                        'message' => 'Valeur de base supprimée avec succès',
+                        'data' => new IndicateursResource($indicateur),
+                        'statutCode' => Response::HTTP_OK
+                    ], Response::HTTP_OK);
+                }
+
+                // Récupérer la clé de valeur de l'indicateur
                 $valueKey = $indicateur->valueKey();
 
-                // Recuperer la cle moy si ca existe sinon cree
-                /**
-                 * Recuperer la cle moy si ca existe sinon cree
-                 *  $unite = Unitee::firstOrCreate(["type" => nombre],["nom" => Nombre,"type" => nombre, 'programmeId' => $indicateur->programmeId])
-                 * array('libelle' => "Moyenne", 'key' => moy, 'type' => $unite->type, 'description', 'uniteeMesureId' => $unite->id, 'programmeId'  => $indicateur->programmeId);
-                 */
-                $valueKey = IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first();
+                // Si pas de clé, créer ou récupérer la clé 'moy'
+                if (!$valueKey) {
+                    // Créer ou récupérer l'unité de mesure 'nombre'
+                    $unite = Unitee::firstOrCreate(
+                        ["type" => "nombre", "programmeId" => $indicateur->programmeId],
+                        ["nom" => "Nombre", "type" => "nombre", "programmeId" => $indicateur->programmeId]
+                    );
 
-                if($valueKey->id !== $indicateur->valueKey()?->pivot->indicateurValueKeyId){
-                    $indicateur->valueKeys()->attach([$valueKey->id => ["uniteeMesureId" => $valueKey->uniteeMesureId, "type" => $valueKey->type]]);
+                    // Créer ou récupérer la clé 'moy'
+                    $valueKey = IndicateurValueKey::firstOrCreate(
+                        ["key" => "moy", "programmeId" => $indicateur->programmeId],
+                        [
+                            "libelle"        => "Moyenne",
+                            "key"            => "moy",
+                            "type"           => $unite->type,
+                            "description"    => "Clé générée automatiquement pour la moyenne",
+                            "uniteeMesureId" => $unite->id,
+                            "programmeId"    => $indicateur->programmeId,
+                        ]
+                    );
+
+                    // Attacher la clé à l'indicateur
+                    $indicateur->valueKeys()->attach([$valueKey->id => [
+                        "uniteeMesureId" => $valueKey->uniteeMesureId,
+                        "type" => $valueKey->type
+                    ]]);
                     $indicateur->refresh();
                 }
 
-                /* $unite = Unitee::firstOrCreate(
-                    ["type" => "nombre"], // condition
-                    ["nom" => "Nombre", "type" => "nombre", "programmeId" => $indicateur->programmeId] // valeurs si création
-                );
-
-                $valueKey = IndicateurValueKey::firstOrCreate(
-                    ["key" => "moy"], // condition
-                    [
-                        "libelle"        => "Moyenne",
-                        "key"            => "moy",
-                        "type"           => $unite->type,
-                        "description"    => "Clé générée automatiquement pour la moyenne",
-                        "uniteeMesureId" => $unite->id,
-                        "programmeId"    => $indicateur->programmeId,
-                    ] // valeurs si création
-                ); */
-
-                if (!$valueKey) {
-                    throw new Exception("Aucune clé de valeur trouvée pour cet indicateur", 500);
-                }
-
+                // Validation que la valeur est numérique si nécessaire
                 if ($valueKey->type !== 'text' && !is_numeric($nouvelleValeurDeBase)) {
                     throw new Exception("La valeur de base doit être numérique", 422);
                 }
