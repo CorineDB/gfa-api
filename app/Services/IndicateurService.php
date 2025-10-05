@@ -1151,6 +1151,42 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 throw new Exception("Les années cibles doivent être fournies sous forme de tableau", 422);
             }
 
+            // Si anneesCible est un tableau vide, supprimer toutes les valeurs cibles
+            if (empty($attributs['anneesCible'])) {
+                // Récupérer toutes les valeurs cibles de cet indicateur
+                $valeursCiblesIndicateur = $this->valeurCibleIndicateurRepository
+                    ->newInstance()
+                    ->where("cibleable_id", $indicateur->id)
+                    ->where("cibleable_type", get_class($indicateur))
+                    ->get();
+
+                // Supprimer toutes les valeurs cibles et leurs entrées associées
+                foreach ($valeursCiblesIndicateur as $valeurCibleIndicateur) {
+                    $valeurCibleIndicateur->valeursCible()->delete();
+                    $valeurCibleIndicateur->delete();
+                }
+
+                // Rafraîchissement de l'indicateur
+                $indicateur->refresh();
+
+                // Logging de l'activité
+                $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+                $message = Str::ucfirst($acteur) . " a supprimé toutes les valeurs cibles de l'indicateur " . $indicateur->nom;
+
+                DB::commit();
+
+                // Nettoyage du cache
+                Cache::forget('indicateurs');
+                Cache::forget('indicateurs-' . $indicateur->id);
+
+                return response()->json([
+                    'statut' => 'success',
+                    'message' => 'Toutes les valeurs cibles ont été supprimées avec succès',
+                    'data' => new IndicateursResource($indicateur),
+                    'statutCode' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+            }
+
             // Traitement de chaque année cible
             foreach ($attributs['anneesCible'] as $anneeCible) {
 
