@@ -1797,10 +1797,8 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                         throw new Exception("La clé {$data['keyId']} n'est pas associée à cet indicateur", 422);
                     }
 
-                    throw  new Exception("La clé " . json_encode($valueKey));
-
                     // Validation que la valeur est numérique si l'unité de mesure l'exige
-                    if ($valueKey->type !== 'text' && !is_numeric($data['value'])) {
+                    if ($valueKey->pivot->type !== 'text' && !is_numeric($data['value'])) {
                         throw new Exception("La valeur pour la clé '{$valueKey->key}' doit être numérique", 422);
                     }
 
@@ -1829,8 +1827,12 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                  *  $unite = Unitee::firstOrCreate(["type" => nombre],["nom" => Nombre,"type" => nombre, 'programmeId' => $indicateur->programmeId])
                  * array('libelle' => "Moyenne", 'key' => moy, 'type' => $unite->type, 'description', 'uniteeMesureId' => $unite->id, 'programmeId'  => $indicateur->programmeId);
                  */
-
                 $valueKey = IndicateurValueKey::where('key', 'moy')->first() ?? IndicateurValueKey::first();
+
+                throw new Exception(" Keys : " . json_encode($indicateur->valuesKey->load("pivot")));
+                if($valueKey->id !== $indicateur->valueKey()->pivot->id){
+                    $indicateur->valuesKey()->attach([$valueKey->id]);
+                }
 
                 /* $unite = Unitee::firstOrCreate(
                     ["type" => "nombre"], // condition
@@ -1853,7 +1855,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     throw new Exception("Aucune clé de valeur trouvée pour cet indicateur", 500);
                 }
 
-                if ($valueKey->pivot->type !== 'text' && !is_numeric($nouvelleValeurDeBase)) {
+                if ($valueKey->type !== 'text' && !is_numeric($nouvelleValeurDeBase)) {
                     throw new Exception("La valeur de base doit être numérique", 422);
                 }
 
