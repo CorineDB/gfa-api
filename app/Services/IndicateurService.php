@@ -1835,7 +1835,7 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                     throw new Exception(" Keys : " . json_encode($indicateur->valueKeys));
                 }
 
-                throw new Exception(" Value Key : " . json_encode($indicateur->valueKey));
+                throw new Exception(" Value Key : " . json_encode($indicateur->valueKey()));
 
                 /* $unite = Unitee::firstOrCreate(
                     ["type" => "nombre"], // condition
