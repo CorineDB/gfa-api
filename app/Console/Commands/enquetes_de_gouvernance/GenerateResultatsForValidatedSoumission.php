@@ -13,20 +13,50 @@ use Illuminate\Support\Collection;
 
 class GenerateResultatsForValidatedSoumission extends Command
 {
-    protected $signature = 'gouvernance:generate-results';
-    protected $description = 'Generates evaluation results for all validated soumissions';
+    protected $signature = 'gouvernance:generate-results {evaluationId? : ID de l\'évaluation (optionnel, traite toutes si absent)}';
+    protected $description = 'Generates evaluation results for validated soumissions. Optionally for a specific evaluation.';
     protected $evaluationDeGouvernance;
 
     public function handle()
     {
-        EvaluationDeGouvernance::where("statut", 0)
-            ->get()
-            ->each(function ($evaluationDeGouvernance) {
-                $this->evaluationDeGouvernance = $evaluationDeGouvernance;
-                $this->generateResultForEnquete($evaluationDeGouvernance);
-            });
+        $evaluationId = $this->argument('evaluationId');
 
-        $this->info("Generated result for soumissions");
+        // Si un ID spécifique est fourni, traiter uniquement cette évaluation
+        if ($evaluationId) {
+            $evaluation = EvaluationDeGouvernance::find($evaluationId);
+
+            if (!$evaluation) {
+                $this->error("❌ Évaluation introuvable avec l'ID: {$evaluationId}");
+                return 1;
+            }
+
+            $this->info("🔄 Génération des résultats pour l'évaluation: {$evaluation->intitule} (Année: {$evaluation->annee_exercice})");
+            $this->evaluationDeGouvernance = $evaluation;
+            $this->generateResultForEnquete($evaluation);
+            $this->info("✅ Résultats générés pour l'évaluation: {$evaluation->intitule}");
+
+            return 0;
+        }
+
+        // Sinon, traiter toutes les évaluations en cours (statut = 0 ou 1)
+        $this->info("🔄 Génération des résultats pour toutes les évaluations en cours...");
+
+        $evaluations = EvaluationDeGouvernance::whereIn("statut", [0, 1])->get();
+
+        if ($evaluations->isEmpty()) {
+            $this->warn("⚠️  Aucune évaluation en cours trouvée");
+            return 0;
+        }
+
+        $this->info("📊 Nombre d'évaluations à traiter: {$evaluations->count()}");
+
+        $evaluations->each(function ($evaluationDeGouvernance) {
+            $this->line("   → Traitement: {$evaluationDeGouvernance->intitule} (Année: {$evaluationDeGouvernance->annee_exercice})");
+            $this->evaluationDeGouvernance = $evaluationDeGouvernance;
+            $this->generateResultForEnquete($evaluationDeGouvernance);
+        });
+
+        $this->info("✅ Résultats générés pour {$evaluations->count()} évaluation(s)");
         return 0;
     }
 

@@ -1958,4 +1958,166 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * Modifie complètement un indicateur avec validation groupée des erreurs.
+     * Fonction complète qui peut changer le type d'indicateur et toutes ses valeurs.
+     *
+     * @param mixed $indicateur ID ou instance de l'indicateur
+     * @param array $attributs Données complètes de l'indicateur
+     * @return JsonResponse
+     */
+    public function updateIndicateurCompletAvecValidation($indicateur, array $attributs): JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            // Récupération de l'indicateur
+            if (is_string($indicateur)) {
+                $indicateur = $this->repository->findById($indicateur);
+            }
+
+            if (!$indicateur) {
+                throw new Exception("Indicateur inconnu", 404);
+            }
+
+            // Vérification des droits
+            $programme = Auth::user()->programme;
+            if ($indicateur->programmeId !== $programme->id) {
+                throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
+            }
+
+            $errors = [];
+
+            // Gestion du changement de type d'indicateur si nécessaire
+            if (isset($attributs['agreger']) && $indicateur->agreger !== (bool)$attributs['agreger']) {
+                $changeTypeResult = $this->changeIndicateurType($indicateur, $attributs);
+
+                if ($changeTypeResult->getStatusCode() !== 200) {
+                    // Un échec ici est structurel et bloquant, on arrête tout.
+                    DB::rollBack();
+                    return $changeTypeResult;
+                }
+
+                $indicateur->refresh();
+            }
+
+            // Modification des attributs de base de l'indicateur
+            $champsModifiables = [
+                'nom', 'description', 'type_de_variable', 'hypothese', 'indice',
+                'uniteeMesureId', 'categorieId', 'methode_de_la_collecte',
+                'frequence_de_la_collecte', 'sources_de_donnee'
+            ];
+
+            foreach ($champsModifiables as $champ) {
+                if (isset($attributs[$champ])) {
+                    $indicateur->$champ = $attributs[$champ];
+                }
+            }
+
+            // Modification de la valeur de base si fournie
+            if (isset($attributs['valeurDeBase'])) {
+                $resultValeurBase = $this->updateValeurDeBase($indicateur, $attributs);
+                if ($resultValeurBase->getStatusCode() !== 200) {
+                    $errors['valeurDeBase'] = json_decode($resultValeurBase->getContent())->message;
+                } else {
+                    $indicateur->refresh();
+                }
+            }
+
+            // Modification des valeurs cibles si fournies
+            if (isset($attributs['anneesCible'])) {
+                $resultValeursCibles = $this->updateValeursCibles($indicateur, $attributs);
+                if ($resultValeursCibles->getStatusCode() !== 200) {
+                    $errors['anneesCible'] = json_decode($resultValeursCibles->getContent())->message;
+                } else {
+                    $indicateur->refresh();
+                }
+            }
+
+            // Si des erreurs ont été collectées, on annule tout et on les retourne
+            if (!empty($errors)) {
+                DB::rollBack();
+                return response()->json([
+                    'statut' => 'error',
+                    'message' => 'Plusieurs erreurs de validation sont survenues.',
+                    'errors' => $errors,
+                    'statutCode' => Response::HTTP_UNPROCESSABLE_ENTITY
+                ], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
+            // Modification des responsables si fournies
+            if (isset($attributs['responsables'])) {
+                if (isset($attributs['responsables']['ug'])) {
+                    $indicateur->ug_responsable()->sync([
+                        $attributs['responsables']['ug'] => [
+                            "responsableable_type" => UniteeDeGestion::class,
+                            "programmeId" => $programme->id,
+                            "created_at" => now(),
+                            "updated_at" => now()
+                        ]
+                    ]);
+                }
+
+                if (isset($attributs['responsables']['organisations'])) {
+                    $responsables = [];
+                    foreach ($attributs['responsables']['organisations'] as $organisation_responsable) {
+                        if (!($organisation = app(OrganisationRepository::class)->findById($organisation_responsable))) {
+                            throw new Exception("Organisation inconnue", 404);
+                        }
+
+                        $responsables[$organisation->id] = [
+                            "responsableable_type" => Organisation::class,
+                            "programmeId" => $programme->id,
+                            "created_at" => now(),
+                            "updated_at" => now()
+                        ];
+                    }
+                    $indicateur->organisations_responsable()->sync($responsables);
+                }
+            }
+
+            // Modification des sites si fournis
+            if (isset($attributs['sites'])) {
+                $sites = [];
+                foreach ($attributs['sites'] as $id) {
+                    if (!($site = app(SiteRepository::class)->findById($id))) {
+                        throw new Exception("Site introuvable", 404);
+                    }
+                    array_push($sites, $site->id);
+                }
+                $indicateur->sites()->sync($sites, ["programmeId" => $programme->id]);
+            }
+
+            $indicateur->save();
+            $indicateur->refresh();
+
+            // Logging
+            $acteur = Auth::check() ? Auth::user()->nom . " " . Auth::user()->prenom : "Inconnu";
+            $message = Str::ucfirst($acteur) . " a modifié complètement l'indicateur " . $indicateur->nom;
+
+            DB::commit();
+
+            // Nettoyage du cache
+            Cache::forget('indicateurs');
+            Cache::forget('indicateurs-' . $indicateur->id);
+
+            return response()->json([
+                'statut' => 'success',
+                'message' => 'Indicateur modifié avec succès',
+                'data' => new IndicateursResource($indicateur),
+                'statutCode' => Response::HTTP_OK
+            ], Response::HTTP_OK);
+
+        } catch (\Throwable $th) {
+            DB::rollBack();
+
+            return response()->json([
+                'statut' => 'error',
+                'message' => $th->getMessage(),
+                'errors' => [],
+                'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
 }

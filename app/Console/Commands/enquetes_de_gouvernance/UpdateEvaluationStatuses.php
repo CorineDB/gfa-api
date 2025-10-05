@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands\enquetes_de_gouvernance;
 
-use App\Jobs\AppJob;
 use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Notifications\EvaluationNotification;
 use Carbon\Carbon;
@@ -275,14 +274,13 @@ class UpdateEvaluationStatuses extends Command
         }
 
         try {
-            AppJob::dispatch(function () use ($evaluation) {
-                foreach ($evaluation->organisations as $organisation) {
-                    $this->sendStartNotificationToOrganisation($evaluation, $organisation);
-                }
-            });
+            // Envoyer directement sans Job (les closures ne peuvent pas être sérialisées)
+            foreach ($evaluation->organisations as $organisation) {
+                $this->sendStartNotificationToOrganisation($evaluation, $organisation);
+            }
 
             $this->stats['notifications_sent'] += $evaluation->organisations->count();
-            $this->line("     ✅ Notifications de démarrage programmées: {$evaluation->organisations->count()} organisation(s)");
+            $this->line("     ✅ Notifications de démarrage envoyées: {$evaluation->organisations->count()} organisation(s)");
 
         } catch (\Exception $e) {
             $this->stats['notifications_failed'] += $evaluation->organisations->count();
@@ -348,14 +346,13 @@ class UpdateEvaluationStatuses extends Command
         }
 
         try {
-            AppJob::dispatch(function () use ($evaluation) {
-                foreach ($evaluation->organisations as $organisation) {
-                    $this->sendEndNotificationToOrganisation($evaluation, $organisation);
-                }
-            });
+            // Envoyer directement sans Job (les closures ne peuvent pas être sérialisées)
+            foreach ($evaluation->organisations as $organisation) {
+                $this->sendEndNotificationToOrganisation($evaluation, $organisation);
+            }
 
             $this->stats['notifications_sent'] += $evaluation->organisations->count();
-            $this->line("     ✅ Notifications de clôture programmées: {$evaluation->organisations->count()} organisation(s)");
+            $this->line("     ✅ Notifications de clôture envoyées: {$evaluation->organisations->count()} organisation(s)");
 
         } catch (\Exception $e) {
             $this->stats['notifications_failed'] += $evaluation->organisations->count();
@@ -411,22 +408,21 @@ class UpdateEvaluationStatuses extends Command
     }
 
     /**
-     * Programmer la génération du rapport final
+     * Générer les résultats pour l'évaluation terminée
      */
     protected function scheduleReportGeneration(EvaluationDeGouvernance $evaluation): void
     {
         try {
-            AppJob::dispatch(function () use ($evaluation) {
-                Artisan::call('generate:report-evaluation-resultats', [
-                    'evaluationId' => $evaluation->id
-                ]);
-            })->delay(now()->addMinutes(5));
+            // Générer les résultats UNIQUEMENT pour cette évaluation
+            Artisan::call('gouvernance:generate-results', [
+                'evaluationId' => $evaluation->id
+            ]);
 
-            $this->line("     📊 Génération du rapport programmée dans 5 minutes");
+            $this->line("     📊 Résultats générés pour cette évaluation");
 
         } catch (\Exception $e) {
-            $this->error("     ❌ Erreur lors de la programmation du rapport: {$e->getMessage()}");
-            Log::error('Failed to schedule report generation', [
+            $this->error("     ❌ Erreur lors de la génération des résultats: {$e->getMessage()}");
+            Log::error('Failed to generate results for evaluation', [
                 'evaluation_id' => $evaluation->id,
                 'error' => $e->getMessage(),
             ]);
