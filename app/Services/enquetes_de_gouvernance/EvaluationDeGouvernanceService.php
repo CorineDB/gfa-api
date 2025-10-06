@@ -324,7 +324,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 if(!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()){
                     // declencher une exception
                     throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
-
                 }
 
                 $formFactuel = $evaluationDeGouvernance->soumissionsFactuel->first();
@@ -413,6 +412,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->where('organisationId', $organisation->id)
                     ->get();
 
+                if(!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()){
+                    // declencher une exception
+                    throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
+                }
+
                 $group_soumissions = [
                     "id" => $organisation->secure_id,
                     'nom' => optional($organisation->user)->nom ?? null,
@@ -421,6 +425,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'nom_point_focal' => $organisation->nom_point_focal,
                     'prenom_point_focal' => $organisation->prenom_point_focal,
                     'contact_point_focal' => $organisation->contact_point_focal,
+                    "lien_factuel_token"          => $organisationEvaluation->pivot->token,
                     'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
                     'factuel' => $soumissionsFactuel->isNotEmpty() ? new SoumissionFactuelResource($soumissionsFactuel->first()) : null
                 ];
@@ -493,6 +498,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->where('organisationId', $organisation->id)
                     ->get();
 
+                if(!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()){
+                    // declencher une exception
+                    throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
+                }
+
                 $group_soumissions = [
                     "id" => $organisation->secure_id,
                     'nom' => optional($organisation->user)->nom ?? null,
@@ -501,6 +511,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'nom_point_focal' => $organisation->nom_point_focal,
                     'prenom_point_focal' => $organisation->prenom_point_focal,
                     'contact_point_focal' => $organisation->contact_point_focal,
+                    "lien_perception_token"       => $organisationEvaluation->pivot->token,
                     'pourcentage_evolution_des_soumissions_de_perception' => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id),
                     'perception' => SoumissionDePerceptionResource::collection($soumissionsDePerception)
                 ];
