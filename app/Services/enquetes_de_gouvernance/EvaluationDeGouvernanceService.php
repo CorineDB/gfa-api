@@ -321,6 +321,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         }
                     ]);
 
+                if(!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()){
+                    // declencher une exception
+                    throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
+
+                }
 
                 $formFactuel = $evaluationDeGouvernance->soumissionsFactuel->first();
 
@@ -332,6 +337,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'nom_point_focal'       => $organisation->nom_point_focal,
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal,
+                    "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisationEvaluation->pivot->token}",
+                    "lien_perception"       => $url . "/dashboard/tools-perception/{$organisationEvaluation->pivot->token}",
 
                     'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
                 ], ['factuel' => $formFactuel ? new SoumissionFactuelResource($formFactuel) : null, 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
