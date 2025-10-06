@@ -337,8 +337,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'nom_point_focal'       => $organisation->nom_point_focal,
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal,
-                    "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisationEvaluation->pivot->token}",
-                    "lien_perception"       => $url . "/dashboard/tools-perception/{$organisationEvaluation->pivot->token}",
+                    "lien_factuel_token"          => $organisationEvaluation->pivot->token,
+                    "lien_perception_token"       => $organisationEvaluation->pivot->token,
 
                     'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
                 ], ['factuel' => $formFactuel ? new SoumissionFactuelResource($formFactuel) : null, 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
@@ -373,8 +373,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
                             'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
-                            "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
-                            "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
+                            "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
+                            "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
                         ], ['factuel' => $soumissionsFactuel, 'perception' => $soumissionsDePerception]);
                     });
             }
@@ -443,7 +443,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'prenom_point_focal' => $organisation->prenom_point_focal,
                             'contact_point_focal' => $organisation->contact_point_focal,
                             'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
-                            "lien_factuel" => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
+                            "lien_factuel" => $url . "/tools-factuel/{$organisation->pivot->token}",
                             'factuel' => $soumissionsFactuel->isNotEmpty() ? new SoumissionFactuelResource($soumissionsFactuel->first()) : null
                         ];
                     });
@@ -523,7 +523,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'prenom_point_focal' => $organisation->prenom_point_focal,
                             'contact_point_focal' => $organisation->contact_point_focal,
                             'pourcentage_evolution_des_soumissions_de_perception' => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id),
-                            "lien_perception" => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
+                            "lien_perception" => $url . "/tools-perception/{$organisation->pivot->token}",
                             'perception' => SoumissionDePerceptionResource::collection($soumissionsDePerception)
                         ];
                     });
@@ -603,8 +603,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'nom_point_focal'       => $organisation->nom_point_focal,
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
-                            "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
-                            "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
+                            "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
+                            "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
                         ], $types_soumissions->toArray());
                     });
             }
@@ -709,8 +709,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'nom_point_focal'       => $organisation->nom_point_focal,
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
-                            "lien_factuel"          => $url . "/dashboard/tools-factuel/{$organisation->pivot->token}",
-                            "lien_perception"       => $url . "/dashboard/tools-perception/{$organisation->pivot->token}",
+                            "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
+                            "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
                         ], $types_soumissions->toArray());
                     });
             }
@@ -1433,7 +1433,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         "body" => "Votre contribution est essentielle pour finaliser cette étape cruciale. Merci de compléter votre soumission dans les plus brefs délais.",
                         //"body" => "Nous comptons sur votre retour pour atteindre nos objectifs de transparence et d'amélioration continue.",
 
-                        "lien" => $url . "/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}",
+                        "lien" => $url . "/tools-perception/{$evaluationOrganisation->pivot->token}",
                         "cta_text" => "Accéder au formulaire",
                         "signature" => "Cordialement, {$evaluationOrganisation->user->nom}",
                     ];
@@ -1461,7 +1461,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         $message = "Bonjour,\n\n" .
                             "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$evaluationDeGouvernance->programme->nom}, {$evaluationDeGouvernance->annee_exercice}).\n\n" .
                             "Repondez des maintenant :\n" .
-                            "{$url}/dashboard/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
+                            "{$url}/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
                             "Merci pour votre participation !";
 
                         $this->sendSms($message, $phoneNumbers);
