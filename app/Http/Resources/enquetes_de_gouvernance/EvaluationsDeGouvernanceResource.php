@@ -84,6 +84,9 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'total_soumissions_factuel_terminer' => $this->total_soumissions_factuel_terminer,
             'total_soumissions_de_perception_terminer' => $this->total_soumissions_de_perception_terminer,
 
+            'total_soumissions_factuel_incompletes' => $this->total_soumissions_factuel_incompletes,
+            'total_soumissions_de_perception_incompletes' => $this->total_soumissions_de_perception_incompletes,
+
             'organisations_ranking' => $this->organisations_ranking,
             'options_de_reponse_stats' => $this->options_de_reponse_gouvernance_stats,
             'programmeId' => $this->programme->secure_id,
