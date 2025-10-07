@@ -530,6 +530,12 @@ class EvaluationDeGouvernance extends Model
 
     public function getPourcentageEvolutionOrganisationsAttribute()
     {
+
+        // Calculate completion for each organization and rank
+        return $this->organisations->map(function ($organisation) {
+            return $organisation->getSubmissionRateAttribute($this->id);
+        })->avg();
+
         $organisations_ranking = $this->getOrganisationsRankingAttribute();
         if ($organisations_ranking->isEmpty()) {
             return 0;
