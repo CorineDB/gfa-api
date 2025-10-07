@@ -641,6 +641,11 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalSoumissionsDePerceptionTerminerAttribute()
     {
+        return $this->organisations->sum(function ($organisation) {
+            return $organisation->perceptionSubmissions($this->id)->get()
+                ->filter(fn($perception) => $perception->pourcentage_evolution == 100)
+                ->count();
+        });
         // Retourne le nombre d'organisations ayant terminé leur soumission de perception (taux de soumission à 100%)
         return $this->organisations->filter(function ($organisation) {
             return $organisation->getPerceptionSubmissionsAttribute($this->id)->get()// si tu veux filtrer par projet
