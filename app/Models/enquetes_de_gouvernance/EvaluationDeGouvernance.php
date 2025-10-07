@@ -533,7 +533,7 @@ class EvaluationDeGouvernance extends Model
         // Calculate completion for each organization and rank
         return $this->organisations->map(function ($organisation) {
             return $organisation->getFactuelSubmissionRateAttribute($this->id);
-        })->avg();
+        })/* ->avg() */;
     }
 
     public function getPourcentageEvolutionPerceptionOrganisationsAttribute()
@@ -541,7 +541,7 @@ class EvaluationDeGouvernance extends Model
         // Calculate completion for each organization and rank
         return $this->organisations->map(function ($organisation) {
             return $organisation->getPerceptionSubmissionRateAttribute($this->id);
-        })->avg();
+        })/* ->avg() */;
     }
 
     public function getPourcentageEvolutionOrganisationsAttribute()
@@ -549,7 +549,7 @@ class EvaluationDeGouvernance extends Model
         // Calculate completion for each organization and rank
         return $this->organisations->map(function ($organisation) {
             return $organisation->getSubmissionRateAttribute($this->id);
-        })->avg();
+        })/* ->avg() */;
 
         $organisations_ranking = $this->getOrganisationsRankingAttribute();
         if ($organisations_ranking->isEmpty()) {
