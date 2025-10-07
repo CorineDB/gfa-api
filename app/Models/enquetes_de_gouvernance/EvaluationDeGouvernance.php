@@ -58,7 +58,6 @@ class EvaluationDeGouvernance extends Model
                 $evaluation_de_gouvernance->formulaires_de_perception_de_gouvernance()->detach();
 
                 DB::commit();
-
             } catch (\Throwable $th) {
                 DB::rollBack();
 
@@ -224,20 +223,20 @@ class EvaluationDeGouvernance extends Model
     public function recommandations()
     {
         return $this->hasMany(Recommandation::class, 'evaluationId')
-        ->when((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)), function ($query) {
-            // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
-            $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
-        });
+            ->when((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)), function ($query) {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
+            });
         return $this->morphMany(Recommandation::class, "recommandationable");
     }
 
     public function actions_a_mener()
     {
         return $this->hasMany(ActionAMener::class, 'evaluationId')
-        ->when((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)), function ($query) {
-            // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
-            $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
-        });
+            ->when((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class)), function ($query) {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                $query->where('organisationId', auth()->user()->profilable->id); // Ensures no results are returned
+            });
         return $this->morphMany(ActionAMener::class, "actionable");
     }
 
@@ -366,13 +365,14 @@ class EvaluationDeGouvernance extends Model
             ->join('organisations', function ($join) {
                 // Join organisations table using polymorphic relation
                 $join->on('organisations.id', '=', 'users.profilable_id')
-                     ->where('users.profilable_type', '=', 'App\\Models\\Organisation');
+                    ->where('users.profilable_type', '=', 'App\\Models\\Organisation');
             })
             // Select necessary fields
-            ->select('profiles_de_gouvernance.id',
-                     'profiles_de_gouvernance.organisationId',
-                     DB::raw('CONCAT(users.nom, " - ", organisations.sigle) as organisationName') // Combine `users.nom` and `organisations.sigle`
-                    )
+            ->select(
+                'profiles_de_gouvernance.id',
+                'profiles_de_gouvernance.organisationId',
+                DB::raw('CONCAT(users.nom, " - ", organisations.sigle) as organisationName') // Combine `users.nom` and `organisations.sigle`
+            )
             ->selectRaw('
                 CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_factuel")) AS DECIMAL(10, 2)) AS indice_factuel,
                 CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2)) AS indice_de_perception,
@@ -498,7 +498,7 @@ class EvaluationDeGouvernance extends Model
     public function getPourcentageEvolutionAttribute()
     {
 
-        if($this->formulaire_de_perception_de_gouvernance() && $this->formulaire_factuel_de_gouvernance()){
+        if ($this->formulaire_de_perception_de_gouvernance() && $this->formulaire_factuel_de_gouvernance()) {
 
             // Avoid division by zero by checking that total participants are non-zero
             if ($this->pourcentage_evolution_des_soumissions_factuel == 0 && $this->pourcentage_evolution_des_soumissions_de_perception == 0) {
@@ -506,15 +506,11 @@ class EvaluationDeGouvernance extends Model
             }
 
             return round(($this->pourcentage_evolution_des_soumissions_factuel + $this->pourcentage_evolution_des_soumissions_de_perception) / 2, 2);
-
-        }
-        elseif($this->formulaire_de_perception_de_gouvernance()){
+        } elseif ($this->formulaire_de_perception_de_gouvernance()) {
 
             // Avoid division by zero by checking that total participants are non-zero
             return $this->pourcentage_evolution_des_soumissions_de_perception;
-
-        }
-        elseif($this->formulaire_factuel_de_gouvernance()){
+        } elseif ($this->formulaire_factuel_de_gouvernance()) {
             return $this->pourcentage_evolution_des_soumissions_factuel;
         }
 
@@ -528,6 +524,10 @@ class EvaluationDeGouvernance extends Model
         return ($this->pourcentage_evolution_des_soumissions_factuel + $this->pourcentage_evolution_des_soumissions_de_perception) / 2;
     }
 
+
+    /**
+     * Taux de progression des soumissions de chaque organisation participant de l'evaluation
+     */
     public function getPourcentageEvolutionFactuelOrganisationsAttribute()
     {
         // Calculate completion for each organization and rank
@@ -557,6 +557,7 @@ class EvaluationDeGouvernance extends Model
         }
         return round($organisations_ranking->avg('pourcentage_evolution'), 2);
     }
+
 
     public function getPourcentageEvolutionDesSoumissionsFactuelAttribute()
     {
@@ -611,11 +612,10 @@ class EvaluationDeGouvernance extends Model
         // Calculate total soumissionsFactuel count
         $totalSoumissionsFactuel = $this->soumissionsFactuel()->count();
 
-        if($totalOrganisations){
+        if ($totalOrganisations) {
 
             // Return the difference
             return $totalOrganisations - $totalSoumissionsFactuel;
-
         }
         return 0;
     }
@@ -623,7 +623,7 @@ class EvaluationDeGouvernance extends Model
     public function getTotalSoumissionsDePerceptionNonDemarrerAttribute()
     {
 
-        if($this->total_participants_evaluation_de_perception>0){
+        if ($this->total_participants_evaluation_de_perception > 0) {
             return $this->total_participants_evaluation_de_perception - $this->soumissionsDePerception()->count();
         }
         return 0;
@@ -631,25 +631,54 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalSoumissionsFactuelTerminerAttribute()
     {
-        return $this->soumissionsFactuel()->where('statut', true)->count();
+        // Retourne le nombre d'organisations ayant terminé leur soumission factuelle (taux de soumission à 100%)
+        return $this->organisations->filter(function ($organisation) {
+            return $organisation->getFactuelSubmissionRateAttribute($this->id) == 100;
+        })->count();
+        // Ancienne version :
+        // return $this->soumissionsFactuel()->where('statut', true)->count();
     }
 
     public function getTotalSoumissionsDePerceptionTerminerAttribute()
     {
-        return $this->soumissionsDePerception()->where('statut', true)->count();
+        // Retourne le nombre d'organisations ayant terminé leur soumission de perception (taux de soumission à 100%)
+        return $this->organisations->filter(function ($organisation) {
+            return $organisation->getPerceptionSubmissionRateAttribute($this->id) == 100;
+        })->count();
+        // Ancienne version :
+        // return $this->soumissionsDePerception()->where('statut', true)->count();
+    }
+
+    /**
+     * Propose les fonctions pour avoir les soumissions ayant demarree/ en cours mais incomplet à la fin de l'évaluation si statut = true
+     */
+    public function getSoumissionsFactuelIncompletesAttribute()
+    {
+        // Retourne les soumissions factuelles qui sont démarrées mais incomplètes (statut != true)
+        return $this->soumissionsFactuel()->where('statut', '!=', true)->get();
+    }
+
+    public function getSoumissionsDePerceptionIncompletesAttribute()
+    {
+        // Retourne les soumissions de perception qui sont démarrées mais incomplètes (statut != true)
+        return $this->soumissionsDePerception()->where('statut', '!=', true)->get();
     }
 
     public function getTotalParticipantsEvaluationFactuelAttribute()
     {
-        // Sum the 'nbreParticipants' attribute from the pivot table
-        if ((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class) {
-            if (auth()->user()->profilable) {
-                return $this->formulaire_factuel_de_gouvernance() ? ( $this->organisations(optional(auth()->user()->profilable)->id)->count() ?? 0) : 0;
+        if ($this->formulaire_factuel_de_gouvernance()) {
+            // Sum the 'nbreParticipants' attribute from the pivot table
+            if ((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class) {
+                if (auth()->user()->profilable) {
+                    return $this->formulaire_factuel_de_gouvernance() ? ($this->organisations(optional(auth()->user()->profilable)->id)->count() ?? 0) : 0;
+                } else {
+                    return 0;
+                }
+            } elseif ((auth()->user()->type == 'unitee-de-gestion') || get_class(optional(auth()->user()->profilable)) == UniteeDeGestion::class) {
+                return $this->organisations()->count();
             } else {
                 return 0;
             }
-        } elseif ((auth()->user()->type == 'unitee-de-gestion') || get_class(optional(auth()->user()->profilable)) == UniteeDeGestion::class) {
-            return $this->organisations()->count();
         } else {
             return 0;
         }
@@ -657,27 +686,30 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalParticipantsEvaluationDePerceptionAttribute()
     {
+        if ($this->formulaire_de_perception_de_gouvernance()) {
+            return $this->organisations()
+                ->when((auth()->user()->type == 'organisation' || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
+                    // Get the organisation ID of the authenticated user
+                    $organisationId = optional(auth()->user()->profilable)->id;
 
-        return $this->organisations()
-            ->when((auth()->user()->type == 'organisation' || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
-                // Get the organisation ID of the authenticated user
-                $organisationId = optional(auth()->user()->profilable)->id;
+                    // If profilable is null or ID is missing, return 0
+                    if (!$organisationId) {
+                        return 0;
+                    }
 
-                // If profilable is null or ID is missing, return 0
-                if (!$organisationId) {
-                    return 0;
-                }
-
-                // Filter the organisations and sum the 'nbreParticipants' from the pivot table
-                $query->where('organisations.id', $organisationId);
-            })
-            ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (optional(auth()->user()->profilable) != Organisation::class && auth()->user()->profilable != UniteeDeGestion::class)), function ($query) {
-                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
-                $query->whereRaw('1 = 0'); // Ensures no results are returned
-            })->get()  // Retrieve organisations
-            ->sum(function ($organisation) {
-                return $organisation->pivot->nbreParticipants ?? 0;
-            });
+                    // Filter the organisations and sum the 'nbreParticipants' from the pivot table
+                    $query->where('organisations.id', $organisationId);
+                })
+                ->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (optional(auth()->user()->profilable) != Organisation::class && auth()->user()->profilable != UniteeDeGestion::class)), function ($query) {
+                    // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                    $query->whereRaw('1 = 0'); // Ensures no results are returned
+                })->get()  // Retrieve organisations
+                ->sum(function ($organisation) {
+                    return $organisation->pivot->nbreParticipants ?? 0;
+                });
+        } else {
+            return 0;
+        }
     }
 
     public function getOrganisationsRankingAttribute()
