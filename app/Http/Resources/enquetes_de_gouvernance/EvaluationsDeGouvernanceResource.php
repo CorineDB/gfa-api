@@ -46,9 +46,6 @@ class EvaluationsDeGouvernanceResource extends JsonResource
 
             $this->mergeWhen(((Auth::user()->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
                 return [
-
-                    //'pourcentage_evolution_des_soumissions_de_perception' => optional(Auth::user()->profilable)->getPerceptionSubmissionsCompletionAttribute($this->id) ?? 0,
-
                     'pourcentage_evolution_organisations'       => optional(Auth::user()->profilable)->getSubmissionRateAttribute($this->id) ?? 0,
                     'pourcentage_evolution_perception_organisations'     => optional(Auth::user()->profilable)->getPerceptionSubmissionRateAttribute($this->id) ?? 0,
                     'pourcentage_evolution_factuel_organisations'    => optional(Auth::user()->profilable)->getFactuelSubmissionRateAttribute($this->id) ?? 0,
@@ -89,6 +86,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
 
             'organisations_ranking' => $this->organisations_ranking,
             'options_de_reponse_stats' => $this->options_de_reponse_gouvernance_stats,
+            'options_de_reponse_stats' => $this->options_de_reponse_stats,
+
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
             'formulaire_factuel_de_gouvernance' => $this->formulaire_factuel_de_gouvernance() ? $this->formulaire_factuel_de_gouvernance()->secure_id : null,

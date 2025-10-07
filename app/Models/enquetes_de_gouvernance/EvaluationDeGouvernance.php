@@ -673,7 +673,7 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalParticipantsEvaluationFactuelAttribute()
     {
-        if ($this->formulaire_factuel_de_gouvernance()) {
+        //if ($this->formulaire_factuel_de_gouvernance()) {
             // Sum the 'nbreParticipants' attribute from the pivot table
             if ((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class) {
                 if (auth()->user()->profilable) {
@@ -686,14 +686,14 @@ class EvaluationDeGouvernance extends Model
             } else {
                 return 0;
             }
-        } else {
+        /* } else {
             return 0;
-        }
+        } */
     }
 
     public function getTotalParticipantsEvaluationDePerceptionAttribute()
     {
-        if ($this->formulaire_de_perception_de_gouvernance()) {
+        //if ($this->formulaire_de_perception_de_gouvernance()) {
             return $this->organisations()
                 ->when((auth()->user()->type == 'organisation' || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
                     // Get the organisation ID of the authenticated user
@@ -714,9 +714,9 @@ class EvaluationDeGouvernance extends Model
                 ->sum(function ($organisation) {
                     return $organisation->pivot->nbreParticipants ?? 0;
                 });
-        } else {
+        /* } else {
             return 0;
-        }
+        } */
     }
 
     public function getOrganisationsRankingAttribute()
