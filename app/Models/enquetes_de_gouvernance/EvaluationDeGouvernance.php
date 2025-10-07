@@ -528,9 +528,24 @@ class EvaluationDeGouvernance extends Model
         return ($this->pourcentage_evolution_des_soumissions_factuel + $this->pourcentage_evolution_des_soumissions_de_perception) / 2;
     }
 
+    public function getPourcentageEvolutionFactuelOrganisationsAttribute()
+    {
+        // Calculate completion for each organization and rank
+        return $this->organisations->map(function ($organisation) {
+            return $organisation->getFactuelSubmissionRateAttribute($this->id);
+        })->avg();
+    }
+
+    public function getPourcentageEvolutionPerceptionOrganisationsAttribute()
+    {
+        // Calculate completion for each organization and rank
+        return $this->organisations->map(function ($organisation) {
+            return $organisation->getPerceptionSubmissionRateAttribute($this->id);
+        })->avg();
+    }
+
     public function getPourcentageEvolutionOrganisationsAttribute()
     {
-
         // Calculate completion for each organization and rank
         return $this->organisations->map(function ($organisation) {
             return $organisation->getSubmissionRateAttribute($this->id);

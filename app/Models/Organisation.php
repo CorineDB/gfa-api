@@ -442,6 +442,52 @@ class Organisation extends Model
         return 0;
     }
 
+    public function getFactuelSubmissionRateAttribute($evaluationDeGouvernanceId)
+    {
+        // ========== NOUVEAU CODE (CORRIGÉ) ==========
+        $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
+
+        // Si l'évaluation n'existe pas, retourner 0 au lieu de null
+        if(!$evaluation_de_gouvernance){
+            return 0;
+        }
+
+        // Cas 3: Formulaire factuel uniquement
+        if($evaluation_de_gouvernance->formulaire_factuel_de_gouvernance()){
+            // Calculate factual completion percentage
+            $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId) ?? 0;
+
+            // Final weighted completion percentage (limité à 100%)
+            return round(min(100, $factualCompletion), 2);
+        }
+
+        // Cas 4: Aucun formulaire disponible
+        return 0;
+    }
+
+    public function getPerceptionSubmissionRateAttribute($evaluationDeGouvernanceId)
+    {
+
+        // ========== NOUVEAU CODE (CORRIGÉ) ==========
+        $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
+
+        // Si l'évaluation n'existe pas, retourner 0 au lieu de null
+        if(!$evaluation_de_gouvernance){
+            return 0;
+        }
+
+        if($evaluation_de_gouvernance->formulaire_de_perception_de_gouvernance()){
+            // Calculate perception completion using the helper method
+            $perceptionCompletion = $this->getPerceptionSubmissionsCompletionRateAttribute($evaluationDeGouvernanceId) ?? 0;
+
+            // Final weighted completion percentage (limité à 100%)
+            return round(min(100, $perceptionCompletion), 2);
+        }
+
+        // Cas 4: Aucun formulaire disponible
+        return 0;
+    }
+
     public function actions_a_mener()
     {
         return $this->hasMany(ActionAMener::class, 'organisationId');
