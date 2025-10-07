@@ -86,7 +86,6 @@ class EvaluationsDeGouvernanceResource extends JsonResource
 
             'organisations_ranking' => $this->organisations_ranking,
             'options_de_reponse_stats' => $this->options_de_reponse_gouvernance_stats,
-            'options_de_reponse_stats' => $this->options_de_reponse_stats,
 
             'programmeId' => $this->programme->secure_id,
             'created_at' => Carbon::parse($this->created_at)->format("Y-m-d"),
