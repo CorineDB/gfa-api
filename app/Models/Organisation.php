@@ -310,6 +310,18 @@ class Organisation extends Model
     }
 
     /**
+     *
+     *
+     * @param int $evaluationDeGouvernanceId
+     * @return float
+     */
+    public function getPerceptionSubmissionsAttribute($evaluationDeGouvernanceId)
+    {
+        // Fetch all perception submissions for this organisation and evaluation
+        return $this->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernanceId);
+    }
+
+    /**
      * Calculate the completion percentage for perception submissions.
      *
      * @param int $evaluationDeGouvernanceId

@@ -643,7 +643,9 @@ class EvaluationDeGouvernance extends Model
     {
         // Retourne le nombre d'organisations ayant terminé leur soumission de perception (taux de soumission à 100%)
         return $this->organisations->filter(function ($organisation) {
-            return $organisation->getPerceptionSubmissionRateAttribute($this->id) == 100;
+            return $organisation->getPerceptionSubmissionsAttribute($this->id)// si tu veux filtrer par projet
+            ->where('pourcentage_evolution', 100)
+            ->exists();
         })->count();
         // Ancienne version :
         // return $this->soumissionsDePerception()->where('statut', true)->count();
