@@ -642,7 +642,7 @@ class EvaluationDeGouvernance extends Model
     public function getTotalSoumissionsDePerceptionTerminerAttribute()
     {
         return $this->organisations->sum(function ($organisation) {
-            return $organisation->perceptionSubmissions($this->id)->get()
+            return $organisation->getPerceptionSubmissionsAttribute($this->id)->get()
                 ->filter(fn($perception) => $perception->pourcentage_evolution == 100)
                 ->count();
         });
