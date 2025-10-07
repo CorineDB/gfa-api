@@ -31,6 +31,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'annee_exercice' => $this->annee_exercice,
             'statut' => $this->statut,
             'pourcentage_evolution' => $this->pourcentage_evolution,
+            'pourcentage_evolution_organisations' => $this->pourcentage_evolution_organisations,
             'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
 
             $this->mergeWhen(((Auth::user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class), function(){
