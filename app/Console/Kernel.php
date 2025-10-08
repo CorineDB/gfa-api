@@ -34,16 +34,16 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('gouvernance:generate-results')->daily();
         // $schedule->command('inspire')->hourly
-       /*$schedule->command('send-password-validity-expiration-soon-mail')->everyMinute();
+       $schedule->command('send-password-validity-expiration-soon-mail')->everyFifteenMinutes();
 
         $schedule->command('command:change-statut')->everyFifteenMinutes();
-        $schedule->command('change-statut:evaluations')->everyMinute();//->dailyAt('00:00');
+        $schedule->command('change-statut:evaluations')->everyFifteenMinutes();//->dailyAt('00:00');
         // $schedule->command('generate:report-for-validated-soumissions')->daily();
 
-       //$schedule->command('command:demarrage')->everyMinute();
+       $schedule->command('command:demarrage')->everyFifteenMinutes();
 
        $schedule->command('command:rapport')->everyFifteenMinutes();
-       $schedule->command('command:suivi')->everyFifteenMinutes();
+       $schedule->command('command:suivi')->dailyAt('00:00');//->everyFifteenMinutes();
 
         //$schedule->command('command:rappel')->everyMinute();
 
@@ -51,9 +51,9 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('change-statut:action-a-mener')->dailyAt('00:00');
 
-       $backupConfig = AlerteConfig::where('module', 'backup')->first();
+       /*$backupConfig = AlerteConfig::where('module', 'backup')->first();
 
-        if($backupConfig){
+       if($backupConfig){
 
             $backupFrequence = $backupConfig->frequenceBackup;
 
