@@ -653,7 +653,7 @@ class EvaluationDeGouvernance extends Model
     /**
      * Propose les fonctions pour avoir les soumissions ayant demarree/ en cours mais incomplet à la fin de l'évaluation si statut = true
      */
-    public function getSoumissionsFactuelIncompletesAttribute()
+    public function getTotalSoumissionsFactuelIncompletesAttribute()
     {
         // Retourne les soumissions factuelles qui sont démarrées mais incomplètes (statut != true)
         return $this->organisations->sum(function ($organisation) {
@@ -665,7 +665,7 @@ class EvaluationDeGouvernance extends Model
         });
     }
 
-    public function getSoumissionsDePerceptionIncompletesAttribute()
+    public function getTotalSoumissionsDePerceptionIncompletesAttribute()
     {
         // Retourne les soumissions de perception qui sont démarrées mais incomplètes (statut != true)
         return $this->organisations->sum(function ($organisation) {
