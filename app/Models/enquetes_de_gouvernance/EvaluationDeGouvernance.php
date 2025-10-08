@@ -657,11 +657,11 @@ class EvaluationDeGouvernance extends Model
     {
         // Retourne les soumissions factuelles qui sont démarrées mais incomplètes (statut != true)
         return $this->organisations->sum(function ($organisation) {
-            return $organisation->soumissionsFactuel()
+            return $organisation->getFactuelSubmissionAttribute()
                 ->where('statut', true)
-                ->get()
-                ->filter(fn($soumission) => $soumission->pourcentage_evolution != 100)
-                ->count();
+                ->first()->pourcentage_evolution != 100
+                /* ->filter(fn($soumission) => $soumission->pourcentage_evolution != 100)
+                ->count() */;
         });
     }
 

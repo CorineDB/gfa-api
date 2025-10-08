@@ -315,6 +315,18 @@ class Organisation extends Model
      * @param int $evaluationDeGouvernanceId
      * @return float
      */
+    public function getFactuelSubmissionAttribute($evaluationDeGouvernanceId)
+    {
+        // Fetch all perception submissions for this organisation and evaluation
+        return $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->take(1);
+    }
+
+    /**
+     *
+     *
+     * @param int $evaluationDeGouvernanceId
+     * @return float
+     */
     public function getPerceptionSubmissionsAttribute($evaluationDeGouvernanceId)
     {
         // Fetch all perception submissions for this organisation and evaluation
