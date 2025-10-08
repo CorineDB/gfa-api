@@ -318,7 +318,7 @@ class Organisation extends Model
     public function getFactuelSubmissionAttribute($evaluationDeGouvernanceId)
     {
         // Fetch all perception submissions for this organisation and evaluation
-        return $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->take(1);
+        return $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId);
     }
 
     /**
