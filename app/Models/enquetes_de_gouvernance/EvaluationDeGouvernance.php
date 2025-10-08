@@ -659,7 +659,9 @@ class EvaluationDeGouvernance extends Model
         return $this->organisations->sum(function ($organisation) {
             return $organisation->getFactuelSubmissionAttribute($this->id)
                 ->where('statut', true)
-                ->first()->pourcentage_evolution != 100
+                ->get()
+                ->filter(fn($perception) => $perception->pourcentage_evolution != 100)
+                ->count();
                 /* ->filter(fn($soumission) => $soumission->pourcentage_evolution != 100)
                 ->count() */;
         });
