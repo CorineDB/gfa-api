@@ -646,12 +646,6 @@ class EvaluationDeGouvernance extends Model
                 ->filter(fn($perception) => $perception->pourcentage_evolution == 100)
                 ->count();
         });
-        // Retourne le nombre d'organisations ayant terminé leur soumission de perception (taux de soumission à 100%)
-        return $this->organisations->filter(function ($organisation) {
-            return $organisation->getPerceptionSubmissionsAttribute($this->id)->get()// si tu veux filtrer par projet
-            ->filter(fn($perception) => $perception->pourcentage_evolution == 100) // ça c’est en mémoire
-            ->isNotEmpty();
-        })->count();
         // Ancienne version :
         // return $this->soumissionsDePerception()->where('statut', true)->count();
     }
@@ -662,12 +656,25 @@ class EvaluationDeGouvernance extends Model
     public function getSoumissionsFactuelIncompletesAttribute()
     {
         // Retourne les soumissions factuelles qui sont démarrées mais incomplètes (statut != true)
-        return $this->soumissionsFactuel()->where('statut', '!=', true)->get();
+        return $this->organisations->sum(function ($organisation) {
+            return $organisation->soumissionsFactuel()
+                ->where('statut', true)
+                ->get()
+                ->filter(fn($soumission) => $soumission->pourcentage_evolution != 100)
+                ->count();
+        });
     }
 
     public function getSoumissionsDePerceptionIncompletesAttribute()
     {
         // Retourne les soumissions de perception qui sont démarrées mais incomplètes (statut != true)
+        return $this->organisations->sum(function ($organisation) {
+            return $organisation->getPerceptionSubmissionsAttribute($this->id)
+                ->where('statut', true)
+                ->get()
+                ->filter(fn($perception) => $perception->pourcentage_evolution != 100)
+                ->count();
+        });
         return $this->soumissionsDePerception()->where('statut', '!=', true)->get();
     }
 
