@@ -372,6 +372,10 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'prenom_point_focal'    => $organisation->prenom_point_focal,
                             'contact_point_focal'   => $organisation->contact_point_focal,
                             'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
+
+                            "lien_factuel_token"          => $organisation->pivot->token,
+                            "lien_perception_token"       => $organisation->pivot->token,
+
                             "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
                         ], ['factuel' => $soumissionsFactuel, 'perception' => $soumissionsDePerception]);
@@ -448,6 +452,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'prenom_point_focal' => $organisation->prenom_point_focal,
                             'contact_point_focal' => $organisation->contact_point_focal,
                             'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
+                            "lien_factuel_token"          => $organisation->pivot->token,
                             "lien_factuel" => $url . "/tools-factuel/{$organisation->pivot->token}",
                             'factuel' => $soumissionsFactuel->isNotEmpty() ? new SoumissionFactuelResource($soumissionsFactuel->first()) : null
                         ];
@@ -534,6 +539,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'prenom_point_focal' => $organisation->prenom_point_focal,
                             'contact_point_focal' => $organisation->contact_point_focal,
                             'pourcentage_evolution_des_soumissions_de_perception' => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id),
+                            "lien_perception_token"       => $organisation->pivot->token,
                             "lien_perception" => $url . "/tools-perception/{$organisation->pivot->token}",
                             'perception' => SoumissionDePerceptionResource::collection($soumissionsDePerception)
                         ];
