@@ -26,29 +26,30 @@ class SurveyResource extends JsonResource
         }
 
         return [
-            'id'                    => $this->secure_id,
-            'intitule'              => $this->intitule,
-            'description'           => $this->description,
-            'nbreParticipants'      => $this->nbreParticipants,
-            'debut'                 => Carbon::parse($this->debut)->format("Y-m-d"),
-            'fin'                   => Carbon::parse($this->fin)->format("Y-m-d"),
-            'statut'                => $this->statut,
-            'prive'                => $this->prive,
-            'surveyFormId'          => $this->survey_form->secure_id,
-            'created_at'            => Carbon::parse($this->created_at)->format("Y-m-d"),
-            "survey_form_link"      => $url . "/dashboard/form-individuel/{$this->token}",
+            'id'                        => $this->secure_id,
+            'intitule'                  => $this->intitule,
+            'description'               => $this->description,
+            'nbreParticipants'          => $this->nbreParticipants,
+            'debut'                     => Carbon::parse($this->debut)->format("Y-m-d"),
+            'fin'                       => Carbon::parse($this->fin)->format("Y-m-d"),
+            'statut'                    => $this->statut,
+            'prive'                     => $this->prive,
+            'surveyFormId'              => $this->survey_form->secure_id,
+            'created_at'                => Carbon::parse($this->created_at)->format("Y-m-d"),
+            "survey_form_link"          => $url . "/dashboard/form-individuel/{$this->token}",
+            "survey_form_link_token"    => $this->token,
 
             // Include survey_form only if survey_response is NOT loaded
             'survey_form'           => $this->when(
-                !$this->relationLoaded('survey_response'), 
+                !$this->relationLoaded('survey_response'),
                 fn() => new SurveyFormResource($this->survey_form)
             ),
 
             // Include survey_response only if it's loaded
             'survey_response'           => $this->when(
-                $this->relationLoaded('survey_response'), 
+                $this->relationLoaded('survey_response'),
                 fn() => new SurveyReponseResource($this->survey_response)
-            )        
+            )
         ];
     }
 }

@@ -166,6 +166,7 @@ class SurveyService extends BaseService implements SurveyServiceInterface
                 "body"          => "Vous pouvez accéder aux détails de l'enquête et les partager avec les participants concernés. Veuillez utiliser le lien ci-dessous pour consulter ou gérer cette enquête. N'hésitez pas à contacter l'équipe de support en cas de besoin.",
 
                 "lien" => $url . "/dashboard/form-individuel/{$survey->token}",
+                "survey_form_link_token"    => $survey->token,
                 "cta_text" => "Accéder au formulaire de l'enquete individuelle",
                 "signature" => "Cordialement, " . auth()->user()->nom,
             ];

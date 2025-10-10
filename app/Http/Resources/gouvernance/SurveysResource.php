@@ -9,7 +9,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 class SurveysResource extends JsonResource
 {
     use HelperTrait;
-    
+
     /**
      * Transform the resource into an array.
      *
@@ -36,7 +36,8 @@ class SurveysResource extends JsonResource
             'statut'                => $this->statut,
             'surveyFormId'          => $this->survey_form->secure_id,
             'created_at'            => Carbon::parse($this->created_at)->format("Y-m-d"),
-            "survey_form_link"      => $url . "/dashboard/form-individuel/{$this->token}"
+            "survey_form_link"      => $url . "/dashboard/form-individuel/{$this->token}",
+            "survey_form_link_token"    => $this->token,
         ];
     }
 }
