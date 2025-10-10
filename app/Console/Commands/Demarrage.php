@@ -58,6 +58,11 @@ class Demarrage extends Command
 
             if($statut == -1)
             {
+                // Skip if tache has no duree
+                if (!$tache->duree) {
+                    continue;
+                }
+
                 $debut = $tache->duree->debut;
                 $days = "-".$tacheConfig->nombreDeJourAvant." days";
 
@@ -109,6 +114,10 @@ class Demarrage extends Command
 
             if($statut == -1)
             {
+                // Skip if activite has no duree
+                if (!$activite->duree) {
+                    continue;
+                }
 
                 $debut = $activite->duree->debut;
                 $days = " -".$activiteConfig->nombreDeJourAvant." days";

@@ -50,6 +50,10 @@ class ChangeStatut extends Command
 
         foreach($taches as $tache)
         {
+            // Skip if tache has no duree
+            if (!$tache->duree) {
+                continue;
+            }
 
             $fin = $tache->duree->fin;
             $debut = $tache->duree->debut;
@@ -149,6 +153,10 @@ class ChangeStatut extends Command
 
         foreach($activites as $activite)
         {
+            // Skip if activite has no duree
+            if (!$activite->duree) {
+                continue;
+            }
 
             $fin = $activite->duree->fin;
             $debut = $activite->duree->debut;

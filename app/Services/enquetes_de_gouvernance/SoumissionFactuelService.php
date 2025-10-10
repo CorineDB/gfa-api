@@ -296,8 +296,6 @@ class SoumissionFactuelService extends BaseService implements SoumissionFactuelS
                     $soumission->save();
 
                     AppJob::dispatch(
-                        // Call the GenerateEvaluationResultats command with the evaluation ID
-                        // Artisan::call('generate:report-for-validated-soumissions')
                         Artisan::call('gouvernance:generate-results')
                     )->delay(now()->addMinutes(3)); // Optionally add additional delay at dispatch time->addMinutes(10)
 

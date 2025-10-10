@@ -33,17 +33,19 @@ class Kernel extends ConsoleKernel
     {
 
         $schedule->command('gouvernance:generate-results')->daily();
+        $schedule->command('update-evaluation-statuses')->everyFifteenMinutes();
+
         // $schedule->command('inspire')->hourly
        $schedule->command('send-password-validity-expiration-soon-mail')->everyFifteenMinutes();
 
         $schedule->command('command:change-statut')->everyFifteenMinutes();
-        $schedule->command('change-statut:evaluations')->everyFifteenMinutes();//->dailyAt('00:00');
+        //$schedule->command('change-statut:evaluations')->everyFifteenMinutes();//->dailyAt('00:00');
         // $schedule->command('generate:report-for-validated-soumissions')->daily();
 
        $schedule->command('command:demarrage')->everyFifteenMinutes();
 
        $schedule->command('command:rapport')->everyFifteenMinutes();
-       $schedule->command('command:suivi')->dailyAt('00:00');//->everyFifteenMinutes();
+       $schedule->command('command:suivi')->everyMinute();//->dailyAt('00:00');//->everyFifteenMinutes();
 
         //$schedule->command('command:rappel')->everyMinute();
 
