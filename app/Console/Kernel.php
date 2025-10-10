@@ -39,8 +39,8 @@ class Kernel extends ConsoleKernel
         // Emails expiration mot de passe - 1x/jour à 09:00 (optimisé depuis everyFifteenMinutes)
         $schedule->command('send-password-validity-expiration-soon-mail')->dailyAt('09:00');
 
-        // Changement statut tâches/activités - 1x/heure (optimisé depuis everyFifteenMinutes)
-        $schedule->command('command:change-statut')->hourly();
+        // Changement statut tâches/activités - 1x/jour à 01:00 (optimisé depuis hourly car comparaisons sur dates)
+        $schedule->command('command:change-statut')->dailyAt('01:00');
 
         // Alertes démarrage - 1x/jour à 07:00 avant la journée (optimisé depuis everyFifteenMinutes)
         $schedule->command('command:demarrage')->dailyAt('07:00');
