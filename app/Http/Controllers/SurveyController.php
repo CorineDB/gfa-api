@@ -70,6 +70,7 @@ class SurveyController extends Controller
      */
     public function update(UpdateRequest $request, $id)
     {
+        dd($id);
         return $this->surveyService->update($id, $request->all());
     }
 
@@ -98,7 +99,7 @@ class SurveyController extends Controller
     {
         return $this->surveyService->survey_form($token, $idParticipant);
     }
-    
+
     public function public_survey_form($token, $idParticipant)
     {
         return $this->surveyService->survey_form($token, $idParticipant);
