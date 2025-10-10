@@ -47,7 +47,32 @@ class Rapport extends Command
         $missionDeControleConfig = AlerteConfig::where('module', 'rapport-mission-de-controle')->first();
         $chefEnvironnementConfig = AlerteConfig::where('module', 'rapport-chef-environnemental')->first();
 
-        if(date('d') == ($entrepriseConfig->frequenceRapport - $entrepriseConfig->nombreDeJour))
+        // Create default config if it doesn't exist
+        if (!$entrepriseConfig) {
+            $entrepriseConfig = AlerteConfig::create([
+                'module' => 'rapport-entreprise',
+                'nombreDeJourAvant' => 5,
+                'frequenceRapport' => 30
+            ]);
+        }
+
+        if (!$missionDeControleConfig) {
+            $missionDeControleConfig = AlerteConfig::create([
+                'module' => 'rapport-mission-de-controle',
+                'nombreDeJourAvant' => 5,
+                'frequenceRapport' => 30
+            ]);
+        }
+
+        if (!$chefEnvironnementConfig) {
+            $chefEnvironnementConfig = AlerteConfig::create([
+                'module' => 'rapport-chef-environnemental',
+                'nombreDeJourAvant' => 5,
+                'frequenceRapport' => 30
+            ]);
+        }
+
+        if(date('d') == ($entrepriseConfig->frequenceRapport - $entrepriseConfig->nombreDeJourAvant))
         {
             $allUsers = User::all();
                 foreach($allUsers as $user)
@@ -56,6 +81,7 @@ class Rapport extends Command
                     {
                         $data['texte'] = "Il est temps de faire un rapport";
                         $data['id'] = null;
+                        $data['auteurId'] = 0;
                         $notification = new RapportNotification($data);
 
                         $user->notify($notification);
@@ -69,7 +95,7 @@ class Rapport extends Command
                 }
         }
 
-        if(date('d') == ($missionDeControleConfig->frequenceRapport - $missionDeControleConfig->nombreDeJour))
+        if(date('d') == ($missionDeControleConfig->frequenceRapport - $missionDeControleConfig->nombreDeJourAvant))
         {
             $allUsers = User::all();
                 foreach($allUsers as $user)
@@ -92,7 +118,7 @@ class Rapport extends Command
                 }
         }
 
-        if(date('d') == ($chefEnvironnementConfig->frequenceRapport - $chefEnvironnementConfig->nombreDeJour))
+        if(date('d') == ($chefEnvironnementConfig->frequenceRapport - $chefEnvironnementConfig->nombreDeJourAvant))
         {
             $allUsers = User::all();
                 foreach($allUsers as $user)

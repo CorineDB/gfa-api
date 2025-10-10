@@ -52,6 +52,15 @@ class Demarrage extends Command
 
         $tacheConfig = AlerteConfig::where('module', 'tache')->first();
 
+        // Create default config if it doesn't exist
+        if (!$tacheConfig) {
+            $tacheConfig = AlerteConfig::create([
+                'module' => 'tache',
+                'nombreDeJourAvant' => 7,
+                'frequence' => 1
+            ]);
+        }
+
         foreach($taches as $tache)
         {
             $statut = $tache->statut;
@@ -106,6 +115,15 @@ class Demarrage extends Command
         $activites = Activite::all();
 
         $activiteConfig = AlerteConfig::where('module', 'activite')->first();
+
+        // Create default config if it doesn't exist
+        if (!$activiteConfig) {
+            $activiteConfig = AlerteConfig::create([
+                'module' => 'activite',
+                'nombreDeJourAvant' => 7,
+                'frequence' => 1
+            ]);
+        }
 
         foreach($activites as $activite)
         {

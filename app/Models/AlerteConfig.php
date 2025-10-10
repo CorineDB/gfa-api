@@ -10,5 +10,5 @@ class AlerteConfig extends Model
 {
     use HasFactory, HasSecureIds;
 
-    protected $fillable = ['module', 'nombreDeJourAvant', 'frequence'];
+    protected $fillable = ['module', 'nombreDeJourAvant', 'frequence', 'debutSuivi', 'frequenceRapport'];
 }

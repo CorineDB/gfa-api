@@ -4,7 +4,6 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use App\Models\AlerteConfig;
 
 class Kernel extends ConsoleKernel
 {
@@ -31,39 +30,46 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-
+        // Génération de résultats - 1x/jour
         $schedule->command('gouvernance:generate-results')->daily();
-        $schedule->command('update-evaluation-statuses')->everyFifteenMinutes();
 
-        // $schedule->command('inspire')->hourly
-       $schedule->command('send-password-validity-expiration-soon-mail')->everyFifteenMinutes();
+        // Statuts évaluations - 1x/heure (optimisé depuis everyFifteenMinutes)
+        $schedule->command('update-evaluation-statuses')->hourly();
 
-        $schedule->command('command:change-statut')->everyFifteenMinutes();
-        //$schedule->command('change-statut:evaluations')->everyFifteenMinutes();//->dailyAt('00:00');
-        // $schedule->command('generate:report-for-validated-soumissions')->daily();
+        // Emails expiration mot de passe - 1x/jour à 09:00 (optimisé depuis everyFifteenMinutes)
+        $schedule->command('send-password-validity-expiration-soon-mail')->dailyAt('09:00');
 
-       $schedule->command('command:demarrage')->everyFifteenMinutes();
+        // Changement statut tâches/activités - 1x/heure (optimisé depuis everyFifteenMinutes)
+        $schedule->command('command:change-statut')->hourly();
 
-       $schedule->command('command:rapport')->everyFifteenMinutes();
-       $schedule->command('command:suivi')->everyMinute();//->dailyAt('00:00');//->everyFifteenMinutes();
+        // Alertes démarrage - 1x/jour à 07:00 avant la journée (optimisé depuis everyFifteenMinutes)
+        $schedule->command('command:demarrage')->dailyAt('07:00');
 
-        //$schedule->command('command:rappel')->everyMinute();
+        // Génération rapports quotidiens - 1x/jour à 16:00 (optimisé depuis everyFifteenMinutes)
+        $schedule->command('command:rapport')->dailyAt('16:00');
 
+        // Suivi financier/indicateurs - 1x/jour à 08:00 (optimisé depuis everyMinute)
+        $schedule->command('command:suivi')->dailyAt('08:00');
+
+        // Rappel émission mesures à prendre - 1x/jour
         $schedule->command('rappel-emission:mesure-a-prendre')->daily();
 
+        // Changement statut actions à mener - 1x/jour à minuit
         $schedule->command('change-statut:action-a-mener')->dailyAt('00:00');
+
+        // Commandes désactivées
+        // $schedule->command('command:rappel')->everyMinute();
+        // $schedule->command('change-statut:evaluations')->everyFifteenMinutes();
+        // $schedule->command('generate:report-for-validated-soumissions')->daily();
 
        /*$backupConfig = AlerteConfig::where('module', 'backup')->first();
 
        if($backupConfig){
-
             $backupFrequence = $backupConfig->frequenceBackup;
-
             $schedule->command('backup:run')->$backupFrequence();
         }
         $schedule->command('gauge:prune')->daily();
       */
-
     }
 
     /**

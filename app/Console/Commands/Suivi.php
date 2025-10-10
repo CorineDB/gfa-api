@@ -48,7 +48,17 @@ class Suivi extends Command
         $financierConfig = AlerteConfig::where('module', 'suivi-financier')->first();
         $indicateurConfig = AlerteConfig::where('module', 'suivi-indicateur')->first();
 
-        if(date('Y-m-d') >= $financierConfig->debutSuivi)
+        // Create default config if it doesn't exist
+        if (!$financierConfig) {
+            $financierConfig = AlerteConfig::create([
+                'module' => 'suivi-financier',
+                'nombreDeJourAvant' => 0,
+                'frequence' => 30,
+                'debutSuivi' => date('Y-m-d')
+            ]);
+        }
+
+        if($financierConfig && date('Y-m-d') >= $financierConfig->debutSuivi)
         {
 
             $debutSuivi = Carbon::parse($financierConfig->debutSuivi); // Convert start date to Carbon instance
@@ -82,7 +92,17 @@ class Suivi extends Command
             }
         }
 
-        if(date('Y-m-d') >= $indicateurConfig->debutSuivi)
+        // Create default config if it doesn't exist
+        if (!$indicateurConfig) {
+            $indicateurConfig = AlerteConfig::create([
+                'module' => 'suivi-indicateur',
+                'nombreDeJourAvant' => 0,
+                'frequence' => 30,
+                'debutSuivi' => date('Y-m-d')
+            ]);
+        }
+
+        if($indicateurConfig && date('Y-m-d') >= $indicateurConfig->debutSuivi)
         {
             $debutSuivi = Carbon::parse($indicateurConfig->debutSuivi); // Convert start date to Carbon instance
             $today = Carbon::today(); // Get today's date
