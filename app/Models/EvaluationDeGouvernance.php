@@ -401,7 +401,11 @@ class EvaluationDeGouvernance extends Model
         ];
 
         foreach ($profilesData as $profile) {
-            $organisationId = $profile->organisation->secure_id; // Access the related Organisation model
+            $organisationId = Organisation::find($profile->organisationId); // Access the related Organisation model
+
+            if($organisationId) continue;
+
+            $organisationId = $organisationId->secure_id;
 
             // Factuel
             $groupedData['indice_factuel_avg'][$profile->indice_factuel >= $avgIndiceFactuel ? 'greater_than_avg' : 'lower_than_avg'][] = [
