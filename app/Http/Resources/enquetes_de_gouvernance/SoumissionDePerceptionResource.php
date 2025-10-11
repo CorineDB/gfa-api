@@ -2,7 +2,6 @@
 
 namespace App\Http\Resources\enquetes_de_gouvernance;
 
-use App\Http\Resources\enquetes_de_gouvernance\ReponsesDeLaCollecteFactuelResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SoumissionDePerceptionResource extends JsonResource
@@ -59,8 +58,17 @@ class SoumissionDePerceptionResource extends JsonResource
 
     public function questions_reponses($questions)
     {
-        return $questions->map(function($question){
-            $reponse = $question->reponse($this->id)->first();
+        // Créer un index des réponses par questionId pour accès O(1) - Évite les requêtes N+1
+        // $reponsesIndexed = $this->reponses_de_la_collecte->keyBy('questionId'); // ANCIEN (permettait les doublons)
+        $reponsesIndexed = $this->reponses_uniques->keyBy('questionId'); // NOUVEAU (sans doublons)
+
+        return $questions->map(function($question) use ($reponsesIndexed) {
+            // ❌ ANCIENNE VERSION (Requête N+1 + doublons possibles) :
+            // $reponse = $question->reponse($this->id)->first();
+
+            // ✅ NOUVELLE VERSION (Utilise les données déjà chargées + sans doublons) :
+            $reponse = $reponsesIndexed->get($question->id);
+
             return [
                 'id' => $question->secure_id,
                 'nom' => $question->question_operationnelle->nom,

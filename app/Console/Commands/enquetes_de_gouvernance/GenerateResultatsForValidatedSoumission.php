@@ -357,6 +357,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
     protected function calculateQuestionMoyennePonderee($question, $options_de_reponse)
     {
+        /* ========== ANCIEN CODE (COMMENTÉ - PERMETTAIT DES DOUBLONS) ==========
         $nbre_r = $question->reponses->count();
         $weighted_sum = 0;
         $question->options_de_reponse = collect([]);
@@ -385,6 +386,49 @@ class GenerateResultatsForValidatedSoumission extends Command
         }
 
         $question->moyenne_ponderee = $nbre_r > 0 ? round($weighted_sum / $nbre_r, 2) : 0;
+        ========== FIN ANCIEN CODE ========== */
+
+        // ========== NOUVEAU CODE (CORRIGÉ - UNE SEULE RÉPONSE PAR SOUMISSION) ==========
+        $weighted_sum = 0;
+        $question->options_de_reponse = collect([]);
+
+        // Grouper les réponses par soumissionId et ne garder que la plus récente pour chaque soumission
+        $reponses_uniques = $question->reponses
+            ->groupBy('soumissionId')
+            ->map(function ($reponses_par_soumission) {
+                // Pour chaque soumission, prendre la réponse la plus récente
+                return $reponses_par_soumission->sortByDesc('created_at')->first();
+            })
+            ->values();
+
+        // Nombre de soumissions uniques (pas le nombre total de réponses)
+        $nbre_soumissions = $reponses_uniques->count();
+
+        // If no responses, moyenne_ponderee will be 0 (default value)
+        if ($nbre_soumissions === 0) {
+            $question->moyenne_ponderee = 0;
+            return;
+        }
+
+        // Compter les réponses uniques par optionDeReponseId
+        $counts = $reponses_uniques->countBy('optionDeReponseId');
+
+        foreach ($options_de_reponse as $key => $option_de_reponse) {
+            $reponses_count = $counts[$option_de_reponse->id] ?? 0;
+            $optionPoint = $option_de_reponse->pivot->point;
+            $moyenne_ponderee_i = $optionPoint * $reponses_count;
+            $weighted_sum += $moyenne_ponderee_i;
+
+            $option = clone $option_de_reponse;
+            $option->reponses_count = $reponses_count;
+            $option->moyenne_ponderee_i = $moyenne_ponderee_i;
+            $question->options_de_reponse[$key] = $option;
+        }
+
+        // Calculer la moyenne à partir du nombre de soumissions (pas du nombre de réponses)
+        $question->moyenne_ponderee = $nbre_soumissions > 0
+            ? round(min(100, $weighted_sum / $nbre_soumissions), 2) // Limiter à 100 par sécurité
+            : 0;
     }
 
     public function generateResultForFactuelEvaluation(
@@ -521,6 +565,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
     public function interpretData($categorie, $organisationId): Collection
     {
+        /* ========== ANCIEN CODE (COMMENTÉ - PERMETTAIT DES DOUBLONS) ==========
         $reponses = [];
 
         if ($categorie->sousCategoriesDeGouvernance->count()) {
@@ -537,6 +582,38 @@ class GenerateResultatsForValidatedSoumission extends Command
                     ->get()
                     ->toArray();
                 $reponses = array_merge($reponses, $reponses_data);
+            });
+        }
+
+        return collect($reponses);
+        ========== FIN ANCIEN CODE ========== */
+
+        // ========== NOUVEAU CODE (CORRIGÉ - UNE SEULE RÉPONSE PAR QUESTION PAR SOUMISSION) ==========
+        $reponses = [];
+
+        if ($categorie->sousCategoriesDeGouvernance->count()) {
+            $categorie->sousCategoriesDeGouvernance->each(function ($sous_categorie) use (&$reponses, $organisationId) {
+                $reponses = array_merge($reponses, $this->interpretData($sous_categorie, $organisationId)->toArray());
+            });
+        } else {
+            $categorie->questions_de_gouvernance->each(function ($question) use (&$reponses, $organisationId) {
+                $reponses_data = $question->reponses()
+                    ->whereHas("soumission", function ($query) use ($organisationId) {
+                        $query->where('evaluationId', $this->evaluationDeGouvernance->id)
+                            ->where('organisationId', $organisationId);
+                    })
+                    ->get();
+
+                // Grouper par soumissionId et ne prendre que la réponse la plus récente par soumission
+                $reponses_uniques = $reponses_data
+                    ->groupBy('soumissionId')
+                    ->map(function ($reponses_par_soumission) {
+                        return $reponses_par_soumission->sortByDesc('created_at')->first();
+                    })
+                    ->values()
+                    ->toArray();
+
+                $reponses = array_merge($reponses, $reponses_uniques);
             });
         }
 
