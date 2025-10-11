@@ -964,7 +964,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $formulaire_factuel_de_gouvernance = $formulaire_factuel_de_gouvernance->categories_de_gouvernance->map(function ($category_de_gouvernance) use ($evaluationDeGouvernance) {
 
-                $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel;
+                $fiches = $evaluationDeGouvernance->fiches_de_synthese_factuel->load("organisation.user");
 
                 // Initialize score ranges
                 $scoreRanges = [
