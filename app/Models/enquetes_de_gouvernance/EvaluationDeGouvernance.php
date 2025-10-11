@@ -470,7 +470,6 @@ class EvaluationDeGouvernance extends Model
             ->select(
                 'profiles_de_gouvernance.id',
                 'profiles_de_gouvernance.organisationId',
-                'organisations.secure_id as organisation_secure_id', // ✅ Ajouter le secure_id depuis la jointure
                 DB::raw('CONCAT(users.nom, " - ", organisations.sigle) as organisationName')
             )
             ->selectRaw('
@@ -478,6 +477,9 @@ class EvaluationDeGouvernance extends Model
                 CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_de_perception")) AS DECIMAL(10, 2)) AS indice_de_perception,
                 CAST(JSON_UNQUOTE(JSON_EXTRACT(resultat_synthetique, "$[*].indice_synthetique")) AS DECIMAL(10, 2)) AS indice_synthetique
             ')->get();
+
+        // Charger toutes les organisations de l'évaluation pour obtenir leurs secure_ids
+        $organisationsMap = $this->organisations->keyBy('id');
 
         // Grouper les profils en "supérieur à la moyenne" et "inférieur à la moyenne" pour chaque indice
         $groupedData = [
@@ -499,8 +501,14 @@ class EvaluationDeGouvernance extends Model
         ];
 
         foreach ($profilesData as $profile) {
-            // ✅ Utiliser organisation_secure_id qui vient de la jointure
-            $organisationSecureId = $profile->organisation_secure_id;
+            // Obtenir le secure_id de l'organisation depuis la map
+            $organisation = $organisationsMap->get($profile->organisationId);
+            $organisationSecureId = $organisation ? $organisation->secure_id : null;
+
+            // Ignorer si l'organisation n'existe pas
+            if (!$organisationSecureId) {
+                continue;
+            }
 
             // Factuel
             $groupedData['indice_factuel_avg'][$profile->indice_factuel >= $avgIndiceFactuel ? 'greater_than_avg' : 'lower_than_avg'][] = [
