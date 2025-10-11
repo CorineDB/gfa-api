@@ -1008,7 +1008,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
             $formulaire_de_perception_de_gouvernance = $formulaire_de_perception_de_gouvernance->categories_de_gouvernance->map(function ($category_de_gouvernance) use ($evaluationDeGouvernance) {
 
-                $fiches = $evaluationDeGouvernance->fiches_de_synthese_de_perception;
+                $fiches = $evaluationDeGouvernance->fiches_de_synthese_de_perception->load("organisation.user");
 
                 // Initialize score ranges
                 $scoreRanges = [
