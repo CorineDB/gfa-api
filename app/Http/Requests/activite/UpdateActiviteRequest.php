@@ -18,7 +18,29 @@ class UpdateActiviteRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasPermissionTo("modifier-une-activite") || request()->user()->hasRole("unitee-de-gestion", "organisation");
+        $user = request()->user();
+
+        // UG et Organisation avec permission peuvent modifier uniquement pour LEUR projet (projetable)
+        if($user->hasPermissionTo("modifier-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+            $activite = Activite::findByKey($this->route('activite'));
+
+            if($activite) {
+                $composante = $activite->composante;
+                $projet = $composante ? $composante->projet : null;
+
+                // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
+                if($projet) {
+                    if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                        return $projet->projetable_id === $user->organisation->id;
+                    }
+                    if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                        return $projet->projetable_id === $user->uniteDeGestion->id;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public function prepareForValidation(){

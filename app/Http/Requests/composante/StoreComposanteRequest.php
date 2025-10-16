@@ -7,13 +7,10 @@ use App\Models\Projet;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\RequiredIf;
 use Illuminate\Validation\ValidationException;
 
 class StoreComposanteRequest extends FormRequest
 {
-    private $user;
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -21,7 +18,34 @@ class StoreComposanteRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = request()->user();
+
+        // UG et Organisation avec permission peuvent créer uniquement pour LEUR projet (projetable)
+        if($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+            $projet = null;
+
+            // Si c'est une composante directe du projet
+            if($this->projetId) {
+                $projet = Projet::find($this->projetId);
+            }
+            // Si c'est une sous-composante
+            elseif($this->composanteId) {
+                $composante = Composante::find($this->composanteId);
+                $projet = $composante ? $composante->projet : null;
+            }
+
+            // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
+            if($projet) {
+                if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                    return $projet->projetable_id === $user->organisation->id;
+                }
+                if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                    return $projet->projetable_id === $user->uniteDeGestion->id;
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

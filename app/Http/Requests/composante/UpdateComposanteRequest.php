@@ -11,8 +11,6 @@ use Illuminate\Validation\ValidationException;
 
 class UpdateComposanteRequest extends FormRequest
 {
-    private $user;
-
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -20,7 +18,28 @@ class UpdateComposanteRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        $user = request()->user();
+
+        // UG et Organisation avec permission peuvent modifier uniquement pour LEUR projet (projetable)
+        if($user->hasPermissionTo("modifier-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+            $composante = Composante::findByKey($this->route('composante'));
+
+            if($composante) {
+                $projet = $composante->projet;
+
+                // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
+                if($projet) {
+                    if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                        return $projet->projetable_id === $user->organisation->id;
+                    }
+                    if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                        return $projet->projetable_id === $user->uniteDeGestion->id;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public function prepareForValidation(){
@@ -88,12 +107,26 @@ class UpdateComposanteRequest extends FormRequest
                 if($this->composante){
                     $c = Composante::find($this->composante);
                     if($c){
-                        $pret = $c->pret;
-                        $totalpretA = $c->activites->sum('pret');
+                        // Ancien code - Logique inversée
+                        // $pret = $c->pret;
+                        // $totalpretA = $c->activites->sum('pret');
+                        // if($totalpretA > $this->pret)
+                        // {
+                        //     throw ValidationException::withMessages(["pret" => "Le montant du budget alloue a l'output/outcome ne peuvent pas dépasser le total des budgets alloues aux activites de l'output/outcone."], 1);
+                        // }
 
-                        if($totalpretA > $this->pret)
+                        // Nouveau code - Logique corrigée
+                        $totalpretSousComposantes = $c->sousComposantes->sum('pret');
+                        $totalpretActivites = $c->activites->sum('pret');
+
+                        if($this->pret < $totalpretSousComposantes)
                         {
-                            throw ValidationException::withMessages(["pret" => "Le montant du budget alloue a l'output/outcome ne peuvent pas dépasser le total des budgets alloues aux activites de l'output/outcone."], 1);
+                            throw ValidationException::withMessages(["pret" => "Le montant du budget alloue a l'outcome ne peut pas etre inferieur au total des budgets alloues aux outputs de cet outcome."], 1);
+                        }
+
+                        if($this->pret < $totalpretActivites)
+                        {
+                            throw ValidationException::withMessages(["pret" => "Le montant du budget alloue a l'output ne peut pas etre inferieur au total des budgets alloues aux activites de cet output."], 1);
                         }
                     }
                 }
@@ -130,12 +163,26 @@ class UpdateComposanteRequest extends FormRequest
                 if($this->composante){
                     $c = Composante::find($this->composante);
                     if($c){
-                        $budgetNational = $c->budgetNational;
-                        $totalBudgetNational = $c->activites->sum('budgetNational');
+                        // Ancien code - Logique inversée
+                        // $budgetNational = $c->budgetNational;
+                        // $totalBudgetNational = $c->activites->sum('budgetNational');
+                        // if($totalBudgetNational > $this->budgetNational)
+                        // {
+                        //     throw ValidationException::withMessages(["budgetNational" => "Le montant du budget alloue a l'output/outcome ne peuvent pas dépasser le total des budgets alloues aux activites de l'output/outcone."], 1);
+                        // }
 
-                        if($totalBudgetNational > $this->budgetNational)
+                        // Nouveau code - Logique corrigée
+                        $totalBudgetNationalSousComposantes = $c->sousComposantes->sum('budgetNational');
+                        $totalBudgetNationalActivites = $c->activites->sum('budgetNational');
+
+                        if($this->budgetNational < $totalBudgetNationalSousComposantes)
                         {
-                            throw ValidationException::withMessages(["budgetNational" => "Le montant du budget alloue a l'output/outcome ne peuvent pas dépasser le total des budgets alloues aux activites de l'output/outcone."], 1);
+                            throw ValidationException::withMessages(["budgetNational" => "Le montant du fond propre alloue a l'outcome ne peut pas etre inferieur au total des fonds propres alloues aux outputs de cet outcome."], 1);
+                        }
+
+                        if($this->budgetNational < $totalBudgetNationalActivites)
+                        {
+                            throw ValidationException::withMessages(["budgetNational" => "Le montant du fond propre alloue a l'output ne peut pas etre inferieur au total des fonds propres alloues aux activites de cet output."], 1);
                         }
                     }
                 }

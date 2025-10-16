@@ -3,8 +3,6 @@
 namespace App\Http\Requests\activite;
 
 use App\Models\Composante;
-use App\Models\Projet;
-use App\Models\User;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
@@ -18,7 +16,30 @@ class StoreActiviteRequest extends FormRequest
      */
     public function authorize()
     {
-        return request()->user()->hasPermissionTo("creer-une-activite") || request()->user()->hasRole("unitee-de-gestion", "organisation");
+        $user = request()->user();
+
+        // UG et Organisation avec permission peuvent créer uniquement pour LEUR projet (projetable)
+        if($user->hasPermissionTo("creer-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+            if($this->composanteId) {
+                $composante = Composante::find($this->composanteId);
+
+                if($composante) {
+                    $projet = $composante->projet;
+
+                    // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
+                    if($projet) {
+                        if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                            return $projet->projetable_id === $user->organisation->id;
+                        }
+                        if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                            return $projet->projetable_id === $user->uniteDeGestion->id;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -976,6 +976,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Loop through each record
                 foreach ($fiches as $fiche) {
+                    // Skip if organisation is null
+                    if (!$fiche->organisation) {
+                        continue;
+                    }
+
                     $synthese = $fiche->synthese;
 
                     foreach ($synthese as $syntheseItem) {
@@ -985,13 +990,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                             // Logic for organizing into score ranges (adjust based on actual criteria)
                             if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
-                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel]; // Assuming you have this info in the fiche
+                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel]; // Assuming you have this info in the fiche
                             } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
-                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel];
+                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel];
                             } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
-                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel];
+                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel];
                             } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
-                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel];
+                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_factuel' => $indiceFactuel];
                             }
 
                             $category_de_gouvernance->categories_de_gouvernance = $this->getCategories($category_de_gouvernance->categories_de_gouvernance, $fiche, $syntheseItem['categories_de_gouvernance']);
@@ -1020,6 +1025,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Loop through each record
                 foreach ($fiches as $fiche) {
+                    // Skip if organisation is null
+                    if (!$fiche->organisation) {
+                        continue;
+                    }
+
                     $synthese = $fiche->synthese;
 
                     foreach ($synthese as $syntheseItem) {
@@ -1029,13 +1039,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                             // Logic for organizing into score ranges (adjust based on actual criteria)
                             if ($indiceFactuel >= 0 && $indiceFactuel <= 0.25) {
-                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel]; // Assuming you have this info in the fiche
+                                $scoreRanges['0-0.25']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel]; // Assuming you have this info in the fiche
                             } elseif ($indiceFactuel > 0.25 && $indiceFactuel <= 0.50) {
-                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel];
+                                $scoreRanges['0.25-0.50']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel];
                             } elseif ($indiceFactuel > 0.50 && $indiceFactuel <= 0.75) {
-                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel];
+                                $scoreRanges['0.50-0.75']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel];
                             } elseif ($indiceFactuel > 0.75 && $indiceFactuel <= 1) {
-                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom ?? null, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel];
+                                $scoreRanges['0.75-1']['organisations'][] = ['id' => $fiche->organisation->secure_id, 'nom' => optional($fiche->organisation->user)->nom, 'sigle' => $fiche->organisation->sigle, 'indice_de_perception' => $indiceFactuel];
                             }
 
                             if (isset($syntheseItem['questions_de_gouvernance'])) {

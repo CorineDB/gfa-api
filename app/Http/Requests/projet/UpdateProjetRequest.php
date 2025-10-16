@@ -2,14 +2,12 @@
 
 namespace App\Http\Requests\projet;
 
-use App\Models\Bailleur;
 use App\Models\Organisation;
 use App\Models\Programme;
 use App\Models\Projet;
 use App\Models\Site;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class UpdateProjetRequest extends FormRequest
@@ -49,6 +47,7 @@ class UpdateProjetRequest extends FormRequest
 
 
             'pret' => ['sometimes', 'integer', 'min:0', function(){
+                // Vérification vers le PARENT (programme)
                 if($this->programmeId){
                     $programme = Programme::findByKey($this->programmeId);
                     $budgetNational = $programme->budgetNational;
@@ -59,8 +58,34 @@ class UpdateProjetRequest extends FormRequest
                         throw ValidationException::withMessages(["budgetNational" => "Le total des fonds alloues aux projets de ce programme ne peut pas dépasser le montant du fond alloue au programme"], 1);
                     }
                 }
+
+                // Vérification vers les ENFANTS (composantes/outcomes)
+                if($this->route('projet')){
+                    $projet = Projet::findByKey($this->route('projet'));
+                    if($projet){
+                        $totalpretComposantes = $projet->composantes->sum('pret');
+
+                        if($this->pret < $totalpretComposantes)
+                        {
+                            throw ValidationException::withMessages(["pret" => "Le montant du budget alloue au projet ne peut pas etre inferieur au total des budgets alloues aux outcomes de ce projet."], 1);
+                        }
+                    }
+                }
             }],
-            'budgetNational' => ['sometimes', 'integer', 'min:0'],
+            'budgetNational' => ['sometimes', 'integer', 'min:0', function(){
+                // Vérification vers les ENFANTS (composantes/outcomes)
+                if($this->route('projet')){
+                    $projet = Projet::findByKey($this->route('projet'));
+                    if($projet){
+                        $totalBudgetNationalComposantes = $projet->composantes->sum('budgetNational');
+
+                        if($this->budgetNational < $totalBudgetNationalComposantes)
+                        {
+                            throw ValidationException::withMessages(["budgetNational" => "Le montant du fond propre alloue au projet ne peut pas etre inferieur au total des fonds propres alloues aux outcomes de ce projet."], 1);
+                        }
+                    }
+                }
+            }],
             'sites'                         => ['sometimes', 'array', 'min:1'],
             'sites.*'                       => ['distinct', new HashValidatorRule(new Site())]
         ];

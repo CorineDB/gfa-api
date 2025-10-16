@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests\programme;
 
+use App\Models\Programme;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class UpdateRequest extends FormRequest
 {
@@ -27,7 +29,20 @@ class UpdateRequest extends FormRequest
         return [
             'nom' => ['required','max:255', Rule::unique('programmes')->ignore($this->programme)->whereNull('deleted_at')],
             'code' => ['required', Rule::unique('programmes')->ignore($this->programme)->whereNull('deleted_at')],
-            'budgetNational' => 'nullable|int|min:0',
+            'budgetNational' => ['nullable', 'int', 'min:0', function(){
+                // Vérification vers les ENFANTS (projets)
+                if($this->route('programme')){
+                    $programme = Programme::findByKey($this->route('programme'));
+                    if($programme){
+                        $totalBudgetNationalProjets = $programme->projets->sum('budgetNational');
+
+                        if($this->budgetNational < $totalBudgetNationalProjets)
+                        {
+                            throw ValidationException::withMessages(["budgetNational" => "Le montant du fond propre alloue au programme ne peut pas etre inferieur au total des fonds propres alloues aux projets de ce programme."], 1);
+                        }
+                    }
+                }
+            }],
             'objectifGlobaux' => 'required',
             'debut' => 'required|date|date_format:Y-m',
             'fin' => 'required|date|date_format:Y-m|after_or_equal:debut'
