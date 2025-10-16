@@ -21,20 +21,24 @@ class UpdateComposanteRequest extends FormRequest
         $user = request()->user();
 
         // UG et Organisation avec permission peuvent modifier uniquement pour LEUR projet (projetable)
-        if($user->hasPermissionTo("modifier-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+        if ($user->hasPermissionTo("modifier-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
             throw new \Exception("Error Processing Request: " . $this->route('composante'), 1);
 
-            $composante = Composante::findByKey($this->route('composante'));
+            if (!is_object($this->route('composante'))) {
+                if (($composante = Composante::findByKey($this->composante))) {
+                    throw ValidationException::withMessages(["composante" => "Composante Inconnue"], 1);
+                }
+            }
 
-            if($composante) {
+            if ($composante) {
                 $projet = $composante->projet;
 
                 // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
-                if($projet) {
-                    if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                if ($projet) {
+                    if ($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
                         return $projet->projetable_id === $user->organisation->id;
                     }
-                    if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                    if ($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
                         return $projet->projetable_id === $user->uniteDeGestion->id;
                     }
                 }
@@ -44,19 +48,17 @@ class UpdateComposanteRequest extends FormRequest
         return false;
     }
 
-    public function prepareForValidation(){
-        if(!is_object($this->composante))
-        {
-            if(($composante = Composante::findByKey($this->composante))){
-                throw ValidationException::withMessages(["composante" =>"Composante Inconnue" ], 1);
-
+    public function prepareForValidation()
+    {
+        if (!is_object($this->composante)) {
+            if (($composante = Composante::findByKey($this->composante))) {
+                throw ValidationException::withMessages(["composante" => "Composante Inconnue"], 1);
             }
 
             $this->merge([
                 "composante" => $composante->id
             ]);
-        }
-        else{
+        } else {
             $this->merge([
                 "composante" => $this->composante->id
             ]);
@@ -78,37 +80,33 @@ class UpdateComposanteRequest extends FormRequest
             'projetId' => ['sometimes',  Rule::requiredIf(!$this->composanteId), new HashValidatorRule(new Projet())],
             'composanteId' => ['sometimes',  Rule::requiredIf(!$this->projetId), new HashValidatorRule(new Composante())],
 
-            'pret' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function(){
-                if($this->projetId){
+            'pret' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function () {
+                if ($this->projetId) {
                     $projet = Projet::find($this->projetId);
-                    if($projet){
+                    if ($projet) {
                         $pret = $projet->pret;
                         $totalpret = $projet->composantes->where('id', '!=', $this->composante)->sum('pret');
 
-                        if(($totalpret + $this->pret) > $pret)
-                        {
+                        if (($totalpret + $this->pret) > $pret) {
                             throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux outcomes de ce projet ne peuvent pas dépasser le montant du budget alloue au projet"], 1);
                         }
                     }
-                }
-
-                elseif($this->composanteId){
+                } elseif ($this->composanteId) {
                     $composante = Composante::find($this->composanteId);
-                    if($composante){
+                    if ($composante) {
                         $pret = $composante->pret;
                         $totalpret = $composante->sousComposantes->where('id', '!=', $this->composante)->sum('pret');
 
-                        if(($totalpret + $this->pret) > $pret)
-                        {
+                        if (($totalpret + $this->pret) > $pret) {
                             throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux outputs de cet outcome ne peuvent pas dépasser le montant du budget alloue a l'outcome"], 1);
                         }
                     }
                 }
 
 
-                if($this->composante){
+                if ($this->composante) {
                     $c = Composante::find($this->composante);
-                    if($c){
+                    if ($c) {
                         // Ancien code - Logique inversée
                         // $pret = $c->pret;
                         // $totalpretA = $c->activites->sum('pret');
@@ -121,50 +119,44 @@ class UpdateComposanteRequest extends FormRequest
                         $totalpretSousComposantes = $c->sousComposantes->sum('pret');
                         $totalpretActivites = $c->activites->sum('pret');
 
-                        if($this->pret < $totalpretSousComposantes)
-                        {
+                        if ($this->pret < $totalpretSousComposantes) {
                             throw ValidationException::withMessages(["pret" => "Le montant du budget alloue a l'outcome ne peut pas etre inferieur au total des budgets alloues aux outputs de cet outcome."], 1);
                         }
 
-                        if($this->pret < $totalpretActivites)
-                        {
+                        if ($this->pret < $totalpretActivites) {
                             throw ValidationException::withMessages(["pret" => "Le montant du budget alloue a l'output ne peut pas etre inferieur au total des budgets alloues aux activites de cet output."], 1);
                         }
                     }
                 }
             }],
 
-            'budgetNational' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function(){
-                if($this->projetId){
+            'budgetNational' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function () {
+                if ($this->projetId) {
                     $projet = Projet::find($this->projetId);
-                    if($projet){
+                    if ($projet) {
                         $budgetNational = $projet->budgetNational;
                         $totalBudgetNational = $projet->composantes->where('id', '!=', $this->composante)->sum('budgetNational');
 
-                        if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
-                        {
+                        if (($totalBudgetNational + $this->budgetNational) > $budgetNational) {
                             throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres aux outcomes de ce projet ne peut pas dépasser le montant du fond propre du projet"], 1);
                         }
                     }
-                }
-
-                elseif($this->composanteId){
+                } elseif ($this->composanteId) {
                     $composante = Composante::find($this->composanteId);
-                    if($composante){
+                    if ($composante) {
                         $budgetNational = $composante->budgetNational;
                         $totalBudgetNational = $composante->sousComposantes->where('id', '!=', $this->composante)->sum('budgetNational');
 
-                        if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
-                        {
+                        if (($totalBudgetNational + $this->budgetNational) > $budgetNational) {
                             throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres des outputs de cet outcome ne peuvent pas dépasser le montant du fond propre de l'outcome"], 1);
                         }
                     }
                 }
 
 
-                if($this->composante){
+                if ($this->composante) {
                     $c = Composante::find($this->composante);
-                    if($c){
+                    if ($c) {
                         // Ancien code - Logique inversée
                         // $budgetNational = $c->budgetNational;
                         // $totalBudgetNational = $c->activites->sum('budgetNational');
@@ -177,13 +169,11 @@ class UpdateComposanteRequest extends FormRequest
                         $totalBudgetNationalSousComposantes = $c->sousComposantes->sum('budgetNational');
                         $totalBudgetNationalActivites = $c->activites->sum('budgetNational');
 
-                        if($this->budgetNational < $totalBudgetNationalSousComposantes)
-                        {
+                        if ($this->budgetNational < $totalBudgetNationalSousComposantes) {
                             throw ValidationException::withMessages(["budgetNational" => "Le montant du fond propre alloue a l'outcome ne peut pas etre inferieur au total des fonds propres alloues aux outputs de cet outcome."], 1);
                         }
 
-                        if($this->budgetNational < $totalBudgetNationalActivites)
-                        {
+                        if ($this->budgetNational < $totalBudgetNationalActivites) {
                             throw ValidationException::withMessages(["budgetNational" => "Le montant du fond propre alloue a l'output ne peut pas etre inferieur au total des fonds propres alloues aux activites de cet output."], 1);
                         }
                     }
@@ -192,7 +182,7 @@ class UpdateComposanteRequest extends FormRequest
         ];
     }
 
-        /**
+    /**
      * Get the error messages for the defined validation rules.
      *
      * @return array
