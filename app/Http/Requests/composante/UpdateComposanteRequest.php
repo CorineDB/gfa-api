@@ -22,12 +22,14 @@ class UpdateComposanteRequest extends FormRequest
 
         // UG et Organisation avec permission peuvent modifier uniquement pour LEUR projet (projetable)
         if ($user->hasPermissionTo("modifier-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
-            throw new \Exception("Error Processing Request: " . $this->route('composante'), 1);
 
             if (!is_object($this->route('composante'))) {
                 if (($composante = Composante::findByKey($this->composante))) {
                     throw ValidationException::withMessages(["composante" => "Composante Inconnue"], 1);
                 }
+            }
+            else{
+                $composante = $this->route('composante');
             }
 
             if ($composante) {
