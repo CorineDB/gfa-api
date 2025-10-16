@@ -22,7 +22,14 @@ class UpdateActiviteRequest extends FormRequest
 
         // UG et Organisation avec permission peuvent modifier uniquement pour LEUR projet (projetable)
         if($user->hasPermissionTo("modifier-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
-            $activite = Activite::findByKey($this->route('activite'));
+
+            $activite = $this->route('activite');
+
+            if (!is_object($activite)) {
+                if (($activite = Activite::findByKey($activite))) {
+                    throw ValidationException::withMessages(["activite" => "activite Inconnue"], 1);
+                }
+            }
 
             if($activite) {
                 $composante = $activite->composante;

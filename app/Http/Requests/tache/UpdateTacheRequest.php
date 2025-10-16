@@ -16,8 +16,39 @@ cLass UpdateTacheRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {
+    /* {
         return request()->user()->hasPermissionTo("modifier-une-tache") || request()->user()->hasRole("unitee-de-gestion", "organisation");
+    } */
+    {
+        $user = request()->user();
+
+        // UG et Organisation avec permission peuvent modifier uniquement pour LEUR projet (projetable)
+        if($user->hasPermissionTo("modifier-une-tache") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+            $tache = $this->route('tach');
+
+            if (!is_object($tache)) {
+                if (!($tache = Tache::findByKey($tache))) {
+                    throw ValidationException::withMessages(["tach" => "Tâche Inconnue"], 1);
+                }
+            }
+
+            if($tache) {
+                $activite = $tache->activite;
+                $projet = $activite ? $activite->projet : null;
+
+                // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
+                if($projet) {
+                    if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                        return $projet->projetable_id === $user->organisation->id;
+                    }
+                    if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                        return $projet->projetable_id === $user->uniteDeGestion->id;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     public function prepareForValidation(){
@@ -57,15 +88,15 @@ cLass UpdateTacheRequest extends FormRequest
                 if ($activite && $value < $activite->dureeActivite->debut) {
                     $fail("La date de début de la tâche est antérieure à celle de l'activité.");
                 }
-                
+
             }],
             'fin' => ["sometimes", "required", "date", "date_format:Y-m-d", "after_or_equal:debut", function($attribute, $value, $fail) {
                 $activite = Activite::findByKey(request()->input('activiteId'));
-                
+
                     if ($activite && $value > $activite->dureeActivite->fin) {
                         $fail("La date de fin de la tâche est supérieure à celle de l'activité.");
                     }
-                
+
             }],
         ];
     }
