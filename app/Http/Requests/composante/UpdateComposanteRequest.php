@@ -24,6 +24,8 @@ class UpdateComposanteRequest extends FormRequest
         if($user->hasPermissionTo("modifier-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
             $composante = Composante::findByKey($this->route('composante'));
 
+            dd($composante);
+
             if($composante) {
                 $projet = $composante->projet;
 
@@ -75,7 +77,7 @@ class UpdateComposanteRequest extends FormRequest
             'poids' => ['nullable', 'numeric', 'min:0'],
             'projetId' => ['sometimes',  Rule::requiredIf(!$this->composanteId), new HashValidatorRule(new Projet())],
             'composanteId' => ['sometimes',  Rule::requiredIf(!$this->projetId), new HashValidatorRule(new Composante())],
-            
+
             'pret' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
