@@ -30,7 +30,7 @@ class UpdateSuiviFinancierRequest extends FormRequest
     {
         return [
             'activiteId' => ['required', new HashValidatorRule(new Activite())],
-            'consommer' => 'sometimes|required|integer',
+            'consommer' => 'sometimes|required|integer|min:0|max:9999999999999',
             'dateDeSuivi'    => [Rule::requiredIf(!request('trimestre')), 'date_format:Y-m-d', new YearValidationRule, function(){
                 $this->merge([
                     "trimestre" => Carbon::parse(request('dateDeSuivi'))->quarter,
