@@ -353,7 +353,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     // Calculer la somme des budgets déjà alloués aux autres organisations de ce fond
                     $totalBudgetAlloue = DB::table('fond_organisations')
                         ->where('fondId', $fond->id)
-                        ->where('organisationId', '!=', $projet->organisation->id)
+                        ->where('organisationId', '!=', $nouvelleOrganisation->id)
                         ->whereNull('deleted_at')
                         ->sum('budgetAllouer');
 
