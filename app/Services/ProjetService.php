@@ -318,13 +318,84 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 $projet = $projetId;
             }
 
+            // Gestion du changement d'organisation
+            if(isset($attributs['organisationId']) && !empty($attributs['organisationId'])){
+                // Condition 1: La nouvelle organisation doit exister dans le système
+                if(!($nouvelleOrganisation = app(OrganisationRepository::class)->findById($attributs['organisationId']))) {
+                    throw new Exception("Cette organisation n'existe pas", 500);
+                }
+
+                // Condition 2: La nouvelle organisation doit appartenir au même programme que le projet
+                if($nouvelleOrganisation->user->programmeId !== $projet->programmeId){
+                    throw new Exception("Cette organisation ne fait pas partie du même programme que le projet", 500);
+                }
+
+                // Condition 3: La nouvelle organisation ne doit pas déjà avoir un projet
+                if($nouvelleOrganisation->projet && $nouvelleOrganisation->projet->id !== $projet->id){
+                    throw new Exception("Cette organisation est déjà associée à un projet dans le programme", 500);
+                }
+
+                // Condition 4: Le projet ne doit pas avoir de composantes, activités ou données liées
+                if($projet->composantes()->count() > 0){
+                    throw new Exception("Impossible de changer l'organisation : le projet possède déjà des composantes", 500);
+                }
+
+                // Condition 5: Vérifier que le pret du projet ne dépasse pas le fond disponible
+                if($nouvelleOrganisation->fonds()->count()){
+                    $fond = $nouvelleOrganisation->fonds->first();
+                    $pretProjet = isset($attributs['pret']) ? $attributs['pret'] : $projet->pret;
+
+                    // Vérifier que le pret ne dépasse pas le fond disponible
+                    if($pretProjet > $fond->fondDisponible){
+                        throw new Exception("Le montant de la subvention du projet ne peut pas dépasser le fond disponible", 500);
+                    }
+
+                    // Calculer la somme des budgets déjà alloués aux autres organisations de ce fond
+                    $totalBudgetAlloue = DB::table('fond_organisations')
+                        ->where('fondId', $fond->id)
+                        ->whereNull('deleted_at')
+                        ->sum('budgetAllouer');
+
+                    // Vérifier que la somme totale ne dépasse pas le fond disponible
+                    if(($totalBudgetAlloue + $pretProjet) > $fond->fondDisponible){
+                        throw new Exception("La somme des budgets alloués dépasse le fond disponible", 500);
+                    }
+                }
+
+                // Récupérer l'ancienne organisation
+                $ancienneOrganisation = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
+
+                // Mettre à jour le budgetAllouer dans la table pivot fond_organisation
+                if($ancienneOrganisation && $ancienneOrganisation->fonds()->count()){
+                    // Remettre à 0 le budget alloué de l'ancienne organisation
+                    $ancienneOrganisationFond = $ancienneOrganisation->fonds->first()->pivot;
+                    $ancienneOrganisationFond->budgetAllouer = 0;
+                    $ancienneOrganisationFond->save();
+                }
+
+                // Mettre à jour le projetable (polymorphic relationship)
+                $projet->projetable_type = 'App\Models\Organisation';
+                $projet->projetable_id = $nouvelleOrganisation->id;
+
+                // Allouer le budget à la nouvelle organisation
+                if($nouvelleOrganisation->fonds()->count()){
+                    $nouvelleOrganisationFond = $nouvelleOrganisation->fonds->first()->pivot;
+                    $nouvelleOrganisationFond->budgetAllouer = isset($attributs['pret']) ? $attributs['pret'] : $projet->pret;
+                    $nouvelleOrganisationFond->save();
+                }
+
+                // Retirer organisationId des attributs car on a déjà géré le changement
+                unset($attributs['organisationId']);
+            }
+
             $projet = $projet->fill($attributs);
 
             $projet->save();
 
-            $organisation = $projet->organisation;
+            $organisation = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
 
-            if($organisation->fonds()->count()){
+            // Mise à jour du budget alloué si l'organisation existe et que le pret a changé
+            if($organisation && $organisation->fonds()->count()){
                 $organisationFond = $organisation->fonds->first()->pivot;
                 $organisationFond->budgetAllouer = $projet->pret;
                 $organisationFond->save();
