@@ -76,7 +76,7 @@ class UpdateComposanteRequest extends FormRequest
             'projetId' => ['sometimes',  Rule::requiredIf(!$this->composanteId), new HashValidatorRule(new Projet())],
             'composanteId' => ['sometimes',  Rule::requiredIf(!$this->projetId), new HashValidatorRule(new Composante())],
             
-            'pret' => ['sometimes', 'integer', 'min:0', function(){
+            'pret' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
                     if($projet){
@@ -132,7 +132,7 @@ class UpdateComposanteRequest extends FormRequest
                 }
             }],
 
-            'budgetNational' => ['sometimes', 'integer', 'min:0', function(){
+            'budgetNational' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
                     if($projet){
@@ -201,8 +201,12 @@ class UpdateComposanteRequest extends FormRequest
             'nom.required' => 'Le nom de la composante est obligatoire.',
             'statut.required' => 'Le statut de la composante est obligatoire.',
             'poids.required' => 'Le poids de la composante est obligatoire.',
-            'budjetNational.required' => 'Le budget national de la composante est obligatoire.',
-            'pret.required' => 'Le pret effectué de la composante est obligatoire.',
+            'budgetNational.required' => 'Le fond propre de la composante est obligatoire.',
+            'budgetNational.integer' => 'Le fond propre doit être un entier.',
+            'budgetNational.max' => 'Le fond propre ne peut pas dépasser 9 999 999 999 999 CFA.',
+            'pret.required' => 'Le montant de la subvention de la composante est obligatoire.',
+            'pret.integer' => 'Le montant de la subvention doit être un entier.',
+            'pret.max' => 'Le montant de la subvention ne peut pas dépasser 9 999 999 999 999 CFA.',
             'tepPrevu.required' => 'Le tep prévu de la composante est obligatoire.',
             'projetId.required' => 'Le projet de la composante est obligatoire.',
             'projetId.exists' => 'Ce projet n\'existe pas',

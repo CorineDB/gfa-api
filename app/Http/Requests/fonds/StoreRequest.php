@@ -28,7 +28,7 @@ class StoreRequest extends FormRequest
     {
         return [
             'nom_du_fond'               => ['required', 'string', Rule::unique('fonds', 'nom_du_fond')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
-            'fondDisponible' => 'required|integer|min:0'
+            'fondDisponible' => 'required|integer|min:0|max:9999999999999'
         ];
     }
 

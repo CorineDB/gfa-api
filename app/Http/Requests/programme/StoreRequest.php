@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
         return [
             'nom' => ['required','max:255', Rule::unique('programmes')->whereNull('deleted_at')],
             'code' => ['required', Rule::unique('programmes')->whereNull('deleted_at')],
-            'budgetNational' => 'nullable|int|min:0',
+            'budgetNational' => 'nullable|int|min:0|max:9999999999999',
             'objectifGlobaux' => 'required',
             'debut' => 'required|date|date_format:Y-m',
             'fin' => 'required|date|date_format:Y-m|after_or_equal:debut'
@@ -44,10 +44,12 @@ class StoreRequest extends FormRequest
         return [
             'nom.required' => 'Le nom du programme est obligatoire.',
             'objectifGlobaux.required' => 'Veuillez précisez l\'objectif global du programme.',
-            'budgetNational.required' => 'Veuillez précisez le budget national du programme.',
+            'budgetNational.required' => 'Veuillez précisez le montant de la subvention du programme.',
+            'budgetNational.integer' => 'Le montant de la subvention doit être un entier.',
+            'budgetNational.min' => 'Le montant de la subvention du programme ne peut pas être inférieur à 0.',
+            'budgetNational.max' => 'Le montant de la subvention ne peut pas dépasser 9 999 999 999 999 CFA.',
             'code.required' => 'Le code du programme est obligatoire.',
             'code.min' => 'Le code du programme ne peut pas être inférieur à 0.',
-            'budgetNational.min' => 'Le budget national du programme ne peut pas être inférieur à 0.',
             'debut.required' => 'La date de début du programme est obligatoire.',
             'fin.required' => 'La date de fin du programme est obligatoire.'
         ];

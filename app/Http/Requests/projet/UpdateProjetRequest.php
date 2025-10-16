@@ -46,16 +46,16 @@ class UpdateProjetRequest extends FormRequest
             'fichier.*' => ["nullable", "file", 'mimes:txt,doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv', "max:2048"],
 
 
-            'pret' => ['sometimes', 'integer', 'min:0', function(){
+            'pret' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function(){
                 // Vérification vers le PARENT (programme)
                 if($this->programmeId){
                     $programme = Programme::findByKey($this->programmeId);
                     $budgetNational = $programme->budgetNational;
-                    $totalBudgetNational = $programme->projets->sum('pret');
+                    $totalPret = $programme->projets->where('id', '!=', $this->route('projet') ? Projet::findByKey($this->route('projet'))->id : null)->sum('pret');
 
-                    if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
+                    if(($totalPret + $this->pret) > $budgetNational)
                     {
-                        throw ValidationException::withMessages(["budgetNational" => "Le total des fonds alloues aux projets de ce programme ne peut pas dépasser le montant du fond alloue au programme"], 1);
+                        throw ValidationException::withMessages(["pret" => "Le total des montants de subvention alloues aux projets de ce programme ne peut pas dépasser le montant de la subvention du programme"], 1);
                     }
                 }
 
@@ -67,12 +67,12 @@ class UpdateProjetRequest extends FormRequest
 
                         if($this->pret < $totalpretComposantes)
                         {
-                            throw ValidationException::withMessages(["pret" => "Le montant du budget alloue au projet ne peut pas etre inferieur au total des budgets alloues aux outcomes de ce projet."], 1);
+                            throw ValidationException::withMessages(["pret" => "Le montant de la subvention alloue au projet ne peut pas etre inferieur au total des subventions allouees aux outcomes de ce projet."], 1);
                         }
                     }
                 }
             }],
-            'budgetNational' => ['sometimes', 'integer', 'min:0', function(){
+            'budgetNational' => ['sometimes', 'integer', 'min:0', 'max:9999999999999', function(){
                 // Vérification vers les ENFANTS (composantes/outcomes)
                 if($this->route('projet')){
                     $projet = Projet::findByKey($this->route('projet'));
@@ -105,8 +105,12 @@ class UpdateProjetRequest extends FormRequest
             'couleur.required' => 'La couleur du projet est obligatoire.',
             'poids.required' => 'Le poids du projet est obligatoire.',
             'ville.required' => 'La ville du projet est obligatoire.',
-            'budjetNational.required' => 'Le budget national du projet est obligatoire.',
-            'pret.required' => 'Le pret effectué du projet est obligatoire.',
+            'budgetNational.required' => 'Le fond propre du projet est obligatoire.',
+            'budgetNational.integer' => 'Le fond propre doit être un entier.',
+            'budgetNational.max' => 'Le fond propre ne peut pas dépasser 9 999 999 999 999 CFA.',
+            'pret.required' => 'Le montant de la subvention du projet est obligatoire.',
+            'pret.integer' => 'Le montant de la subvention doit être un entier.',
+            'pret.max' => 'Le montant de la subvention ne peut pas dépasser 9 999 999 999 999 CFA.',
             'bailleurId.required' => 'Le bailleur du projet est obligatoire.',
             'programmeId.required' => 'Le programme du projet est obligatoire.',
             'debut.required' => 'La date de début du programme est obligatoire.',

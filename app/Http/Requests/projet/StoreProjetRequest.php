@@ -49,16 +49,16 @@ class StoreProjetRequest extends FormRequest
             'image' => ["file", 'mimes:jpg,png,jpeg,webp,svg,ico', "max:2048"],
             'fichier' => 'nullable|array',
             'fichier.*' => ["file", 'mimes:txt,doc,docx,xls,csv,xlsx,ppt,pdf,jpg,png,jpeg,mp3,wav,mp4,mov,avi,mkv', "max:2048"],
-            'budgetNational' => 'required|integer|min:0',
-            'pret' => ['required', 'integer', 'min:0', function(){
+            'budgetNational' => 'required|integer|min:0|max:9999999999999',
+            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->programmeId){
                     $programme = Programme::findByKey($this->programmeId);
                     $budgetNational = $programme->budgetNational;
-                    $totalBudgetNational = $programme->projets->sum('pret');
+                    $totalPret = $programme->projets->sum('pret');
 
-                    if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
+                    if(($totalPret + $this->pret) > $budgetNational)
                     {
-                        throw ValidationException::withMessages(["budgetNational" => "Le total des fonds alloues aux projets de ce programme ne peut pas dépasser le montant du fond alloue au programme"], 1);
+                        throw ValidationException::withMessages(["pret" => "Le total des montants de subvention alloues aux projets de ce programme ne peut pas dépasser le montant de la subvention du programme"], 1);
                     }
                 }
             }],
@@ -80,9 +80,13 @@ class StoreProjetRequest extends FormRequest
             'couleur.required' => 'La couleur du projet est obligatoire.',
             'poids.required' => 'Le poids du projet est obligatoire.',
             'ville.required' => 'La ville du projet est obligatoire.',
-            'budjetNational.required' => 'Le budget national du projet est obligatoire.',
+            'budgetNational.required' => 'Le fond propre du projet est obligatoire.',
+            'budgetNational.integer' => 'Le fond propre doit être un entier.',
+            'budgetNational.max' => 'Le fond propre ne peut pas dépasser 9 999 999 999 999 CFA.',
             'description.required' => 'La description du projet est obligatoire.',
-            'pret.required' => 'Le pret effectué du projet est obligatoire.',
+            'pret.required' => 'Le montant de la subvention du projet est obligatoire.',
+            'pret.integer' => 'Le montant de la subvention doit être un entier.',
+            'pret.max' => 'Le montant de la subvention ne peut pas dépasser 9 999 999 999 999 CFA.',
             'bailleurId.required' => 'Le bailleur du projet est obligatoire.',
             'debut.required' => 'La date de début du programme est obligatoire.',
             'fin.required' => 'La date de fin du programme est obligatoire.',

@@ -61,7 +61,7 @@ class StoreComposanteRequest extends FormRequest
             'projetId' => [ Rule::requiredIf(!$this->composanteId), 'bail', new HashValidatorRule(new Projet())],
             'composanteId' => [ Rule::requiredIf(!$this->projetId), 'bail', new HashValidatorRule(new Composante())],
 
-            'pret' => ['required', 'integer', 'min:0', function(){
+            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
                     if($projet){
@@ -89,7 +89,7 @@ class StoreComposanteRequest extends FormRequest
                 }
             }],
 
-            'budgetNational' => ['required', 'integer', 'min:0', function(){
+            'budgetNational' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->projetId){
                     $projet = Projet::find($this->projetId);
                     if($projet){
@@ -130,8 +130,12 @@ class StoreComposanteRequest extends FormRequest
         return [
             'nom.required' => 'Le nom de la composante est obligatoire.',
             'poids.required' => 'Le poids de la composante est obligatoire.',
-            'budjetNational.required' => 'Le budget national de la composante est obligatoire.',
-            'pret.required' => 'Le pret effectué de la composante est obligatoire.',
+            'budgetNational.required' => 'Le fond propre de la composante est obligatoire.',
+            'budgetNational.integer' => 'Le fond propre doit être un entier.',
+            'budgetNational.max' => 'Le fond propre ne peut pas dépasser 9 999 999 999 999 CFA.',
+            'pret.required' => 'Le montant de la subvention de la composante est obligatoire.',
+            'pret.integer' => 'Le montant de la subvention doit être un entier.',
+            'pret.max' => 'Le montant de la subvention ne peut pas dépasser 9 999 999 999 999 CFA.',
             'projetId.required' => 'Le projet est obligatoire.',
             'composanteId.required' => 'La composante de la sous composante est obligatoire.'
         ];

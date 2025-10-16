@@ -32,7 +32,7 @@ class UpdatePlanDecaissementRequest extends FormRequest
             'trimestre' => 'required|integer|min:1|max:4',
             'annee' => 'required|integer',
             'activiteId' => ['required',  new HashValidatorRule(new Activite())],
-            'pret' => ['required', 'integer', 'min:0', function(){
+            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
 
                 if($this->activiteId){
                     $activite = Activite::find($this->activiteId);
@@ -41,12 +41,12 @@ class UpdatePlanDecaissementRequest extends FormRequest
 
                     if(($totalPret + $this->pret) > $pret)
                     {
-                        throw ValidationException::withMessages(["budgetNational" => "Le total des prêts des plans de décaissement d'une activité ne peut pas dépasser celui de l'activité"], 1);
+                        throw ValidationException::withMessages(["pret" => "Le total des montants de subvention des plans de décaissement de cette activité ne peut pas dépasser le montant de la subvention de l'activité"], 1);
                     }
                 }
             }],
 
-            'budgetNational' => ['required', 'integer', 'min:0', function(){
+            'budgetNational' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
 
                 if($this->activiteId){
                     $activite = Activite::find($this->activiteId);
@@ -55,7 +55,7 @@ class UpdatePlanDecaissementRequest extends FormRequest
 
                     if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
                     {
-                        throw ValidationException::withMessages(["budgetNational" => "Le total des bugdets nationaux des plans de décaissement d'une activité ne peut pas dépasser celui de l'activité"], 1);
+                        throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres des plans de décaissement de cette activité ne peut pas dépasser le fond propre de l'activité"], 1);
                     }
                 }
             }]
@@ -74,8 +74,12 @@ class UpdatePlanDecaissementRequest extends FormRequest
             'trimestre.min' => 'La valeur minimal pour le trimestre est 1',
             'trimestre.max' => 'La valeur maximal pour le trimestre est 4',
             'annee.required' => 'L\'annee est obligatoire.',
-            'budgetNational.required' => 'Le budget national est obligatoire.',
-            'pret.required' => 'Le pret est obligatoire.',
+            'budgetNational.required' => 'Le fond propre est obligatoire.',
+            'budgetNational.integer' => 'Le fond propre doit être un entier.',
+            'budgetNational.max' => 'Le fond propre ne peut pas dépasser 9 999 999 999 999 CFA.',
+            'pret.required' => 'Le montant de la subvention est obligatoire.',
+            'pret.integer' => 'Le montant de la subvention doit être un entier.',
+            'pret.max' => 'Le montant de la subvention ne peut pas dépasser 9 999 999 999 999 CFA.',
             'activiteId.required' => 'L\'activité est obligatoire.'
         ];
     }

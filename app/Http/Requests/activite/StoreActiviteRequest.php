@@ -60,7 +60,7 @@ class StoreActiviteRequest extends FormRequest
             //'structureResponsableId' => ['required', new HashValidatorRule(new User())],
             //'structureAssocieId' => ['required', new HashValidatorRule(new User())],
 
-            'pret' => ['required', 'integer', 'min:0', function(){
+            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->composanteId){
                     $composante = Composante::find($this->composanteId);
                     if($composante){
@@ -75,7 +75,7 @@ class StoreActiviteRequest extends FormRequest
                 }
             }],
 
-            'budgetNational' => ['required', 'integer', 'min:0', function(){
+            'budgetNational' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->composanteId){
                     $composante = Composante::find($this->composanteId);
                     if($composante){
@@ -105,8 +105,12 @@ class StoreActiviteRequest extends FormRequest
             'debut.required' => 'La date de debut de l\'activité est obligatoire.',
             'fin.required' => 'La date de fin de l\'activité est obligatoire.',
             'type.required' => 'Le type de l\'activité est obligatoire.',
-            'budjetNational.required' => 'Le budget national de l\'activité est obligatoire.',
-            'pret.required' => 'Le pret effectué de l\'activité est obligatoire.',
+            'budgetNational.required' => 'Le fond propre de l\'activité est obligatoire.',
+            'budgetNational.integer' => 'Le fond propre doit être un entier.',
+            'budgetNational.max' => 'Le fond propre ne peut pas dépasser 9 999 999 999 999 CFA.',
+            'pret.required' => 'Le montant de la subvention de l\'activité est obligatoire.',
+            'pret.integer' => 'Le montant de la subvention doit être un entier.',
+            'pret.max' => 'Le montant de la subvention ne peut pas dépasser 9 999 999 999 999 CFA.',
             'tepPrevu.required' => 'Le tep prévu de l\'activité est obligatoire.',
             'userId.required' => 'Le responsable de l\'activité est obligatoire',
             'structureResponsableId.required' => 'La structure responsable de l\'activité est obligatoire',
