@@ -358,7 +358,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                     // Vérifier que la somme totale ne dépasse pas le fond disponible
                     if(($totalBudgetAlloue + $pretProjet) > $fond->fondDisponible){
-                        throw new Exception("La somme des budgets alloués dépasse le fond disponible", 500);
+                        throw new Exception("La somme des budgets alloués dépasse le fond disponible: ". $totalBudgetAlloue . " " . $pretProjet . " " . $fond->fondDisponible, 500);
                     }
                 }
 
