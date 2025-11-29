@@ -6,6 +6,7 @@ use App\Models\Composante;
 use App\Models\Projet;
 use App\Rules\HashValidatorRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -120,6 +121,20 @@ class StoreComposanteRequest extends FormRequest
                 }
             }]
         ];
+    }
+
+    /**
+     * Hook après la validation (si besoin de validations custom).
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            if ($validator->errors()->any()) {
+                Log::warning("Validation failed in CreateUserRequest", [
+                    'errors' => $validator->errors()->toArray()
+                ]);
+            }
+        });
     }
 
 
