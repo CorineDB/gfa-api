@@ -62,10 +62,9 @@ class StoreComposanteRequest extends FormRequest
             'nom' => 'required',
             'poids' => ['nullable', 'numeric', 'min:0'],
             'projetId' => [ Rule::requiredIf(!$this->composanteId), 'bail', new HashValidatorRule(new Projet())],
-            'composanteId' => [ Rule::requiredIf(!$this->projetId), 'bail', new HashValidatorRule(new Composante())],
+            'composanteId' => [ Rule::requiredIf(!$this->projetId), 'bail', new HashValidatorRule(new Composante())],/*
 
             'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
-                dd($this->projetId);
                 if($this->projetId){
                     $projet = Projet::findByKey($this->projetId);
                     if($projet){
@@ -119,7 +118,7 @@ class StoreComposanteRequest extends FormRequest
                         }
                     }
                 }
-            }]
+            }] */
         ];
     }
 
