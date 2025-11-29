@@ -22,12 +22,11 @@ class StoreComposanteRequest extends FormRequest
 
         //dd($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion")));
 
-        dd($user->role);
-
-
         // UG et Organisation avec permission peuvent créer uniquement pour LEUR projet (projetable)
         if($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
             $projet = null;
+
+            dd($this->projetId);
 
             // Si c'est une composante directe du projet
             if($this->projetId) {
