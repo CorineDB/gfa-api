@@ -41,7 +41,6 @@ class StoreComposanteRequest extends FormRequest
                 if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
                     return $projet->projetable_id === $user->organisation->id;
                 }
-                dd($projet);
                 if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
                     return $projet->projetable_id === $user->uniteDeGestion->id;
                 }
@@ -66,7 +65,7 @@ class StoreComposanteRequest extends FormRequest
 
             'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->projetId){
-                    $projet = Projet::find($this->projetId);
+                    $projet = Projet::findByKey($this->projetId);
                     if($projet){
                         $pret = $projet->pret;
                         $totalpret = $projet->composantes->sum('pret');
@@ -79,7 +78,7 @@ class StoreComposanteRequest extends FormRequest
                 }
 
                 elseif($this->composanteId){
-                    $composante = Composante::find($this->composanteId);
+                    $composante = Composante::findByKey($this->composanteId);
                     if($composante){
                         $pret = $composante->pret;
                         $totalpret = $composante->sousComposantes->sum('pret');
@@ -94,7 +93,7 @@ class StoreComposanteRequest extends FormRequest
 
             'budgetNational' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
                 if($this->projetId){
-                    $projet = Projet::find($this->projetId);
+                    $projet = Projet::findByKey($this->projetId);
                     if($projet){
                         $budgetNational = $projet->budgetNational;
                         $totalBudgetNational = $projet->composantes->sum('budgetNational');
@@ -107,7 +106,7 @@ class StoreComposanteRequest extends FormRequest
                 }
 
                 elseif($this->composanteId){
-                    $composante = Composante::find($this->composanteId);
+                    $composante = Composante::findByKey($this->composanteId);
                     if($composante){
                         $budgetNational = $composante->budgetNational;
                         $totalBudgetNational = $composante->sousComposantes->sum('budgetNational');
