@@ -64,6 +64,7 @@ class StoreComposanteRequest extends FormRequest
             'composanteId' => [ Rule::requiredIf(!$this->projetId), 'bail', new HashValidatorRule(new Composante())],
 
             'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
+                dd($this->projetId);
                 if($this->projetId){
                     $projet = Projet::findByKey($this->projetId);
                     if($projet){
