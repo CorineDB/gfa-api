@@ -129,6 +129,7 @@ class StoreComposanteRequest extends FormRequest
     public function withValidator($validator): void
     {
         $validator->after(function ($validator) {
+            dd("ICI");
             if ($validator->errors()->any()) {
                 Log::warning("Validation failed in CreateUserRequest", [
                     'errors' => $validator->errors()->toArray()
