@@ -60,6 +60,7 @@ class ComposanteController extends Controller
      */
     public function store(StoreComposanteRequest $request)
     {
+        dd($request->validated());
         return $this->composanteService->create($request->all());
     }
 
