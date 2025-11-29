@@ -26,8 +26,6 @@ class StoreComposanteRequest extends FormRequest
         if($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
             $projet = null;
 
-            dd($this->projetId);
-
             // Si c'est une composante directe du projet
             if($this->projetId) {
                 $projet = Projet::find($this->projetId);
@@ -38,8 +36,10 @@ class StoreComposanteRequest extends FormRequest
                 $projet = $composante ? $composante->projet : null;
             }
 
+            dump($projet);
             // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
             if($projet) {
+                dd($projet);
                 if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
                     return $projet->projetable_id === $user->organisation->id;
                 }
