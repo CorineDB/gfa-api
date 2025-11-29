@@ -28,6 +28,7 @@ class StoreComposanteRequest extends FormRequest
 
             // Si c'est une composante directe du projet
             if($this->projetId) {
+                dd("HER");
                 $projet = Projet::find($this->projetId);
             }
             // Si c'est une sous-composante
