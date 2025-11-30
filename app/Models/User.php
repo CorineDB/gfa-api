@@ -155,7 +155,7 @@ class User extends Authenticatable
 
     public function uniteeDeGestion()
     {
-        return $this->profilable_type === UniteeDeGestion::class ? $this->profilable : null;
+        return $this->profilable_type === UniteeDeGestion::class ? $this->profilable() : null;
         return $this->morphTo()->where("profilable_type", get_class(new UniteeDeGestion()));
     }
 
