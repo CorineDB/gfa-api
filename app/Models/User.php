@@ -89,7 +89,7 @@ class User extends Authenticatable
                     'nom' => time() . '::' . $user->nom,
                     'contact' => time() . '::' . $user->contact
                 ]);
-                
+
                 $user->roles()->detach();
 
                 DB::commit();
@@ -102,7 +102,7 @@ class User extends Authenticatable
         });
     }
 
- 
+
     /**
      * The channels the user receives notification broadcasts on.
      */
@@ -138,6 +138,7 @@ class User extends Authenticatable
 
     public function organisation()
     {
+        return $this->profilable_type === Organisation::class ? $this->profilable : null;
         return $this->morphTo()->where("profilable_type", get_class(new Organisation()));
     }
 

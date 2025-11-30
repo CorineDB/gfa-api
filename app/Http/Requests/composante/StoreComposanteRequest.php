@@ -37,7 +37,7 @@ class StoreComposanteRequest extends FormRequest
                 $projet = $composante ? $composante->projet : null;
             }
 
-            dump($user->organisation);
+            dump($user->uniteDeGestion);
             dd($user->profilable);
             // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
             if($projet) {
