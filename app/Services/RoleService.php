@@ -106,7 +106,7 @@ class RoleService extends BaseService implements RoleServiceInterface
             else{
                 $roleableType = $user->profilable ? get_class($user->profilable) : auth()->user()->profilable_type;
                 $roleableId   = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
-            
+
                 $attributs = array_merge($attributs, [
                     'roleable_type' => $roleableType,
                     'roleable_id'   => $roleableId,
@@ -198,7 +198,7 @@ class RoleService extends BaseService implements RoleServiceInterface
 
                         $roleableType = $user->profilable ? get_class($user->profilable) : auth()->user()->profilable_type;
                         $roleableId   = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
-                    
+
                         $attributs = array_merge($attributs, [
                             'roleable_type' => $roleableType,
                             'roleable_id'   => $roleableId,
