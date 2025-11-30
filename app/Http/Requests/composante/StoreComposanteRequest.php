@@ -37,7 +37,7 @@ class StoreComposanteRequest extends FormRequest
                 $projet = $composante ? $composante->projet : null;
             }
 
-            dump($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation"));
+            dump($user->organisation);
             dd($user->profilable);
             // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
             if($projet) {
