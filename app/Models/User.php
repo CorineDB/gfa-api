@@ -139,6 +139,7 @@ class User extends Authenticatable
 
     public function organisation()
     {
+        return $this->morphTo();
         return $this->profilable_type === Organisation::class ? $this->profilable : null;
         return $this->morphTo()->where("profilable_type", get_class(new Organisation()));
     }
@@ -156,6 +157,7 @@ class User extends Authenticatable
 
     public function uniteeDeGestion():?MorphTo
     {
+        return $this->morphTo();
         return $this->profilable_type === UniteeDeGestion::class ? $this->profilable() : null;
         return $this->morphTo()->where("profilable_type", get_class(new UniteeDeGestion()));
     }
