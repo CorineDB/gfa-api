@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Exception;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
@@ -153,7 +154,7 @@ class User extends Authenticatable
         return $this->morphTo()->where("profilable_type", get_class(new MissionDeControle()));
     }
 
-    public function uniteeDeGestion()
+    public function uniteeDeGestion():?MorphTo
     {
         return $this->profilable_type === UniteeDeGestion::class ? $this->profilable() : null;
         return $this->morphTo()->where("profilable_type", get_class(new UniteeDeGestion()));
