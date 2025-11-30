@@ -21,8 +21,6 @@ class StoreComposanteRequest extends FormRequest
     {
         $user = request()->user();
 
-        //dd($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion")));
-
         // UG et Organisation avec permission peuvent créer uniquement pour LEUR projet (projetable)
         if($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
             $projet = null;
@@ -37,20 +35,16 @@ class StoreComposanteRequest extends FormRequest
                 $projet = $composante ? $composante->projet : null;
             }
 
-            dump($user->uniteDeGestion);
-            dd($user->profilable);
             // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
             if($projet) {
                 if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
-                    dd("HERE", $projet->projetable_id, $user->organisation->id);
-                    return $projet->projetable_id === $user->organisation->id;
+                    return $projet->projetable_id === $user->profilable->id;
                 }
                 if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
-                    return $projet->projetable_id === $user->uniteDeGestion->id;
+                    return $projet->projetable_id === $user->profilable->id;
                 }
             }
         }
-        dd("HERE");
 
         return false;
     }
