@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UpdateColumnsOfSitesTable extends Migration
+class EditColumnsOfSitesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class UpdateColumnsOfSitesTable extends Migration
      */
     public function up()
     {
-        
+
         if(Schema::hasTable('sites')){
             Schema::table('sites', function (Blueprint $table) {
 
