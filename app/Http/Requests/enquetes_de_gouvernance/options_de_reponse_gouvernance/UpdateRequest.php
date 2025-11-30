@@ -31,7 +31,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'libelle'  => ['sometimes','max:255', Rule::unique('options_de_reponse_gouvernance', 'libelle')->where("programmeId", auth()->user()->programmeId)->ignore($this->option_de_reponse_gouvernance)->whereNull('deleted_at')],
+            'libelle'  => ['sometimes','max:255', Rule::unique('options_de_reponse_gouvernance', 'libelle')->where('type', $this->input('type'))->where("programmeId", auth()->user()->programmeId)->ignore($this->option_de_reponse_gouvernance)->whereNull('deleted_at')],
 
             'type'          => 'required|string|in:factuel,perception',  // Ensures the value is either 'factuel' or 'perception'
             'description' => 'sometimes|nullable|max:255'
