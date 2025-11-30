@@ -58,7 +58,7 @@ class StoreComposanteRequest extends FormRequest
     {
         return [
             'nom' => 'required',
-            'poids' => ['nullable', 'numeric', 'min:0'],/*
+            'poids' => ['nullable', 'numeric', 'min:0'],
             'projetId' => [ Rule::requiredIf(!$this->composanteId), 'bail', new HashValidatorRule(new Projet())],
             'composanteId' => [ Rule::requiredIf(!$this->projetId), 'bail', new HashValidatorRule(new Composante())],
 
@@ -116,25 +116,9 @@ class StoreComposanteRequest extends FormRequest
                         }
                     }
                 }
-            }] */
+            }]
         ];
     }
-
-    /**
-     * Hook après la validation (si besoin de validations custom).
-     */
-    public function withValidator($validator): void
-    {
-        $validator->after(function ($validator) {
-            dd("ICI");
-            if ($validator->errors()->any()) {
-                Log::warning("Validation failed in CreateUserRequest", [
-                    'errors' => $validator->errors()->toArray()
-                ]);
-            }
-        });
-    }
-
 
     /**
      * Get the error messages for the defined validation rules.
