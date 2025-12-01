@@ -444,6 +444,9 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             if (!empty($sourceDeVerificationId) && $sourceDeVerificationId != 'null') {
                                 $rule = new HashValidatorRule(new EnqSourceDeVerification());
 
+                                throw new \Exception("ESt" . $sourceDeVerificationId, 422);
+
+
                                 if (!$rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId)) {
                                     $validator->errors()->add(
                                         "factuel.response_data.$i.sourceDeVerificationId",
