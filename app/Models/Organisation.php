@@ -342,8 +342,9 @@ class Organisation extends Model
     public function getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId)
     {
         // Fetch submissions for the organisation
-        $factualSubmission = $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
+        $factualSubmission = $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->count();
 
+        dd("factualCompletion " . $factualSubmission);
         // Calculate factual completion percentage
         return $factualSubmission ? round($factualSubmission->pourcentage_evolution, 2) : 0;
     }
@@ -471,7 +472,6 @@ class Organisation extends Model
         // ========== NOUVEAU CODE (CORRIGÉ) ==========
         $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->count();
 
-        dd($evaluation_de_gouvernance);
         // Si l'évaluation n'existe pas, retourner 0 au lieu de null
         if(!$evaluation_de_gouvernance){
             return 0;
@@ -485,6 +485,8 @@ class Organisation extends Model
             // Final weighted completion percentage (limité à 100%)
             return round(min(100, $factualCompletion), 2);
         }
+
+        dd("Here 0");
 
         // Cas 4: Aucun formulaire disponible
         return 0;
