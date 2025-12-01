@@ -9,6 +9,8 @@ use Illuminate\Validation\ValidationException;
 
 class StoreActiviteRequest extends FormRequest
 {
+    protected $composant = null;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,6 +27,7 @@ class StoreActiviteRequest extends FormRequest
 
                 if ($composante) {
                     $projet = $composante->projet;
+                    $this->composant = $composante;
 
                     // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
                     if ($projet) {
@@ -55,10 +58,7 @@ class StoreActiviteRequest extends FormRequest
             'debut' => 'required|date|date_format:Y-m-d',
             'fin' => 'required|date|date_format:Y-m-d|after_or_equal:debut',
             'type' => 'required|max:255',
-            //'userId' => ['required', new HashValidatorRule(new User())],
             'composanteId' => ['required', new HashValidatorRule(new Composante())],
-            //'structureResponsableId' => ['required', new HashValidatorRule(new User())],
-            //'structureAssocieId' => ['required', new HashValidatorRule(new User())],
 
             'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function () {
                 if ($this->composanteId) {

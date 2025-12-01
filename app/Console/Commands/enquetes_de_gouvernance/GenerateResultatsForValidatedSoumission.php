@@ -121,8 +121,22 @@ class GenerateResultatsForValidatedSoumission extends Command
             $evaluationDeGouvernance->formulaire_factuel_de_gouvernance(),
             $organisationId
         );
+        $this->info("✅ Résultats factuel {$indice_factuel} pour organisation ID: {$organisationId} : {$results} ");
 
         $this->updateOrCreateFicheDeSynthese($evaluationDeGouvernance, $organisationId, 'factuel', [
+            'type' => 'factuel',
+            'indice_de_gouvernance' => $indice_factuel,
+            'resultats' => $results,
+            'synthese' => $synthese,
+            'evaluatedAt' => now(),
+            'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id,
+            'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id,
+            'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()),
+            'organisationId' => $organisationId,
+            'programmeId' => $evaluationDeGouvernance->programmeId
+        ]);
+
+        $this->info("✅ Fiche synthese factuel : " . [
             'type' => 'factuel',
             'indice_de_gouvernance' => $indice_factuel,
             'resultats' => $results,

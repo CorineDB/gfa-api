@@ -21,7 +21,7 @@ class UpdateActiviteRequest extends FormRequest
         $user = request()->user();
 
         // UG et Organisation avec permission peuvent modifier uniquement pour LEUR projet (projetable)
-        if($user->hasPermissionTo("modifier-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+        if ($user->hasPermissionTo("modifier-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
 
             $activite = $this->route('activite');
 
@@ -31,16 +31,16 @@ class UpdateActiviteRequest extends FormRequest
                 }
             }
 
-            if($activite) {
+            if ($activite) {
                 $composante = $activite->composante;
                 $projet = $composante ? $composante->projet : null;
 
                 // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
-                if($projet) {
-                    if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                if ($projet) {
+                    if ($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
                         return $projet->projetable_id === $user->profilable->id;
                     }
-                    if($projet->projetable_type === 'App\Models\UniteeDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                    if ($projet->projetable_type === 'App\Models\UniteeDeGestion' && $user->hasRole("unitee-de-gestion")) {
                         return $projet->projetable_id === $user->profilable->id;
                     }
                 }
@@ -50,18 +50,17 @@ class UpdateActiviteRequest extends FormRequest
         return false;
     }
 
-    public function prepareForValidation(){
-        if(!is_object($this->activite))
-        {
-            if(($activite = Activite::findByKey($this->activite))){
-                throw ValidationException::withMessages(["activite" =>"Activite Inconnue" ], 1);
+    public function prepareForValidation()
+    {
+        if (!is_object($this->activite)) {
+            if (($activite = Activite::findByKey($this->activite))) {
+                throw ValidationException::withMessages(["activite" => "Activite Inconnue"], 1);
             }
 
             $this->merge([
                 "activite" => $activite->id
             ]);
-        }
-        else{
+        } else {
             $this->merge([
                 "activite" => $this->activite->id
             ]);
@@ -86,30 +85,28 @@ class UpdateActiviteRequest extends FormRequest
             //'structureResponsableId' => ['sometimes', 'required', new HashValidatorRule(new User())],
             //'structureAssocieId' => ['sometimes', 'required', new HashValidatorRule(new User())],
 
-            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
-                if($this->composanteId){
+            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function () {
+                if ($this->composanteId) {
                     $composante = Composante::find($this->composanteId);
-                    if($composante){
+                    if ($composante) {
                         $pret = $composante->pret;
                         $totalpret = $composante->activites->where('id', '!=', $this->activite)->sum('pret');
 
-                        if(($totalpret + $this->pret) > $pret)
-                        {
+                        if (($totalpret + $this->pret) > $pret) {
                             throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux activites de cet output ne peuvent pas dépasser le montant du budget alloue a l'output"], 1);
                         }
                     }
                 }
             }],
 
-            'budgetNational' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
-                if($this->composanteId){
+            'budgetNational' => ['required', 'integer', 'min:0', 'max:9999999999999', function () {
+                if ($this->composanteId) {
                     $composante = Composante::find($this->composanteId);
-                    if($composante){
+                    if ($composante) {
                         $budgetNational = $composante->budgetNational;
                         $totalBudgetNational = $composante->activites->where('id', '!=', $this->activite)->sum('budgetNational');
 
-                        if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
-                        {
+                        if (($totalBudgetNational + $this->budgetNational) > $budgetNational) {
                             throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres des activites ne peuvent pas dépasser le montant du fond propre de l'output."], 1);
                         }
                     }
@@ -123,7 +120,7 @@ class UpdateActiviteRequest extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    /* public function messages()
     {
         return [
             'nom.required' => 'Le nom de l\'activité est obligatoire.',
@@ -141,6 +138,55 @@ class UpdateActiviteRequest extends FormRequest
             'structureResponsableId.required' => 'La structure responsable de l\'activité est obligatoire',
             'structureAssocieId.required' => 'La structure associé de l\'activité est obligatoire',
             'composanteId.required' => 'La composante de l\'activité est obligatoire',
+        ];
+    } */
+
+    public function messages()
+    {
+        return [
+            'nom.required' => "Le nom de l'activité est obligatoire.",
+            'nom.sometimes' => "Le nom de l'activité est obligatoire.",
+
+            'poids.numeric' => "Le poids de l'activité doit être un nombre.",
+            'poids.min' => "Le poids de l'activité ne peut pas être négatif.",
+
+            'debut.required' => "La date de début de l'activité est obligatoire.",
+            'debut.date' => "La date de début doit être une date valide.",
+            'debut.date_format' => "La date de début doit être au format Y-m-d.",
+
+            'fin.required' => "La date de fin de l'activité est obligatoire.",
+            'fin.date' => "La date de fin doit être une date valide.",
+            'fin.date_format' => "La date de fin doit être au format Y-m-d.",
+            'fin.after_or_equal' => "La date de fin doit être postérieure ou égale à la date de début.",
+
+            'type.required' => "Le type de l'activité est obligatoire.",
+            'type.max' => "Le type ne peut pas dépasser 255 caractères.",
+
+            'pret.required' => "Le montant de la subvention est obligatoire.",
+            'pret.integer' => "Le montant de la subvention doit être un entier.",
+            'pret.min' => "Le montant de la subvention doit être supérieur ou égal à 0.",
+            'pret.max' => "Le montant de la subvention ne peut pas dépasser 9 999 999 999 999.",
+
+            'budgetNational.required' => "Le fond propre de l'activité est obligatoire.",
+            'budgetNational.integer' => "Le fond propre doit être un entier.",
+            'budgetNational.min' => "Le fond propre doit être supérieur ou égal à 0.",
+
+            'composanteId.required' => "La composante ou l'output parent est obligatoire.",
+            'composanteId.*' => "La composante spécifiée est invalide.",
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'nom' => "nom de l'activité",
+            'poids' => "poids de l'activité",
+            'debut' => "date de début de l'activité",
+            'fin' => "date de fin de l'activité",
+            'type' => "type d'activité",
+            'pret' => "montant de la subvention pour le financement de l'activité",
+            'budgetNational' => "fond propre de financement de l'activité",
+            'composanteId' => "output parent",
         ];
     }
 }
