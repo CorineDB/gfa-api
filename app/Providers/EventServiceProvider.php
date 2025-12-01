@@ -10,6 +10,8 @@ use App\Models\Notification;
 use App\Observers\LogActivityObserver;
 use App\Observers\UserObserver;
 use App\Listeners\UserLogin;
+use App\Models\UniteeDeGestion;
+use App\Observers\UniteeDeGestionObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -40,7 +42,7 @@ class EventServiceProvider extends ServiceProvider
     {
         LogActivity::observe(LogActivityObserver::class);
         User::observe(UserObserver::class);
-
+        UniteeDeGestion::observe(UniteeDeGestionObserver::class);
         Event::listen(queueable(function (Login $event) {
             GenererPta::dispatch($event->programme)->delay(now());
         })->delay(now()->addSeconds(10)));

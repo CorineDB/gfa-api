@@ -2,6 +2,7 @@
 
 namespace App\Observers;
 
+use App\Models\enquetes_de_gouvernance\OptionDeReponseGouvernance;
 use App\Models\UniteeDeGestion;
 
 class UniteeDeGestionObserver
@@ -14,38 +15,51 @@ class UniteeDeGestionObserver
      */
     public function created(UniteeDeGestion $uniteeDeGestion)
     {
-        $options = [
-            'programmeId' => $uniteeDeGestion->programmeId,
-            'factuel' => [
-                // options de reponse factuel de gouvernance
-                ['slug' => 'oui', 'libelle' => 'Oui', 'valeur' => 1, 'soumissionConfiguration' => ['preuveIsRequired' => true, 'descriptionIsRequired' => false, 'sourceDeVerificationIsRequired' => true]],
-                ['slug' => 'partiellement', 'libelle' => 'Partiellement', 'valeur' => 0.5, 'preuveIsRequired' => false, 'descriptionIsRequired' => true, 'sourceDeVerificationIsRequired' => false],
-                ['slug' => 'non', 'libelle' => 'Non', 'valeur' => 0, 'preuveIsRequired' => false, 'descriptionIsRequired' => false, 'sourceDeVerificationIsRequired' => false],
-            ],
-            'perception' => [
-                // options de reponse perception de gouvernance
-                ['slug' => 'ne-peux-repondre', 'libelle' => 'Ne peux répondre', 'valeur' => 0],
-                ['slug' => 'pas-du-tout', 'libelle' => 'Pas du tout', 'valeur' => 0],
-                ['slug' => 'faiblement', 'libelle' => 'Faiblement', 'valeur' => 0.25],
-                ['slug' => 'moyennement', 'libelle' => 'Moyennement', 'valeur' => 0.5],
-                ['slug' => 'dans-une-grande-mesure', 'libelle' => 'Dans une grande mesure', 'valeur' => 0.75],
-                ['slug' => 'totalement', 'libelle' => 'Totalement', 'valeur' => 1],
-            ],
-        ];
-
-        /* foreach ($options['perception'] as $option) {
-            $uniteeDeGestion->programme->options_de_reponse_de_perception_gouvernance()->create([
-                'libelle' => $option['intitule'],
-                'type' => 'perception',
-            ]);
+        // On vérifie qu'un programme est bien lié
+        if (empty($uniteeDeGestion->programmeId)) {
+            return;
         }
 
-        foreach ($options['factuel'] as $option) {
-            $uniteeDeGestion->programme->options_de_reponse_factuel_gouvernance()->create([
-                'libelle' => $option['intitule'],
-                'type' => 'factuel',
-            ]);
-        } */
+        $programmeId = $uniteeDeGestion->programmeId;
+
+        // 1. Définition des options FACTUELLES
+        $optionsFactuelles = [
+            ['slug' => 'oui', 'libelle' => 'Oui'],
+            ['slug' => 'non', 'libelle' => 'Non'],
+            ['slug' => 'partiellement', 'libelle' => 'Partiellement'],
+        ];
+
+        foreach ($optionsFactuelles as $option) {
+            OptionDeReponseGouvernance::firstOrCreate(
+                [
+                    'libelle'     => $option['libelle'],
+                    'slug'        => $option['slug'],
+                    'type'        => 'factuel',
+                    'programmeId' => $programmeId,
+                ]
+            );
+        }
+
+        // 2. Définition des options de PERCEPTION
+        $optionsPerception = [
+            ['slug' => 'ne-peux-repondre', 'libelle' => 'Ne peux répondre'],
+            ['slug' => 'pas-du-tout', 'libelle' => 'Pas du tout'],
+            ['slug' => 'faiblement', 'libelle' => 'Faiblement'],
+            ['slug' => 'moyennement', 'libelle' => 'Moyennement'],
+            ['slug' => 'dans-une-grande-mesure', 'libelle' => 'Dans une grande mesure'],
+            ['slug' => 'totalement', 'libelle' => 'Totalement'],
+        ];
+
+        foreach ($optionsPerception as $option) {
+            OptionDeReponseGouvernance::firstOrCreate(
+                [
+                    'libelle'     => $option['libelle'],
+                    'slug'        => $option['slug'],
+                    'type'        => 'perception',
+                    'programmeId' => $programmeId,
+                ]
+            );
+        }
     }
 
     /**
