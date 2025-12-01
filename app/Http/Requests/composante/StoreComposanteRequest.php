@@ -36,14 +36,13 @@ class StoreComposanteRequest extends FormRequest
                 $projet = $composante ? $composante->projet : null;
             }
 
-            dd($projet);
-
             // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
             if ($projet) {
                 if ($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
                     return $projet->projetable_id === $user->profilable->id;
                 }
                 if ($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                    dd($projet->projetable_id, $user->profilable->id);
                     return $projet->projetable_id === $user->profilable->id;
                 }
             }
