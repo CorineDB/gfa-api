@@ -443,6 +443,11 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             // Vérifier que l’ID est valide
                             if (!empty($sourceDeVerificationId) && $sourceDeVerificationId != 'null') {
                                 $rule = new HashValidatorRule(new EnqSourceDeVerification());
+                                throw_if(!$rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId), \Illuminate\Validation\ValidationException::withMessages([
+                                    "factuel.response_data.$i.sourceDeVerificationId" => ["L'ID de la source de vérification est invalide."]
+                                ]));
+                                throw new \Exception($rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId), 1);
+
                                 if (!$rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId)) {
                                     $validator->errors()->add(
                                         "factuel.response_data.$i.sourceDeVerificationId",
