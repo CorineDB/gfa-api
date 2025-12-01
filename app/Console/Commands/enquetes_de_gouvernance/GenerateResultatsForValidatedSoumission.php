@@ -51,7 +51,7 @@ class GenerateResultatsForValidatedSoumission extends Command
         $this->info("📊 Nombre d'évaluations à traiter: {$evaluations->count()}");
 
         $evaluations->each(function ($evaluationDeGouvernance) {
-            $this->line("   → Traitement: {$evaluationDeGouvernance->intitule} (Année: {$evaluationDeGouvernance->annee_exercice})");
+            $this->line("   → Traitement: {$evaluationDeGouvernance->id}  {$evaluationDeGouvernance->intitule} (Année: {$evaluationDeGouvernance->annee_exercice})");
             $this->evaluationDeGouvernance = $evaluationDeGouvernance;
             $this->generateResultForEnquete($evaluationDeGouvernance);
         });
