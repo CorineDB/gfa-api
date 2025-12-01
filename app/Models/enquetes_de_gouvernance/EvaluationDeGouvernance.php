@@ -706,9 +706,10 @@ class EvaluationDeGouvernance extends Model
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
                 $percent = $organisation->getFactuelSubmissionRateAttribute($this->id);
+                dd($percent == 100);
             return $percent == 100;
             return $organisation->getFactuelSubmissionRateAttribute($this->id) == 100;
-        })/* ->count() */;
+        })/*->count() */;
         // Ancienne version :
         // return $this->soumissionsFactuel()->where('statut', true)->count();
     }
