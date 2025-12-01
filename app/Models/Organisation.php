@@ -344,7 +344,6 @@ class Organisation extends Model
         // Fetch submissions for the organisation
         $factualSubmission = $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
 
-        dd("factualCompletion " . $factualSubmission->pourcentage_evolution);
         // Calculate factual completion percentage
         return $factualSubmission ? round($factualSubmission->pourcentage_evolution, 2) : 0;
     }
@@ -482,6 +481,7 @@ class Organisation extends Model
             // Calculate factual completion percentage
             $factualCompletion = $this->getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId) ?? 0;
 
+             dd("factualCompletion $factualCompletion");
             // Final weighted completion percentage (limité à 100%)
             return round(min(100, $factualCompletion), 2);
         }
