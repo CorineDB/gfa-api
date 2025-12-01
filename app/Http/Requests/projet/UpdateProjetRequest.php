@@ -94,7 +94,7 @@ class UpdateProjetRequest extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    /* public function messages()
     {
         return [
             'nom.required' => 'Le nom du projet est obligatoire.',
@@ -113,7 +113,7 @@ class UpdateProjetRequest extends FormRequest
             'debut.required' => 'La date de début du programme est obligatoire.',
             'fin.required' => 'La date de fin du programme est obligatoire.',
         ];
-    }
+    } */
     public function messages()
     {
         return [
