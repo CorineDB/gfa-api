@@ -761,8 +761,7 @@ class EvaluationDeGouvernance extends Model
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
                 $percent = $organisation->getFactuelSubmissionRateAttribute($this->id);
-                dd($percent);
-            return ($percent !== 100 && $percent != 0);
+                return ($percent != 100 && $percent != 0);
             return $organisation->getFactuelSubmissionRateAttribute($this->id) !== 100;
         })->count();
 
@@ -814,7 +813,7 @@ class EvaluationDeGouvernance extends Model
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
                 $percent = $organisation->getFactuelSubmissionRateAttribute($this->id);
-            return ($percent !== 100 && $percent != 0) ? true : false;
+            return ($percent != 100 && $percent != 0) ? true : false;
         })->count();
 
         // Retourne les soumissions de perception qui sont démarrées mais incomplètes (statut != true)
