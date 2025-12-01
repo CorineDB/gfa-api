@@ -41,7 +41,7 @@ cLass UpdateTacheRequest extends FormRequest
                     if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
                         return $projet->projetable_id === $user->profilable->id;
                     }
-                    if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                    if($projet->projetable_type === 'App\Models\UniteeDeGestion' && $user->hasRole("unitee-de-gestion")) {
                         return $projet->projetable_id === $user->profilable->id;
                     }
                 }
