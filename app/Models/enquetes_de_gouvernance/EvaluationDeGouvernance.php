@@ -601,6 +601,29 @@ class EvaluationDeGouvernance extends Model
 
     public function getPourcentageEvolutionDesSoumissionsFactuelAttribute()
     {
+        return $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
+            // Get the organisation ID of the authenticated user
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If profilable is null or ID is missing, return 0
+            if (!$organisationId) {
+                return 0;
+            }
+
+            // Filter the organisations and sum the 'nbreParticipants' from the pivot table
+            $query->where('organisations.id', $organisationId);
+        })->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            })->get()->map(function ($organisation) {
+            return $organisation->getFactuelSubmissionRateAttribute($this->id);
+        })->avg();
+
+        // Calculate completion for each organization and rank
+        return $this->organisations->map(function ($organisation) {
+            return $organisation->getFactuelSubmissionRateAttribute($this->id);
+        })->avg();
+
         // Avoid division by zero by checking that total soumissions factuel or total participants are non-zero
         if ($this->total_soumissions_factuel == 0 || $this->total_participants_evaluation_factuel == 0) {
             return 0;
@@ -611,6 +634,30 @@ class EvaluationDeGouvernance extends Model
 
     public function getPourcentageEvolutionDesSoumissionsDePerceptionAttribute()
     {
+
+        return $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
+            // Get the organisation ID of the authenticated user
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If profilable is null or ID is missing, return 0
+            if (!$organisationId) {
+                return 0;
+            }
+
+            // Filter the organisations and sum the 'nbreParticipants' from the pivot table
+            $query->where('organisations.id', $organisationId);
+        })->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            })->get()->map(function ($organisation) {
+            return $organisation->getPerceptionSubmissionRateAttribute($this->id);
+        })->avg();
+
+        // Calculate completion for each organization and rank
+        return $this->organisations->map(function ($organisation) {
+            return $organisation->getPerceptionSubmissionRateAttribute($this->id);
+        })->avg();
+
         // Avoid division by zero by checking that total soumissions de perception or total participants are non-zero
         if ($this->total_soumissions_de_perception == 0 || $this->total_participants_evaluation_de_perception == 0) {
             return 0;
