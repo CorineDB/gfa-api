@@ -705,11 +705,8 @@ class EvaluationDeGouvernance extends Model
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
-                $percent = $organisation->getFactuelSubmissionRateAttribute($this->id);
-                dd($percent === 100);
-            return $percent == 100;
             return $organisation->getFactuelSubmissionRateAttribute($this->id) == 100;
-        })/*->count() */;
+        })->count();
         // Ancienne version :
         // return $this->soumissionsFactuel()->where('statut', true)->count();
     }
