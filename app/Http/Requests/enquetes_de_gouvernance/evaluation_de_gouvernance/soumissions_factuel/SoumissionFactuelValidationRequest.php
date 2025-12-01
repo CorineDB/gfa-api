@@ -177,6 +177,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $optionDeReponseId = request()->input('factuel.response_data.*.optionDeReponseId')[$index] ?? null;
 
                                 $formOption = $this->formulaireCache->options_de_reponse()->wherePivot('optionId', $optionDeReponseId)->first();
+                                throw new \Exception("Error Processing Request" . $formOption . " dsfdsf dsfdsf : ". $this->formulaireCache->options_de_reponse, 422);
                             } else {
                                 $fail("Option de reponse introuvable.");
                             }
