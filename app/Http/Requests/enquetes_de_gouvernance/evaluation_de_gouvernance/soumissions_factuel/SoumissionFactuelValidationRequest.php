@@ -452,7 +452,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 else {
                                     $validator->errors()->add(
                                         "factuel.response_data.$i.sourceDeVerificationId",
-                                        "Veuillez preciser la source de verification."
+                                        "Veuillez preciser la source de verification. Vérifier que l’ID est valide"
                                     );
                                 }
                             }
@@ -474,7 +474,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             else {
                                 $validator->errors()->add(
                                     "factuel.response_data.$i.sourceDeVerificationId",
-                                    "Veuillez preciser la source de verification."
+                                    "Veuillez preciser la source de verification. Vérifier source"
                                 );
                             }
                         }
