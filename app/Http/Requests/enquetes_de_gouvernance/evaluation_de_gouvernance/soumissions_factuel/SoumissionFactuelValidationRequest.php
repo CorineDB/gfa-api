@@ -181,6 +181,9 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $fail("Option de reponse introuvable.");
                             }
 
+                            throw new \Exception("Error Processing Request" . $formOption, 1);
+
+
                             if ($formOption) {
 
                                 if ($formOption->pivot->preuveIsRequired) {
