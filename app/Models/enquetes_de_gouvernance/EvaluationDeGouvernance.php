@@ -619,11 +619,6 @@ class EvaluationDeGouvernance extends Model
             return $organisation->getFactuelSubmissionRateAttribute($this->id);
         })->avg();
 
-        // Calculate completion for each organization and rank
-        return $this->organisations->map(function ($organisation) {
-            return $organisation->getFactuelSubmissionRateAttribute($this->id);
-        })->avg();
-
         // Avoid division by zero by checking that total soumissions factuel or total participants are non-zero
         if ($this->total_soumissions_factuel == 0 || $this->total_participants_evaluation_factuel == 0) {
             return 0;
@@ -650,11 +645,6 @@ class EvaluationDeGouvernance extends Model
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->map(function ($organisation) {
-            return $organisation->getPerceptionSubmissionRateAttribute($this->id);
-        })->avg();
-
-        // Calculate completion for each organization and rank
-        return $this->organisations->map(function ($organisation) {
             return $organisation->getPerceptionSubmissionRateAttribute($this->id);
         })->avg();
 
@@ -859,7 +849,7 @@ class EvaluationDeGouvernance extends Model
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
-                $percent = $organisation->getFactuelSubmissionRateAttribute($this->id);
+                $percent = $organisation->getPerceptionSubmissionRateAttribute($this->id);
             return ($percent != 100 && $percent != 0) ? true : false;
         })->count();
 
