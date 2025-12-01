@@ -444,21 +444,18 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             if (!empty($sourceDeVerificationId) && $sourceDeVerificationId != 'null') {
                                 $rule = new HashValidatorRule(new EnqSourceDeVerification());
 
-                                throw new \Exception("ESt" . $sourceDeVerificationId, 422);
-
-
                                 if (!$rule->passes("factuel.response_data.$i.sourceDeVerificationId", $sourceDeVerificationId)) {
                                     $validator->errors()->add(
                                         "factuel.response_data.$i.sourceDeVerificationId",
                                         "La source de vérification est invalide."
                                     );
-                                }
+                                }/*
                                 else {
                                     $validator->errors()->add(
                                         "factuel.response_data.$i.sourceDeVerificationId",
                                         "Veuillez preciser la source de verification. Vérifier que l’ID est valide"
                                     );
-                                }
+                                } */
                             }
                             // Si une source textuelle est fournie → vérifier qu’elle est une string valide et min 10 caractères
                             elseif (!empty($sourceDeVerification)) {
