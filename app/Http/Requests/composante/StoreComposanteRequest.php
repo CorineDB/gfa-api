@@ -20,6 +20,7 @@ class StoreComposanteRequest extends FormRequest
      */
     public function authorize()
     {
+        dd( request()->user());
         $user = request()->user();
 
         ($user/* ->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion")) */);
