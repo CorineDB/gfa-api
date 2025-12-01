@@ -471,6 +471,7 @@ class Organisation extends Model
         // ========== NOUVEAU CODE (CORRIGÉ) ==========
         $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
 
+        return $evaluation_de_gouvernance;
         // Si l'évaluation n'existe pas, retourner 0 au lieu de null
         if(!$evaluation_de_gouvernance){
             return 0;
