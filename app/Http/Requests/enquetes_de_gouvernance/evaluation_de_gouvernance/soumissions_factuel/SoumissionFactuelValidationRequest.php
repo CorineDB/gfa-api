@@ -181,7 +181,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                                 $fail("Option de reponse introuvable.");
                             }
 
-                            throw new \Exception("Error Processing Request" . $formOption, 1);
+                            throw new \Exception("Error Processing Request" . $formOption, 422);
 
 
                             if ($formOption) {
