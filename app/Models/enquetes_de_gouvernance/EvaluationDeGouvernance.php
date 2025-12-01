@@ -811,7 +811,7 @@ class EvaluationDeGouvernance extends Model
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
-            return ($organisation->getPerceptionSubmissionsAttribute($this->id) == 100 && $organisation->getPerceptionSubmissionsAttribute($this->id) !== 0);
+            return ($organisation->getFactuelSubmissionAttribute($this->id) == 100 && $organisation->getFactuelSubmissionAttribute($this->id) !== 0);
         })->count();
 
         // Retourne les soumissions de perception qui sont démarrées mais incomplètes (statut != true)
