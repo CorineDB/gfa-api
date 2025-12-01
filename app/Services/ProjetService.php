@@ -392,7 +392,7 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                     }
 
                     // Mettre à jour le projetable (polymorphic relationship)
-                    $projet->projetable_type = 'App\Models\Projet';
+                    $projet->projetable_type = get_class($owner);
                     $projet->projetable_id = $owner->id;
 
                 } else {
