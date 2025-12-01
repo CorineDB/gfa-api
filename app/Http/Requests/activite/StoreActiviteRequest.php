@@ -19,19 +19,19 @@ class StoreActiviteRequest extends FormRequest
         $user = request()->user();
 
         // UG et Organisation avec permission peuvent créer uniquement pour LEUR projet (projetable)
-        if($user->hasPermissionTo("creer-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
-            if($this->composanteId) {
+        if ($user->hasPermissionTo("creer-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
+            if ($this->composanteId) {
                 $composante = Composante::find($this->composanteId);
 
-                if($composante) {
+                if ($composante) {
                     $projet = $composante->projet;
 
                     // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
-                    if($projet) {
-                        if($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
+                    if ($projet) {
+                        if ($projet->projetable_type === 'App\Models\Organisation' && $user->hasRole("organisation")) {
                             return $projet->projetable_id === $user->profilable->id;
                         }
-                        if($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
+                        if ($projet->projetable_type === 'App\Models\UniteDeGestion' && $user->hasRole("unitee-de-gestion")) {
                             return $projet->projetable_id === $user->profilable->id;
                         }
                     }
@@ -60,30 +60,28 @@ class StoreActiviteRequest extends FormRequest
             //'structureResponsableId' => ['required', new HashValidatorRule(new User())],
             //'structureAssocieId' => ['required', new HashValidatorRule(new User())],
 
-            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function(){
-                if($this->composanteId){
+            'pret' => ['required', 'integer', 'min:0', 'max:9999999999999', function () {
+                if ($this->composanteId) {
                     $composante = Composante::find($this->composanteId);
-                    if($composante){
+                    if ($composante) {
                         $pret = $composante->pret;
                         $totalpret = $composante->activites->sum('pret');
 
-                        if(($totalpret + $this->pret) > $pret)
-                        {
+                        if (($totalpret + $this->pret) > $pret) {
                             throw ValidationException::withMessages(["pret" => "Le total des budgets alloues aux activites de cet output ne peuvent pas dépasser le montant du budget alloue a l'output"], 1);
                         }
                     }
                 }
             }],
 
-            'budgetNational' => ['required', 'integer', 'min:0', function(){
-                if($this->composanteId){
+            'budgetNational' => ['required', 'integer', 'min:0', function () {
+                if ($this->composanteId) {
                     $composante = Composante::find($this->composanteId);
-                    if($composante){
+                    if ($composante) {
                         $budgetNational = $composante->budgetNational;
                         $totalBudgetNational = $composante->activites->sum('budgetNational');
 
-                        if(($totalBudgetNational + $this->budgetNational) > $budgetNational)
-                        {
+                        if (($totalBudgetNational + $this->budgetNational) > $budgetNational) {
                             throw ValidationException::withMessages(["budgetNational" => "Le total des fonds propres des activites ne peuvent pas dépasser le montant du fond propre de l'output."], 1);
                         }
                     }
@@ -97,7 +95,7 @@ class StoreActiviteRequest extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    /* public function messages()
     {
         return [
             'nom.required' => 'Le nom de l\'activité est obligatoire.',
@@ -113,5 +111,39 @@ class StoreActiviteRequest extends FormRequest
             'structureAssocieId.required' => 'La structure associé de l\'activité est obligatoire',
         ];
     }
+ */
 
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
+    public function messages()
+    {
+        return [
+            'nom.required' => "Le :attribute est obligatoire.",
+            'poids.required' => "Le :attribute est obligatoire.",
+            'debut.required' => "La date de début de l'activité est obligatoire.",
+            'fin.required' => "La date de fin de l'activité est obligatoire.",
+            'type.required' => "Le type de l'activité est obligatoire.",
+            'pret.required' => "Le :attribute est obligatoire.",
+            'pret.integer' => "Le :attribute doit être un entier.",
+            'budgetNational.required' => "Le :attribute est obligatoire.",
+            'budgetNational.integer' => "Le :attribute doit être un entier.",
+            'composanteId.required' => "L' :attribute est obligatoire.",
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'nom' => "nom de l'activité",
+            'poids' => "poids de l'activité",
+            'debut' => "date de début de l'activité",
+            'fin' => "date de fin de l'activité",
+            'pret' => "montant de la subvention pour le financement de l'activité",
+            'budgetNational' => "fond propre de financement de l'activité",
+            'composanteId' => $this->composant ? ($this->composant->composanteId ? 'output parent' : 'outcome parent') : 'outcome parent',
+        ];
+    }
 }

@@ -376,20 +376,44 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                 // Retirer organisationId des attributs car on a déjà géré le changement
                 unset($attributs['organisationId']);
+            } else {
+                if (auth()->user()->profilable_type === UniteeDeGestion::class) {
+                    $owner = auth()->user()->profilable;
+
+                    // Récupérer l'ancienne organisation
+                    $ancienneOwner = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
+
+                    // Mettre à jour le budgetAllouer dans la table pivot fond_organisation
+                    if ($ancienneOwner && $ancienneOwner->fonds()->count()) {
+                        // Remettre à 0 le budget alloué de l'ancienne organisation
+                        $ancienneOrganisationFond = $ancienneOwner->fonds->first()->pivot;
+                        $ancienneOrganisationFond->budgetAllouer = 0;
+                        $ancienneOrganisationFond->save();
+                    }
+
+                    // Mettre à jour le projetable (polymorphic relationship)
+                    $projet->projetable_type = 'App\Models\Projet';
+                    $projet->projetable_id = $owner->id;
+
+                } else {
+                    throw new Exception("Vous n'avez pas les permissions pour effectuer cette action", 403);
+                }
             }
 
             $projet = $projet->fill($attributs);
 
             $projet->save();
 
-            $organisation = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
+            /*
+                $organisation = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
 
-            // Mise à jour du budget alloué si l'organisation existe et que le pret a changé
-            if ($organisation && $organisation->fonds()->count()) {
-                $organisationFond = $organisation->fonds->first()->pivot;
-                $organisationFond->budgetAllouer = $projet->pret;
-                $organisationFond->save();
-            }
+                // Mise à jour du budget alloué si l'organisation existe et que le pret a changé
+                if ($organisation && $organisation->fonds()->count()) {
+                    $organisationFond = $organisation->fonds->first()->pivot;
+                    $organisationFond->budgetAllouer = $projet->pret;
+                    $organisationFond->save();
+                }
+            */
 
             if (array_key_exists('statut', $attributs) && $attributs['statut'] === -1) {
 
