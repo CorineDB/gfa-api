@@ -469,7 +469,7 @@ class Organisation extends Model
     public function getFactuelSubmissionRateAttribute($evaluationDeGouvernanceId)
     {
         // ========== NOUVEAU CODE (CORRIGÉ) ==========
-        $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->count();
+        $evaluation_de_gouvernance = $this->evaluations_de_gouvernance->where('id', $evaluationDeGouvernanceId)->first();
 
         // Si l'évaluation n'existe pas, retourner 0 au lieu de null
         if(!$evaluation_de_gouvernance){
