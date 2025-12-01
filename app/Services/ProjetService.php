@@ -404,6 +404,8 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
             $projet->save();
 
+            dd($projet);
+
             /*
                 $organisation = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
 
