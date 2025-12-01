@@ -136,7 +136,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             'programmeId' => $evaluationDeGouvernance->programmeId
         ]);
 
-        $this->info("✅ Fiche synthese factuel : " . [
+        $this->info("✅ Fiche synthese factuel : " . json_encode([
             'type' => 'factuel',
             'indice_de_gouvernance' => $indice_factuel,
             'resultats' => $results,
@@ -147,7 +147,7 @@ class GenerateResultatsForValidatedSoumission extends Command
             'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()),
             'organisationId' => $organisationId,
             'programmeId' => $evaluationDeGouvernance->programmeId
-        ]);
+        ]));
 
         return $this->updateOrCreateProfile(
             $evaluationDeGouvernance,
