@@ -33,14 +33,7 @@ class UniteeDeGestionObserver
             ],
         ];
 
-        foreach ($options['perception'] as $option) {
-            $uniteeDeGestion->programme->options_de_reponse_de_perception_gouvernance()->create([
-                'libelle' => $option['intitule'],
-                'type' => 'perception',
-            ]);
-        }
-
-        foreach ($options['perception'] as $option) {
+        /* foreach ($options['perception'] as $option) {
             $uniteeDeGestion->programme->options_de_reponse_de_perception_gouvernance()->create([
                 'libelle' => $option['intitule'],
                 'type' => 'perception',
@@ -52,7 +45,7 @@ class UniteeDeGestionObserver
                 'libelle' => $option['intitule'],
                 'type' => 'factuel',
             ]);
-        }
+        } */
     }
 
     /**
