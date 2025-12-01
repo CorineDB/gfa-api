@@ -42,8 +42,6 @@ class StoreComposanteRequest extends FormRequest
                     return $projet->projetable_id === $user->profilable->id;
                 }
                 if ($projet->projetable_type === 'App\Models\UniteeDeGestion' && $user->hasRole("unitee-de-gestion")) {
-
-                dd($projet);
                     return $projet->projetable_id === $user->profilable->id;
                 }
             }
