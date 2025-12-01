@@ -51,7 +51,7 @@ class GenerateResultatsForValidatedSoumission extends Command
         $this->info("📊 Nombre d'évaluations à traiter: {$evaluations->count()}");
 
         $evaluations->each(function ($evaluationDeGouvernance) {
-            $this->line("   → Traitement: {$evaluationDeGouvernance->id}  {$evaluationDeGouvernance->intitule} (Année: {$evaluationDeGouvernance->annee_exercice})");
+            $this->line("   → Traitement: {$evaluationDeGouvernance->intitule} (Année: {$evaluationDeGouvernance->annee_exercice})");
             $this->evaluationDeGouvernance = $evaluationDeGouvernance;
             $this->generateResultForEnquete($evaluationDeGouvernance);
         });
@@ -239,8 +239,6 @@ class GenerateResultatsForValidatedSoumission extends Command
         } else {
             app(FicheDeSyntheseRepository::class)->create($data);
         }
-
-        $this->info("🔄FICHE : $type " . json_encode($fiche));
     }
 
     protected function updateOrCreateProfile(
@@ -252,6 +250,8 @@ class GenerateResultatsForValidatedSoumission extends Command
         Collection $allPrincipes = null
     ) {
         $profile = $profile ?: $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first();
+
+        $this->info(json_encode($profile));
 
         // If allPrincipes provided, start with all principles at 0
         $baseResults = $allPrincipes ? $allPrincipes->toArray() : [];
