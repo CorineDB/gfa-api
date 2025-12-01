@@ -25,7 +25,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'nom' => ['required','max:255', Rule::unique('programmes')->whereNull('deleted_at')],
+            'nom' => ['required', 'max:255', Rule::unique('programmes')->whereNull('deleted_at')],
             'code' => ['required', Rule::unique('programmes')->whereNull('deleted_at')],
             'budgetNational' => 'nullable|int|min:0|max:9999999999999',
             'objectifGlobaux' => 'required',
@@ -34,12 +34,12 @@ class StoreRequest extends FormRequest
         ];
     }
 
-     /**
+    /**
      * Get the error messages for the defined validation rules.
      *
      * @return array
      */
-    public function messages()
+    /* public function messages()
     {
         return [
             'nom.required' => 'Le nom du programme est obligatoire.',
@@ -52,6 +52,44 @@ class StoreRequest extends FormRequest
             'code.min' => 'Le code du programme ne peut pas être inférieur à 0.',
             'debut.required' => 'La date de début du programme est obligatoire.',
             'fin.required' => 'La date de fin du programme est obligatoire.'
+        ];
+    } */
+    public function messages()
+    {
+        return [
+            'nom.required' => 'Le :attribute est obligatoire.',
+            'nom.max' => 'Le :attribute ne peut pas dépasser 255 caractères.',
+            'nom.unique' => 'Le :attribute est déjà utilisé.',
+
+            'code.required' => 'Le :attribute est obligatoire.',
+            'code.unique' => 'Le :attribute est déjà utilisé.',
+
+            'budgetNational.integer' => 'Le :attribute doit être un entier.',
+            'budgetNational.min' => 'Le :attribute ne peut pas être inférieur à 0.',
+            'budgetNational.max' => 'Le :attribute ne peut pas dépasser 9 999 999 999 999 CFA.',
+
+            'objectifGlobaux.required' => 'Veuillez préciser :attribute.',
+
+            'debut.required' => 'La :attribute est obligatoire.',
+            'debut.date' => 'La :attribute doit être une date valide.',
+            'debut.date_format' => 'La :attribute doit respecter le format YYYY-MM.',
+
+            'fin.required' => 'La :attribute est obligatoire.',
+            'fin.date' => 'La :attribute doit être une date valide.',
+            'fin.date_format' => 'La :attribute doit respecter le format YYYY-MM.',
+            'fin.after_or_equal' => 'La :attribute doit être postérieure ou égale à la date de début.',
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'nom' => 'nom du programme',
+            'code' => 'code du programme',
+            'budgetNational' => 'montant de subvention des projets du programme',
+            'objectifGlobaux' => 'objectif global',
+            'debut' => 'date de début',
+            'fin' => 'date de fin',
         ];
     }
 }

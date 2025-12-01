@@ -11,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class UpdateComposanteRequest extends FormRequest
 {
+    protected $composant = null;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -188,7 +190,7 @@ class UpdateComposanteRequest extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    /* public function messages()
     {
         return [
             'nom.required' => 'Le nom de la composante est obligatoire.',
@@ -204,6 +206,36 @@ class UpdateComposanteRequest extends FormRequest
             'projetId.required' => 'Le projet de la composante est obligatoire.',
             'projetId.exists' => 'Ce projet n\'existe pas',
             'composanteId.required' => 'La sous composante  est obligatoire.',
+        ];
+    } */
+
+
+
+    public function messages()
+    {
+        return [
+            'nom.required' => "L' :attribute est obligatoire.",
+            'poids.required' => 'Le :attribute est obligatoire.',
+            'budgetNational.required' => 'Le :attribute est obligatoire.',
+            'budgetNational.integer' => 'Le :attribute doit être un entier.',
+            'budgetNational.max' => 'Le :attribute ne peut pas dépasser 9 999 999 999 999 CFA.',
+            'pret.required' => 'Le :attribute est obligatoire.',
+            'pret.integer' => 'Le :attribute doit être un entier.',
+            'pret.max' => 'Le :attribute ne peut pas dépasser 9 999 999 999 999 CFA.',
+            'projetId.required' => 'Le :attribute est obligatoire.',
+            'composanteId.required' => "L' :attribute est obligatoire."
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'nom' => $this->composanteId ? 'nom de l\'output' : 'nom de l\'outcome',
+            'poids' => $this->composanteId ? 'poids de l\'output' : 'poids de l\'outcome',
+            'budgetNational' => $this->composanteId ? 'fond propre de l\'output' : 'fond propre de l\'outcome',
+            'pret' => $this->composanteId ? 'montant de la subvention de l\'output' : 'montant de la subvention de l\'outcome',
+            'projetId' => 'projet',
+            'composanteId' => $this->composant ? ($this->composant->composanteId ? 'output parent' : 'outcome parent') : 'outcome parent',
         ];
     }
 }
