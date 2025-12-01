@@ -342,9 +342,9 @@ class Organisation extends Model
     public function getFactuelSubmissionCompletionRateAttribute($evaluationDeGouvernanceId)
     {
         // Fetch submissions for the organisation
-        $factualSubmission = $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->count();
+        $factualSubmission = $this->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernanceId)->first();
 
-        dd("factualCompletion " . $factualSubmission);
+        dd("factualCompletion " . $factualSubmission->pourcentage_evolution);
         // Calculate factual completion percentage
         return $factualSubmission ? round($factualSubmission->pourcentage_evolution, 2) : 0;
     }
