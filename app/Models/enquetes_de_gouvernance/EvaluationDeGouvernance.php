@@ -761,7 +761,7 @@ class EvaluationDeGouvernance extends Model
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
-            return $organisation->getFactuelSubmissionRateAttribute($this->id) !== 100;
+            return ($organisation->getFactuelSubmissionRateAttribute($this->id) !== 100 && $organisation->getFactuelSubmissionRateAttribute($this->id) !== 0);
         })->count();
 
         // Retourne les soumissions factuelles qui sont démarrées mais incomplètes (statut != true)
@@ -784,7 +784,7 @@ class EvaluationDeGouvernance extends Model
             return $organisation->getFactuelSubmissionAttribute($this->id)
                 ->where('statut', true)
                 ->get()
-                ->filter(fn($perception) => $perception->pourcentage_evolution != 100)
+                ->filter(fn($factuel) => $factuel->pourcentage_evolution != 100 && $factuel->pourcentage_evolution != 0)
                 ->count();
                 /* ->filter(fn($soumission) => $soumission->pourcentage_evolution != 100)
                 ->count() */;
@@ -811,7 +811,7 @@ class EvaluationDeGouvernance extends Model
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
             })->get()->filter(function ($organisation) {
-            return $organisation->getFactuelSubmissionRateAttribute($this->id) == 100;
+            return ($organisation->getPerceptionSubmissionsAttribute($this->id) == 100 && $organisation->getPerceptionSubmissionsAttribute($this->id) !== 0);
         })->count();
 
         // Retourne les soumissions de perception qui sont démarrées mais incomplètes (statut != true)
