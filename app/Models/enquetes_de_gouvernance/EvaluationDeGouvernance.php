@@ -704,7 +704,8 @@ class EvaluationDeGouvernance extends Model
         })->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
                 // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
                 $query->whereRaw('1 = 0'); // Ensures no results are returned
-            })->get()->filter(function ($organisation) {
+            })
+        ->get()->filter(function ($organisation) {
             return $organisation->getFactuelSubmissionRateAttribute($this->id) == 100;
         })->count();
         // Ancienne version :
@@ -742,6 +743,27 @@ class EvaluationDeGouvernance extends Model
      */
     public function getTotalSoumissionsFactuelIncompletesAttribute()
     {
+
+        // Retourne le nombre d'organisations ayant terminé leur soumission factuelle (taux de soumission à 100%)
+        // Filter organisations if the authenticated user's type is 'organisation'
+        return $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
+            // Get the organisation ID of the authenticated user
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If profilable is null or ID is missing, return 0
+            if (!$organisationId) {
+                return 0;
+            }
+
+            // Filter the organisations and sum the 'nbreParticipants' from the pivot table
+            $query->where('organisations.id', $organisationId);
+        })->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            })->get()->filter(function ($organisation) {
+            return $organisation->getFactuelSubmissionRateAttribute($this->id) !== 100;
+        })->count();
+
         // Retourne les soumissions factuelles qui sont démarrées mais incomplètes (statut != true)
         // Filter organisations if the authenticated user's type is 'organisation'
         return $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
@@ -771,6 +793,27 @@ class EvaluationDeGouvernance extends Model
 
     public function getTotalSoumissionsDePerceptionIncompletesAttribute()
     {
+
+        // Retourne le nombre d'organisations ayant terminé leur soumission factuelle (taux de soumission à 100%)
+        // Filter organisations if the authenticated user's type is 'organisation'
+        return $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
+            // Get the organisation ID of the authenticated user
+            $organisationId = optional(auth()->user()->profilable)->id;
+
+            // If profilable is null or ID is missing, return 0
+            if (!$organisationId) {
+                return 0;
+            }
+
+            // Filter the organisations and sum the 'nbreParticipants' from the pivot table
+            $query->where('organisations.id', $organisationId);
+        })->when(((!in_array(auth()->user()->type, ['organisation', 'unitee-de-gestion'])) && (get_class(optional(auth()->user()->profilable)) != Organisation::class && get_class(optional(auth()->user()->profilable)) != UniteeDeGestion::class)), function ($query) {
+                // Return 0 if user type is neither 'organisation' nor 'unitee-de-gestion'
+                $query->whereRaw('1 = 0'); // Ensures no results are returned
+            })->get()->filter(function ($organisation) {
+            return $organisation->getFactuelSubmissionRateAttribute($this->id) == 100;
+        })->count();
+
         // Retourne les soumissions de perception qui sont démarrées mais incomplètes (statut != true)
         // Filter organisations if the authenticated user's type is 'organisation'
         return $this->organisations()->when(((auth()->user()->type == 'organisation') || get_class(optional(auth()->user()->profilable)) == Organisation::class), function ($query) {
