@@ -121,7 +121,6 @@ class GenerateResultatsForValidatedSoumission extends Command
             $evaluationDeGouvernance->formulaire_factuel_de_gouvernance(),
             $organisationId
         );
-        $this->info("✅ Résultats factuel {$indice_factuel} pour organisation ID: {$organisationId} : {$results} ");
 
         $this->updateOrCreateFicheDeSynthese($evaluationDeGouvernance, $organisationId, 'factuel', [
             'type' => 'factuel',
@@ -135,19 +134,6 @@ class GenerateResultatsForValidatedSoumission extends Command
             'organisationId' => $organisationId,
             'programmeId' => $evaluationDeGouvernance->programmeId
         ]);
-
-        $this->info("✅ Fiche synthese factuel : " . json_encode([
-            'type' => 'factuel',
-            'indice_de_gouvernance' => $indice_factuel,
-            'resultats' => $results,
-            'synthese' => $synthese,
-            'evaluatedAt' => now(),
-            'evaluationDeGouvernanceId' => $evaluationDeGouvernance->id,
-            'formulaireDeGouvernance_id' => $evaluationDeGouvernance->formulaire_factuel_de_gouvernance()->id,
-            'formulaireDeGouvernance_type' => get_class($evaluationDeGouvernance->formulaire_factuel_de_gouvernance()),
-            'organisationId' => $organisationId,
-            'programmeId' => $evaluationDeGouvernance->programmeId
-        ]));
 
         return $this->updateOrCreateProfile(
             $evaluationDeGouvernance,
@@ -253,6 +239,8 @@ class GenerateResultatsForValidatedSoumission extends Command
         } else {
             app(FicheDeSyntheseRepository::class)->create($data);
         }
+
+        $this->info("🔄FICHE : $type " . json_encode($fiche));
     }
 
     protected function updateOrCreateProfile(
