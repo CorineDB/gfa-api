@@ -21,6 +21,7 @@ class StoreComposanteRequest extends FormRequest
     public function authorize()
     {
         $user = request()->user();
+        ($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion")));
 
         // UG et Organisation avec permission peuvent créer uniquement pour LEUR projet (projetable)
         if ($user->hasPermissionTo("creer-une-composante") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
@@ -35,6 +36,8 @@ class StoreComposanteRequest extends FormRequest
                 $this->composant = $composante = Composante::findByKey($this->composanteId);
                 $projet = $composante ? $composante->projet : null;
             }
+
+            dd($projet);
 
             // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
             if ($projet) {
