@@ -143,7 +143,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
 
             'factuel.response_data.*.preuves'                       => [
                 "sometimes",
-                function ($attribute, $value, $fail) {
+                /* function ($attribute, $value, $fail) {
 
                     if (request()->input('soumissionId') != null) {
 
@@ -210,7 +210,7 @@ class SoumissionFactuelValidationRequest extends FormRequest
                             $fail("Formulaire factuel inconnu.");
                         }
                     }
-                },
+                }, */
                 "array",
                 "min:1"
             ],
