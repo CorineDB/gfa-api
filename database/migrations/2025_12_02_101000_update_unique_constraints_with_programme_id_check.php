@@ -119,7 +119,7 @@ class UpdateUniqueConstraintsWithProgrammeIdCheck extends Migration
                 Schema::table($tableName, function (Blueprint $table) use ($compositeIndexName, $columnName) {
                     // 1. Drop the composite key we just added
                     try {
-                        $table->dropUnique($compositeIndexName);
+                        //$table->dropUnique($compositeIndexName);
                     } catch (\Exception $ex) {
                         Log::error("Rollback failed to drop composite '$compositeIndexName': " . $ex->getMessage());
                     }
