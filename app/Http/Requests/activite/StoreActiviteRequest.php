@@ -23,9 +23,7 @@ class StoreActiviteRequest extends FormRequest
         // UG et Organisation avec permission peuvent créer uniquement pour LEUR projet (projetable)
         if ($user->hasPermissionTo("creer-une-activite") && ($user->hasRole("organisation") || $user->hasRole("unitee-de-gestion"))) {
             if ($this->composanteId) {
-                $composante = Composante::find($this->composanteId);
-
-                dd($this->composanteId, $composante);
+                $composante = Composante::findByKey($this->composanteId);
 
                 if ($composante) {
                     $projet = $composante->projet;

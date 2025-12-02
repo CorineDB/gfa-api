@@ -11,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class UpdateActiviteRequest extends FormRequest
 {
+    protected $composant = null;
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -32,7 +34,8 @@ class UpdateActiviteRequest extends FormRequest
             }
 
             if ($activite) {
-                $composante = $activite->composante;
+                $this->composant = $composante = $activite->composante;
+
                 $projet = $composante ? $composante->projet : null;
 
                 // Vérifier si le projet appartient à l'utilisateur (organisation ou UG)
