@@ -70,6 +70,15 @@ class SendInvitationJob implements ShouldQueue
                 }
 
                 $participantsToNotify = $this->data["participants"] ?? [];
+                $token = $this->data['token'] ?? $evaluationOrganisation->pivot->token ?? null;
+
+                if (!$token) {
+                     // Fallback attempt to fetch if not passed (though service should pass it now)
+                     // Or log warning. For now, let's rely on data.
+                     Log::warning("SendInvitationJob: Token not found in data, trying pivot.");
+                     // If pivot is missing (serialized model), this will still fail if we don't handle it.
+                     // But we expect it in data now.
+                }
 
                 $url = config("app.url");
                 if (strpos($url, 'localhost') == false) {
@@ -89,7 +98,7 @@ class SendInvitationJob implements ShouldQueue
                         
                         // Build personalized link with participant ID if available
                         $participantId = $participant['id'] ?? '';
-                        $link = $url . "/tools-perception/{$evaluationOrganisation->pivot->token}" . ($participantId ? "/{$participantId}" : "");
+                        $link = $url . "/tools-perception/{$token}" . ($participantId ? "/{$participantId}" : "");
 
                         $details = [];
                         $details['view'] = $this->mailView; // Use dynamic view
@@ -131,7 +140,7 @@ class SendInvitationJob implements ShouldQueue
                 
                 if (!empty($phoneNumbers)) {
                     try {
-                        $genericLink = $url . "/tools-perception/{$evaluationOrganisation->pivot->token}";
+                        $genericLink = $url . "/tools-perception/{$token}";
                         $message = "Bonjour,\n" .
                                     "Vous etes invite(e) a participer a l'enquete d'auto-evaluation de gouvernance de {$evaluationOrganisation->user->nom} dans le cadre du programme {$this->evaluationDeGouvernance->programme->nom} ({$this->evaluationDeGouvernance->annee_exercice}).\n" .
                                     "Participez des maintenant : " .

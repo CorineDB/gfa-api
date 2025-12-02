@@ -1560,6 +1560,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $jobData = $attributs;
                 $jobData['organisationId'] = $organisationId;
                 $jobData['participants'] = $participantsToNotify;
+                $jobData['token'] = $evaluationOrganisation->pivot->token; // Pass token explicitly
 
                 SendInvitationJob::dispatch($evaluationDeGouvernance, $evaluationOrganisation, $jobData, 'invitation-enquete-de-collecte');
 
@@ -1613,6 +1614,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $jobData = [];
                 $jobData['organisationId'] = $organisationId;
                 $jobData['participants'] = $participantsToRemind; // Only send to those who need a reminder
+                $jobData['token'] = $evaluationOrganisation->pivot->token; // Pass token explicitly
 
                 $mailSubject = "Rappel : Soumission à l'auto-évaluation de gouvernance";
                 $mailView = "emails.auto-evaluation.rappel_soumission_participant"; // Assuming you have this reminder template
