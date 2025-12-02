@@ -51,11 +51,22 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             }),
 
             $this->mergeWhen(((Auth::user()->type == 'organisation') || get_class(auth()->user()->profilable) == Organisation::class), function(){
+                // On récupère l'organisation profilable de l'utilisateur
+                $organisation = Auth::user()->profilable;
+                // On récupère l'évaluation de gouvernance spécifique
+                $evaluationDeGouvernance = $this->resource; // L'instance de EvaluationDeGouvernance passée à la ressource
+
+                // On doit récupérer le pivot pour avoir la liste des participants
+                $evaluationOrganisationPivot = $evaluationDeGouvernance->organisations()->wherePivot('organisation_id', $organisation->id)->first()->pivot ?? null;
+                $participantsList = $evaluationOrganisationPivot && $evaluationOrganisationPivot->participants ? json_decode($evaluationOrganisationPivot->participants, true) : [];
+
+
                 return [
-                    'pourcentage_evolution_organisations'       => optional(Auth::user()->profilable)->getSubmissionRateAttribute($this->id) ?? 0,
-                    'pourcentage_evolution_perception_organisations'     => optional(Auth::user()->profilable)->getPerceptionSubmissionRateAttribute($this->id) ?? 0,
-                    'pourcentage_evolution_factuel_organisations'    => optional(Auth::user()->profilable)->getFactuelSubmissionRateAttribute($this->id) ?? 0,
-                    'nbreDeParticipants' => optional(Auth::user()->profilable)->getNbreDeParticipantsAttribute($this->id) ?? 0
+                    'pourcentage_evolution_organisations'       => optional($organisation)->getSubmissionRateAttribute($this->id) ?? 0,
+                    'pourcentage_evolution_perception_organisations'     => optional($organisation)->getPerceptionSubmissionRateAttribute($this->id) ?? 0,
+                    'pourcentage_evolution_factuel_organisations'    => optional($organisation)->getFactuelSubmissionRateAttribute($this->id) ?? 0,
+                    'nbreDeParticipants' => optional($organisation)->getNbreDeParticipantsAttribute($this->id) ?? 0,
+                    'participants' => $participantsList, // <-- NOUVEAU : La liste détaillée des participants
                 ];
             }),
 
