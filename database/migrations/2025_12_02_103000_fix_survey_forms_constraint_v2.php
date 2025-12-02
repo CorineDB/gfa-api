@@ -24,7 +24,7 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
                 } catch (\Exception $e) {
                     Log::info("Constraint 'survey_forms_libelle_programmeId_unique' not found or could not be dropped: " . $e->getMessage());
                 }
-                
+
                 // Also try dropping the simple unique constraint just in case
                  try {
                     $table->dropUnique('survey_forms_libelle_unique');
@@ -35,15 +35,15 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
                 // 2. Add the new composite unique constraint including created_by fields
                 // Unique on: libelle, programmeId, created_by_type, created_by_id
                 $newIndexName = 'survey_forms_lib_prog_creator_unique'; // Shortened name to avoid length limits
-                
+
                 try {
                     // Check if index exists before adding
                     $sm = Schema::getConnection()->getDoctrineSchemaManager();
                     $indexes = $sm->listTableIndexes('survey_forms');
-                    
+
                     if (!array_key_exists(strtolower($newIndexName), array_change_key_case($indexes, CASE_LOWER))) {
                         $table->unique(
-                            ['libelle', 'programmeId', 'created_by_type', 'created_by_id'], 
+                            ['libelle', 'programmeId', 'created_by_type', 'created_by_id'],
                             $newIndexName
                         );
                     }
@@ -65,14 +65,14 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
             Schema::table('survey_forms', function (Blueprint $table) {
                 // Drop the new 4-column constraint
                 try {
-                    $table->dropUnique('survey_forms_lib_prog_creator_unique');
+                    //$table->dropUnique('survey_forms_lib_prog_creator_unique');
                 } catch (\Exception $e) {
                     // Ignore
                 }
 
                 // Restore the 2-column constraint (previous state)
                 try {
-                    $table->unique(['libelle', 'programmeId'], 'survey_forms_libelle_programmeId_unique');
+                    //$table->unique(['libelle', 'programmeId'], 'survey_forms_libelle_programmeId_unique');
                 } catch (\Exception $e) {
                     // Ignore
                 }
