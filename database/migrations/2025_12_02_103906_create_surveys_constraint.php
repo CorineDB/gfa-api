@@ -21,25 +21,25 @@ class CreateSurveysConstraint extends Migration
                 $indexes = array_change_key_case($indexes, CASE_LOWER);
 
                 // 1. Drop the previous composite unique constraint if it exists
-                $indexName1 = 'surveys_libelle_programmeId_unique';
+                $indexName1 = 'surveys_intitule_programmeId_unique';
                 if (array_key_exists(strtolower($indexName1), $indexes)) {
                     $table->dropUnique($indexName1);
                 }
 
                 // Also try dropping the simple unique constraint if it exists
-                $indexName2 = 'surveys_libelle_unique';
+                $indexName2 = 'surveys_intitule_unique';
                 if (array_key_exists(strtolower($indexName2), $indexes)) {
                     $table->dropUnique($indexName2);
                 }
 
                 // 2. Add the new composite unique constraint including created_by fields
-                // Unique on: libelle, programmeId, surveyable_type, surveyable_id
-                $newIndexName = 'surveys_lib_prog_survey_unique'; // Shortened name to avoid length limits
+                // Unique on: intitule, programmeId, surveyable_type, surveyable_id
+                $newIndexName = 'surveys_intitule_prog_survey_unique'; // Shortened name to avoid length limits
 
                 if (!array_key_exists(strtolower($newIndexName), $indexes)) {
                     try {
                         $table->unique(
-                            ['libelle', 'programmeId', 'surveyable_type', 'surveyable_id'],
+                            ['intitule', 'programmeId', 'surveyable_type', 'surveyable_id'],
                             $newIndexName
                         );
                     } catch (\Exception $e) {
@@ -64,16 +64,16 @@ class CreateSurveysConstraint extends Migration
                 $indexes = array_change_key_case($indexes, CASE_LOWER);
 
                 // Drop the new 4-column constraint if exists
-                $newIndexName = 'surveys_lib_prog_survey_unique';
+                $newIndexName = 'surveys_intitule_prog_survey_unique';
                 if (array_key_exists(strtolower($newIndexName), $indexes)) {
                     $table->dropUnique($newIndexName);
                 }
 
                 // Restore the 2-column constraint (previous state) if not exists
-                $oldIndexName = 'surveys_libelle_programmeId_unique';
+                $oldIndexName = 'surveys_intitule_programmeId_unique';
                 if (!array_key_exists(strtolower($oldIndexName), $indexes)) {
                     try {
-                        $table->unique(['libelle', 'programmeId'], $oldIndexName);
+                        $table->unique(['intitule', 'programmeId'], $oldIndexName);
                     } catch (\Exception $e) {
                         // Ignore
                     }
