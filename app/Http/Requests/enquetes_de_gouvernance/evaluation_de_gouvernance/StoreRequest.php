@@ -75,16 +75,65 @@ class StoreRequest extends FormRequest
     {
         return [
             // Custom messages for the 'nom' field
-            'nom.required'      => 'Le champ nom est obligatoire.',
-            'nom.max'           => 'Le nom ne doit pas dépasser 255 caractères.',
-            'nom.unique'        => 'Ce nom est déjà utilisé dans les résultats.',
+            /*
+                'nom.required'      => 'Le champ nom est obligatoire.',
+                'nom.max'           => 'Le nom ne doit pas dépasser 255 caractères.',
+                'nom.unique'        => 'Ce nom est déjà utilisé dans les résultats.',
 
-            // Custom messages for the 'description' field
-            'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
+                // Custom messages for the 'description' field
+                'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
 
-            // Custom messages for the 'programmeId' field
-            'programmeId.required' => 'Le champ programme est obligatoire.',
+                // Custom messages for the 'programmeId' field
+                'programmeId.required' => 'Le champ programme est obligatoire.',
+            */
 
+            // Nom de l'évaluation
+            'intitule.required' => 'Le nom de l’évaluation est obligatoire.',
+            'intitule.string'   => 'Le nom de l’évaluation doit être une chaîne de caractères.',
+            'intitule.unique'   => 'Ce nom d’évaluation est déjà utilisé pour ce programme.',
+            'intitule.max'           => 'Le intitule de l’évaluation ne doit pas dépasser 255 caractères.',
+
+            // Description
+            'description.max' => 'La description ne doit pas dépasser 255 caractères.',
+
+            'programmeId.required' => 'Le programme associé est obligatoire.',
+
+            // Année d'exercice
+            'annee_exercice.required' => 'L’année d’exercice est obligatoire.',
+            'annee_exercice.integer'  => 'L’année d’exercice doit être un nombre entier.',
+
+            // Dates
+            'debut.required'        => 'La date de début est obligatoire.',
+            'debut.date'            => 'La date de début doit être une date valide.',
+            'debut.date_format'     => 'La date de début doit être au format AAAA-MM-JJ.',
+            'debut.before'          => 'La date de début doit être antérieure à la date de fin.',
+
+            'fin.required' => 'La date de fin est obligatoire.',
+            'fin.date' => 'La date de fin doit être une date valide.',
+            'fin.date_format' => 'La date de fin doit être au format AAAA-MM-JJ.',
+            'fin.after_or_equal' => 'La date de fin doit être égale ou postérieure à la date de début.',
+
+            // Formulaires de gouvernance
+            'formulaires_de_gouvernance.required' => 'Veuillez soumettre au moins un formulaire de gouvernance.',
+            'formulaires_de_gouvernance.array'    => 'Les formulaires doivent être envoyés sous forme de tableau.',
+            'formulaires_de_gouvernance.min'      => 'Au moins un formulaire doit être soumis.',
+            'formulaires_de_gouvernance.max'      => 'Vous ne pouvez pas soumettre plus de 2 formulaires.',
+
+            'formulaires_de_gouvernance.factuel.distinct'     => 'Chaque formulaire factuel doit être unique.',
+            'formulaires_de_gouvernance.perception.distinct'  => 'Chaque formulaire de perception doit être unique.',
+
+            'formulaires_de_gouvernance.factuel'    => 'Le formulaire factuel soumis est inconnu ou invalide.',
+            'formulaires_de_gouvernance.perception' => 'Le formulaire de perception soumis est inconnu ou invalide.',
+
+            // Correspondance des principes entre formulaires
+            'formulaires_de_gouvernance.mismatch_principes' => 'Les principes des formulaires factuel et de perception ne correspondent pas. Veuillez vérifier la cohérence.',
+
+            // Organisations
+            'organisations.required'       => 'Veuillez sélectionner au moins une organisation.',
+            'organisations.array'          => 'Les organisations doivent être envoyées sous forme de tableau.',
+            'organisations.min'            => 'Au moins une organisation doit être sélectionnée.',
+            'organisations.*.required'     => 'Chaque organisation sélectionnée est obligatoire.',
+            'organisations.*.distinct'     => 'Chaque organisation doit être unique.'
         ];
     }
 
@@ -117,7 +166,7 @@ class StoreRequest extends FormRequest
                     return;
                 }
 
-		/*
+                /*
                 // Step 1: Retrieve Principe IDs from the 'perception' form
                 $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance')
                     ->where('formulaireDePerceptionId', $formulaireDePerception->id)
@@ -140,30 +189,30 @@ class StoreRequest extends FormRequest
                     ->toArray();
 		*/
 
-		$perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance as principes')
-                                          ->join('principes_de_gouvernance_de_perception as pgp', 'pgp.id', '=', 'principes.categorieable_id')
-    					  ->where('formulaireDePerceptionId', $formulaireDePerception->id)
-    					  ->whereNull('categorieDePerceptionDeGouvernanceId')
-    					  ->select('pgp.nom as principe_nom')
-   					  ->pluck('principe_nom')
-    					  ->map(fn($v) => $this->normalize_string($v))
-    			                  ->toArray();
+                $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance as principes')
+                    ->join('principes_de_gouvernance_de_perception as pgp', 'pgp.id', '=', 'principes.categorieable_id')
+                    ->where('formulaireDePerceptionId', $formulaireDePerception->id)
+                    ->whereNull('categorieDePerceptionDeGouvernanceId')
+                    ->select('pgp.nom as principe_nom')
+                    ->pluck('principe_nom')
+                    ->map(fn($v) => $this->normalize_string($v))
+                    ->toArray();
 
 
-		$factuelPrincipesIds = DB::table('categories_factuel_de_gouvernance as types')
-                        ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
-                        ->join('principes_de_gouvernance_factuel as pgf', 'pgf.id', '=', 'principes.categorieable_id')
-			->where('types.formulaireFactuelId', $formulaireFactuel->id)
-    			->whereNull('types.categorieFactuelDeGouvernanceId')
-    			->where('principes.formulaireFactuelId', $formulaireFactuel->id)
-    			->whereNotNull('principes.categorieFactuelDeGouvernanceId')
-    			->where('types.categorieable_type', get_class(new TypeDeGouvernanceFactuel()))
-    			->where('principes.categorieable_type', get_class(new PrincipeDeGouvernanceFactuel()))
-    			->select('pgf.nom as principe_nom')
-    			->distinct()
-    			->pluck('principe_nom')
-    			->map(fn($v) => $this->normalize_string($v))
-    			->toArray();
+                $factuelPrincipesIds = DB::table('categories_factuel_de_gouvernance as types')
+                    ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
+                    ->join('principes_de_gouvernance_factuel as pgf', 'pgf.id', '=', 'principes.categorieable_id')
+                    ->where('types.formulaireFactuelId', $formulaireFactuel->id)
+                    ->whereNull('types.categorieFactuelDeGouvernanceId')
+                    ->where('principes.formulaireFactuelId', $formulaireFactuel->id)
+                    ->whereNotNull('principes.categorieFactuelDeGouvernanceId')
+                    ->where('types.categorieable_type', get_class(new TypeDeGouvernanceFactuel()))
+                    ->where('principes.categorieable_type', get_class(new PrincipeDeGouvernanceFactuel()))
+                    ->select('pgf.nom as principe_nom')
+                    ->distinct()
+                    ->pluck('principe_nom')
+                    ->map(fn($v) => $this->normalize_string($v))
+                    ->toArray();
 
                 //dd($perceptionPrincipesIds, $factuelPrincipesIds);
 
@@ -210,15 +259,16 @@ class StoreRequest extends FormRequest
         }
     }
 
-  function normalize_string(string $str): string {
-    // 1. Supprime les espaces en début/fin
-    $str = trim($str);
-    // 2. Remplace les multiples espaces par un seul
-    $str = preg_replace('/\s+/', ' ', $str);
-    // 3. Met en minuscules
-    $str = mb_strtolower($str, 'UTF-8');
-    // 4. Normalise les accents
-    $str = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
-    return $str;
-}
+    function normalize_string(string $str): string
+    {
+        // 1. Supprime les espaces en début/fin
+        $str = trim($str);
+        // 2. Remplace les multiples espaces par un seul
+        $str = preg_replace('/\s+/', ' ', $str);
+        // 3. Met en minuscules
+        $str = mb_strtolower($str, 'UTF-8');
+        // 4. Normalise les accents
+        $str = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $str);
+        return $str;
+    }
 }
