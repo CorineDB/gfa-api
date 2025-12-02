@@ -382,6 +382,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
                             'nbreDeParticipants'          => $organisation->pivot->nbreParticipants ?? 0,
+                            'nbreParticipants'            => $organisation->pivot->nbreParticipants ?? 0,
                             'participants'                => $organisation->pivot->participants ? json_decode($organisation->pivot->participants) : 0,
                         ], ['factuel' => $soumissionsFactuel, 'perception' => $soumissionsDePerception]);
                     });
