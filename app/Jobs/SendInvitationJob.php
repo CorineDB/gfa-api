@@ -70,7 +70,7 @@ class SendInvitationJob implements ShouldQueue
                 }
 
                 $participantsToNotify = $this->data["participants"] ?? [];
-                $token = $this->data['token'] ?? $evaluationOrganisation->pivot->token ?? null;
+                $token = $this->data['token'] ?? null;
 
                 if (!$token) {
                      // Fallback attempt to fetch if not passed (though service should pass it now)

@@ -421,7 +421,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                                     $soumissionsFactuel = $evaluationDeGouvernance->soumissionsFactuel()
                                         ->where('organisationId', $organisation->id)
                                         ->get();
-                
+
                                     if (!$organisationEvaluation = $evaluationDeGouvernance->organisations()->where('organisations.id', $organisation->id)->first()) {
                                         // declencher une exception
                                         throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
@@ -1561,6 +1561,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $jobData['organisationId'] = $organisationId;
                 $jobData['participants'] = $participantsToNotify;
                 $jobData['token'] = $evaluationOrganisation->pivot->token; // Pass token explicitly
+
+                throw new Exception("REQUEST" . $jobData['token'], 403);
+
 
                 SendInvitationJob::dispatch($evaluationDeGouvernance, $evaluationOrganisation, $jobData, 'invitation-enquete-de-collecte');
 
