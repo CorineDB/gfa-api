@@ -337,6 +337,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'contact_point_focal'   => $organisation->contact_point_focal,
                     "lien_factuel_token"          => $organisationEvaluation->pivot->token,
                     "lien_perception_token"       => $organisationEvaluation->pivot->token,
+                    'organisation_token'          => $organisationEvaluation->pivot->token, // <-- Ajouté
 
                     'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
                 ], ['factuel' => $formFactuel ? new SoumissionFactuelResource($formFactuel) : null, 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
@@ -374,6 +375,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                             "lien_factuel_token"          => $organisation->pivot->token,
                             "lien_perception_token"       => $organisation->pivot->token,
+                            'organisation_token'          => $organisation->pivot->token, // <-- Ajouté
 
                             "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
