@@ -1320,9 +1320,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             // 1. Récupérer l'évaluation via le token d'organisation
             $evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
-            })->with(["organisations" => function ($query) use ($token) {
-                $query->wherePivot('token', $token);
-            }])->first();
+            })->first();
 
             if (!$evaluationDeGouvernance) {
                 throw new Exception("Evaluation de gouvernance inconnue ou lien invalide.", 404);
@@ -1333,7 +1331,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 return response()->json(['statut' => 'success', 'message' => "L'évaluation est clôturée.", 'data' => null, 'statutCode' => Response::HTTP_NO_CONTENT], Response::HTTP_NO_CONTENT);
             }
 
-            $organisation = $evaluationDeGouvernance->organisations->first();
+            $organisation = $evaluationDeGouvernance->organisations()->wherePivot('token', $token)->first();
             if (!$organisation) {
                 throw new Exception("Organisation introuvable.", 404);
             }
