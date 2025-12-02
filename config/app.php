@@ -55,6 +55,7 @@ return [
     */
 
     'url' => env('APP_URL', 'http://localhost'),
+    'port' => env('APP_PORT', '8000'),
     'ug_url' => env('UG_APP_URL', 'https://ug.dms-redevabilite.com'),
     'organisation_url' => env('ORG_APP_URL', 'https://organisation.dms-redevabilite.com'),
     'admin_url' => env('ADMIN_APP_URL', 'https://admin.dms-redevabilite.com'),

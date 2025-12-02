@@ -19,6 +19,7 @@ use App\Jobs\AppJob;
 use App\Jobs\SendInvitationJob;
 use App\Mail\InvitationEnqueteDeCollecteEmail;
 use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance as EnqueteEvaluationDeGouvernance;
+use App\Models\enquetes_de_gouvernance\SoumissionDePerception;
 use App\Models\Organisation;
 use App\Repositories\enquetes_de_gouvernance\EvaluationDeGouvernanceRepository;
 use App\Repositories\OrganisationRepository;
@@ -656,9 +657,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->get()->groupBy('type')->map(function ($soumissions, $type) {
                         if ($type === 'perception') {
                             return SoumissionsResource::collection($soumissions);
-                        } else {
-                            return new SoumissionsResource($soumissions->first());
                         }
+                        return new SoumissionsResource($soumissions->first());
                     });
 
                 $group_soumissions = array_merge([
@@ -669,7 +669,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'nom_point_focal'       => $organisation->nom_point_focal,
                     'prenom_point_focal'    => $organisation->prenom_point_focal,
                     'contact_point_focal'   => $organisation->contact_point_focal,
-                    'pourcentage_evolution_des_soumissions_de_perception'   => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id)
+                    'pourcentage_evolution_des_soumissions_de_perception'   => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id),
+                    // Ajout du token de l'organisation pour le cas de l'utilisateur de type organisation
+                    'organisation_token' => $organisation->pivot->token // <-- Ajouté avec le nom demandé
                 ], $group_soumissions->toArray());
             } else {
 
@@ -726,6 +728,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             'contact_point_focal'   => $organisation->contact_point_focal,
                             "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
+                            'organisation_token'    => $organisation->pivot->token, // <-- Ajouté
                         ], $types_soumissions->toArray());
                     });
             }
@@ -1303,60 +1306,101 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function formulaire_de_perception_de_gouvernance(string $paricipant_id, string $token): JsonResponse
     {
         try {
-            if (!($evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
+            // 1. Récupérer l'évaluation via le token d'organisation
+            $evaluationDeGouvernance = EnqueteEvaluationDeGouvernance::whereHas("organisations", function ($query) use ($token) {
                 $query->where('evaluation_organisations.token', $token);
             })->with(["organisations" => function ($query) use ($token) {
                 $query->wherePivot('token', $token);
-            }])->first())) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            }])->first();
 
+            if (!$evaluationDeGouvernance) {
+                throw new Exception("Evaluation de gouvernance inconnue ou lien invalide.", 404);
+            }
 
+            // 2. Vérifier le statut de l'évaluation
             if ($evaluationDeGouvernance->statut == 1) {
-                return response()->json(['statut' => 'success', 'message' => "Lien expire", 'data' => null, 'statutCode' => Response::HTTP_NO_CONTENT], Response::HTTP_NO_CONTENT);
+                return response()->json(['statut' => 'success', 'message' => "L'évaluation est clôturée.", 'data' => null, 'statutCode' => Response::HTTP_NO_CONTENT], Response::HTTP_NO_CONTENT);
             }
 
             $organisation = $evaluationDeGouvernance->organisations->first();
+            if (!$organisation) {
+                throw new Exception("Organisation introuvable.", 404);
+            }
+
+            // 3. Tenter d'identifier le participant_id (sans bloquer la soumission s'il n'est pas trouvé)
+            $participantsList = $organisation->pivot->participants ? json_decode($organisation->pivot->participants, true) : [];
+            $participantInfo = null;
+
+            foreach ($participantsList as $p) {
+                if (isset($p['id']) && (string)$p['id'] === (string)$paricipant_id) {
+                    $participantInfo = $p; // Stocke toutes les infos du participant connues (nom, mail, tel, etc.)
+                    break;
+                }
+            }
+            // Si participantInfo est null ici, cela signifie que c'est un "anonyme" ou un participant non listé initialement.
+            // On continue le flow, mais on n'a pas d'infos supplémentaires pour le personnaliser.
 
             $terminer = false;
+            $formulaire_de_perception_de_gouvernance = null;
 
-            if ($organisation != null) {
+            // 4. Vérifier si une soumission existe déjà pour ce participant (quel qu'il soit)
+            $soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first();
 
-                /*if($evaluationDeGouvernance->soumissionsDePerception(null, $organisation->id)->where('statut', true)->count() == $organisation->pivot->nbreParticipants){
-                    return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-                }*/
-
-                if (($soumission = $evaluationDeGouvernance->soumissionDePerception($paricipant_id, $organisation->id)->first())) {
-
-                    if ($soumission->statut === true) {
-                        $terminer = true;
-                        $formulaire_de_perception_de_gouvernance = false;
-                    } else {
-                        $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
-                    }
+            if ($soumission) {
+                // Cas : Soumission existante
+                if ($soumission->statut === true) {
+                    $terminer = true;
+                    // La soumission est terminée, on ne renvoie pas le formulaire pour éviter toute modification.
+                    return response()->json(['statut' => 'success', 'message' => "Votre soumission a déjà été validée.", 'data' => [
+                        'id' => $evaluationDeGouvernance->secure_id,
+                        'intitule' => $evaluationDeGouvernance->intitule,
+                        'description' => $evaluationDeGouvernance->description,
+                        'debut' => Carbon::parse($evaluationDeGouvernance->debut)->format("Y-m-d"),
+                        'fin' => Carbon::parse($evaluationDeGouvernance->fin)->format("Y-m-d"),
+                        'annee_exercice' => $evaluationDeGouvernance->annee_exercice,
+                        'statut' => $evaluationDeGouvernance->statut,
+                        'terminer' => $terminer,
+                        'programmeId' => $evaluationDeGouvernance->programme->secure_id,
+                        'participant_info' => $participantInfo,
+                        'formulaire_de_gouvernance' => null // Pas de formulaire pour une soumission terminée
+                    ], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                 } else {
-
-                    if($organisation->sousmissions_enquete_de_perception()->where('evaluationId', $evaluationDeGouvernance->id)->count() >= $organisation->pivot->nbreParticipants){
-                        return response()->json(['statut' => 'success', 'message' => "Quota des soumissions atteints", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-                    }
-
-                    $attributs = [
-                        'evaluationId' => $evaluationDeGouvernance->id,
-                        'formulaireDePerceptionId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
-                        'organisationId' => $organisation->id,
-                        'programmeId' => $evaluationDeGouvernance->programmeId,
-                        'identifier_of_participant' => $paricipant_id
-                    ];
-
-                    $soumission = $evaluationDeGouvernance->soumissionsDePerception()->create($attributs);
-
+                    // La soumission existe mais n'est pas terminée, on renvoie le formulaire pour qu'il puisse reprendre.
                     $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
                 }
             } else {
-                return response()->json(['statut' => 'success', 'message' => "Organisation inconnu du programme", 'data' => null, 'statutCode' => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
+                // Cas : Nouvelle soumission
 
-                $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($evaluationDeGouvernance->formulaire_de_perception_de_gouvernance());
+                // Vérification du quota global avant de créer une nouvelle soumission
+                // On compte le nombre de soumissions déjà créées ET TERMINÉES (statut = true) pour cette organisation
+                $currentSubmissionsCount = $organisation->sousmissions_enquete_de_perception()
+                    ->where('evaluationId', $evaluationDeGouvernance->id)
+                    ->where('statut', true) // <-- Modifié : Ne compte que les soumissions terminées
+                    ->count();
+
+                $quota = $organisation->pivot->nbreParticipants; // Le nombre total de soumissions autorisées
+
+                // Si le nombre de soumissions terminées atteint ou dépasse le quota, on bloque la création de nouvelles.
+                if ($currentSubmissionsCount >= $quota) {
+                    return response()->json(['statut' => 'error', 'message' => "Le nombre maximal de soumissions COMPLÉTÉES pour cette évaluation a été atteint. Merci de votre intérêt.", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+                }
+
+                // Création de la soumission
+                $attributs = [
+                    'evaluationId' => $evaluationDeGouvernance->id,
+                    'formulaireDePerceptionId' => $evaluationDeGouvernance->formulaire_de_perception_de_gouvernance()->id,
+                    'organisationId' => $organisation->id,
+                    'programmeId' => $evaluationDeGouvernance->programmeId,
+                    'identifier_of_participant' => $paricipant_id,
+                    'statut' => false // Nouvelle soumission, non terminée par défaut
+                ];
+
+                $soumission = $evaluationDeGouvernance->soumissionsDePerception()->create($attributs);
+                $formulaire_de_perception_de_gouvernance = new SoumissionDePerceptionResource($soumission);
             }
 
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => [
+            // Construction de la réponse finale
+            $responseData = [
                 'id' => $evaluationDeGouvernance->secure_id,
                 'intitule' => $evaluationDeGouvernance->intitule,
                 'description' => $evaluationDeGouvernance->description,
@@ -1366,8 +1410,12 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 'statut' => $evaluationDeGouvernance->statut,
                 'terminer' => $terminer,
                 'programmeId' => $evaluationDeGouvernance->programme->secure_id,
+                'participant_info' => $participantInfo, // Infos du participant si trouvé, sinon null
                 'formulaire_de_gouvernance' => $formulaire_de_perception_de_gouvernance
-            ], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            ];
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $responseData, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -1381,18 +1429,137 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
     public function envoi_mail_au_participants($evaluationDeGouvernance, array $attributs): JsonResponse
     {
         try {
-            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) {
+                throw new Exception("Evaluation de gouvernance inconnue.", 500);
+            }
 
+            $organisationId = null;
             if ((Auth::user()->hasRole('organisation') || (get_class(auth()->user()->profilable) == Organisation::class))) {
-                $attributs['organisationId'] = Auth::user()->profilable->id;
+                $organisationId = Auth::user()->profilable->id;
             } else {
                 return response()->json(['statut' => 'error', 'message' => "Pas le droit", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
             }
-    \Illuminate\Support\Facades\Log::notice("Inviation a envoyé immédiatement à ". json_encode($attributs));
-            SendInvitationJob::dispatch($evaluationDeGouvernance, $attributs, 'invitation-enquete-de-collecte');
-    \Illuminate\Support\Facades\Log::notice("Invitation envoyé immédiatement");
 
-            return response()->json(['statut' => 'success', 'message' => "Invitation envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            // 1. Récupérer l'organisation et ses données pivot
+            $evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first();
+            if (!$evaluationOrganisation) {
+                throw new Exception("Organisation non liée à cette évaluation.", 404);
+            }
+
+            // 2. Fusionner et dédoublonner les participants (Logique déplacée du Job vers le Service)
+            $existingParticipants = $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : [];
+            $newParticipants = $attributs['participants'] ?? [];
+
+            // Assigner un ID unique aux nouveaux participants s'ils n'en ont pas
+            foreach ($newParticipants as &$np) {
+                if (!isset($np['id'])) {
+                    $np['id'] = uniqid('part_', true);
+                }
+            }
+            unset($np); // Rompre la référence
+
+            $allParticipants = array_merge($existingParticipants, $newParticipants);
+            $uniqueParticipants = [];
+
+            // Dédoublonnage robuste (Email prioritaire, puis Téléphone)
+            foreach ($allParticipants as $p) {
+                if (isset($p['type_de_contact'])) {
+                    $key = null;
+                    // On utilise l'email ou le téléphone comme clé d'unicité
+                    if ($p['type_de_contact'] === 'email' && !empty($p['email'])) {
+                        $key = 'email_' . $p['email'];
+                    } elseif ($p['type_de_contact'] === 'contact' && !empty($p['phone'])) {
+                        $key = 'phone_' . $p['phone'];
+                    }
+
+                    if ($key) {
+                        // Si le participant n'a pas d'ID (cas d'un ancien participant en base), on lui en génère un
+                        if (!isset($p['id'])) {
+                            $p['id'] = uniqid('part_', true);
+                        }
+
+                        // On stocke le participant.
+                        // Si la clé existe déjà (doublon), la version actuelle ($p) écrasera la précédente.
+                        // Comme $allParticipants contient [Anciens..., Nouveaux...], les nouveaux prévaudront en cas de conflit
+                        // (mise à jour des infos), mais s'ils sont identiques, l'ID du "nouveau" sera utilisé.
+                        // Pour garder la stabilité de l'ID d'un existant, on vérifie d'abord.
+                        if (!isset($uniqueParticipants[$key])) {
+                            $uniqueParticipants[$key] = $p;
+                        } else {
+                            // Si on veut mettre à jour les infos mais garder l'ID original :
+                            $originalId = $uniqueParticipants[$key]['id'];
+                            $uniqueParticipants[$key] = $p;
+                            $uniqueParticipants[$key]['id'] = $originalId; // On restaure l'ID original
+                        }
+                    }
+                }
+            }
+            $finalParticipantsList = array_values($uniqueParticipants);
+
+            // 3. Mise à jour immédiate de la liste des participants
+            $evaluationOrganisation->pivot->participants = json_encode($finalParticipantsList);
+
+            // 4. Mise à jour immédiate du Quota (nbreParticipants) avec contrôles de sécurité
+            $currentQuota = $evaluationOrganisation->pivot->nbreParticipants ?? 0;
+            $requestedQuota = $attributs['nbreParticipants'] ?? 0;
+            $totalInvited = count($finalParticipantsList);
+
+            // Compter les réponses déjà reçues pour ne pas casser l'existant
+            $responsesReceived = $evaluationDeGouvernance->soumissionsDePerception()
+                ->where('organisationId', $organisationId)
+                ->count();
+
+            // Le quota doit être au moins égal au nombre de gens qu'on a explicitement invités
+            $effectiveQuota = max($requestedQuota, $totalInvited);
+
+            if ($effectiveQuota > 0) {
+                // On met à jour si :
+                // - C'est une augmentation (toujours safe)
+                // - C'est une diminution MAIS qui reste supérieure au nombre de réponses déjà reçues
+                if ($effectiveQuota > $currentQuota || ($effectiveQuota < $currentQuota && $effectiveQuota >= $responsesReceived)) {
+                    $evaluationOrganisation->pivot->nbreParticipants = $effectiveQuota;
+                }
+            }
+
+            $evaluationOrganisation->pivot->save();
+
+            // 5. Identifier les VRAIS nouveaux participants pour l'envoi de mail
+            // On compare les clés (email/phone) des $newParticipants avec ceux qui étaient DÉJÀ dans $existingParticipants
+            $existingKeys = [];
+            foreach ($existingParticipants as $ep) {
+                if (isset($ep['type_de_contact'])) {
+                    if ($ep['type_de_contact'] === 'email' && !empty($ep['email'])) $existingKeys['email_' . $ep['email']] = true;
+                    elseif ($ep['type_de_contact'] === 'contact' && !empty($ep['phone'])) $existingKeys['phone_' . $ep['phone']] = true;
+                }
+            }
+
+            $participantsToNotify = [];
+            foreach ($newParticipants as $np) {
+                $key = null;
+                if (isset($np['type_de_contact'])) {
+                    if ($np['type_de_contact'] === 'email' && !empty($np['email'])) $key = 'email_' . $np['email'];
+                    elseif ($np['type_de_contact'] === 'contact' && !empty($np['phone'])) $key = 'phone_' . $np['phone'];
+                }
+
+                // Si la clé n'existait pas avant, c'est un nouveau à notifier
+                if ($key && !isset($existingKeys[$key])) {
+                    $participantsToNotify[] = $np;
+                }
+            }
+
+            // 6. Dispatcher le job UNIQUEMENT s'il y a des gens à notifier
+            if (!empty($participantsToNotify)) {
+                $jobData = $attributs;
+                $jobData['organisationId'] = $organisationId;
+                $jobData['participants'] = $participantsToNotify;
+
+                SendInvitationJob::dispatch($evaluationDeGouvernance, $evaluationOrganisation, $jobData, 'invitation-enquete-de-collecte');
+
+                return response()->json(['statut' => 'success', 'message' => "Invitations envoyées aux nouveaux participants.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            }
+
+            return response()->json(['statut' => 'success', 'message' => "Participants mis à jour. Aucune nouvelle invitation nécessaire.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -1408,95 +1575,55 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         try {
             if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            /* if (!(Auth::user()->hasRole('organisation')) && (get_class(auth()->user()->profilable) != Organisation::class)) {
-                return response()->json(['statut' => 'error', 'message' => "Pas la permission pour", 'data' => null, 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
-            } */
+            $organisationId = Auth::user()->profilable->id; // Current user's organisation ID
 
-            $organisationId = Auth::user()->profilable->id;
+            // 1. Retrieve the evaluationOrganisation pivot data
+            if (!($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
+                throw new Exception("L'organisation n'est pas liée à cette évaluation.", 404);
+            }
 
-            if (($evaluationOrganisation = $evaluationDeGouvernance->organisations($organisationId)->first())) {
+            // 2. Get all invited participants from the pivot table
+            $allInvitedParticipants = $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : [];
 
-                $participants = [];
-                // Decode and merge participants from the organisation's pivot data
-                $participants = array_merge($participants, $evaluationOrganisation->pivot->participants ? json_decode($evaluationOrganisation->pivot->participants, true) : []);
+            // 3. Get IDs of participants who have already submitted (only completed ones)
+            $submittedParticipantIds = SoumissionDePerception::where('evaluationId', $evaluationDeGouvernance->id)
+                ->where('organisationId', $organisationId)
+                ->where('statut', true) // <-- Ajouté : Ne récupère que les IDs des soumissions terminées
+                ->pluck('identifier_of_participant')
+                ->toArray();
 
-                // Filter participants for those with "email" contact type
-                $emailParticipants = array_filter($participants, function ($participant) {
-                    return $participant["type_de_contact"] === "email";
-                });
-
-                // Extract email addresses for Mail::to()
-                $emailAddresses = array_column($emailParticipants, 'email');
-
-                // Filter participants for those with "email" contact type
-                $phoneNumberParticipants = array_filter($participants, function ($participant) {
-                    return $participant["type_de_contact"] === "contact";
-                });
-
-                // Extract phone numbers for https://api.e-mc.co/v3/
-                $phoneNumbers = array_column($phoneNumberParticipants, 'phone');
-
-                // Send the email if there are any email addresses
-                if (!empty($emailAddresses)) {
-
-                    $url = config("app.url");
-
-                    // If the URL is localhost, append the appropriate IP address and port
-                    if (strpos($url, 'localhost') == false) {
-                        $url = config("app.organisation_url");
-                    }
-
-                    $details['view'] = "emails.auto-evaluation.rappel_soumission_participant";
-
-                    $details['subject'] = "Rappel : Soumission à l'auto-évaluation de gouvernance";
-                    $details['content'] = [
-                        "greeting" => "Bonjour, Monsieur/Madame!",
-                        //"introduction" => "Nous vous rappelons que la soumission de votre évaluation de gouvernance pour le programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**) est en attente.",
-                        //"introduction" => "L'organisation **{$evaluationOrganisation->user->nom}** vous a invité(e) à participer à son enquête d'auto-évaluation dans le cadre du programme **{$evaluationDeGouvernance->programme->nom}** (année d'exercice **{$evaluationDeGouvernance->annee_exercice}**).",
-                        "introduction" => "Nous, **{$evaluationOrganisation->user->nom}**, vous rappelons votre participation à notre enquête d'auto-évaluation de gouvernance. Votre contribution est essentielle pour renforcer notre gouvernance dans le cadre du programme **{$evaluationDeGouvernance->programme->nom}**, année d'exercice **{$evaluationDeGouvernance->annee_exercice}**.",
-
-                        "body" => "Votre contribution est essentielle pour finaliser cette étape cruciale. Merci de compléter votre soumission dans les plus brefs délais.",
-                        //"body" => "Nous comptons sur votre retour pour atteindre nos objectifs de transparence et d'amélioration continue.",
-
-                        "lien" => $url . "/tools-perception/{$evaluationOrganisation->pivot->token}",
-                        "cta_text" => "Accéder au formulaire",
-                        "signature" => "Cordialement, {$evaluationOrganisation->user->nom}",
-                    ];
-
-                    // Create the email instance
-                    $mailer = new InvitationEnqueteDeCollecteEmail($details);
-
-                    // Send the email later after a delay
-                    $when = now()->addSeconds(5);
-                    Mail::to($emailAddresses)->later($when, $mailer);
-                }
-
-                // Send the sms if there are any phone numbers
-                if (!empty($phoneNumbers)) {
-
-                    try {
-
-                        $url = config("app.url");
-
-                        // If the URL is localhost, append the appropriate IP address and port
-                        if (strpos($url, 'localhost') == false) {
-                            $url = config("app.organisation_url");
-                        }
-
-                        $message = "Bonjour,\n\n" .
-                            "🔔 Rappel : Vous n’avez pas encore complete l’enquete d’auto-évaluation de gouvernance de {$evaluationOrganisation->user->nom} ({$evaluationDeGouvernance->programme->nom}, {$evaluationDeGouvernance->annee_exercice}).\n\n" .
-                            "Repondez des maintenant :\n" .
-                            "{$url}/tools-perception/{$evaluationOrganisation->pivot->token}\n\n" .
-                            "Merci pour votre participation !";
-
-                        $this->sendSms($message, $phoneNumbers);
-                    } catch (\Throwable $th) {
-                        Log::error('Error sending SMS : ' . $th->getMessage());
-                    }
+            // 4. Identify participants who have not yet submitted
+            $participantsToRemind = [];
+            foreach ($allInvitedParticipants as $participant) {
+                // Ensure participant has an ID and it's not in the submitted list
+                if (isset($participant['id']) && !in_array($participant['id'], $submittedParticipantIds)) {
+                    $participantsToRemind[] = $participant;
                 }
             }
 
-            return response()->json(['statut' => 'success', 'message' => "Rappel envoye", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            // 5. Dispatch SendInvitationJob if there are participants to remind
+            if (!empty($participantsToRemind)) {
+                $jobData = [];
+                $jobData['organisationId'] = $organisationId;
+                $jobData['participants'] = $participantsToRemind; // Only send to those who need a reminder
+
+                $mailSubject = "Rappel : Soumission à l'auto-évaluation de gouvernance";
+                $mailView = "emails.auto-evaluation.rappel_soumission_participant"; // Assuming you have this reminder template
+
+                SendInvitationJob::dispatch(
+                    $evaluationDeGouvernance,
+                    $evaluationOrganisation,
+                    $jobData,
+                    'rappel-soumission', // Type to indicate it's a reminder
+                    $mailSubject,
+                    $mailView
+                );
+
+                return response()->json(['statut' => 'success', 'message' => "Rappel(s) envoyé(s) aux participants n'ayant pas encore soumis.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            }
+
+            return response()->json(['statut' => 'success', 'message' => "Tous les participants ont déjà soumis leur enquête.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
