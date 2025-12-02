@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class UpdateUniqueConstraintForSurveyFormsTable extends Migration
+class EditUniqueConstraintForSurveyForms extends Migration
 {
     /**
      * Run the migrations.
