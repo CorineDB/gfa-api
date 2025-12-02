@@ -57,7 +57,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                 $evaluationDeGouvernance = $this->resource; // L'instance de EvaluationDeGouvernance passée à la ressource
 
                 // On doit récupérer le pivot pour avoir la liste des participants
-                // $evaluationOrganisationPivot = $evaluationDeGouvernance->organisations()->wherePivot('organisation_id', $organisation->id)->first()->pivot ?? null;
+                $evaluationOrganisationPivot = $evaluationDeGouvernance->organisations()->wherePivot('organisation_id', $organisation->id)->first()->pivot ?? null;
                 // $participantsList = $evaluationOrganisationPivot && $evaluationOrganisationPivot->participants ? json_decode($evaluationOrganisationPivot->participants, true) : [];
 
 
