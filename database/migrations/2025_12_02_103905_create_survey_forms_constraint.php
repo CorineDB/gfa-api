@@ -3,10 +3,8 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
-class FixSurveyFormsUniqueConstraintV2 extends Migration
+class CreateSurveyFormsConstraint extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +12,7 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
      * @return void
      */
     public function up()
-    {/*
+    {
         if (Schema::hasTable('survey_forms')) {
             Schema::table('survey_forms', function (Blueprint $table) {
                 // 1. Drop the previous composite unique constraint if it exists
@@ -51,7 +49,7 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
                      Log::warning("Could not create unique constraint '$newIndexName': " . $e->getMessage());
                 }
             });
-        } */
+        }
     }
 
     /**
@@ -60,6 +58,7 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
      * @return void
      */
     public function down()
+
     {
         if (Schema::hasTable('survey_forms')) {
             Schema::table('survey_forms', function (Blueprint $table) {
