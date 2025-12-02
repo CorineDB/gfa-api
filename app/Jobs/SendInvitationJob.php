@@ -71,6 +71,7 @@ class SendInvitationJob implements ShouldQueue
 
                 $participantsToNotify = $this->data["participants"] ?? [];
                 $token = $this->data['token'] ?? null;
+                Log::warning("SendInvitationJob: Token not found in data, trying pivot." . $token);
 
                 if (!$token) {
                      // Fallback attempt to fetch if not passed (though service should pass it now)
@@ -95,7 +96,7 @@ class SendInvitationJob implements ShouldQueue
 
                     // 1. EMAIL : Send individual personalized email
                     if ($participant['type_de_contact'] === 'email' && !empty($participant['email'])) {
-                        
+
                         // Build personalized link with participant ID if available
                         $participantId = $participant['id'] ?? '';
                         $link = $url . "/tools-perception/{$token}" . ($participantId ? "/{$participantId}" : "");
@@ -137,7 +138,7 @@ class SendInvitationJob implements ShouldQueue
 
                 // --- Send SMS (Bulk) ---
                 $phoneNumbers = array_unique($phoneNumbers);
-                
+
                 if (!empty($phoneNumbers)) {
                     try {
                         $genericLink = $url . "/tools-perception/{$token}";
@@ -146,7 +147,7 @@ class SendInvitationJob implements ShouldQueue
                                     "Participez des maintenant : " .
                                     "{$genericLink}\n" .
                                     "Merci !";
-                        
+
                         // Adjust SMS message for rappel
                         if ($this->type == "rappel-soumission") {
                             $message = "Bonjour,\n\n" .
