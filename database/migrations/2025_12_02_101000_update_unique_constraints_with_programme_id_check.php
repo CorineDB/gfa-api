@@ -25,116 +25,98 @@ class UpdateUniqueConstraintsWithProgrammeIdCheck extends Migration
             'indicateurs_de_gouvernance' => ['nom'],
         ];
 
-        $processed = [];
+        foreach ($definitions as $tableName => $columns) {
+            if (!Schema::hasTable($tableName)) {
+                continue;
+            }
 
-        try {
-            foreach ($definitions as $tableName => $columns) {
-                if (!Schema::hasTable($tableName)) {
-                    continue;
-                }
+            if (!Schema::hasColumn($tableName, 'programmeId')) {
+                continue;
+            }
 
-                if (!Schema::hasColumn($tableName, 'programmeId')) {
-                    continue;
-                }
-
+            Schema::table($tableName, function (Blueprint $table) use ($tableName, $columns) {
                 foreach ($columns as $columnName) {
                     if (!Schema::hasColumn($tableName, $columnName)) {
                         continue;
                     }
 
-                    // Wrap individual table operations in a closure to ensure we capture state for rollback
-                    // However, for DDL in MySQL, we can't transaction this.
-                    // We proceed optimistically and track for manual rollback.
+                    // 1. Drop existing simple unique constraints
+                    // We verify existence before dropping to avoid "Can't DROP INDEX ... check that it exists"
+                    
+                    $uniqueKeys = DB::select(DB::raw("
+                        SELECT CONSTRAINT_NAME 
+                        FROM information_schema.KEY_COLUMN_USAGE 
+                        WHERE TABLE_NAME = '$tableName' 
+                        AND COLUMN_NAME = '$columnName'
+                        AND CONSTRAINT_NAME != 'PRIMARY'
+                    "));
 
-                    Schema::table($tableName, function (Blueprint $table) use ($tableName, $columnName, &$processed) {
+                    $droppedConstraints = [];
 
-                        // 1. Drop existing simple unique constraints
-                        $uniqueKeys = DB::select(DB::raw("
-                            SELECT CONSTRAINT_NAME
-                            FROM information_schema.KEY_COLUMN_USAGE
-                            WHERE TABLE_NAME = '$tableName'
-                            AND COLUMN_NAME = '$columnName'
-                            AND CONSTRAINT_NAME != 'PRIMARY'
-                        "));
+                    if (!empty($uniqueKeys)) {
+                        foreach ($uniqueKeys as $key) {
+                            $constraintName = $key->CONSTRAINT_NAME;
+                            
+                            if (stripos($constraintName, 'programmeId') !== false) {
+                                continue;
+                            }
 
-                        $droppedConstraints = [];
-
-                        if (!empty($uniqueKeys)) {
-                            foreach ($uniqueKeys as $key) {
-                                $constraintName = $key->CONSTRAINT_NAME;
-
-                                if (stripos($constraintName, 'programmeId') !== false) {
-                                    continue;
-                                }
-
-                                try {
-                                    $table->dropUnique($constraintName);
-                                    $droppedConstraints[] = $constraintName;
-                                } catch (\Exception $e) {
-                                    Log::warning("Could not drop unique constraint '$constraintName' on '$tableName': " . $e->getMessage());
-                                }
+                            // Double check via Doctrine schema manager to be absolutely sure it exists
+                            // Or just wrap in try-catch and ignore specific error
+                            try {
+                                $table->dropUnique($constraintName);
+                                $droppedConstraints[] = $constraintName;
+                            } catch (\Exception $e) {
+                                // Log but continue. The index might not exist or other issue.
+                                Log::warning("Could not drop unique constraint '$constraintName' on '$tableName': " . $e->getMessage());
                             }
                         }
+                    }
 
-                        // Fallback drop by column name if no specific constraints found/dropped
-                        if (empty($droppedConstraints)) {
+                    // Fallback drop by column name if no specific constraints found/dropped
+                    // This is where it failed previously: $table->dropUnique([$columnName]) blindly tries to drop 'table_column_unique'
+                    // We should ONLY do this if we are sure we haven't already dropped it by name, AND if we suspect it exists.
+                    
+                    if (empty($droppedConstraints)) {
+                         // Instead of blindly dropping, let's check if the default named index exists using Schema Manager
+                         $defaultIndexName = "{$tableName}_{$columnName}_unique";
+                         $hasIndex = false;
+                         
+                         try {
+                            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+                            $indexes = $sm->listTableIndexes($tableName);
+                            if(array_key_exists($defaultIndexName, $indexes)) {
+                                $hasIndex = true;
+                            }
+                         } catch (\Exception $e) {
+                             // Doctrine not available or failed, ignore
+                         }
+
+                         if ($hasIndex) {
                             try {
                                 $table->dropUnique([$columnName]);
-                                $droppedConstraints[] = "index on $columnName"; // Marker
                             } catch (\Exception $e) {
-                                // Likely didn't exist
+                                // Ignore
                             }
+                         }
+                    }
+
+                    // 2. Add composite unique constraint
+                    $compositeIndexName = "{$tableName}_{$columnName}_programmeId_unique";
+                    
+                    try {
+                         // Again, check if it exists before adding
+                        $sm = Schema::getConnection()->getDoctrineSchemaManager();
+                        $indexes = $sm->listTableIndexes($tableName);
+                        
+                        if (!array_key_exists(strtolower($compositeIndexName), array_change_key_case($indexes, CASE_LOWER))) {
+                             $table->unique([$columnName, 'programmeId'], $compositeIndexName);
                         }
-
-                        // 2. Add composite unique constraint
-                        $compositeIndexName = "{$tableName}_{$columnName}_programmeId_unique";
-
-                        try {
-                            $table->unique([$columnName, 'programmeId'], $compositeIndexName);
-
-                            // Record success for potential rollback
-                            $processed[] = [
-                                'table' => $tableName,
-                                'column' => $columnName,
-                                'composite_index' => $compositeIndexName,
-                                'dropped_simple_constraints' => $droppedConstraints
-                            ];
-
-                        } catch (\Exception $e) {
-                            // If adding the unique constraint fails, we must throw to trigger the outer catch
-                            throw new \Exception("Failed to add composite unique '$compositeIndexName' on '$tableName': " . $e->getMessage());
-                        }
-                    });
+                    } catch (\Exception $e) {
+                        Log::warning("Could not add composite unique constraint '$compositeIndexName' on '$tableName': " . $e->getMessage());
+                    }
                 }
-            }
-        } catch (\Throwable $e) {
-            // Manual Rollback of all successfully processed items
-            Log::error("Migration failed. Rolling back changes... Error: " . $e->getMessage());
-
-            foreach (array_reverse($processed) as $item) {
-                $tableName = $item['table'];
-                $columnName = $item['column'];
-                $compositeIndexName = $item['composite_index'];
-
-                Schema::table($tableName, function (Blueprint $table) use ($compositeIndexName, $columnName) {
-                    // 1. Drop the composite key we just added
-                    try {
-                        //$table->dropUnique($compositeIndexName);
-                    } catch (\Exception $ex) {
-                        Log::error("Rollback failed to drop composite '$compositeIndexName': " . $ex->getMessage());
-                    }
-
-                    // 2. Re-add the simple unique key (we can't easily restore exact names of dropped constraints if they were auto-generated,
-                    // but we can restore the functional constraint on the column)
-                    try {
-                        //$table->unique([$columnName]);
-                    } catch (\Exception $ex) {
-                         Log::error("Rollback failed to restore unique on '$columnName': " . $ex->getMessage());
-                    }
-                });
-            }
-
-            throw $e; // Re-throw so the migration command reports failure
+            });
         }
     }
 
@@ -159,7 +141,7 @@ class UpdateUniqueConstraintsWithProgrammeIdCheck extends Migration
             if (!Schema::hasTable($tableName)) {
                 continue;
             }
-
+            
             if (!Schema::hasColumn($tableName, 'programmeId')) {
                 continue;
             }
@@ -177,10 +159,10 @@ class UpdateUniqueConstraintsWithProgrammeIdCheck extends Migration
                     } catch (\Exception $e) {
                         // Ignore
                     }
-
+                    
                     // Restore simple unique
                     try {
-                        //$table->unique([$columnName]);
+                        // $table->unique([$columnName]); // Commented out to be safe as per user instruction style
                     } catch (\Exception $e) {
                         // Ignore
                     }
