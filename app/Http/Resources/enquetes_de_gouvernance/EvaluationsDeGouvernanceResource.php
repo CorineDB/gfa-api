@@ -58,15 +58,16 @@ class EvaluationsDeGouvernanceResource extends JsonResource
 
                 // On doit récupérer le pivot pour avoir la liste des participants
                 $evaluationOrganisationPivot = $evaluationDeGouvernance->organisations()->wherePivot('organisationId', $organisation->id)->first()->pivot ?? null;
-                // $participantsList = $evaluationOrganisationPivot && $evaluationOrganisationPivot->participants ? json_decode($evaluationOrganisationPivot->participants, true) : [];
+                $nbreDeParticipants = $evaluationOrganisationPivot && $evaluationOrganisationPivot->nbreParticipants ? json_decode($evaluationOrganisationPivot->nbreParticipants, true) : [];
+                $participantsList = $evaluationOrganisationPivot && $evaluationOrganisationPivot->participants ? json_decode($evaluationOrganisationPivot->participants, true) : [];
 
 
                 return [
                     'pourcentage_evolution_organisations'       => optional($organisation)->getSubmissionRateAttribute($this->id) ?? 0,
                     'pourcentage_evolution_perception_organisations'     => optional($organisation)->getPerceptionSubmissionRateAttribute($this->id) ?? 0,
                     'pourcentage_evolution_factuel_organisations'    => optional($organisation)->getFactuelSubmissionRateAttribute($this->id) ?? 0,
-                    'nbreDeParticipants' => optional($organisation)->getNbreDeParticipantsAttribute($this->id) ?? 0,
-                    //'participants' => $participantsList, // <-- NOUVEAU : La liste détaillée des participants
+                    'nbreDeParticipants' => $nbreDeParticipants,// optional($organisation)->getNbreDeParticipantsAttribute($this->id) ?? 0,
+                    'participants' => $participantsList, // <-- NOUVEAU : La liste détaillée des participants
                 ];
             }),
 
@@ -84,7 +85,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     //'pourcentage_evolution_des_soumissions_de_perception' => optional(Auth::user()->profilable)->getPerceptionSubmissionsCompletionAttribute($this->id) ?? 0,
 
                     'pourcentage_evolution_des_soumissions_de_perception' => optional(Auth::user()->profilable)->getPerceptionSubmissionsCompletionRateAttribute($this->id) ?? 0,
-                    'nbreDeParticipants' => optional(Auth::user()->profilable)->getNbreDeParticipantsAttribute($this->id) ?? 0
+                    //'nbreDeParticipants' => optional(Auth::user()->profilable)->getNbreDeParticipantsAttribute($this->id) ?? 0
                 ];
             }),
 
