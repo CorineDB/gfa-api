@@ -673,7 +673,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'contact_point_focal'   => $organisation->contact_point_focal,
                     'pourcentage_evolution_des_soumissions_de_perception'   => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id),
                     // Ajout du token de l'organisation pour le cas de l'utilisateur de type organisation
-                    'organisation_token' => $organisation->pivot->token // <-- Ajouté avec le nom demandé
+                    'organisation_token' => $organisation->pivot->token, // <-- Ajouté avec le nom demandé
+                    'nbreParticipants'   => $organisation->pivot->nbreParticipants,
+                    'participants'       => $organisation->pivot->participants ? json_decode($organisation->pivot->participants, true) : []
                 ], $group_soumissions->toArray());
             } else {
 
@@ -731,6 +733,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                             "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
                             'organisation_token'    => $organisation->pivot->token, // <-- Ajouté
+                            'nbreParticipants'      => $organisation->pivot->nbreParticipants,
+                            'participants'          => $organisation->pivot->participants ? json_decode($organisation->pivot->participants, true) : []
                         ], $types_soumissions->toArray());
                     });
             }

@@ -37,10 +37,16 @@ class EvaluationsDeGouvernanceResource extends JsonResource
             'pourcentage_evolution_des_soumissions_factuel' => $this->pourcentage_evolution_des_soumissions_factuel,
 
             $this->mergeWhen(((Auth::user()->type == 'unitee-de-gestion') || get_class(auth()->user()->profilable) == UniteeDeGestion::class), function(){
+                $totalParticipants = $this->organisations->sum('pivot.nbreParticipants');
+                $nombreOrganisations = $this->organisations->count();
+                $moyenneParticipants = $nombreOrganisations > 0 ? round($totalParticipants / $nombreOrganisations, 2) : 0;
+
                 return [
                     'pourcentage_evolution_organisations'               => $this->pourcentage_evolution_organisations,
                     'pourcentage_evolution_perception_organisations'    => $this->pourcentage_evolution_perception_organisations,
                     'pourcentage_evolution_factuel_organisations'       => $this->pourcentage_evolution_factuel_organisations,
+                    'total_participants_attendus_global'                => $totalParticipants,
+                    'moyenne_participants_par_organisation'             => $moyenneParticipants,
                 ];
             }),
 
@@ -49,6 +55,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'pourcentage_evolution_organisations'       => optional(Auth::user()->profilable)->getSubmissionRateAttribute($this->id) ?? 0,
                     'pourcentage_evolution_perception_organisations'     => optional(Auth::user()->profilable)->getPerceptionSubmissionRateAttribute($this->id) ?? 0,
                     'pourcentage_evolution_factuel_organisations'    => optional(Auth::user()->profilable)->getFactuelSubmissionRateAttribute($this->id) ?? 0,
+                    'nbreDeParticipants' => optional(Auth::user()->profilable)->getNbreDeParticipantsAttribute($this->id) ?? 0
                 ];
             }),
 
