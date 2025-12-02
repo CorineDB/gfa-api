@@ -14,8 +14,8 @@ class FixUniqueConstraintOnFormulairesFactuelDeGouvernance extends Migration
     public function up()
     {
         Schema::table('formulaires_factuel_de_gouvernance', function (Blueprint $table) {
-            // 🔄 Restaurer l'unique si rollback
-            $table->unique('libelle', 'formulaires_factuel_de_gouvernance_libelle_unique');
+            // 🔥 Supprimer l'unique sur la colonne libelle
+            $table->dropUnique('formulaires_factuel_de_gouvernance_libelle_unique');
         });
     }
 
@@ -27,8 +27,8 @@ class FixUniqueConstraintOnFormulairesFactuelDeGouvernance extends Migration
     public function down()
     {
         Schema::table('formulaires_factuel_de_gouvernance', function (Blueprint $table) {
-            // 🔥 Supprimer l'unique sur la colonne libelle
-            $table->dropUnique('formulaires_factuel_de_gouvernance_libelle_unique');
+            // 🔄 Restaurer l'unique si rollback
+            $table->unique('libelle', 'formulaires_factuel_de_gouvernance_libelle_unique');
         });
     }
 }
