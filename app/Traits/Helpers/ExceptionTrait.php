@@ -3,6 +3,7 @@
 namespace App\Traits\Helpers;
 
 use ErrorException;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
@@ -38,6 +39,10 @@ trait ExceptionTrait
 
         if($this->isAuthentication($e)){
             return $this->AuthenticationResponse($e);
+        }
+
+        if($this->isAuthorization($e)){
+            return $this->AuthorizationResponse($e);
         }
 
         if($this->isUnauthorized($e)){
@@ -78,6 +83,10 @@ trait ExceptionTrait
 
     protected function isAuthentication($e){
         return $e instanceof AuthenticationException;
+    }
+
+    protected function isAuthorization($e){
+        return $e instanceof AuthorizationException;
     }
 
     protected function isUnauthorized($e){
@@ -124,6 +133,11 @@ trait ExceptionTrait
     {
         return $this->errorResponse("Connexion expiré. Veuillez vous connectez", [], Response::HTTP_UNAUTHORIZED);
         return $this->errorResponse($e->getMessages() == "Unauthenticated" ? "Connexion expiré. Veuillez vous connectez" : $e->getMessages(), [], Response::HTTP_UNAUTHORIZED);
+    }
+
+    protected function AuthorizationResponse($e)
+    {
+        return $this->errorResponse("Vous n'êtes pas autorisé à effectuer cette action.", [], Response::HTTP_FORBIDDEN);
     }
 
     protected function UnauthorizedResponse($e)
