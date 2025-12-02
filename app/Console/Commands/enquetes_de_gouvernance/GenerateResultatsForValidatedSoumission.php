@@ -718,7 +718,7 @@ class GenerateResultatsForValidatedSoumission extends Command
     ) {
         $profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first();
 
-        $this->info("Generated result for soumissions - Profile ID: {$profile->resultat_synthetique}");
+        $this->info("Generated result for soumissions - Profile ID: " . json_encode($profile->resultat_synthetique));
 
         if (!$profile) {
             return;
