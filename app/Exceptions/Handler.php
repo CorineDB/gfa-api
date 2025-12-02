@@ -9,7 +9,7 @@ use Throwable;
 class Handler extends ExceptionHandler
 {
     use ExceptionTrait;
-    
+
     /**
      * A list of the exception types that are not reported.
      *
@@ -47,6 +47,12 @@ class Handler extends ExceptionHandler
         if ($request->expectsJson() || $request->wantsJson() || $request->isJson() || $request->is('api/*'))
         {
             return $this->apiExceptions($request,$exception);
+        }
+        if ($exception instanceof \Illuminate\Auth\AuthenticationException) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Action non authoriser.',
+            ], 403);
         }
 
         return parent::render($request, $exception);
