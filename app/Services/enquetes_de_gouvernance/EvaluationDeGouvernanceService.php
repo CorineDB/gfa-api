@@ -338,6 +338,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     "lien_factuel_token"          => $organisationEvaluation->pivot->token,
                     "lien_perception_token"       => $organisationEvaluation->pivot->token,
                     'organisation_token'          => $organisationEvaluation->pivot->token, // <-- Ajouté
+                    'nbreDeParticipants'          => $organisationEvaluation->pivot->nbreDeParticipants ?? 0,
+                    'participants'                => $organisationEvaluation->pivot->participants ?? 0,
+                    //'participants' => $participantsList, // <-- NOUVEAU : La liste détaillée des participants
 
                     'pourcentage_evolution' => $organisation->getSubmissionRateAttribute($evaluationDeGouvernance->id),
                 ], ['factuel' => $formFactuel ? new SoumissionFactuelResource($formFactuel) : null, 'perception' => SoumissionDePerceptionResource::collection($evaluationDeGouvernance->soumissionsDePerception)]);
@@ -379,6 +382,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                             "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
+                            'nbreDeParticipants'          => $organisation->pivot->nbreDeParticipants ?? 0,
+                            'participants'                => $organisation->pivot->participants ?? 0,
                         ], ['factuel' => $soumissionsFactuel, 'perception' => $soumissionsDePerception]);
                     });
             }
@@ -518,6 +523,8 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'prenom_point_focal' => $organisation->prenom_point_focal,
                     'contact_point_focal' => $organisation->contact_point_focal,
                     "lien_perception_token"       => $organisationEvaluation->pivot->token,
+                    'nbreDeParticipants'          => $organisationEvaluation->pivot->nbreDeParticipants ?? 0,
+                    'participants'                => $organisationEvaluation->pivot->participants ?? 0,
                     'pourcentage_evolution_des_soumissions_de_perception' => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id),
                     'perception' => SoumissionDePerceptionResource::collection($soumissionsDePerception)
                 ];
