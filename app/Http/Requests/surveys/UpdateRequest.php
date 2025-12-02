@@ -16,7 +16,7 @@ class UpdateRequest extends FormRequest
      * @return bool
      */
     public function authorize()
-    {        
+    {
         return request()->user()->hasPermissionTo("modifier-une-enquete-individuelle") || request()->user()->hasRole("unitee-de-gestion", "organisation");
     }
 
@@ -33,7 +33,7 @@ class UpdateRequest extends FormRequest
         }
 
         return [
-            'intitule'               => ['sometimes', 'string', Rule::unique('surveys', 'intitule')->ignore($this->survey)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'intitule'               => ['sometimes', 'string', Rule::unique('surveys', 'intitule')->ignore($this->survey)->where("created_by_type", auth()->user()->profilable_type)->where("created_by_id", auth()->user()->profilable_id)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'description'           => 'nullable|max:255',
             'prive'                 => 'required|boolean:false',

@@ -25,13 +25,13 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->survey))
+        if(is_string($this->survey_form))
         {
-            $this->survey = Survey::findByKey($this->survey);
+            $this->survey_form = Survey::findByKey($this->survey_form);
         }
 
         return [
-            'libelle'               => ['sometimes', 'string', Rule::unique('survey_forms', 'libelle')->ignore($this->survey)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'libelle'               => ['sometimes', 'string', Rule::unique('survey_forms', 'libelle')->ignore($this->survey_form)->where("created_by_type", auth()->user()->profilable_type)->where("created_by_id", auth()->user()->profilable_id)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'description' => 'sometimes|nullable|max:255',
             'form_data' => 'sometimes|array|min:1'

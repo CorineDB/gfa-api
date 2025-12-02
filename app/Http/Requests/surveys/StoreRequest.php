@@ -27,7 +27,7 @@ class StoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'intitule'               => ['required', 'string', Rule::unique('surveys', 'intitule')->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
+            'intitule'               => ['required', 'string', Rule::unique('surveys', 'intitule')->where("created_by_type", auth()->user()->profilable_type)->where("created_by_id", auth()->user()->profilable_id)->where("programmeId", auth()->user()->programmeId)->whereNull('deleted_at')],
 
             'description'           => 'nullable|max:255',
             'prive'                 => 'required|boolean:false',
