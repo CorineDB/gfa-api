@@ -324,6 +324,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     // declencher une exception
                     throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
                 }
+                    throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance : " . json_encode($organisationEvaluation), 404);
 
                 $formFactuel = $evaluationDeGouvernance->soumissionsFactuel->first();
 
