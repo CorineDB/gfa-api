@@ -57,8 +57,8 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                 $evaluationDeGouvernance = $this->resource; // L'instance de EvaluationDeGouvernance passée à la ressource
 
                 // On doit récupérer le pivot pour avoir la liste des participants
-                $evaluationOrganisationPivot = $evaluationDeGouvernance->organisations()->wherePivot('organisation_id', $organisation->id)->first()->pivot ?? null;
-                $participantsList = $evaluationOrganisationPivot && $evaluationOrganisationPivot->participants ? json_decode($evaluationOrganisationPivot->participants, true) : [];
+                // $evaluationOrganisationPivot = $evaluationDeGouvernance->organisations()->wherePivot('organisation_id', $organisation->id)->first()->pivot ?? null;
+                // $participantsList = $evaluationOrganisationPivot && $evaluationOrganisationPivot->participants ? json_decode($evaluationOrganisationPivot->participants, true) : [];
 
 
                 return [
@@ -66,7 +66,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
                     'pourcentage_evolution_perception_organisations'     => optional($organisation)->getPerceptionSubmissionRateAttribute($this->id) ?? 0,
                     'pourcentage_evolution_factuel_organisations'    => optional($organisation)->getFactuelSubmissionRateAttribute($this->id) ?? 0,
                     'nbreDeParticipants' => optional($organisation)->getNbreDeParticipantsAttribute($this->id) ?? 0,
-                    'participants' => $participantsList, // <-- NOUVEAU : La liste détaillée des participants
+                    //'participants' => $participantsList, // <-- NOUVEAU : La liste détaillée des participants
                 ];
             }),
 
