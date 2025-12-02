@@ -319,7 +319,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         }
                     ]);
 
-                if (!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()) {
+                if (!$organisationEvaluation = $evaluationDeGouvernance->organisations()->where('organisations.id', $organisation->id)->first()) {
                     // declencher une exception
                     throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
                 }
@@ -417,15 +417,14 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $organisation = Auth::user()->profilable;
 
                 // Charger uniquement les soumissions factuelles de l'organisation
-                $soumissionsFactuel = $evaluationDeGouvernance->soumissionsFactuel()
-                    ->where('organisationId', $organisation->id)
-                    ->get();
-
-                if (!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()) {
-                    // declencher une exception
-                    throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
-                }
-
+                                    $soumissionsFactuel = $evaluationDeGouvernance->soumissionsFactuel()
+                                        ->where('organisationId', $organisation->id)
+                                        ->get();
+                
+                                    if (!$organisationEvaluation = $evaluationDeGouvernance->organisations()->where('organisations.id', $organisation->id)->first()) {
+                                        // declencher une exception
+                                        throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
+                                    }
                 $group_soumissions = [
                     "id" => $organisation->secure_id,
                     'nom' => optional($organisation->user)->nom ?? null,
@@ -508,7 +507,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->where('organisationId', $organisation->id)
                     ->get();
 
-                if (!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()) {
+                if (!$organisationEvaluation = $evaluationDeGouvernance->organisations()->where('organisations.id', $organisation->id)->first()) {
                     // declencher une exception
                     throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
                 }
