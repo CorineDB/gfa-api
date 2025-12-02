@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class UpdateUniqueConstraintForSurveyForms extends Migration
+class UpdateUniqueConstraintForSurveyFormsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -24,7 +24,7 @@ class UpdateUniqueConstraintForSurveyForms extends Migration
                 } catch (\Exception $e) {
                     Log::info("Constraint 'survey_forms_libelle_programmeId_unique' not found or could not be dropped: " . $e->getMessage());
                 }
-                
+
                 // Also try dropping the simple unique constraint just in case
                  try {
                     $table->dropUnique('survey_forms_libelle_unique');
@@ -35,10 +35,10 @@ class UpdateUniqueConstraintForSurveyForms extends Migration
                 // 2. Add the new composite unique constraint including created_by fields
                 // Unique on: libelle, programmeId, created_by_type, created_by_id
                 $newIndexName = 'survey_forms_lib_prog_creator_unique'; // Shortened name to avoid length limits
-                
+
                 try {
                     $table->unique(
-                        ['libelle', 'programmeId', 'created_by_type', 'created_by_id'], 
+                        ['libelle', 'programmeId', 'created_by_type', 'created_by_id'],
                         $newIndexName
                     );
                 } catch (\Exception $e) {
