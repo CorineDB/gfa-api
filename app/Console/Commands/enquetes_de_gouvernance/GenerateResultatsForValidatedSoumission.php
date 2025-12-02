@@ -284,6 +284,87 @@ class GenerateResultatsForValidatedSoumission extends Command
         $existingResults = $existingResults instanceof Collection ? $existingResults->toArray() : $existingResults;
         $newResults = $newResults instanceof Collection ? $newResults->toArray() : $newResults;
 
+        // --- NOUVEAU CODE : Fusion par NOM NORMALISÉ ---
+        // Gère: ID différents, Accents, Majuscules, Articles (Le, La, L', Un...)
+
+        $mergedMap = [];
+
+        // Fonction robuste de normalisation
+        $normalize = function ($str) {
+            if (!is_string($str)) return uniqid(); // Fallback
+
+            $str = mb_strtolower(trim($str), 'UTF-8');
+
+            // 1. Retirer les articles définis/indéfinis et prépositions courantes en début de chaîne
+            // l', d', le, la, les, un, une, des, du, de
+            $prefixes = [
+                "l'", "d'",
+                "le ", "la ", "les ",
+                "un ", "une ", "des ",
+                "du ", "de "
+            ];
+
+            foreach ($prefixes as $prefix) {
+                if (strpos($str, $prefix) === 0) {
+                    $str = substr($str, strlen($prefix));
+                    break;
+                }
+            }
+
+            // 2. Remplacement manuel des accents
+            $replacements = [
+                'à'=>'a', 'á'=>'a', 'â'=>'a', 'ã'=>'a', 'ä'=>'a', 'å'=>'a',
+                'ç'=>'c',
+                'è'=>'e', 'é'=>'e', 'ê'=>'e', 'ë'=>'e',
+                'ì'=>'i', 'í'=>'i', 'î'=>'i', 'ï'=>'i',
+                'ñ'=>'n',
+                'ò'=>'o', 'ó'=>'o', 'ô'=>'o', 'õ'=>'o', 'ö'=>'o',
+                'ù'=>'u', 'ú'=>'u', 'û'=>'u', 'ü'=>'u',
+                'ý'=>'y', 'ÿ'=>'y'
+            ];
+            $str = strtr($str, $replacements);
+
+            // 3. Ne garder que les lettres et chiffres
+            return preg_replace('/[^a-z0-9]/', '', $str);
+        };
+
+        // 1. Mapper l'existant par clé normalisée
+        foreach ($existingResults as $item) {
+            $item = is_array($item) ? $item : (array) $item;
+            // Clé: Nom normalisé ou ID si pas de nom
+            $key = isset($item['nom']) ? $normalize($item['nom']) : (string) ($item['id'] ?? uniqid());
+
+            if (empty($key)) $key = (string) ($item['id'] ?? uniqid());
+
+            $mergedMap[$key] = $item;
+        }
+
+        // 2. Fusionner les nouveaux
+        foreach ($newResults as $result) {
+            $result = is_array($result) ? $result : (array) $result;
+
+            $key = isset($result['nom']) ? $normalize($result['nom']) : (string) ($result['id'] ?? uniqid());
+
+            if (empty($key)) $key = (string) ($result['id'] ?? uniqid());
+
+            if (isset($mergedMap[$key])) {
+                // Fusion (la nouvelle valeur écrase l'ancienne pour les clés communes)
+                $mergedMap[$key] = array_merge($mergedMap[$key], $result);
+            } else {
+                $mergedMap[$key] = $result;
+            }
+        }
+
+        return array_values($mergedMap);
+    }
+
+    /* ========== ANCIEN CODE (Fusion par ID strict) ==========
+    protected function mergeResults($existingResults, $newResults): array
+    {
+        // Convert to array if Collection
+        $existingResults = $existingResults instanceof Collection ? $existingResults->toArray() : $existingResults;
+        $newResults = $newResults instanceof Collection ? $newResults->toArray() : $newResults;
+
         $resultat_synthetique = collect($existingResults)->keyBy('id');
 
         foreach ($newResults as $result) {
@@ -300,6 +381,7 @@ class GenerateResultatsForValidatedSoumission extends Command
 
         return $resultat_synthetique->values()->toArray();
     }
+    ========================================================= */
 
     public function generateResultForPerceptionEvaluation(
         FormulaireDePerceptionDeGouvernance $formulaireDeGouvernance,
