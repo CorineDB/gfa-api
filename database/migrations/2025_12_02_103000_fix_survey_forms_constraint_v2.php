@@ -14,7 +14,7 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
      * @return void
      */
     public function up()
-    {
+    {/*
         if (Schema::hasTable('survey_forms')) {
             Schema::table('survey_forms', function (Blueprint $table) {
                 // 1. Drop the previous composite unique constraint if it exists
@@ -51,7 +51,7 @@ class FixSurveyFormsUniqueConstraintV2 extends Migration
                      Log::warning("Could not create unique constraint '$newIndexName': " . $e->getMessage());
                 }
             });
-        }
+        } */
     }
 
     /**
