@@ -25,6 +25,8 @@ class StoreActiviteRequest extends FormRequest
             if ($this->composanteId) {
                 $composante = Composante::find($this->composanteId);
 
+                dd($this->composanteId, $composante);
+
                 if ($composante) {
                     $projet = $composante->projet;
                     $this->composant = $composante;
