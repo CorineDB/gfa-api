@@ -190,8 +190,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                     $evaluationDeGouvernance->statut = -1;
                     $evaluationDeGouvernance->save();
-                }
-                else{
+                } else {
                     $evaluationDeGouvernance->statut = 0;
                     $evaluationDeGouvernance->save();
                 }
@@ -202,22 +201,22 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             if ($evaluationDeGouvernance->statut <= 0) {
                 $evaluationDeGouvernance->organisations()->syncWithoutDetaching($attributs['organisations']);
 
-    // Vérifier si toutes les organisations ont un token
-    foreach ($evaluationDeGouvernance->organisations as $organisation) {
-        if (empty($organisation->pivot->token)) {
-            // Générer un nouveau token
-            $token = str_replace(['/', '\\', '.'], '', Hash::make(
-                Hash::make($evaluationDeGouvernance->secure_id . $organisation->secure_id) .
-                    Hash::make(strtotime(now()))
-            ));
+                // Vérifier si toutes les organisations ont un token
+                foreach ($evaluationDeGouvernance->organisations as $organisation) {
+                    if (empty($organisation->pivot->token)) {
+                        // Générer un nouveau token
+                        $token = str_replace(['/', '\\', '.'], '', Hash::make(
+                            Hash::make($evaluationDeGouvernance->secure_id . $organisation->secure_id) .
+                                Hash::make(strtotime(now()))
+                        ));
 
-            // Mettre à jour le pivot
-            $evaluationDeGouvernance->organisations()->updateExistingPivot(
-                $organisation->id,
-                ['token' => $token]
-            );
-        }
-    }
+                        // Mettre à jour le pivot
+                        $evaluationDeGouvernance->organisations()->updateExistingPivot(
+                            $organisation->id,
+                            ['token' => $token]
+                        );
+                    }
+                }
             }
 
             if (isset($attributs['formulaires_de_gouvernance'])) {
@@ -320,11 +319,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         }
                     ]);
 
-                if(!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()){
+                if (!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()) {
                     // declencher une exception
                     throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
                 }
-                    throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance : " . json_encode($organisationEvaluation), 404);
+                throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance : " . json_encode($organisationEvaluation), 404);
 
                 $formFactuel = $evaluationDeGouvernance->soumissionsFactuel->first();
 
@@ -339,7 +338,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     "lien_factuel_token"          => $organisationEvaluation->pivot->token,
                     "lien_perception_token"       => $organisationEvaluation->pivot->token,
                     'organisation_token'          => $organisationEvaluation->pivot->token, // <-- Ajouté
-                    'nbreDeParticipants'          => $organisationEvaluation->pivot->nbreDeParticipants ?? 0,
+                    'nbreDeParticipants'          => $organisationEvaluation->pivot->nbreParticipants ?? 0,
                     'participants'                => $organisationEvaluation->pivot->participants ? json_decode($organisationEvaluation->pivot->participants) : 0,
                     //'participants' => $participantsList, // <-- NOUVEAU : La liste détaillée des participants
 
@@ -383,7 +382,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                             "lien_factuel"          => $url . "/tools-factuel/{$organisation->pivot->token}",
                             "lien_perception"       => $url . "/tools-perception/{$organisation->pivot->token}",
-                            'nbreDeParticipants'          => $organisation->pivot->nbreDeParticipants ?? 0,
+                            'nbreDeParticipants'          => $organisation->pivot->nbreParticipants ?? 0,
                             'participants'                => $organisation->pivot->participants ? json_decode($organisation->pivot->participants) : 0,
                         ], ['factuel' => $soumissionsFactuel, 'perception' => $soumissionsDePerception]);
                     });
@@ -423,7 +422,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->where('organisationId', $organisation->id)
                     ->get();
 
-                if(!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()){
+                if (!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()) {
                     // declencher une exception
                     throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
                 }
@@ -510,7 +509,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     ->where('organisationId', $organisation->id)
                     ->get();
 
-                if(!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()){
+                if (!$organisationEvaluation = $organisation->evaluations_de_gouvernance($organisation->id)->first()) {
                     // declencher une exception
                     throw new Exception("L'organisation n'est pas liée aucune évaluation de gouvernance.", 404);
                 }
@@ -524,7 +523,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     'prenom_point_focal' => $organisation->prenom_point_focal,
                     'contact_point_focal' => $organisation->contact_point_focal,
                     "lien_perception_token"       => $organisationEvaluation->pivot->token,
-                    'nbreDeParticipants'          => $organisationEvaluation->pivot->nbreDeParticipants ?? 0,
+                    'nbreDeParticipants'          => $organisationEvaluation->pivot->nbreParticipants ?? 0,
                     'participants'                => $organisationEvaluation->pivot->participants ? json_decode($organisationEvaluation->pivot->participants) : 0,
                     'pourcentage_evolution_des_soumissions_de_perception' => $organisation->getPerceptionSubmissionsCompletionAttribute($evaluationDeGouvernance->id),
                     'perception' => SoumissionDePerceptionResource::collection($soumissionsDePerception)
@@ -770,7 +769,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 $fiches_de_synthese = $evaluationDeGouvernance->fiches_de_synthese()->where('organisationId', $organisation->id)
                     ->get()->groupBy(['type'])->map(function ($fiches_de_synthese, $type) {
-                        return new FicheDeSyntheseResource ($fiches_de_synthese->first());
+                        return new FicheDeSyntheseResource($fiches_de_synthese->first());
                     });
 
                 $fiches_de_synthese = array_merge([
@@ -792,7 +791,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $organisation = app(OrganisationRepository::class)->findById($organisationId);
 
                     $fiches_de_synthese = $rapportEvaluationParOrganisation->map(function ($fiches_de_synthese, $type) {
-                        if($fiches_de_synthese){
+                        if ($fiches_de_synthese) {
                             return new FicheDeSyntheseResource($fiches_de_synthese->first());
                         }
                     })->filter();
@@ -1265,14 +1264,13 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $query->where('type', 'indicateur')->whereHas("soumission", function ($query) use ($evaluationDeGouvernance, $token) {
                         $query->where('evaluationId', $evaluationDeGouvernance->id)->where('organisationId', $evaluationDeGouvernance->organisations()->wherePivot('token', $token)->first()->id);
                     });
-                });*/
-                else {
+                });*/ else {
 
-                    if(!$evaluationDeGouvernance->formulaire_factuel_de_gouvernance()){
+                    if (!$evaluationDeGouvernance->formulaire_factuel_de_gouvernance()) {
                         return response()->json(['statut' => 'success', 'message' => "Evaluation inexistant", 'data' => -1, 'statutCode' => Response::HTTP_NOT_FOUND], Response::HTTP_NOT_FOUND);
                     }
 
-                    if($organisation->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernance->id)->count() >= 1){
+                    if ($organisation->sousmissions_enquete_factuel()->where('evaluationId', $evaluationDeGouvernance->id)->count() >= 1) {
                         return response()->json(['statut' => 'success', 'message' => "Soumission factuel passer", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
                     }
 
@@ -1429,7 +1427,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             ];
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $responseData, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -1573,7 +1570,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }
 
             return response()->json(['statut' => 'success', 'message' => "Participants mis à jour. Aucune nouvelle invitation nécessaire.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
@@ -1637,7 +1633,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             }
 
             return response()->json(['statut' => 'success', 'message' => "Tous les participants ont déjà soumis leur enquête.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
         } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
