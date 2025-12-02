@@ -239,6 +239,8 @@ class GenerateResultatsForValidatedSoumission extends Command
         } else {
             app(FicheDeSyntheseRepository::class)->create($data);
         }
+
+        $this->info("ficheDeSynthese updated/created for organisation ID: {$organisationId}, type: {$type}, fiche: {$fiche}");
     }
 
     protected function updateOrCreateProfile(
@@ -717,8 +719,6 @@ class GenerateResultatsForValidatedSoumission extends Command
         Collection $allPrincipes
     ) {
         $profile = $evaluationDeGouvernance->profiles($organisationId, $evaluationOrganisationId)->first();
-
-        $this->info("Generated result for soumissions - Profile ID: " . json_encode($profile->resultat_synthetique));
 
         if (!$profile) {
             return;
