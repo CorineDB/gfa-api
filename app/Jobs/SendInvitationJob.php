@@ -3,8 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\InvitationEnqueteDeCollecteEmail;
-use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance as EnqueteEvaluationDeGouvernance;
-use App\Models\EvaluationDeGouvernance;
+use App\Models\enquetes_de_gouvernance\EvaluationDeGouvernance;
 use App\Models\Organisation;
 use App\Traits\Helpers\ConfigueTrait;
 use App\Traits\Helpers\SmsTrait;
@@ -37,7 +36,7 @@ class SendInvitationJob implements ShouldQueue
      * @return void
      */
     public function __construct(
-        EvaluationDeGouvernance | EnqueteEvaluationDeGouvernance $evaluationDeGouvernance,
+        EvaluationDeGouvernance $evaluationDeGouvernance,
         Organisation $evaluationOrganisation,
         array $data,
         string $type,
@@ -70,7 +69,7 @@ class SendInvitationJob implements ShouldQueue
                 }
 
                 $participantsToNotify = $this->data["participants"] ?? [];
-                $token = $this->data['token'] ?? null;
+                $token = /* $this->data['token'] ?? */ null;
 
                 Log::warning("SendInvitationJob: Using token from data: " . ($token ?? 'NULL'));
                 if (!$token) {
