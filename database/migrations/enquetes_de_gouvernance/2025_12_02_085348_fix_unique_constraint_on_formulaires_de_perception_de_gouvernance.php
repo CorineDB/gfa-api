@@ -26,6 +26,9 @@ class FixUniqueConstraintOnFormulairesFactuelDeGouvernance extends Migration
      */
     public function down()
     {
-        //
+        Schema::table('formulaires_factuel_de_gouvernance', function (Blueprint $table) {
+            // 🔄 Restaurer l'unique si rollback
+            $table->unique('libelle', 'formulaires_factuel_de_gouvernance_libelle_unique');
+        });
     }
 }
