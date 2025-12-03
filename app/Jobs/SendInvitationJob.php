@@ -71,7 +71,7 @@ class SendInvitationJob implements ShouldQueue
                 $participantsToNotify = $this->data["participants"] ?? [];
                 $token = /* $this->data['token'] ?? */ null;
 
-                Log::warning("SendInvitationJob: Using token from data: " . ($token ?? 'NULL'));
+                Log::warning("SendInvitationJob: Using token from data: " . (json_encode($this->data) ?? 'NULL'));
                 if (!$token) {
                      // Fallback attempt to fetch if not passed (though service should pass it now)
                      // Or log warning. For now, let's rely on data.
