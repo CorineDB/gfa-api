@@ -101,7 +101,7 @@ class SendInvitationJob implements ShouldQueue
                         Log::warning("SendInvitationJob: Token not found in data : " . $token);
                         // Build personalized link with participant ID if available
                         $participantId = $participant['id'] ?? '';
-                        $link = $url . "/tools-perception/{$token}" . ($participantId ? "/{$participantId}" : "");
+                        $link = $url . "/tools-perception/{$token}" . ($participantId ? "?participantId={$participantId}" : "");
                         Log::warning("SendInvitationJob: invitation link: " . $link);
 
                         $details = [];
