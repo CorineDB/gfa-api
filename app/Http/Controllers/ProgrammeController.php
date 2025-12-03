@@ -316,4 +316,9 @@ class ProgrammeController extends Controller
     {
         return $this->programmeService->emailRapports();
     }
+
+    public function scores_au_fil_du_temps_reviser(?string $organisationId = null)
+    {
+        return $this->programmeService->scores_au_fil_du_temps_reviser($organisationId);
+    }
 }
