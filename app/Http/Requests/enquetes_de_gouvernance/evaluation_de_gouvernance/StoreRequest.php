@@ -247,12 +247,14 @@ class StoreRequest extends FormRequest
                 if (!empty($perceptionDiffNames) || !empty($factuelDiffNames)) {
                     $message = "Les principes de gouvernance ne correspondent pas entre les formulaires.";
                     if (!empty($perceptionDiffNames)) {
-                        $message .= " Principes manquants dans le formulaire factuel : " . implode(', ', $perceptionDiffNames) . ".";
+                        $message = " Principes manquants dans le formulaire factuel : " . implode(', ', $perceptionDiffNames) . ".";
+                        $validator->errors()->add('formulaires_de_gouvernance.perception ', $message);
                     }
                     if (!empty($factuelDiffNames)) {
-                        $message .= " Principes manquants dans le formulaire de perception : " . implode(', ', $factuelDiffNames) . ".";
+                        $message = " Principes manquants dans le formulaire de perception : " . implode(', ', $factuelDiffNames) . ".";
+                        $validator->errors()->add('formulaires_de_gouvernance.factuel ', $message);
                     }
-                    $validator->errors()->add('formulaires_de_gouvernance', $message);
+                    //$validator->errors()->add('formulaires_de_gouvernance', $message);
                 }
             } else {
 
