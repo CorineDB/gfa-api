@@ -136,7 +136,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 ));
 
                 // Add to the array in the correct format
-                $organisationsId[$organisation->id] = ['token' => $token];
+                $organisationsId[$organisation->id] = ['token' => $token, 'nbreParticipants' => 1, 'participants' => null];
             }
 
             // Attach organisations with the additional pivot data
@@ -1666,6 +1666,52 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                         'id' => $organisation->secure_id,
                         'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
                         'scores' => $evaluations_scores,
+                    ];
+                })
+                ->values(); // Reset keys for a clean JSON output
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function resultats_syntheses_reviser($evaluationDeGouvernance): JsonResponse
+    {
+        try {
+            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+
+            $resultats_syntheses = [];
+
+            $organisationId = null;
+
+            if ((auth()->user()->type == "organisation") || get_class(auth()->user()->profilable) == Organisation::class) {
+                $organisationId = optional(auth()->user()->profilable)->id;
+            }
+
+            $programme = auth()->user()->programme;
+
+            $resultats_syntheses = $evaluationDeGouvernance->organisations($organisationId)->get()
+                ->map(function ($organisation) use ($programme) { // Use $programme here
+                    // Calculate scores for this specific organisation
+                    $evaluations_scores_by_year = $programme->evaluations_de_gouvernance->map(function ($programme_evaluation_de_gouvernance) use ($organisation) {
+                        return [
+                            'annee' => $programme_evaluation_de_gouvernance->annee_exercice,
+                            'results' => $organisation->profiles($programme_evaluation_de_gouvernance->id)->first()->resultat_synthetique ?? []
+                        ];
+                    })->groupBy('annee') // Group by year
+                    ->map(function ($yearly_evaluations_data) {
+                        // For each year, flatten the 'results' arrays from all evaluations into a single array
+                        return $yearly_evaluations_data->flatMap(function ($item) {
+                            return $item['results'];
+                        })->values(); // Reset keys
+                    });
+
+                    // Merge evaluation scores with organizational metadata
+                    return [
+                        'id' => $organisation->secure_id,
+                        'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
+                        'scores' => $evaluations_scores_by_year, // Assign the grouped scores
                     ];
                 })
                 ->values(); // Reset keys for a clean JSON output

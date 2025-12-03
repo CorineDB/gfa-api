@@ -33,7 +33,7 @@ class EvaluationDeGouvernanceController extends Controller
         $this->middleware('permission:voir-une-action-a-mener')->only(['actions_a_mener']);
         $this->middleware('permission:voir-plan-action')->only(['feuille_de_route']);
         $this->middleware('permission:voir-une-fiche-de-synthese')->only(['fiches_de_synthese']);
-        $this->middleware('permission:voir-resultats-evaluation')->only(['resultats_syntheses']);
+        $this->middleware('permission:voir-resultats-evaluation')->only(['resultats_syntheses', 'resultats_syntheses_reviser']);
         $this->middleware('permission:voir-un-formulaires-de-gouvernance')->only(['formulaires_de_gouvernance']);
         $this->middleware('permission:voir-formulaire-factuel')->only(['formulaire_factuel', 'formulaire_factuel_de_gouvernance']);
 
@@ -157,6 +157,11 @@ class EvaluationDeGouvernanceController extends Controller
     public function resultats_syntheses($id)
     {
         return $this->evaluationDeGouvernanceService->resultats_syntheses($id);
+    }
+
+    public function resultats_syntheses_reviser($id)
+    {
+        return $this->evaluationDeGouvernanceService->resultats_syntheses_reviser($id);
     }
 
     public function voir_resultats_syntheses_avec_classement_des_organisations($id)
