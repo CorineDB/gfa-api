@@ -1391,7 +1391,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
 
                 // Si le nombre de soumissions terminées atteint ou dépasse le quota, on bloque la création de nouvelles.
                 if ($currentSubmissionsCount >= $quota) {
-                    return response()->json(['statut' => 'error', 'message' => "Le nombre maximal de soumissions COMPLÉTÉES pour cette évaluation a été atteint. Merci de votre intérêt.", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_FORBIDDEN], Response::HTTP_FORBIDDEN);
+                    return response()->json(['statut' => 'error', 'message' => "Le nombre maximal de soumissions COMPLÉTÉES pour cette évaluation a été atteint. Merci de votre intérêt.", 'data' => ['terminer' => true, 'formulaire_de_gouvernance' => null], 'statutCode' => Response::HTTP_NOT_ACCEPTABLE], Response::HTTP_NOT_ACCEPTABLE);
                 }
 
                 // Création de la soumission
