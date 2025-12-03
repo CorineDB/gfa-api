@@ -1563,6 +1563,9 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $jobData['participants'] = $participantsToNotify;
                 $jobData['token'] = $evaluationOrganisation->pivot->token; // Pass token explicitly
 
+
+                Log::warning("SendInvitationJob: processing: " . (json_encode($jobData)));
+
                 SendInvitationJob::dispatch($evaluationDeGouvernance, $evaluationOrganisation, $jobData, 'invitation-enquete-de-collecte');
 
                 return response()->json(['statut' => 'success', 'message' => "Invitations envoyées aux nouveaux participants.", 'data' => null, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
