@@ -58,7 +58,7 @@ class EvaluationsDeGouvernanceResource extends JsonResource
 
                 // On doit récupérer le pivot pour avoir la liste des participants
                 $evaluationOrganisationPivot = $evaluationDeGouvernance->organisations()->wherePivot('organisationId', $organisation->id)->first()->pivot ?? null;
-                $nbreDeParticipants = $evaluationOrganisationPivot && $evaluationOrganisationPivot->nbreParticipants ? json_decode($evaluationOrganisationPivot->nbreParticipants, true) : [];
+                $nbreDeParticipants = $evaluationOrganisationPivot && $evaluationOrganisationPivot->nbreParticipants ? $evaluationOrganisationPivot->nbreParticipants : [];
                 $participantsList = $evaluationOrganisationPivot && $evaluationOrganisationPivot->participants ? json_decode($evaluationOrganisationPivot->participants, true) : [];
 
 
