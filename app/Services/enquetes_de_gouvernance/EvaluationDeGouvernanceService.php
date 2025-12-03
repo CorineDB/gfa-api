@@ -1541,7 +1541,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 }
             }
 
-            $participantsToNotify = $existingKeys;
+            $participantsToNotify = [];
             foreach ($newParticipants as $np) {
                 $key = null;
                 if (isset($np['type_de_contact'])) {
@@ -1553,7 +1553,6 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 if ($key && !isset($existingKeys[$key])) {
                     $participantsToNotify[] = $np;
                 }
-                $participantsToNotify[] = $np;
             }
 
             // 6. Dispatcher le job UNIQUEMENT s'il y a des gens à notifier
@@ -1564,7 +1563,7 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                 $jobData['token'] = $evaluationOrganisation->pivot->token; // Pass token explicitly
 
 
-                Log::warning("SendInvitationJob: processing: " . (json_encode($jobData)));
+                Log::warning("Service before job is process : " . (json_encode($jobData)));
 
                 SendInvitationJob::dispatch($evaluationDeGouvernance, $evaluationOrganisation, $jobData, 'invitation-enquete-de-collecte');
 

@@ -69,7 +69,7 @@ class SendInvitationJob implements ShouldQueue
                 }
 
                 $participantsToNotify = $this->data["participants"] ?? [];
-                $token = /* $this->data['token'] ?? */ null;
+                $token = $this->data['token'] ?? null;
 
                 Log::warning("SendInvitationJob: Using token from data: " . (json_encode($this->data)));
                 if (!$token) {
