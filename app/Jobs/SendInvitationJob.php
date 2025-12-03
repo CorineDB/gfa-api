@@ -49,9 +49,6 @@ class SendInvitationJob implements ShouldQueue
         $this->evaluationOrganisation = $evaluationOrganisation;
         $this->mailSubject = $mailSubject;
         $this->mailView = $mailView;
-
-        Log::info("SendInvitationJob: __construct() - Type received: '{$type}', assigned: '{$this->type}'");
-        Log::info("SendInvitationJob: __construct() - Data received keys: " . implode(', ', array_keys($data)));
     }
 
     /**
@@ -61,9 +58,6 @@ class SendInvitationJob implements ShouldQueue
      */
     public function handle()
     {
-        Log::info("SendInvitationJob: handle() - Type at start: '{$this->type}'");
-        Log::info("SendInvitationJob: handle() - Data at start: " . json_encode($this->data));
-
         try {
             if ($this->type == "invitation-enquete-de-collecte" || $this->type == "rappel-soumission") {
                 // Use the pre-loaded evaluationOrganisation object
@@ -77,7 +71,6 @@ class SendInvitationJob implements ShouldQueue
                 $participantsToNotify = $this->data["participants"] ?? [];
                 $token = $this->data['token'] ?? null;
 
-                Log::warning("SendInvitationJob: Using token from data: " . (json_encode($this->data)));
                 if (!$token) {
                      // Fallback attempt to fetch if not passed (though service should pass it now)
                      // Or log warning. For now, let's rely on data.
@@ -121,7 +114,6 @@ class SendInvitationJob implements ShouldQueue
                              $details['content']['cta_text'] = "Accéder au formulaire";
                              $details['content']['signature'] = "Cordialement, {$evaluationOrganisation->user->nom}";
                         }
-
 
                         try {
                             $mailer = new InvitationEnqueteDeCollecteEmail($details);
