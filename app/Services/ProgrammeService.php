@@ -580,9 +580,73 @@ class ProgrammeService extends BaseService implements ProgrammeServiceInterface
                 })
                 ->values(); // Reset keys for a clean JSON output
 
-
-            //return response()->json(['statut' => 'success', 'message' => null, 'data' => $cadre_de_mesure_rendement, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
             return response()->json(['statut' => 'success', 'message' => null, 'data' => $scores, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+
+        }
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function scores_au_fil_du_temps_reviser($organisationId = null) : JsonResponse
+    {
+        try
+        {
+            $programme = auth()->user()->programme;
+
+            if(auth()->user()->type=="organisation"){
+                $organisationId = optional(auth()->user()->profilable)->id;
+            }
+            else if($organisationId == null){
+                throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+            }
+
+            if($organisationId){
+
+                if (!(($organisation = app(OrganisationRepository::class)->findById($organisationId)))) {
+                    throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+                }
+            } else {
+                 throw new Exception("Organisation introuvable dans le programme.", Response::HTTP_NOT_FOUND);
+            }
+
+
+            $scores_by_organisation = collect();
+
+            if ($organisation) {
+                // Fetch and sort all evaluations for the program
+                $all_programme_evaluations = $programme->enquetes_de_gouvernance()
+                    ->orderBy('annee_exercice', 'asc')
+                    ->orderBy('debut', 'asc')
+                    ->get();
+
+                // Calculate scores for this specific organisation
+                $evaluations_scores_by_year = $all_programme_evaluations->map(function ($programme_evaluation_de_gouvernance) use ($organisation) {
+                    return [
+                        'annee' => $programme_evaluation_de_gouvernance->annee_exercice,
+                        'evaluation' => [
+                            'id' => $programme_evaluation_de_gouvernance->secure_id,
+                            'intitule' => $programme_evaluation_de_gouvernance->intitule,
+                            'resultats' => $organisation->profiles($programme_evaluation_de_gouvernance->id)->first()->resultat_synthetique ?? []
+                        ]
+                    ];
+                })->groupBy('annee') // Group by year
+                ->map(function ($yearly_evaluations_data) {
+                    // Return the list of evaluations for this year
+                    return $yearly_evaluations_data->pluck('evaluation')->values();
+                });
+
+                // Merge evaluation scores with organizational metadata
+                $scores_by_organisation->push([
+                    'id' => $organisation->secure_id,
+                    'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
+                    'scores' => $evaluations_scores_by_year, // Assign the grouped scores
+                ]);
+            }
+
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => $scores_by_organisation->values(), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
 
         }
         catch (\Throwable $th)
