@@ -50,7 +50,9 @@ class UpdateRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $anneeExercice = $this->input('annee_exercice');
                     if (date('Y', strtotime($value)) < $anneeExercice) {
-                        $fail("The $attribute must be equal to or later than the start of annee_exercice.");
+                        //$fail("The $attribute must be equal to or later than the start of annee_exercice.");
+                        $fail("La date de début doit être dans l’année d’exercice sélectionnée ou après.");
+
                     }
                 }
             ],

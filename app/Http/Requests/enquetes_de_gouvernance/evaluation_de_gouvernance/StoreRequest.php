@@ -44,7 +44,7 @@ class StoreRequest extends FormRequest
                 function ($attribute, $value, $fail) {
                     $anneeExercice = $this->input('annee_exercice');
                     if (date('Y', strtotime($value)) < $anneeExercice) {
-                        $fail("The $attribute must be equal to or later than the start of annee_exercice.");
+                        $fail("La date de début doit être dans l’année d’exercice sélectionnée ou après.");
                     }
                 }
             ],
@@ -74,66 +74,60 @@ class StoreRequest extends FormRequest
     public function messages()
     {
         return [
-            // Custom messages for the 'nom' field
-            /*
-                'nom.required'      => 'Le champ nom est obligatoire.',
-                'nom.max'           => 'Le nom ne doit pas dépasser 255 caractères.',
-                'nom.unique'        => 'Ce nom est déjà utilisé dans les résultats.',
 
-                // Custom messages for the 'description' field
-                'description.max'   => 'La description ne doit pas dépasser 255 caractères.',
+            // -------------------------
+            // INTITULÉ
+            // -------------------------
+            'intitule.required' => 'Veuillez saisir le nom de l’évaluation.',
+            'intitule.string'   => 'Le nom de l’évaluation doit être composé de lettres et de chiffres.',
+            'intitule.unique'   => 'Un autre outil utilise déjà ce nom, veuillez en choisir un autre.',
 
-                // Custom messages for the 'programmeId' field
-                'programmeId.required' => 'Le champ programme est obligatoire.',
-            */
+            // -------------------------
+            // DESCRIPTION
+            // -------------------------
+            'description.max' => 'La description est trop longue (maximum 255 caractères).',
 
-            // Nom de l'évaluation
-            'intitule.required' => 'Le nom de l’évaluation est obligatoire.',
-            'intitule.string'   => 'Le nom de l’évaluation doit être une chaîne de caractères.',
-            'intitule.unique'   => 'Ce nom d’évaluation est déjà utilisé pour ce programme.',
-            'intitule.max'           => 'Le intitule de l’évaluation ne doit pas dépasser 255 caractères.',
+            // -------------------------
+            // ANNÉE D’EXERCICE
+            // -------------------------
+            'annee_exercice.required' => 'Veuillez saisir l’année d’exercice.',
+            'annee_exercice.integer'  => 'L’année d’exercice doit être un nombre.',
 
-            // Description
-            'description.max' => 'La description ne doit pas dépasser 255 caractères.',
+            // -------------------------
+            // DATES
+            // -------------------------
+            'debut.required'     => 'Veuillez saisir la date de début.',
+            'debut.date'         => 'La date de début n’est pas valide.',
+            'debut.date_format'  => 'La date de début doit être au format AAAA-MM-JJ.',
+            'debut.before'       => 'La date de début doit être avant la date de fin.',
 
-            'programmeId.required' => 'Le programme associé est obligatoire.',
+            'fin.required'       => 'Veuillez saisir la date de fin.',
+            'fin.date'           => 'La date de fin n’est pas valide.',
+            'fin.date_format'    => 'La date de fin doit être au format AAAA-MM-JJ.',
+            'fin.after_or_equal' => 'La date de fin doit être après ou égale à la date de début.',
 
-            // Année d'exercice
-            'annee_exercice.required' => 'L’année d’exercice est obligatoire.',
-            'annee_exercice.integer'  => 'L’année d’exercice doit être un nombre entier.',
-
-            // Dates
-            'debut.required'        => 'La date de début est obligatoire.',
-            'debut.date'            => 'La date de début doit être une date valide.',
-            'debut.date_format'     => 'La date de début doit être au format AAAA-MM-JJ.',
-            'debut.before'          => 'La date de début doit être antérieure à la date de fin.',
-
-            'fin.required' => 'La date de fin est obligatoire.',
-            'fin.date' => 'La date de fin doit être une date valide.',
-            'fin.date_format' => 'La date de fin doit être au format AAAA-MM-JJ.',
-            'fin.after_or_equal' => 'La date de fin doit être égale ou postérieure à la date de début.',
 
             // Formulaires de gouvernance
-            'formulaires_de_gouvernance.required' => 'Veuillez soumettre au moins un formulaire de gouvernance.',
+            'formulaires_de_gouvernance.required' => 'Veuillez sélectionner au moins un formulaire pour cette évaluation.',
+            'formulaires_de_gouvernance.min'      => 'Vous devez soumettre au moins un formulaire.',
+            'formulaires_de_gouvernance.max'      => 'Vous ne pouvez pas soumettre plus de deux formulaires.',
             'formulaires_de_gouvernance.array'    => 'Les formulaires doivent être envoyés sous forme de tableau.',
-            'formulaires_de_gouvernance.min'      => 'Au moins un formulaire doit être soumis.',
-            'formulaires_de_gouvernance.max'      => 'Vous ne pouvez pas soumettre plus de 2 formulaires.',
+
+            'formulaires_de_gouvernance.factuel'    => 'Le formulaire factuel sélectionné est introuvable ou invalide.',
+            'formulaires_de_gouvernance.perception' => 'Le formulaire de perception sélectionné est introuvable ou invalide.',
 
             'formulaires_de_gouvernance.factuel.distinct'     => 'Chaque formulaire factuel doit être unique.',
             'formulaires_de_gouvernance.perception.distinct'  => 'Chaque formulaire de perception doit être unique.',
 
-            'formulaires_de_gouvernance.factuel'    => 'Le formulaire factuel soumis est inconnu ou invalide.',
-            'formulaires_de_gouvernance.perception' => 'Le formulaire de perception soumis est inconnu ou invalide.',
-
             // Correspondance des principes entre formulaires
-            'formulaires_de_gouvernance.mismatch_principes' => 'Les principes des formulaires factuel et de perception ne correspondent pas. Veuillez vérifier la cohérence.',
+            'formulaires_de_gouvernance.mismatch_principes' => 'Pour que cette évaluation soit valide, les principes de gouvernance doivent être identiques dans les deux formulaires. Veuillez vérifier que les mêmes principes sont utilisés.',
 
-            // Organisations
-            'organisations.required'       => 'Veuillez sélectionner au moins une organisation.',
-            'organisations.array'          => 'Les organisations doivent être envoyées sous forme de tableau.',
-            'organisations.min'            => 'Au moins une organisation doit être sélectionnée.',
-            'organisations.*.required'     => 'Chaque organisation sélectionnée est obligatoire.',
-            'organisations.*.distinct'     => 'Chaque organisation doit être unique.'
+            // Organisations participantes
+            'organisations.required'       => 'Veuillez sélectionner au moins une organisation qui participera à l’évaluation.',
+            'organisations.array'          => 'Les organisations doivent être envoyées sous forme de liste.',
+            'organisations.min'            => 'Vous devez sélectionner au moins une organisation pour participer à l’évaluation.',
+            'organisations.*.required'     => 'Chaque organisation sélectionnée doit être valide.',
+            'organisations.*.distinct'     => 'Chaque organisation participante doit être unique.'
         ];
     }
 
@@ -220,10 +214,27 @@ class StoreRequest extends FormRequest
                 //if (array_diff($perceptionPrincipesIds, $factuelPrincipesIds) || array_diff($factuelPrincipesIds, $perceptionPrincipesIds)) {
                 if (!empty(array_diff($perceptionPrincipesIds, $factuelPrincipesIds)) || !empty(array_diff($factuelPrincipesIds, $perceptionPrincipesIds))) {
 
-                    $validator->errors()->add(
+                    /* $validator->errors()->add(
                         'formulaires_de_gouvernance',
                         "Les principes de gouvernance du formulaire de perception doivent etre les memes dans le formulaire factuel."
-                    );
+                    ); */
+                    // Step 3: Compare perception IDs across forms
+                    $perceptionDiff = array_diff($perceptionPrincipesIds, $factuelPrincipesIds);
+                    $factuelDiff    = array_diff($factuelPrincipesIds, $perceptionPrincipesIds);
+
+                    if (!empty($perceptionDiff) || !empty($factuelDiff)) {
+                        $message = "Les principes de gouvernance ne correspondent pas entre les formulaires.";
+
+                        if (!empty($perceptionDiff)) {
+                            $message .= " Principes manquants dans le formulaire factuel : " . implode(', ', $perceptionDiff) . ".";
+                        }
+                        if (!empty($factuelDiff)) {
+                            $message .= " Principes manquants dans le formulaire de perception : " . implode(', ', $factuelDiff) . ".";
+                        }
+
+                        $validator->errors()->add('formulaires_de_gouvernance', $message);
+                    }
+
                 }
             } else {
 
