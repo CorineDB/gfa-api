@@ -246,15 +246,26 @@ class StoreRequest extends FormRequest
                 // Message utilisateur
                 if (!empty($perceptionDiffNames) || !empty($factuelDiffNames)) {
                     $message = "Les principes de gouvernance ne correspondent pas entre les formulaires.";
+                    // Message utilisateur par champ
                     if (!empty($perceptionDiffNames)) {
-                        $message = " Principes manquants dans le formulaire factuel : " . implode(', ', $perceptionDiffNames) . ".";
-                        $validator->errors()->add('formulaires_de_gouvernance.perception ', $message);
+                        $factuelErrorsMessage = " Principes manquants dans le formulaire factuel : " . implode(', ', $perceptionDiffNames) . ".";
+                        $message .= $factuelErrorsMessage;
+                        $validator->errors()->add(
+                            'formulaires_de_gouvernance.factuel',
+                            $factuelErrorsMessage
+                        );
                     }
+
                     if (!empty($factuelDiffNames)) {
-                        $message = " Principes manquants dans le formulaire de perception : " . implode(', ', $factuelDiffNames) . ".";
-                        $validator->errors()->add('formulaires_de_gouvernance.factuel ', $message);
+                        $perceptionErrorsMessage = " Principes manquants dans le formulaire de perception : " . implode(', ', $factuelDiffNames) . ".";
+                        $message .= $perceptionErrorsMessage;
+                        $validator->errors()->add(
+                            'formulaires_de_gouvernance.perception',
+                            $perceptionErrorsMessage
+                        );
                     }
-                    //$validator->errors()->add('formulaires_de_gouvernance', $message);
+
+                    $validator->errors()->add('formulaires_de_gouvernance', $message);
                 }
             } else {
 
