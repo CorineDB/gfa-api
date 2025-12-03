@@ -1697,14 +1697,16 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
                     $evaluations_scores_by_year = $programme->evaluations_de_gouvernance->map(function ($programme_evaluation_de_gouvernance) use ($organisation) {
                         return [
                             'annee' => $programme_evaluation_de_gouvernance->annee_exercice,
-                            'results' => $organisation->profiles($programme_evaluation_de_gouvernance->id)->first()->resultat_synthetique ?? []
+                            'evaluation' => [
+                                'id' => $programme_evaluation_de_gouvernance->secure_id,
+                                'intitule' => $programme_evaluation_de_gouvernance->intitule,
+                                'resultats' => $organisation->profiles($programme_evaluation_de_gouvernance->id)->first()->resultat_synthetique ?? []
+                            ]
                         ];
                     })->groupBy('annee') // Group by year
                     ->map(function ($yearly_evaluations_data) {
-                        // For each year, flatten the 'results' arrays from all evaluations into a single array
-                        return $yearly_evaluations_data->flatMap(function ($item) {
-                            return $item['results'];
-                        })->values(); // Reset keys
+                        // Return the list of evaluations for this year
+                        return $yearly_evaluations_data->pluck('evaluation')->values();
                     });
 
                     // Merge evaluation scores with organizational metadata
