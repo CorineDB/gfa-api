@@ -25,8 +25,7 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->survey_form))
-        {
+        if (is_string($this->survey_form)) {
             $this->survey_form = Survey::findByKey($this->survey_form);
         }
 
@@ -39,12 +38,25 @@ class UpdateRequest extends FormRequest
     }
 
     /**
-    * Get the error messages for the defined validation rules.
-    *
-    * @return array
-    */
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array
+     */
     public function messages()
     {
+        return [
+
+            // ---------- LIBELLE ----------
+            'libelle.string' => 'Le libellé du formulaire d’enquête personnalisée doit être une chaîne de caractères valide.',
+            'libelle.unique' => 'Un autre formulaire d’enquête personnalisée utilise déjà ce libellé.',
+
+            // ---------- DESCRIPTION ----------
+            'description.max' => 'La description du formulaire ne peut pas dépasser 255 caractères.',
+
+            // ---------- FORM DATA ----------
+            'form_data.array' => 'Le contenu du formulaire doit être une structure de données valide.',
+            'form_data.min'   => 'Le formulaire doit contenir au moins un élément.',
+        ];
         return [
             // Custom messages for the 'libelle' field
             'libelle.required'      => 'Le champ libelle est obligatoire.',
