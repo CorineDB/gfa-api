@@ -58,6 +58,7 @@ class SendInvitationJob implements ShouldQueue
      */
     public function handle()
     {
+
         try {
             if ($this->type == "invitation-enquete-de-collecte" || $this->type == "rappel-soumission") {
                 // Use the pre-loaded evaluationOrganisation object
@@ -71,6 +72,8 @@ class SendInvitationJob implements ShouldQueue
                 $participantsToNotify = $this->data["participants"] ?? [];
                 $token = $this->data['token'] ?? null;
 
+                Log::warning("SendInvitationJob: Using token from data: " . (json_encode($this->data)));
+                Log::warning("SendInvitationJob: Token not found in data : " . $token);
                 if (!$token) {
                      // Fallback attempt to fetch if not passed (though service should pass it now)
                      // Or log warning. For now, let's rely on data.
