@@ -1694,7 +1694,11 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
             $resultats_syntheses = $evaluationDeGouvernance->organisations($organisationId)->get()
                 ->map(function ($organisation) use ($programme) { // Use $programme here
                     // Calculate scores for this specific organisation
-                    $evaluations_scores_by_year = $programme->evaluations_de_gouvernance->map(function ($programme_evaluation_de_gouvernance) use ($organisation) {
+                    $evaluations_scores_by_year = $programme->evaluations_de_gouvernance()
+                        ->orderBy('annee_exercice', 'asc')
+                        ->orderBy('debut', 'asc')
+                        ->get()
+                        ->map(function ($programme_evaluation_de_gouvernance) use ($organisation) {
                         return [
                             'annee' => $programme_evaluation_de_gouvernance->annee_exercice,
                             'evaluation' => [
