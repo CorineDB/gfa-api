@@ -23,12 +23,12 @@ class SendInvitationJob implements ShouldQueue
 
     use ConfigueTrait,SmsTrait;
 
-    private $type;
-    private $data;
-    private $evaluationDeGouvernance;
-    private Organisation $evaluationOrganisation;
-    private string $mailSubject; // New property for dynamic subject
-    private string $mailView;    // New property for dynamic view/template
+    protected $type;
+    protected $data;
+    protected $evaluationDeGouvernance;
+    protected Organisation $evaluationOrganisation;
+    protected string $mailSubject; // New property for dynamic subject
+    protected string $mailView;    // New property for dynamic view/template
 
     /**
      * Create a new job instance.
