@@ -98,9 +98,11 @@ class SendInvitationJob implements ShouldQueue
                     // 1. EMAIL : Send individual personalized email
                     if ($participant['type_de_contact'] === 'email' && !empty($participant['email'])) {
 
+                        Log::warning("SendInvitationJob: Token not found in data : " . $token);
                         // Build personalized link with participant ID if available
                         $participantId = $participant['id'] ?? '';
                         $link = $url . "/tools-perception/{$token}" . ($participantId ? "/{$participantId}" : "");
+                        Log::warning("SendInvitationJob: invitation link: " . $link);
 
                         $details = [];
                         $details['view'] = $this->mailView; // Use dynamic view
