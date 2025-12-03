@@ -1035,8 +1035,6 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                     Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese')->middleware('permission:voir-une-fiche-de-synthese');
                     Route::get('{evaluation_de_gouvernance}/resultats-syntheses', 'resultats_syntheses')->name('resultats_syntheses')->middleware('permission:voir-resultats-evaluation');
-                    //Route reviser
-                    Route::get('{evaluation_de_gouvernance}/resultats-syntheses-reviser', 'resultats_syntheses_reviser')->name('resultats_syntheses_reviser')->middleware('permission:voir-resultats-evaluation');
                     Route::get('{evaluation_de_gouvernance}/voir-resultats-avec-classement-organisations', 'voir_resultats_syntheses_avec_classement_des_organisations')->name('voir_resultats_syntheses_avec_classement_des_organisations')->middleware('permission:voir-resultats-evaluation');
 
                     Route::get('{evaluation_de_gouvernance}/fiches-de-synthese-with-organisations-classement', 'fiches_de_synthese_with_organisations_classement')->name('fiches_de_synthese_with_organisations_classement')->middleware('permission:voir-une-fiche-de-synthese');
@@ -1216,6 +1214,8 @@ Route::group(['middleware' => ['cors', 'json.response'], 'as' => 'api.'/* , 'nam
 
                         Route::get('{evaluation_de_gouvernance}/fiches-de-synthese', 'fiches_de_synthese')->name('fiches_de_synthese')->middleware('permission:voir-une-fiche-de-synthese');
                         Route::get('{evaluation_de_gouvernance}/resultats-syntheses', 'resultats_syntheses')->name('resultats_syntheses')->middleware('permission:voir-resultats-evaluation');
+                        //Route reviser
+                        Route::get('{evaluation_de_gouvernance}/resultats-syntheses-reviser', 'resultats_syntheses_reviser')->name('resultats_syntheses_reviser')->middleware('permission:voir-resultats-evaluation');
                         Route::get('{evaluation_de_gouvernance}/voir-resultats-avec-classement-organisations', 'voir_resultats_syntheses_avec_classement_des_organisations')->name('voir_resultats_syntheses_avec_classement_des_organisations')->middleware('permission:voir-resultats-evaluation');
 
                         Route::get('{evaluation_de_gouvernance}/fiches-de-synthese-with-organisations-classement', 'fiches_de_synthese_with_organisations_classement')->name('fiches_de_synthese_with_organisations_classement');
