@@ -160,30 +160,7 @@ class StoreRequest extends FormRequest
                     return;
                 }
 
-                /*
-                // Step 1: Retrieve Principe IDs from the 'perception' form
-                $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance')
-                    ->where('formulaireDePerceptionId', $formulaireDePerception->id)
-                    ->whereNull('categorieDePerceptionDeGouvernanceId')
-                    ->pluck('categorieable_id')
-                    ->toArray();
-
-                // Step 2: Retrieve unique Principe IDs from the 'factuel' form
-                $factuelPrincipesIds = DB::table('categories_factuel_de_gouvernance as types')
-                    ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
-                    ->where('types.formulaireFactuelId', $formulaireFactuel->id)
-                    ->whereNull('types.categorieFactuelDeGouvernanceId')
-                    ->where('principes.formulaireFactuelId', $formulaireFactuel->id)
-                    ->whereNotNull('principes.categorieFactuelDeGouvernanceId')
-                    ->where('types.categorieable_type', get_class(new TypeDeGouvernanceFactuel()))
-                    ->where('principes.categorieable_type', get_class(new PrincipeDeGouvernanceFactuel()))
-                    ->select('principes.categorieable_id as principe_id')
-                    ->distinct() // Ignore duplicates by selecting only unique perception IDs
-                    ->pluck('principe_id')
-                    ->toArray();
-		*/
-
-                $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance as principes')
+                /* $perceptionPrincipesIds = DB::table('categories_de_perception_de_gouvernance as principes')
                     ->join('principes_de_gouvernance_de_perception as pgp', 'pgp.id', '=', 'principes.categorieable_id')
                     ->where('formulaireDePerceptionId', $formulaireDePerception->id)
                     ->whereNull('categorieDePerceptionDeGouvernanceId')
@@ -214,10 +191,10 @@ class StoreRequest extends FormRequest
                 //if (array_diff($perceptionPrincipesIds, $factuelPrincipesIds) || array_diff($factuelPrincipesIds, $perceptionPrincipesIds)) {
                 if (!empty(array_diff($perceptionPrincipesIds, $factuelPrincipesIds)) || !empty(array_diff($factuelPrincipesIds, $perceptionPrincipesIds))) {
 
-                    /* $validator->errors()->add(
+                    / $validator->errors()->add(
                         'formulaires_de_gouvernance',
                         "Les principes de gouvernance du formulaire de perception doivent etre les memes dans le formulaire factuel."
-                    ); */
+                    ); /
                     // Step 3: Compare perception IDs across forms
                     $perceptionDiff = array_diff($perceptionPrincipesIds, $factuelPrincipesIds);
                     $factuelDiff    = array_diff($factuelPrincipesIds, $perceptionPrincipesIds);
@@ -235,6 +212,47 @@ class StoreRequest extends FormRequest
                         $validator->errors()->add('formulaires_de_gouvernance', $message);
                     }
 
+                } */
+                // Récupérer les vrais noms
+                $perceptionPrincipesNames = DB::table('categories_de_perception_de_gouvernance as principes')
+                    ->join('principes_de_gouvernance_de_perception as pgp', 'pgp.id', '=', 'principes.categorieable_id')
+                    ->where('formulaireDePerceptionId', $formulaireDePerception->id)
+                    ->whereNull('categorieDePerceptionDeGouvernanceId')
+                    ->pluck('pgp.nom')
+                    ->toArray();
+
+                $factuelPrincipesNames = DB::table('categories_factuel_de_gouvernance as types')
+                    ->join('categories_factuel_de_gouvernance as principes', 'types.id', '=', 'principes.categorieFactuelDeGouvernanceId')
+                    ->join('principes_de_gouvernance_factuel as pgf', 'pgf.id', '=', 'principes.categorieable_id')
+                    ->where('types.formulaireFactuelId', $formulaireFactuel->id)
+                    ->whereNull('types.categorieFactuelDeGouvernanceId')
+                    ->where('principes.formulaireFactuelId', $formulaireFactuel->id)
+                    ->whereNotNull('principes.categorieFactuelDeGouvernanceId')
+                    ->pluck('pgf.nom')
+                    ->toArray();
+
+                // Versions normalisées pour comparer
+                $perceptionNormalized = array_map([$this, 'normalize_string'], $perceptionPrincipesNames);
+                $factuelNormalized    = array_map([$this, 'normalize_string'], $factuelPrincipesNames);
+
+                // Calculer les différences
+                $perceptionDiff = array_diff($perceptionNormalized, $factuelNormalized);
+                $factuelDiff    = array_diff($factuelNormalized, $perceptionNormalized);
+
+                // Récupérer les vrais noms pour afficher
+                $perceptionDiffNames = array_filter($perceptionPrincipesNames, fn($name) => in_array($this->normalize_string($name), $perceptionDiff));
+                $factuelDiffNames    = array_filter($factuelPrincipesNames, fn($name) => in_array($this->normalize_string($name), $factuelDiff));
+
+                // Message utilisateur
+                if (!empty($perceptionDiffNames) || !empty($factuelDiffNames)) {
+                    $message = "Les principes de gouvernance ne correspondent pas entre les formulaires.";
+                    if (!empty($perceptionDiffNames)) {
+                        $message .= " Principes manquants dans le formulaire factuel : " . implode(', ', $perceptionDiffNames) . ".";
+                    }
+                    if (!empty($factuelDiffNames)) {
+                        $message .= " Principes manquants dans le formulaire de perception : " . implode(', ', $factuelDiffNames) . ".";
+                    }
+                    $validator->errors()->add('formulaires_de_gouvernance', $message);
                 }
             } else {
 
