@@ -173,9 +173,9 @@ class StoreRequest extends FormRequest
             'nom.unique'   => 'Un indicateur portant ce nom existe déjà. Veuillez en choisir un autre.',
 
             // --- RESPONSABLES ---
-            'responsables.ug.required_if'        => 'Veuillez sélectionner l’unité de gestion responsable.',
+            /* 'responsables.ug.required_if'        => 'Veuillez sélectionner l’unité de gestion responsable.',
             'responsables.organisations.required_if' => 'Veuillez sélectionner au moins une organisation responsable.',
-            'responsables.organisations.*.distinct' => 'Chaque organisation doit être unique.',
+            'responsables.organisations.*.distinct' => 'Chaque organisation doit être unique.', */
 
             'responsables.ug.required_if'        => 'Veuillez sélectionner une unité de gestion responsable.',
             'responsables.organisations.required_if' => 'Veuillez sélectionner au moins une organisation responsable.',
