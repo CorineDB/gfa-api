@@ -177,6 +177,13 @@ class StoreRequest extends FormRequest
             'responsables.organisations.required_if' => 'Veuillez sélectionner au moins une organisation responsable.',
             'responsables.organisations.*.distinct' => 'Chaque organisation doit être unique.',
 
+            'responsables.ug.required'        => 'Veuillez sélectionner une unité de gestion responsable.',
+            'responsables.organisations.required' => 'Veuillez sélectionner au moins une organisation responsable.',
+            'responsables.organisations.*.distinct' => 'Chaque organisation responsable doit être unique.',
+            'responsables.organisations.*.exists' => 'L’organisation sélectionnée est invalide.',
+
+
+
             // --- ANNEE DE BASE ---
             'anneeDeBase.date_format'     => 'Veuillez saisir l’année de base au format AAAA.',
             'anneeDeBase.after_or_equal'  => 'L’année de base doit être après le début du programme.',
