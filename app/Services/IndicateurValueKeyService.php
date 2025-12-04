@@ -44,7 +44,7 @@ class IndicateurValueKeyService extends BaseService implements IndicateurValueKe
 
             if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
                 //$projets = $this->repository->allFiltredBy([['attribut' => 'programmeId', 'operateur' => '=', 'valeur' => auth()->user()->programme->id]]);
-                $indicateurs_values_keys = Auth::user()->programme->indicateurs_values_keys;
+                $indicateurs_values_keys = Auth::user()->programme->indicateurs_values_keys()->where('key', '!=', 'moy')->get();
             }
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursValueKeyResource::collection($indicateurs_values_keys), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);

@@ -60,6 +60,24 @@ class UniteeDeGestionObserver
                 ]
             );
         }
+
+        // Création de l'unité de mesure 'nombre' si elle n'existe pas pour ce programme
+        $uniteNombre = \App\Models\Unitee::firstOrCreate(
+            ['type' => 'nombre', 'programmeId' => $programmeId],
+            ['nom' => 'Nombre', 'programmeId' => $programmeId]
+        );
+
+        // Création de la clé d'indicateur 'moy' (moyenne) si elle n'existe pas pour ce programme
+        \App\Models\IndicateurValueKey::firstOrCreate(
+            ['key' => 'moy', 'programmeId' => $programmeId],
+            [
+                'libelle' => 'Moyenne',
+                'type' => 'nombre',
+                'description' => 'Clé générée automatiquement pour la moyenne',
+                'uniteeMesureId' => $uniteNombre->id,
+                'programmeId' => $programmeId,
+            ]
+        );
     }
 
     /**
