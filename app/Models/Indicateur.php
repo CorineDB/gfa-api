@@ -30,7 +30,8 @@ class Indicateur extends Model
             DB::beginTransaction();
             try {
 
-                if (($indicateur->suivis->pluck('suivisIndicateur')->count() > 0)) {
+                \Illuminate\Support\Facades\Log::info('Indicateur ID: ' . $indicateur->id . ' - Count of suivisIndicateur: ' . $indicateur->suivis->pluck('suivisIndicateur')->collapse()->count());
+                if (($indicateur->suivis->pluck('suivisIndicateur')->collapse()->count() > 0)) {
                     // Prevent deletion by throwing an exception
                     throw new Exception("Impossible de supprimer cet indicateur car il est lié à des données de suivi.");
                 }

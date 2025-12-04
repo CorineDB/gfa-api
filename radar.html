@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Évolution des Scores de Gouvernance V3</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+        }
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        canvas {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Évolution des Scores de Gouvernance par Organisation</h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="organisationSelect">Organisation :</label>
+                <select id="organisationSelect"></select>
+            </div>
+            <div class="control-group">
+                <label for="yearSelect">Année :</label>
+                <select id="yearSelect">
+                    <option value="all">Toutes les années</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="scoreTypeSelect">Type de Score :</label>
+                <select id="scoreTypeSelect">
+                    <option value="indice_synthetique">Synthétique</option>
+                    <option value="indice_factuel">Factuel</option>
+                    <option value="indice_de_perception">Perception</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <canvas id="governanceChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const jsonData = {
+            "statut": "success",
+            "message": null,
+            "data": [
+                {
+                    "id": "1ObEZkoyPWENwJ6VBdma92bkM5X8r43Xxl3ZlgDvLKxyeA0GopYOzjnR1rBpe59j",
+                    "intitule": "HG - organisation 1",
+                    "scores": {
+                        "2024": [
+                            {
+                                "id": "q3LDxPYpML43w0QP58RxaZkYqX2meO9AwBvjVdDJz1AG76ybnNrKlWgpr6Xn2Rm7",
+                                "intitule": "Evalaution A2024",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.88,
+                                        "indice_de_perception": 0.25,
+                                        "indice_synthetique": 0.47
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0.42,
+                                        "indice_synthetique": 0.65
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "7yOKnYv4PXrR3YdL5J2b7ekKnZ0qa6oZ1BA4vxpMgDmVGlWzwQy1O8jNj5MZqPWV",
+                                "intitule": "Evaluation B2024",
+                                "resultats": []
+                            }
+                        ],
+                        "2025": [
+                            {
+                                "id": "7D1deJkxbM06dAWVX8D2mnQJvR3wxOEwqokrGya1zp4ZNY75LPjelgKq4VyRm2Ka",
+                                "intitule": "Evalution A2023",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 1
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 1
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "5NOgpdmeez28Wq0dRjNAYrVMwXbP4GBezo6y1m5paODvJKnlg7QZkLx3xvbjLXGK",
+                                "intitule": "Evaluation A2025",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.69,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0.69
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0.03,
+                                        "indice_synthetique": 0.17
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "3mNkjA2qDa4ZXY3NLJPxpv2wnglm7zE1eEKjy0Rd5rObekQM6AW18GVqwgVRKYp4",
+                                "intitule": "Evalaution B2025",
+                                "resultats": [
+                                    {
+                                        "id": 27,
+                                        "nom": "Participation",
+                                        "indice_factuel": 0.25,
+                                        "indice_de_perception": 0.38,
+                                        "indice_synthetique": 0.31
+                                    },
+                                    {
+                                        "id": 26,
+                                        "nom": "Redevabilité",
+                                        "indice_factuel": 0.5,
+                                        "indice_de_perception": 0.19,
+                                        "indice_synthetique": 0.31
+                                    },
+                                    {
+                                        "id": 25,
+                                        "nom": "Efficacité et Efficience",
+                                        "indice_factuel": 0.38,
+                                        "indice_de_perception": 0.38,
+                                        "indice_synthetique": 0.38
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "eWyGPQaZPgJGwaLYAkmd5nvq7Wz8Rr9rOE23xOKeVN14ljy0ZQbM6pXD6mrdYMLg",
+                                "intitule": "Evalaution C2025",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.75,
+                                        "indice_de_perception": 0.38,
+                                        "indice_synthetique": 0.53
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "jObPZAzmDKnAeVPL426WGMv5q1ldx0o6voJpgNRz7yZQwj83bYXrkmaO4r1RJqae",
+                                "intitule": "essai casse",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.5,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0.5
+                                    }
+                                ]
+                            }
+                        ],
+                        "2026": [
+                            {
+                                "id": "yVZKbeDl2jD5zb7JZMweGPv8gm1QRdBG2EY30Nk6lp4qyrAxXWKLOnVaX7Nnw2Gd",
+                                "intitule": "Evaluation A2026",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0.03,
+                                        "indice_synthetique": 0.03
+                                    }
+                                ]
+                            }
+                        ],
+                        "2027": [
+                            {
+                                "id": "Vb5Zlx7zLl3VjpRv0qWdeMm6gJP7y890aEn1AbxzD52NGkwO4aYQKrZXeagOmvd3",
+                                "intitule": "Evaluation A2027",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0.13,
+                                        "indice_synthetique": 0.13
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "statutCode": 200
+        };
+
+        const organisationSelect = document.getElementById('organisationSelect');
+        const yearSelect = document.getElementById('yearSelect');
+        const scoreTypeSelect = document.getElementById('scoreTypeSelect');
+        const ctx = document.getElementById('governanceChart').getContext('2d');
+        let governanceChart;
+
+        // Fonction pour générer des couleurs uniques
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return `rgba(${r}, ${g}, ${b}, 0.8)`;
+        }
+
+        // Fonction pour générer une couleur de fond avec transparence
+        function getAreaColor(color) {
+            return color.replace(/0\.8\)$/, '0.2)');
+        }
+
+        // Fonction pour initialiser le sélecteur d'organisation
+        function populateOrganisationSelect() {
+            organisationSelect.innerHTML = '';
+            jsonData.data.forEach(org => {
+                const option = document.createElement('option');
+                option.value = org.id;
+                option.textContent = org.intitule;
+                organisationSelect.appendChild(option);
+            });
+        }
+
+        // Fonction pour initialiser le sélecteur d'année
+        function populateYearSelect(selectedOrganisationId) {
+            const organisationData = jsonData.data.find(org => org.id === selectedOrganisationId);
+            if (!organisationData) return;
+
+            const years = Object.keys(organisationData.scores).sort();
+            yearSelect.innerHTML = '<option value="all">Toutes les années</option>';
+            
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+        }
+
+        // Fonction pour préparer les données du graphique
+        function prepareChartData(selectedOrganisationId, selectedScoreType, selectedYear) {
+            const organisationData = jsonData.data.find(org => org.id === selectedOrganisationId);
+            if (!organisationData) return { labels: [], datasets: [] };
+
+            const labels = [];
+            const principlesMap = new Map();
+
+            // Déterminer les années à traiter
+            const yearsToProcess = selectedYear === 'all' 
+                ? Object.keys(organisationData.scores).sort() 
+                : [selectedYear];
+
+            // Parcourir les scores par année
+            yearsToProcess.forEach(year => {
+                const evaluations = organisationData.scores[year];
+                if (!evaluations) return;
+                
+                evaluations.forEach(evaluation => {
+                    labels.push(`${year} - ${evaluation.intitule}`);
+
+                    const currentEvaluationPrinciples = new Set(evaluation.resultats.map(r => r.nom));
+
+                    // Initialiser les principes existants
+                    principlesMap.forEach((dataArray, principleName) => {
+                        if (!currentEvaluationPrinciples.has(principleName) && dataArray.length < labels.length) {
+                            dataArray.push(0);
+                        }
+                    });
+
+                    // Ajouter les scores
+                    evaluation.resultats.forEach(result => {
+                        if (!principlesMap.has(result.nom)) {
+                            principlesMap.set(result.nom, Array(labels.length - 1).fill(0));
+                        }
+                        principlesMap.get(result.nom).push(
+                            result[selectedScoreType] !== undefined && result[selectedScoreType] !== null 
+                                ? result[selectedScoreType] 
+                                : 0
+                        );
+                    });
+
+                    // Compléter avec des 0 si nécessaire
+                    principlesMap.forEach((dataArray, principleName) => {
+                        if (dataArray.length < labels.length) {
+                            dataArray.push(0);
+                        }
+                    });
+                });
+            });
+
+            const datasets = [];
+            principlesMap.forEach((data, principleName) => {
+                const color = getRandomColor();
+                datasets.push({
+                    label: principleName,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: getAreaColor(color),
+                    tension: 0.3,
+                    fill: true,
+                    pointBackgroundColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                });
+            });
+
+            return { labels, datasets };
+        }
+
+        // Fonction pour obtenir le texte du type de score
+        function getScoreTypeText(scoreTypeValue) {
+            const options = Array.from(scoreTypeSelect.options);
+            const selectedOption = options.find(option => option.value === scoreTypeValue);
+            return selectedOption ? selectedOption.textContent : scoreTypeValue;
+        }
+
+        // Fonction pour mettre à jour le graphique
+        function updateChart() {
+            const selectedOrganisationId = organisationSelect.value;
+            const selectedScoreType = scoreTypeSelect.value;
+            const selectedYear = yearSelect.value;
+            const chartData = prepareChartData(selectedOrganisationId, selectedScoreType, selectedYear);
+
+            if (governanceChart) {
+                governanceChart.destroy();
+            }
+
+            const yearText = selectedYear === 'all' ? 'Toutes les années' : selectedYear;
+            const orgName = organisationSelect.options[organisationSelect.selectedIndex].text;
+
+            governanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: chartData.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Scores ${getScoreTypeText(selectedScoreType)} - ${orgName} (${yearText})`,
+                            font: {
+                                size: 18
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Évaluations'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: `Score ${getScoreTypeText(selectedScoreType)}`
+                            },
+                            beginAtZero: true,
+                            max: 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Événements
+        organisationSelect.addEventListener('change', () => {
+            populateYearSelect(organisationSelect.value);
+            updateChart();
+        });
+        yearSelect.addEventListener('change', updateChart);
+        scoreTypeSelect.addEventListener('change', updateChart);
+
+        // Initialisation
+        populateOrganisationSelect();
+        if (organisationSelect.value) {
+            populateYearSelect(organisationSelect.value);
+            updateChart();
+        } else {
+            ctx.font = "20px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Aucune donnée d'organisation disponible.", ctx.canvas.width/2, ctx.canvas.height/2);
+        }
+    </script>
+</body>
+</html>

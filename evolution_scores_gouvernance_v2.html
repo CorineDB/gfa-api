@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Évolution des Scores de Gouvernance V2</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #0056b3;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+        }
+        label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+        canvas {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Évolution des Scores de Gouvernance par Organisation (V2)</h1>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="organisationSelect">Organisation :</label>
+                <select id="organisationSelect"></select>
+            </div>
+            <div class="control-group">
+                <label for="scoreTypeSelect">Type de Score :</label>
+                <select id="scoreTypeSelect">
+                    <option value="indice_synthetique">Synthétique</option>
+                    <option value="indice_factuel">Factuel</option>
+                    <option value="indice_de_perception">Perception</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <canvas id="governanceChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const jsonData = {
+            "statut": "success",
+            "message": null,
+            "data": [
+                {
+                    "id": "1ObEZkoyPWENwJ6VBdma92bkM5X8r43Xxl3ZlgDvLKxyeA0GopYOzjnR1rBpe59j",
+                    "intitule": "HG - organisation 1",
+                    "scores": {
+                        "2024": [
+                            {
+                                "id": "q3LDxPYpML43w0QP58RxaZkYqX2meO9AwBvjVdDJz1AG76ybnNrKlWgpr6Xn2Rm7",
+                                "intitule": "Evalaution A2024",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.88,
+                                        "indice_de_perception": 0.25,
+                                        "indice_synthetique": 0.47
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0.42,
+                                        "indice_synthetique": 0.65
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "7yOKnYv4PXrR3YdL5J2b7ekKnZ0qa6oZ1BA4vxpMgDmVGlWzwQy1O8jNj5MZqPWV",
+                                "intitule": "Evaluation B2024",
+                                "resultats": []
+                            }
+                        ],
+                        "2025": [
+                            {
+                                "id": "7D1deJkxbM06dAWVX8D2mnQJvR3wxOEwqokrGya1zp4ZNY75LPjelgKq4VyRm2Ka",
+                                "intitule": "Evalution A2023",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 1
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 1
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "5NOgpdmeez28Wq0dRjNAYrVMwXbP4GBezo6y1m5paODvJKnlg7QZkLx3xvbjLXGK",
+                                "intitule": "Evaluation A2025",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.69,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0.69
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 1,
+                                        "indice_de_perception": 0.03,
+                                        "indice_synthetique": 0.17
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "3mNkjA2qDa4ZXY3NLJPxpv2wnglm7zE1eEKjy0Rd5rObekQM6AW18GVqwgVRKYp4",
+                                "intitule": "Evalaution B2025",
+                                "resultats": [
+                                    {
+                                        "id": 27,
+                                        "nom": "Participation",
+                                        "indice_factuel": 0.25,
+                                        "indice_de_perception": 0.38,
+                                        "indice_synthetique": 0.31
+                                    },
+                                    {
+                                        "id": 26,
+                                        "nom": "Redevabilité",
+                                        "indice_factuel": 0.5,
+                                        "indice_de_perception": 0.19,
+                                        "indice_synthetique": 0.31
+                                    },
+                                    {
+                                        "id": 25,
+                                        "nom": "Efficacité et Efficience",
+                                        "indice_factuel": 0.38,
+                                        "indice_de_perception": 0.38,
+                                        "indice_synthetique": 0.38
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "eWyGPQaZPgJGwaLYAkmd5nvq7Wz8Rr9rOE23xOKeVN14ljy0ZQbM6pXD6mrdYMLg",
+                                "intitule": "Evalaution C2025",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.75,
+                                        "indice_de_perception": 0.38,
+                                        "indice_synthetique": 0.53
+                                    }
+                                ]
+                            },
+                            {
+                                "id": "jObPZAzmDKnAeVPL426WGMv5q1ldx0o6voJpgNRz7yZQwj83bYXrkmaO4r1RJqae",
+                                "intitule": "essai casse",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0.5,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0.5
+                                    }
+                                ]
+                            }
+                        ],
+                        "2026": [
+                            {
+                                "id": "yVZKbeDl2jD5zb7JZMweGPv8gm1QRdBG2EY30Nk6lp4qyrAxXWKLOnVaX7Nnw2Gd",
+                                "intitule": "Evaluation A2026",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0.03,
+                                        "indice_synthetique": 0.03
+                                    }
+                                ]
+                            }
+                        ],
+                        "2027": [
+                            {
+                                "id": "Vb5Zlx7zLl3VjpRv0qWdeMm6gJP7y890aEn1AbxzD52NGkwO4aYQKrZXeagOmvd3",
+                                "intitule": "Evaluation A2027",
+                                "resultats": [
+                                    {
+                                        "id": 23,
+                                        "nom": "Transparence",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0.13,
+                                        "indice_synthetique": 0.13
+                                    },
+                                    {
+                                        "id": 24,
+                                        "nom": "Egalité et inclusion sociale",
+                                        "indice_factuel": 0,
+                                        "indice_de_perception": 0,
+                                        "indice_synthetique": 0
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "statutCode": 200
+        };
+
+        const organisationSelect = document.getElementById('organisationSelect');
+        const scoreTypeSelect = document.getElementById('scoreTypeSelect');
+        const ctx = document.getElementById('governanceChart').getContext('2d');
+        let governanceChart; // Variable pour stocker l'instance du graphique Chart.js
+
+        // Fonction pour générer des couleurs uniques avec transparence
+        function getRandomColor() {
+            const r = Math.floor(Math.random() * 255);
+            const g = Math.floor(Math.random() * 255);
+            const b = Math.floor(Math.random() * 255);
+            return `rgba(${r}, ${g}, ${b}, 0.8)`; // Couleur pour le contour de la ligne
+        }
+
+        // Fonction pour générer une couleur de fond avec transparence pour l'aire
+        function getAreaColor(color) {
+            // Utilise la même couleur que le contour mais avec une opacité de 0.2
+            return color.replace(/0\.8\)$/, '0.2)'); 
+        }
+
+        // Fonction pour initialiser les options du sélecteur d'organisation
+        function populateOrganisationSelect() {
+            organisationSelect.innerHTML = ''; // Nettoyer les options existantes
+            jsonData.data.forEach(org => {
+                const option = document.createElement('option');
+                option.value = org.id;
+                option.textContent = org.intitule;
+                organisationSelect.appendChild(option);
+            });
+        }
+
+        // Fonction pour préparer les données pour le graphique Chart.js
+        function prepareChartData(selectedOrganisationId, selectedScoreType) {
+            const organisationData = jsonData.data.find(org => org.id === selectedOrganisationId);
+            if (!organisationData) return { labels: [], datasets: [] };
+
+            const labels = []; // Labels pour l'axe X (Année - Évaluation)
+            const principlesMap = new Map(); // Pour regrouper les scores par principe
+
+            // Parcourir les scores par année, puis par évaluation
+            Object.keys(organisationData.scores).sort().forEach(year => {
+                const evaluations = organisationData.scores[year];
+                evaluations.forEach(evaluation => {
+                    // Ajouter le label de l'évaluation
+                    labels.push(`${year} - ${evaluation.intitule}`);
+
+                    // Collecter tous les noms de principes pour cette organisation
+                    const currentEvaluationPrinciples = new Set(evaluation.resultats.map(r => r.nom));
+
+                    // S'assurer que tous les principes déjà rencontrés sont initialisés avec des données (null ou 0)
+                    principlesMap.forEach((dataArray, principleName) => {
+                        if (!currentEvaluationPrinciples.has(principleName) && dataArray.length < labels.length) {
+                            dataArray.push(0); // Ajouter 0 si le principe n'a pas de score pour cette évaluation
+                        }
+                    });
+
+                    // Ajouter les scores de l'évaluation actuelle
+                    evaluation.resultats.forEach(result => {
+                        if (!principlesMap.has(result.nom)) {
+                            principlesMap.set(result.nom, Array(labels.length - 1).fill(0)); // Initialiser avec des 0 pour les évaluations précédentes
+                        }
+                        principlesMap.get(result.nom).push(result[selectedScoreType] !== undefined && result[selectedScoreType] !== null ? result[selectedScoreType] : 0);
+                    });
+
+                    // S'assurer que tous les principes n'ayant pas de résultat pour cette évaluation
+                    // et qui sont apparus précédemment ont un 0 pour cette évaluation.
+                    principlesMap.forEach((dataArray, principleName) => {
+                        if (dataArray.length < labels.length) {
+                            dataArray.push(0); // Ajouter 0 si un principe précédemment vu n'a pas de score ici
+                        }
+                    });
+                });
+            });
+
+            const datasets = [];
+            principlesMap.forEach((data, principleName) => {
+                const color = getRandomColor();
+                datasets.push({
+                    label: principleName,
+                    data: data,
+                    borderColor: color,
+                    backgroundColor: getAreaColor(color), // Couleur de fond pour l'aire
+                    tension: 0.3,
+                    fill: true, // Remplir l'aire sous la ligne
+                    pointBackgroundColor: 'white',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                });
+            });
+
+            return { labels, datasets };
+        }
+
+        // Fonction pour obtenir le texte du type de score sélectionné
+        function getScoreTypeText(scoreTypeValue) {
+            const options = Array.from(scoreTypeSelect.options);
+            const selectedOption = options.find(option => option.value === scoreTypeValue);
+            return selectedOption ? selectedOption.textContent : scoreTypeValue;
+        }
+
+        // Fonction pour dessiner/mettre à jour le graphique
+        function updateChart() {
+            const selectedOrganisationId = organisationSelect.value;
+            const selectedScoreType = scoreTypeSelect.value;
+            const chartData = prepareChartData(selectedOrganisationId, selectedScoreType);
+
+            if (governanceChart) {
+                governanceChart.destroy(); // Détruire l'ancienne instance si elle existe
+            }
+
+            governanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.labels,
+                    datasets: chartData.datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Évolution des scores ${getScoreTypeText(selectedScoreType)} pour ${organisationSelect.options[organisationSelect.selectedIndex].text}`,
+                            font: {
+                                size: 18
+                            }
+                        },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Évaluations dans le Temps'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: `Score ${getScoreTypeText(selectedScoreType)}`
+                            },
+                            beginAtZero: true,
+                            max: 1 // Les scores sont entre 0 et 1
+                        }
+                    }
+                }
+            });
+        }
+
+        // Événements de changement sur les sélecteurs
+        organisationSelect.addEventListener('change', updateChart);
+        scoreTypeSelect.addEventListener('change', updateChart);
+
+        // Initialisation du tableau de bord
+        populateOrganisationSelect();
+        if (organisationSelect.value) {
+            updateChart();
+        } else {
+             // Gérer le cas où il n'y a pas d'organisations
+            ctx.font = "20px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("Aucune donnée d'organisation disponible.", ctx.canvas.width/2, ctx.canvas.height/2);
+        }
+    </script>
+</body>
+</html>
