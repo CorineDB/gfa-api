@@ -177,8 +177,8 @@ class StoreRequest extends FormRequest
             'responsables.organisations.required_if' => 'Veuillez sélectionner au moins une organisation responsable.',
             'responsables.organisations.*.distinct' => 'Chaque organisation doit être unique.',
 
-            'responsables.ug.required'        => 'Veuillez sélectionner une unité de gestion responsable.',
-            'responsables.organisations.required' => 'Veuillez sélectionner au moins une organisation responsable.',
+            'responsables.ug.required_if'        => 'Veuillez sélectionner une unité de gestion responsable.',
+            'responsables.organisations.required_if' => 'Veuillez sélectionner au moins une organisation responsable.',
             'responsables.organisations.*.distinct' => 'Chaque organisation responsable doit être unique.',
             'responsables.organisations.*.exists' => 'L’organisation sélectionnée est invalide.',
 
