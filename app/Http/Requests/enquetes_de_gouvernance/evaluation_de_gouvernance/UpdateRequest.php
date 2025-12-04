@@ -81,6 +81,54 @@ class UpdateRequest extends FormRequest
     public function messages()
     {
         return [
+
+            // INTITULE
+            'intitule.required' => 'Veuillez saisir le nom de l’évaluation.',
+            'intitule.string'   => 'Le nom de l’évaluation doit être composé de lettres et de chiffres.',
+            'intitule.unique'   => 'Une autre évaluation utilise déjà ce nom. Veuillez en choisir un autre.',
+
+            // DESCRIPTION
+            'description.max' => 'La description est trop longue (maximum 255 caractères).',
+
+            // ANNEE
+            'annee_exercice.required' => 'Veuillez saisir l’année d’exercice.',
+            'annee_exercice.integer'  => 'L’année d’exercice doit être un nombre.',
+
+            // DATES
+            'debut.required'     => 'Veuillez saisir la date de début.',
+            'debut.date'         => 'La date de début n’est pas valide.',
+            'debut.date_format'  => 'La date de début doit être au format AAAA-MM-JJ.',
+            'debut.before'       => 'La date de début doit être avant la date de fin.',
+
+            'fin.required'       => 'Veuillez saisir la date de fin.',
+            'fin.date'           => 'La date de fin n’est pas valide.',
+            'fin.date_format'    => 'La date de fin doit être au format AAAA-MM-JJ.',
+            'fin.after_or_equal' => 'La date de fin doit être après ou égale à la date de début.',
+
+            // FORMULAIRES
+            'formulaires_de_gouvernance.required' => 'Veuillez sélectionner au moins un formulaire.',
+            'formulaires_de_gouvernance.array'    => 'Les formulaires doivent être envoyés sous forme de tableau.',
+            'formulaires_de_gouvernance.min'      => 'Vous devez sélectionner au moins un formulaire.',
+            'formulaires_de_gouvernance.max'      => 'Vous ne pouvez sélectionner que deux formulaires maximum.',
+
+            'formulaires_de_gouvernance.factuel'    => 'Le formulaire factuel sélectionné est introuvable ou invalide.',
+            'formulaires_de_gouvernance.perception' => 'Le formulaire de perception sélectionné est introuvable ou invalide.',
+
+            'formulaires_de_gouvernance.factuel.distinct'    => 'Chaque formulaire factuel doit être unique.',
+            'formulaires_de_gouvernance.perception.distinct' => 'Chaque formulaire de perception doit être unique.',
+
+            // PRINCIPES (mismatch)
+            'formulaires_de_gouvernance.mismatch_principes'
+                => 'Pour mettre à jour cette évaluation, les principes de gouvernance doivent être identiques dans les deux formulaires. Veuillez vérifier la cohérence.',
+
+            // ORGANISATIONS
+            'organisations.required'   => 'Veuillez sélectionner au moins une organisation participante.',
+            'organisations.array'      => 'Les organisations doivent être envoyées sous forme de liste.',
+            'organisations.min'        => 'Veuillez sélectionner au moins une organisation.',
+            'organisations.*.required' => 'Chaque organisation sélectionnée doit être valide.',
+            'organisations.*.distinct' => 'Chaque organisation doit être unique.',
+        ];
+        return [
             // Custom messages for the 'nom' field
             'nom.required'      => 'Le champ nom est obligatoire.',
             'nom.max'           => 'Le nom ne doit pas dépasser 255 caractères.',

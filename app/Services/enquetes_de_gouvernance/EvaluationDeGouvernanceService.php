@@ -1676,56 +1676,58 @@ class EvaluationDeGouvernanceService extends BaseService implements EvaluationDe
         }
     }
 
-    public function resultats_syntheses_reviser($evaluationDeGouvernance): JsonResponse
-    {
-        try {
-            if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
+    /*
+        public function resultats_syntheses_reviser($evaluationDeGouvernance): JsonResponse
+        {
+            try {
+                if (!is_object($evaluationDeGouvernance) && !($evaluationDeGouvernance = $this->repository->findById($evaluationDeGouvernance))) throw new Exception("Evaluation de gouvernance inconnue.", 500);
 
-            $resultats_syntheses = [];
+                $resultats_syntheses = [];
 
-            $organisationId = null;
+                $organisationId = null;
 
-            if ((auth()->user()->type == "organisation") || get_class(auth()->user()->profilable) == Organisation::class) {
-                $organisationId = optional(auth()->user()->profilable)->id;
-            }
+                if ((auth()->user()->type == "organisation") || get_class(auth()->user()->profilable) == Organisation::class) {
+                    $organisationId = optional(auth()->user()->profilable)->id;
+                }
 
-            $programme = auth()->user()->programme;
+                $programme = auth()->user()->programme;
 
-            $resultats_syntheses = $evaluationDeGouvernance->organisations($organisationId)->with('user')->get()
-                    // Calculate scores for this specific organisation
-                    $evaluations_scores_by_year = $programme->evaluations_de_gouvernance()
-                        ->orderBy('annee_exercice', 'asc')
-                        ->orderBy('debut', 'asc')
-                        ->get()
-                        ->map(function ($programme_evaluation_de_gouvernance) use ($organisation) {
+                $resultats_syntheses = $evaluationDeGouvernance->organisations($organisationId)->with('user')->get()
+                        // Calculate scores for this specific organisation
+                        $evaluations_scores_by_year = $programme->evaluations_de_gouvernance()
+                            ->orderBy('annee_exercice', 'asc')
+                            ->orderBy('debut', 'asc')
+                            ->get()
+                            ->map(function ($programme_evaluation_de_gouvernance) use ($organisation) {
+                            return [
+                                'annee' => $programme_evaluation_de_gouvernance->annee_exercice,
+                                'evaluation' => [
+                                    'id' => $programme_evaluation_de_gouvernance->secure_id,
+                                    'intitule' => $programme_evaluation_de_gouvernance->intitule,
+                                    'resultats' => $organisation->profiles($programme_evaluation_de_gouvernance->id)->first()->resultat_synthetique ?? []
+                                ]
+                            ];
+                        })->groupBy('annee') // Group by year
+                        ->map(function ($yearly_evaluations_data) {
+                            // Return the list of evaluations for this year
+                            return $yearly_evaluations_data->pluck('evaluation')->values();
+                        });
+
+                        // Merge evaluation scores with organizational metadata
                         return [
-                            'annee' => $programme_evaluation_de_gouvernance->annee_exercice,
-                            'evaluation' => [
-                                'id' => $programme_evaluation_de_gouvernance->secure_id,
-                                'intitule' => $programme_evaluation_de_gouvernance->intitule,
-                                'resultats' => $organisation->profiles($programme_evaluation_de_gouvernance->id)->first()->resultat_synthetique ?? []
-                            ]
+                            'id' => $organisation->secure_id,
+                            'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
+                            'scores' => $evaluations_scores_by_year, // Assign the grouped scores
                         ];
-                    })->groupBy('annee') // Group by year
-                    ->map(function ($yearly_evaluations_data) {
-                        // Return the list of evaluations for this year
-                        return $yearly_evaluations_data->pluck('evaluation')->values();
-                    });
+                    })
+                    ->values(); // Reset keys for a clean JSON output
 
-                    // Merge evaluation scores with organizational metadata
-                    return [
-                        'id' => $organisation->secure_id,
-                        'intitule' => $organisation->sigle . " - " . $organisation->user->nom,
-                        'scores' => $evaluations_scores_by_year, // Assign the grouped scores
-                    ];
-                })
-                ->values(); // Reset keys for a clean JSON output
-
-            return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        } catch (\Throwable $th) {
-            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+                return response()->json(['statut' => 'success', 'message' => null, 'data' => $resultats_syntheses, 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+            } catch (\Throwable $th) {
+                return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+            }
         }
-    }
+    */
 
     public function classement_resultats_syntheses_des_organisation($evaluationDeGouvernance): JsonResponse
     {

@@ -20,5 +20,5 @@ interface EvaluationDeGouvernanceServiceInterface
 
     public function envoi_mail_au_participants($evaluationDeGouvernance, array $attributs): JsonResponse;
 
-    public function resultats_syntheses_reviser($evaluationDeGouvernance): JsonResponse;
+    //public function resultats_syntheses_reviser($evaluationDeGouvernance): JsonResponse;
 }

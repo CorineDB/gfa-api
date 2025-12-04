@@ -36,8 +36,7 @@ class UpdateRequest extends FormRequest
      */
     public function rules()
     {
-        if(is_string($this->indicateur))
-        {
+        if (is_string($this->indicateur)) {
             $this->indicateur = Indicateur::findByKey($this->indicateur);
         }
 
@@ -54,18 +53,18 @@ class UpdateRequest extends FormRequest
             'hypothese'                     => 'nullable',
 
             'responsables'                  => ['sometimes', 'array'],
-            'responsables.ug'               => ['sometimes',Rule::requiredIf(!request()->input('responsables.organisations')), !empty(request()->input('responsables.organisations')) ? 'nullable' :'', 'string', new HashValidatorRule(new UniteeDeGestion())],
-            'responsables.organisations'    => ['sometimes',Rule::requiredIf(empty(request()->input('responsables.ug')) === true), 'array', 'min:0'],
+            'responsables.ug'               => ['sometimes', Rule::requiredIf(!request()->input('responsables.organisations')), !empty(request()->input('responsables.organisations')) ? 'nullable' : '', 'string', new HashValidatorRule(new UniteeDeGestion())],
+            'responsables.organisations'    => ['sometimes', Rule::requiredIf(empty(request()->input('responsables.ug')) === true), 'array', 'min:0'],
 
             'responsables.organisations.*'  => ['distinct', 'string', new HashValidatorRule(new Organisation())],
 
-            'anneeDeBase'                   => ['nullable', 'date_format:Y', 'after_or_equal:'.Carbon::parse($programme->debut)->year, 'before_or_equal:'.Carbon::parse($programme->fin)->year, 'before_or_equal:'.now()->format("Y")],
+            'anneeDeBase'                   => ['nullable', 'date_format:Y', 'after_or_equal:' . Carbon::parse($programme->debut)->year, 'before_or_equal:' . Carbon::parse($programme->fin)->year, 'before_or_equal:' . now()->format("Y")],
 
             "type_de_variable"              => ["sometimes", "in:quantitatif,qualitatif,dichotomique"],
 
-            "agreger"                       => ["sometimes", "boolean:false", function($attribute, $value, $fail){
+            "agreger"                       => ["sometimes", "boolean:false", function ($attribute, $value, $fail) {
 
-                if(request()->input($attribute) != null && request()->input('agreger') != $this->indicateur->agreger && $this->indicateur->suivis->isNotEmpty()) {
+                if (request()->input($attribute) != null && request()->input('agreger') != $this->indicateur->agreger && $this->indicateur->suivis->isNotEmpty()) {
                     $fail('Cet indicateur a deja ete suivi et donc ne peut plus etre mis a jour.');
                 }
             }],
@@ -77,24 +76,28 @@ class UpdateRequest extends FormRequest
             'sites'                         => ['sometimes', 'array', 'min:1'],
             'sites.*'                         => ['distinct', new HashValidatorRule(new Site())],
 
-            'value_keys'                    => ['sometimes', Rule::requiredIf(request()->input('agreger')), request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
-                if(!request()->input('agreger') && (is_array(request()->input('value_keys')))){
+            'value_keys'                    => ['sometimes', Rule::requiredIf(request()->input('agreger')), request()->input('agreger') ? "array" : "", function ($attribute, $value, $fail) {
+                if (!request()->input('agreger') && (is_array(request()->input('value_keys')))) {
                     $fail("Champ non requis.");
                 }
             }, request()->input('agreger') ? "min:1" : ""],
             'value_keys.*.id'               => [Rule::requiredIf(request()->input('agreger')), "string", 'distinct', new HashValidatorRule(new IndicateurValueKey())],
             'value_keys.*.uniteeMesureId'   => ["nullable", "string", new HashValidatorRule(new Unitee())],
 
-            'valeurDeBase'                  => ['sometimes', (request()->input('agreger') != null && request()->input('agreger')) ? "array" : "", function($attribute, $value, $fail){
-                    if(!request()->input('agreger') && is_array(request()->input('valeurDeBase'))){
+            'valeurDeBase'                  => [
+                'sometimes',
+                (request()->input('agreger') != null && request()->input('agreger')) ? "array" : "",
+                function ($attribute, $value, $fail) {
+                    if (!request()->input('agreger') && is_array(request()->input('valeurDeBase'))) {
                         $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
                     }
 
                     /*if(!(request()->input('agreger') && $this->indicateur->agreger) && (is_array(request()->input('valeurDeBase')))){
                         $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
                     }*/
-
-                }, (request()->input('agreger') != null && request()->input('agreger') == $this->indicateur->agreger) ? (request()->input('agreger') ? "min:".$nbreKeys : ($this->indicateur->agreger ? "min:".$nbreKeys : "")) : (request()->input('agreger') ? "min:1":""), (request()->input('agreger') != null && request()->input('agreger') == $this->indicateur->agreger) ? (request()->input('agreger') ? "max:".$nbreKeys : ($this->indicateur->agreger ? "max:".$nbreKeys : "")) : ""//request()->input('agreger') ? "min:".$nbreKeys : ($this->indicateur->agreger ? "min:".$nbreKeys : ""), request()->input('agreger') ? "max:".$nbreKeys : ($this->indicateur->agreger ? "max:".$nbreKeys : "")
+                },
+                (request()->input('agreger') != null && request()->input('agreger') == $this->indicateur->agreger) ? (request()->input('agreger') ? "min:" . $nbreKeys : ($this->indicateur->agreger ? "min:" . $nbreKeys : "")) : (request()->input('agreger') ? "min:1" : ""),
+                (request()->input('agreger') != null && request()->input('agreger') == $this->indicateur->agreger) ? (request()->input('agreger') ? "max:" . $nbreKeys : ($this->indicateur->agreger ? "max:" . $nbreKeys : "")) : "" //request()->input('agreger') ? "min:".$nbreKeys : ($this->indicateur->agreger ? "min:".$nbreKeys : ""), request()->input('agreger') ? "max:".$nbreKeys : ($this->indicateur->agreger ? "max:".$nbreKeys : "")
             ],
 
             'valeurDeBase.*.keyId'            => ['distinct', new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
@@ -107,12 +110,11 @@ class UpdateRequest extends FormRequest
 
             'anneesCible'                    => ['sometimes', "array", request()->input('anneesCible') ? "min:1" : ""],
 
-            'anneesCible.*.valeurCible'      => ['required', request()->input('agreger') ? "array" : "", function($attribute, $value, $fail){
-                if(!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))){
+            'anneesCible.*.valeurCible'      => ['required', request()->input('agreger') ? "array" : "", function ($attribute, $value, $fail) {
+                if (!request()->input('agreger') && (is_array(request()->input('valeurDeBase')))) {
                     $fail("La valeur de base pour cet indicateur ne peut pas etre un array.");
                 }
-
-            }, request()->input('agreger') ? "min:".count(request()->input('value_keys')) : "", request()->input('agreger') ? "max:".count(request()->input('value_keys')) : ""],
+            }, request()->input('agreger') ? "min:" . count(request()->input('value_keys')) : "", request()->input('agreger') ? "max:" . count(request()->input('value_keys')) : ""],
             'anneesCible.*.valeurCible.*.keyId'            => [new HashValidatorRule(new IndicateurValueKey()), function ($attribute, $value, $fail) {
 
                 // Get the index from the attribute name
@@ -123,7 +125,6 @@ class UpdateRequest extends FormRequest
                 if (!in_array(request()->input('anneesCible.*.valeurCible.*.keyId')[$index], collect(request()->input('value_keys.*.id'))->toArray())) {
                     $fail("Le keyId n'est pas dans value_keys.");
                 }
-
             }],
             'anneesCible.*.valeurCible.*.value'              => ['required'],
 
@@ -141,6 +142,58 @@ class UpdateRequest extends FormRequest
      */
     public function messages()
     {
+        return [
+            'nom.required'                    => 'Merci de renseigner le nom de l’indicateur.',
+            'nom.unique'                      => 'Un indicateur avec ce nom existe déjà dans votre programme.',
+            'description.required'            => 'Merci de fournir une description pour l’indicateur.',
+            'anneeDeBase.required'            => 'Veuillez indiquer l’année de base pour l’indicateur.',
+            'anneeDeBase.date_format'         => 'L’année de base doit être au format YYYY.',
+            'anneeDeBase.after_or_equal'      => 'L’année de base ne peut pas être antérieure au début du programme.',
+            'anneeDeBase.before_or_equal'     => 'L’année de base ne peut pas dépasser l’année en cours ou la fin du programme.',
+
+            'uniteeMesureId.required'         => 'Veuillez sélectionner l’unité de mesure de l’indicateur.',
+            'uniteeMesureId.exists'           => 'L’unité de mesure sélectionnée est invalide.',
+
+            'categorieId.required'            => 'Veuillez sélectionner une catégorie pour l’indicateur.',
+            'categorieId.exists'              => 'La catégorie sélectionnée n’existe pas dans le système.',
+
+            'responsables.ug.required'        => 'Veuillez sélectionner une unité de gestion responsable.',
+            'responsables.organisations.required' => 'Veuillez sélectionner au moins une organisation responsable.',
+            'responsables.organisations.*.distinct' => 'Chaque organisation responsable doit être unique.',
+            'responsables.organisations.*.exists' => 'L’organisation sélectionnée est invalide.',
+
+            'agreger.boolean'                  => 'Le champ “agréger” doit être vrai ou faux.',
+            'agreger.*'                        => 'Cet indicateur a déjà été suivi et ne peut plus être modifié pour l’agrégation.',
+
+            'value_keys.required'              => 'Veuillez fournir au moins une clé de valeur pour cet indicateur agrégé.',
+            'value_keys.array'                 => 'Les clés de valeur doivent être envoyées sous forme de liste.',
+            'value_keys.min'                   => 'Au moins une clé de valeur est nécessaire.',
+            'value_keys.*.id.required'         => 'Chaque clé de valeur doit avoir un identifiant.',
+            'value_keys.*.id.distinct'         => 'Chaque clé de valeur doit être unique.',
+            'value_keys.*.uniteeMesureId.exists' => 'L’unité de mesure pour la clé de valeur est invalide.',
+
+            'valeurDeBase.required'            => 'Veuillez renseigner la valeur de base pour cet indicateur.',
+            'valeurDeBase.array'               => 'La valeur de base doit être fournie sous forme de liste.',
+            'valeurDeBase.min'                 => 'Le nombre de valeurs de base doit correspondre au nombre de clés de valeur.',
+            'valeurDeBase.max'                 => 'Le nombre de valeurs de base ne peut pas dépasser le nombre de clés de valeur.',
+            'valeurDeBase.*.value.required'    => 'Chaque valeur de base doit être renseignée.',
+            'valeurDeBase.*.keyId.exists'      => 'La clé associée à la valeur de base est invalide.',
+
+            'anneesCible.array'                => 'Les années cibles doivent être envoyées sous forme de liste.',
+            'anneesCible.*.annee.required'     => 'Veuillez renseigner l’année cible.',
+            'anneesCible.*.annee.distinct'     => 'Chaque année cible doit être unique.',
+            'anneesCible.*.annee.date_format'  => 'L’année cible doit être au format YYYY.',
+            'anneesCible.*.annee.after_or_equal' => 'L’année cible ne peut pas être antérieure à l’année de base.',
+            'anneesCible.*.valeurCible.required' => 'Veuillez renseigner la valeur cible pour cette année.',
+            'anneesCible.*.valeurCible.array'  => 'La valeur cible doit être fournie sous forme de liste si l’indicateur est agrégé.',
+            'anneesCible.*.valeurCible.*.value.required' => 'Chaque valeur cible doit être renseignée.',
+            'anneesCible.*.valeurCible.*.keyId.exists'   => 'La clé associée à la valeur cible est invalide.',
+
+            'sites.array'                       => 'Les sites doivent être fournis sous forme de liste.',
+            'sites.min'                         => 'Veuillez sélectionner au moins un site.',
+            'sites.*.distinct'                  => 'Chaque site doit être unique.',
+            'sites.*.exists'                    => 'Le site sélectionné est invalide.',
+        ];
         return [
             'nom.required'          => 'Le nom de l\'indicateur est obligatoire.',
             'description.required'  => 'La description de l\'indicateur est obligatoire.',
