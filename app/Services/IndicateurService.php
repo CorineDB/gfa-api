@@ -1747,27 +1747,76 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
             $nouvelleValeurDeBase = $attributs['valeurDeBase'];
 
             // Vérifier si la valeur de base a réellement changé
-            $valeurActuelle = $indicateur->valeurDeBase;
+            // Utiliser la relation polymorphique pour récupérer les vraies valeurs en base
+            $valeursDeBaseActuelles = $indicateur->valeursDeBase;
             $valeurAChange = false;
 
             if ($indicateur->agreger) {
-                // Pour un indicateur agrégé, comparer les tableaux
-                if (is_array($nouvelleValeurDeBase) && is_array($valeurActuelle)) {
-                    // Trier les deux tableaux pour une comparaison correcte
-                    ksort($nouvelleValeurDeBase);
-                    ksort($valeurActuelle);
-                    $valeurAChange = ($nouvelleValeurDeBase !== $valeurActuelle);
+                // Pour un indicateur agrégé, comparer les valeurs
+                if (is_array($nouvelleValeurDeBase) && $valeursDeBaseActuelles->isNotEmpty()) {
+                    // Convertir la nouvelle valeur (format [{keyId, value}]) en format comparable
+                    $nouvellesValeurs = [];
+                    foreach ($nouvelleValeurDeBase as $item) {
+                        if (isset($item['keyId']) && isset($item['value'])) {
+                            // Récupérer la clé correspondante
+                            $valueKey = $indicateur->valueKeys()->where("indicateur_value_keys.id", $item['keyId'])->first();
+                            if ($valueKey) {
+                                $nouvellesValeurs[$valueKey->key] = $item['value'];
+                            }
+                        }
+                    }
+                    
+                    // Reconstruire les valeurs actuelles depuis la relation
+                    $valeursActuelles = [];
+                    foreach ($valeursDeBaseActuelles as $valeurBase) {
+                        // Récupérer la clé via le mapping
+                        $mapping = DB::table('indicateur_value_keys_mapping')
+                            ->where('id', $valeurBase->indicateurValueKeyMapId)
+                            ->first();
+                        
+                        if ($mapping) {
+                            $valueKey = $indicateur->valueKeys()
+                                ->wherePivot('id', $mapping->id)
+                                ->first();
+                            
+                            if ($valueKey) {
+                                $valeursActuelles[$valueKey->key] = $valeurBase->value;
+                            }
+                        }
+                    }
+                    
+                    // Comparer les valeurs après tri
+                    ksort($nouvellesValeurs);
+                    ksort($valeursActuelles);
+                    
+                    // Comparer les clés et les valeurs
+                    if (array_keys($nouvellesValeurs) !== array_keys($valeursActuelles)) {
+                        $valeurAChange = true;
+                    } else {
+                        // Comparer les valeurs (conversion en string pour comparaison souple)
+                        foreach ($nouvellesValeurs as $key => $newVal) {
+                            $oldVal = $valeursActuelles[$key] ?? null;
+                            if ($newVal != $oldVal) { // Utiliser != pour comparaison souple (10 == "10")
+                                $valeurAChange = true;
+                                break;
+                            }
+                        }
+                    }
+                } elseif (is_array($nouvelleValeurDeBase) && $valeursDeBaseActuelles->isEmpty()) {
+                    // Nouvelles valeurs mais pas d'anciennes = changement
+                    $valeurAChange = true;
                 } else {
                     $valeurAChange = true; // Structure différente = changement
                 }
             } else {
                 // Pour un indicateur simple, comparer les valeurs directes
-                if (is_array($valeurActuelle) && !empty($valeurActuelle)) {
-                    // L'ancienne valeur est un tableau, prendre la première valeur
-                    $valeurActuelleSimple = array_values($valeurActuelle)[0] ?? null;
+                if ($valeursDeBaseActuelles->isNotEmpty()) {
+                    // Récupérer la première valeur de base
+                    $valeurActuelleSimple = $valeursDeBaseActuelles->first()->value;
                     $valeurAChange = ($nouvelleValeurDeBase != $valeurActuelleSimple);
                 } else {
-                    $valeurAChange = ($nouvelleValeurDeBase != $valeurActuelle);
+                    // Pas de valeur actuelle, donc c'est un changement
+                    $valeurAChange = true;
                 }
             }
 
