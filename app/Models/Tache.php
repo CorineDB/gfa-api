@@ -6,6 +6,7 @@ use App\Traits\Helpers\Pta;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Tache extends Model
@@ -13,7 +14,7 @@ class Tache extends Model
     protected $table = 'taches';
     public $timestamps = true;
 
-    use HasSecureIds, HasFactory, Pta;
+    use HasSecureIds, SoftDeletes, HasFactory, Pta;
 
     protected $dates = ['deleted_at'];
     protected $fillable = array('nom', 'position', 'poids', 'activiteId', 'programmeId', 'description', 'statut');

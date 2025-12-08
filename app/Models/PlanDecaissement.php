@@ -9,7 +9,7 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class PlanDecaissement extends Model
 {
-    use HasSecureIds, HasFactory;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $table = 'plan_de_decaissements';
     public $timestamps = true;

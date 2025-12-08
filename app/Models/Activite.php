@@ -17,7 +17,7 @@ use Exception;
 
 class Activite extends Model
 {
-    use HasSecureIds, HasFactory, Pta, HelperTrait;
+    use HasSecureIds, SoftDeletes, HasFactory, Pta, HelperTrait;
 
     protected $table = 'activites';
 

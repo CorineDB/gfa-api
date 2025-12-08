@@ -16,7 +16,7 @@ class Composante extends Model
     public $timestamps = true;
 
     use Pta;
-    use HasSecureIds, HasFactory;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $dates = ['deleted_at'];
 

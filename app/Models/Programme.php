@@ -25,7 +25,7 @@ use Exception;
 
 class Programme extends Model
 {
-    use HasSecureIds, HasFactory;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $table = 'programmes';
 
@@ -659,6 +659,7 @@ class Programme extends Model
             $query->where("projetable_id", $user->profilable->id)
                   ->where("projetable_type", Organisation::class);
         } */
+
         /*
          * });
          *     });
