@@ -1739,18 +1739,101 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
             }
 
-            // Vérification qu'il n'y a pas de suivis (optionnel selon les règles métier)
-            //if ($indicateur->suivis->isNotEmpty()) {
-            if ($indicateur->suivisIndicateur()->isNotEmpty()) {
-                throw new Exception("Impossible de modifier la valeur de base d'un indicateur qui a déjà des suivis.", 422);
-            }
-
             // Validation des données d'entrée
             if (!isset($attributs['valeurDeBase'])) {
                 throw new Exception("La valeur de base doit être fournie", 422);
             }
 
             $nouvelleValeurDeBase = $attributs['valeurDeBase'];
+
+            // Vérifier si la valeur de base a réellement changé
+            // Utiliser la relation polymorphique pour récupérer les vraies valeurs en base
+            $valeursDeBaseActuelles = $indicateur->valeursDeBase;
+            $valeurAChange = false;
+
+            if ($indicateur->agreger) {
+                // Pour un indicateur agrégé, comparer les valeurs
+                if (is_array($nouvelleValeurDeBase) && $valeursDeBaseActuelles->isNotEmpty()) {
+                    // Convertir la nouvelle valeur (format [{keyId, value}]) en format comparable
+                    $nouvellesValeurs = [];
+                    foreach ($nouvelleValeurDeBase as $item) {
+                        if (isset($item['keyId']) && isset($item['value'])) {
+                            // Récupérer la clé correspondante
+                            $valueKey = $indicateur->valueKeys()->where("indicateur_value_keys.id", $item['keyId'])->first();
+                            if ($valueKey) {
+                                $nouvellesValeurs[$valueKey->key] = $item['value'];
+                            }
+                        }
+                    }
+                    
+                    // Reconstruire les valeurs actuelles depuis la relation
+                    $valeursActuelles = [];
+                    foreach ($valeursDeBaseActuelles as $valeurBase) {
+                        // Récupérer la clé via le mapping
+                        $mapping = DB::table('indicateur_value_keys_mapping')
+                            ->where('id', $valeurBase->indicateurValueKeyMapId)
+                            ->first();
+                        
+                        if ($mapping) {
+                            $valueKey = $indicateur->valueKeys()
+                                ->wherePivot('id', $mapping->id)
+                                ->first();
+                            
+                            if ($valueKey) {
+                                $valeursActuelles[$valueKey->key] = $valeurBase->value;
+                            }
+                        }
+                    }
+                    
+                    // Comparer les valeurs après tri
+                    ksort($nouvellesValeurs);
+                    ksort($valeursActuelles);
+                    
+                    // Comparer les clés et les valeurs
+                    if (array_keys($nouvellesValeurs) !== array_keys($valeursActuelles)) {
+                        $valeurAChange = true;
+                    } else {
+                        // Comparer les valeurs (conversion en string pour comparaison souple)
+                        foreach ($nouvellesValeurs as $key => $newVal) {
+                            $oldVal = $valeursActuelles[$key] ?? null;
+                            if ($newVal != $oldVal) { // Utiliser != pour comparaison souple (10 == "10")
+                                $valeurAChange = true;
+                                break;
+                            }
+                        }
+                    }
+                } elseif (is_array($nouvelleValeurDeBase) && $valeursDeBaseActuelles->isEmpty()) {
+                    // Nouvelles valeurs mais pas d'anciennes = changement
+                    $valeurAChange = true;
+                } else {
+                    $valeurAChange = true; // Structure différente = changement
+                }
+            } else {
+                // Pour un indicateur simple, comparer les valeurs directes
+                if ($valeursDeBaseActuelles->isNotEmpty()) {
+                    // Récupérer la première valeur de base
+                    $valeurActuelleSimple = $valeursDeBaseActuelles->first()->value;
+                    $valeurAChange = ($nouvelleValeurDeBase != $valeurActuelleSimple);
+                } else {
+                    // Pas de valeur actuelle, donc c'est un changement
+                    $valeurAChange = true;
+                }
+            }
+
+            // Vérification qu'il n'y a pas de suivis SEULEMENT si la valeur a changé
+            if ($valeurAChange && $indicateur->suivisIndicateur()->isNotEmpty()) {
+                throw new Exception("Impossible de modifier la valeur de base d'un indicateur qui a déjà des suivis.", 422);
+            }
+
+            // Si la valeur n'a pas changé, retourner directement sans modification
+            if (!$valeurAChange) {
+                return response()->json([
+                    'statut' => 'success',
+                    'message' => 'Aucune modification de la valeur de base nécessaire',
+                    'data' => new IndicateursResource($indicateur),
+                    'statutCode' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+            }
 
 
 
