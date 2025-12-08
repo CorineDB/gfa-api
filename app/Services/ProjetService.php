@@ -328,8 +328,11 @@ class ProjetService extends BaseService implements ProjetServiceInterface
                 // Récupérer l'ancienne organisation pour la gestion du budget
                 $ancienneOrganisation = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
 
-                // Condition 4: Le projet ne doit pas avoir de composantes, activités ou données liées
-                if ($projet->composantes()->count() > 0) {
+                // Vérifier si l'organisation a réellement changé
+                $organisationAChange = !($projet->projetable_type === 'App\Models\Organisation' && $projet->projetable_id == $attributs['organisationId']);
+
+                // Condition 4: Le projet ne doit pas avoir de composantes si l'organisation change
+                if ($organisationAChange && $projet->composantes()->count() > 0) {
                     throw new Exception("Impossible de changer l'organisation : le projet possède déjà des composantes", 500);
                 }
 
@@ -397,6 +400,14 @@ class ProjetService extends BaseService implements ProjetServiceInterface
 
                     // Récupérer l'ancienne organisation
                     $ancienneOwner = $projet->projetable_type === 'App\Models\Organisation' ? $projet->projetable : null;
+
+                    // Vérifier si le porteur du projet change (de Organisation vers UniteeDeGestion)
+                    $porteurAChange = $projet->projetable_type === 'App\Models\Organisation';
+
+                    // Si le porteur change (on retire le projet à l'organisation), vérifier qu'il n'y a pas de composantes
+                    if ($porteurAChange && $projet->composantes()->count() > 0) {
+                        throw new Exception("Impossible de retirer le projet à l'organisation : le projet possède déjà des composantes", 500);
+                    }
 
                     // Mettre à jour le budgetAllouer dans la table pivot fond_organisation
                     if ($ancienneOwner && $ancienneOwner->fonds()->count()) {
