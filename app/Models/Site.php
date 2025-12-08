@@ -2,17 +2,17 @@
 
 namespace App\Models;
 
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphToMany;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+use Exception;
 
 class Site extends Model
 {
-
-    use HasSecureIds, HasFactory;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $table = 'sites';
 
@@ -31,17 +31,15 @@ class Site extends Model
                 // Prevent deletion by throwing an exception
                 throw new Exception("Impossible de supprimer ce site car il est lié à un ou plusieurs indicateurs, projets ou activités. Veuillez d'abord supprimer ou dissocier ces éléments.");
             }
-        }); 
+        });
 
         static::deleted(function ($site) {
-
             DB::beginTransaction();
             try {
-
                 $site->update([
                     'nom' => time() . '::' . $site->nom
                 ]);
-                
+
                 DB::commit();
             } catch (\Throwable $th) {
                 DB::rollBack();
@@ -83,7 +81,7 @@ class Site extends Model
 
     public function sync_bailleurs()
     {
-        return $this->belongsToMany(Bailleur::class, 'bailleur_sites', 'siteId', 'bailleurId')->withPivot('siteId', 'bailleurId','programmeId');
+        return $this->belongsToMany(Bailleur::class, 'bailleur_sites', 'siteId', 'bailleurId')->withPivot('siteId', 'bailleurId', 'programmeId');
     }
 
     public function bailleurs_site()
@@ -108,7 +106,7 @@ class Site extends Model
     {
         return $this->morphedByMany(Indicateur::class, 'siteable');
     }
- 
+
     /**
      * Get all of the projets that are assigned this site.
      */
@@ -116,7 +114,7 @@ class Site extends Model
     {
         return $this->morphedByMany(Projet::class, 'siteable');
     }
- 
+
     /**
      * Get all of the activites that are assigned this site.
      */
