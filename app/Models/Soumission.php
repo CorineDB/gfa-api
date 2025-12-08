@@ -2,30 +2,32 @@
 
 namespace App\Models;
 
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+use Exception;
 
 class Soumission extends Model
 {
     protected $table = 'soumissions';
     public $timestamps = true;
 
-    use HasSecureIds, HasFactory ;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $dates = ['deleted_at'];
 
     protected $fillable = array('type', 'commentaire', 'submitted_at', 'statut', 'comite_members', 'sexe', 'age', 'categorieDeParticipant', 'identifier_of_participant', 'submittedBy', 'evaluationId', 'formulaireDeGouvernanceId', 'organisationId', 'programmeId');
 
     protected $casts = [
-        "comite_members" => "json",
-        "statut" => "boolean",
-        "submitted_at" => "datetime"
+        'comite_members' => 'json',
+        'statut' => 'boolean',
+        'submitted_at' => 'datetime'
     ];
-    
+
     protected $appends = ['pourcentage_evolution'];
+
     protected $with = [];
 
     protected static function boot()
@@ -33,15 +35,12 @@ class Soumission extends Model
         parent::boot();
 
         static::deleting(function ($soumission) {
-
             DB::beginTransaction();
             try {
-
                 if (($soumission->statut)) {
                     // Prevent deletion by throwing an exception
-                    throw new Exception("Impossible de supprimer cette soumission validee.");
+                    throw new Exception('Impossible de supprimer cette soumission validee.');
                 }
-
             } catch (\Throwable $th) {
                 DB::rollBack();
 
@@ -50,10 +49,8 @@ class Soumission extends Model
         });
 
         static::deleted(function ($soumission) {
-
             DB::beginTransaction();
             try {
-
                 $soumission->reponses_de_la_collecte()->delete();
 
                 DB::commit();
@@ -64,7 +61,7 @@ class Soumission extends Model
             }
         });
     }
-    
+
     public function evaluation_de_gouvernance()
     {
         return $this->belongsTo(EvaluationDeGouvernance::class, 'evaluationId');
@@ -112,7 +109,7 @@ class Soumission extends Model
             });
 
         return $allReponses->isNotEmpty() ? $allReponses->avg('pourcentage_evolution') : 0; */
-        
+
         $nombre_de_questions = $this->formulaireDeGouvernance->questions_de_gouvernance->count();
 
         $total_pourcentage_de_reponse = $this->reponses_de_la_collecte->sum(function ($reponse_de_la_collecte) {

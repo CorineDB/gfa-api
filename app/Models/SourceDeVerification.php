@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class SourceDeVerification extends Model
@@ -11,11 +12,11 @@ class SourceDeVerification extends Model
     protected $table = 'sources_de_verification';
     public $timestamps = true;
 
-    use HasSecureIds, HasFactory ;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = array("intitule", "description", 'programmeId');
+    protected $fillable = array('intitule', 'description', 'programmeId');
 
     protected $casts = [];
 
