@@ -1,0 +1,56 @@
+Program Assignment
+Une unite de gestion gere un ou plusieurs programmes
+Un programme est gerer par une et une seule unite de gestion
+L'unite de gestion peut constituer le planning d'un programme
+Un programme est compose d'un ou plusieurs sous-programmes
+Un sous-programme ou projet fait parti d'un et un seul programme
+
+L'unite de gestion d'un programme assigne un sous-programme ou projet a une organisation partenaire
+Un sous-programme ne peut etre attribuer a plus d'une organisation 
+Une organisation gere un ou plusieurs sous-programme(s) ou projet(s)
+
+Une organisation peut constituer le planning d'un sous-programme ou projet
+Un sous-programme est compose d'un ou plusieurs outcomes/phases
+Un programme est constitue d'un ou plusieurs outcomes/resultats
+Un outcomes est propre a un programme ou sous-programme specifique
+Un outcome est compose d'un ou plusieurs outputs
+Un output est propre a un outcome specifique
+Un output est compose d'un ou plusieurs activites
+
+Un programme peut se voir attribuer plusieurs types de gouvernance.
+Une unite de gestion d'un programme peut définit son programme de gouvernance et lui attribue des types, principes et criteres de gouvernance et des indicateurs pertinents.
+
+Chaque programme doit être associé à au moins un type de gouvernance. Le type de gouvernance influence les indicateurs d'évaluation qui s'appliqueront.
+
+
+Chaque type de gouvernance est lié à des principes de gouvernance qui permettent d'évaluer l'etat de la gouvernance des sous-programmes ou projets par les organisations au sein d'un programme.
+
+Chaque critère de gouvernance doit être lié à au moins un principe de gouvernance et être associé ou non à un ou plusieurs indicateurs de gouvernance.
+
+Un indicateur est lié ou non à un critère de gouvernance et l'évaluation est basée sur les options de réponse prédéfinies.
+
+
+Les indicateurs de gouvernance doivent être évalués à l'aide des options de reponse prédéfinies (par exemple, à choix multiples ou booléennes).
+
+
+Les indicateurs de gouvernance doivent avoir une description claire de leur objectif dans l'évaluation.
+
+
+Tous les indicateurs de gouvernance doivent être suivis pour chaque programme auquel une organisation participe.
+
+la source de la reponse d'un suivi d'indicateur doit etre donner
+
+Les Suivis doivent avoir des options de commentaire, ce qui permet aux évaluateurs de fournir un contexte ou des éclaircissements pour chaque score d'indicateur de gouvernance.
+
+Les commentaires doivent être liés à un indicateur de gouvernance spécifique afin d'assurer la traçabilité et une meilleure compréhension lors des revues d'évaluation.
+
+L'unite de gestion peut programmer une enquête d'auto-évaluation du respect ou non  de la bonne gouvernance d’un sous-programme/projet par les différentes institutions;
+
+Toutes les organisations participants a un programme doivent faire l'object d'une evaluation de l'etat de gouvernance des sous-programmes auquels ils sont assignes.
+
+Après chaque évaluation, le resultat de l'enquête du respect ou non des principes de la bonne gouvernance d’un projet/programme d'une organisation sera generer.
+
+L'unite de gestion du programme est chargés d'examiner les résultats et de fournir un retour d'information ou des recommandations sur la base des indicateurs et des commentaires soumis.
+
+Chaque organisation peut accéder à ses resultats d'évaluation, les commentaires des insuffisances/faiblesses ainsi que des recommandations d'actions concrètes à entreprendre pour les corriger
+

@@ -1,0 +1,111 @@
+- Origine du projet
+  - Titre du projet : string
+  - Sigle (acronyme) : string
+  - Origine du projet : string
+  - Fondement
+    - Odds
+    - Cibles
+    - Informations du PND
+      - Orientations strategique du PND
+      - Objectifs strategique du PND
+    - Informations du PAG
+      - Piliers strategiques du PAG
+      - Axes du PAG
+      - Actions du PAG
+  - Situation actuelle
+  - Situation desiree
+  - Contraintes
+- Description sommaire de l’idée de projet 
+  - Objectif général
+  - Objectif spécifiques
+  - Résultats attendus
+  - Echéancier des principaux extrants (Indicateurs de réalisations physiques)
+  - Description des principaux extrants
+  - Description des extrants
+  - Description somaire
+  - Caractéristiques techniques du projet
+  - Estimation des coûts et des bénéfices
+  - Aspects organisationnels du projet
+  - Risques immédiats
+  - Conclusions et recommandations
+  - Autres solutions alternatives considérées et non retenues
+
+- Parties prenantes
+  - Parties prenantes
+  - Public cible
+  - Cibles
+- Date de debut de l'etude : string
+- Date de fin de l'etude : string
+- date prevue demarrage : string
+- Duree d'execution prevue : integer
+  
+- Porteur du projet (ministere)
+- Demandeur (ministere)
+- Responsable du projet (L'agent charge du projet)
+- identifiant_bip : Codification unique du projet
+- COÛT ESTIMATIF: float
+- Source de financement du projet
+- Categorie du projet
+  - nom
+  - code
+- Zones d'intervention
+  - code
+  - longitude
+  - latitude
+- Cadre strategique
+  - Odds
+  - Cibles
+- Informations sectorielles:
+  - code
+  - secteur
+  - sous_secteur
+- Lien pour consulter/telecharger la fiche de projet rediger
+- Evaluations
+  - Climatique
+    - Score climatique : float
+    - Criteres de l'evaluation climatique: 
+      - Nom du critere
+      - Notation
+      - La ponderation
+  - AMC
+    - Score amc : float
+    - Criteres de l'AMC:  
+      - Nom du critere
+      - Notation
+      - La ponderation
+  - Note conceptuelle
+    - Resume de la note conceptuelle
+    - Fichiers joints a la note conceptuelle
+    - Lien pour consulter/telecharger la note conceptuelle rediger
+    - Lien pour consulter/telecharger l'appreciation de la note conceptuelle
+    - Decision de l'etude de profil
+  - Etude de prefaisabilite
+    - Date debut de l'etude
+    - Date fin de l'etude
+    - information du cabinet : json
+    - information de financement de l'etude : json
+    - Lien pour consulter/telecharger le fichier du tdr
+    - Lien pour consulter/telecharger le fichier excel detaille de l'appreciation du tdr
+    - Lien pour consulter/telecharger le rapport de prefaisabilite televerser
+    - Lien pour consulter/telecharger le proces verbal de l'etude televerser
+    - Lien pour consulter/telecharger la liste de presence de l'etude televerser
+    - Decision de l'etude
+    - commentaire de la decision
+  - Etude de faisabilite
+    - Date debut de l'etude
+    - Date fin de l'etude
+    - information du cabinet : json
+    - information de financement de l'etude : json
+    - Lien pour consulter/telecharger le fichier du tdr
+    - Lien pour consulter/telecharger le fichier excel detaille de l'appreciation du tdr
+    - Lien pour consulter/telecharger le rapport de faisabilite televerser
+    - Lien pour consulter/telecharger le proces verbal de l'etude televerser
+    - Lien pour consulter/telecharger la liste de presence de l'etude televerser
+    - Synthese et recommandation
+    - Decision de l'etude
+    - commentaire de la decision l'etude de faisabilite
+  - Evaluation ex-ante
+    - Lien pour consulter/telecharger le document de l'evaluation ex-ante
+    - Decision de l'evaluation
+
+

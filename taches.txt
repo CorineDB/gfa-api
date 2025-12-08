@@ -1,0 +1,19 @@
+- Logo : bailleur
+
+- permissions
+
+- statut : non demarré, en cours, achevé, proroger
+
+- proroger un projet
+
+- details projet
+
+- Composantes filtre
+
+-
+1H
+ ON REVOQUE
+INACTIVEMENT
+
+simulation tarifaire mettre les infos assurer principal
+session apres fermeture a gerer .

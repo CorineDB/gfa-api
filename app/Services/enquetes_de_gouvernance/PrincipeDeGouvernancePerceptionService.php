@@ -1,0 +1,151 @@
+<?php
+
+namespace App\Services\enquetes_de_gouvernance;
+
+use App\Http\Resources\gouvernance\IndicateursDeGouvernanceResource;
+use App\Http\Resources\gouvernance\PrincipesDeGouvernanceResource;
+use App\Repositories\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionRepository;
+use Core\Services\Contracts\BaseService;
+use Core\Services\Interfaces\enquetes_de_gouvernance\PrincipeDeGouvernancePerceptionServiceInterface;
+use Exception;
+use App\Traits\Helpers\LogActivity;
+use Illuminate\Support\Str;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
+/**
+* Interface PrincipeDeGouvernancePerceptionServiceInterface
+* @package Core\Services\Interfaces
+*/
+class PrincipeDeGouvernancePerceptionService extends BaseService implements PrincipeDeGouvernancePerceptionServiceInterface
+{
+
+    /**
+     * @var service
+     */
+    protected $repository;
+
+    /**
+     * PrincipeDeGouvernancePerceptionRepository constructor.
+     *
+     * @param PrincipeDeGouvernancePerceptionRepository $principeDeGouvernanceRepository
+     */
+    public function __construct(PrincipeDeGouvernancePerceptionRepository $principeDeGouvernanceRepository)
+    {
+        parent::__construct($principeDeGouvernanceRepository);
+    }
+
+    public function all(array $columns = ['*'], array $relations = []): JsonResponse
+    {
+        try
+        {
+            $principes_de_gouvernance = collect([]);
+
+            if(!(Auth::user()->hasRole('administrateur') || auth()->user()->profilable_type == "App\\Models\\Administrateur")){
+                $principes_de_gouvernance = Auth::user()->programme->principes_de_gouvernance_perception;
+            }
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => PrincipesDeGouvernanceResource::collection($principes_de_gouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function findById($principeDeGouvernance, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
+    {
+        try
+        {
+            if(!is_object($principeDeGouvernance) && !($principeDeGouvernance = $this->repository->findById($principeDeGouvernance))) throw new Exception("Ce principe de gouvernance n'existe pas.", Response::HTTP_NOT_FOUND);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => new PrincipesDeGouvernanceResource($principeDeGouvernance), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        }
+
+        catch (\Throwable $th)
+        {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function create(array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+            $programme = Auth::user()->programme;
+
+            $attributs = array_merge($attributs, ['programmeId' => $programme->id]);
+
+            $principeDeGouvernance = $this->repository->create($attributs);
+
+            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+
+            $message = $message ?? Str::ucfirst($acteur) . " a créé un " . strtolower(class_basename($principeDeGouvernance));
+
+            //LogActivity::addToLog("Enrégistrement", $message, get_class($principeDeGouvernance), $principeDeGouvernance->id);
+
+            DB::commit();
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new PrincipesDeGouvernanceResource($principeDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public function update($principeDeGouvernance, array $attributs) : JsonResponse
+    {
+        DB::beginTransaction();
+
+        try {
+
+            if(!is_object($principeDeGouvernance) && !($principeDeGouvernance = $this->repository->findById($principeDeGouvernance))) throw new Exception("Ce principe de gouvernance n'existe pas", Response::HTTP_NOT_FOUND);
+
+            $this->repository->update($principeDeGouvernance->id, $attributs);
+
+            $principeDeGouvernance->refresh();
+
+            $acteur = Auth::check() ? Auth::user()->nom . " ". Auth::user()->prenom : "Inconnu";
+
+            $message = $message ?? Str::ucfirst($acteur) . " a modifié un " . strtolower(class_basename($principeDeGouvernance));
+
+            //LogActivity::addToLog("Modification", $message, get_class($principeDeGouvernance), $principeDeGouvernance->id);
+
+            DB::commit();
+
+            return response()->json(['statut' => 'success', 'message' => "Enregistrement réussir", 'data' => new PrincipesDeGouvernanceResource($principeDeGouvernance), 'statutCode' => Response::HTTP_CREATED], Response::HTTP_CREATED);
+
+        } catch (\Throwable $th) {
+
+            DB::rollBack();
+
+            //throw $th;
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => [], 'statutCode' => Response::HTTP_INTERNAL_SERVER_ERROR], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * Liste des questions operationnelle
+     *
+     * return JsonResponse
+     */
+    public function questions_operationnelle($principeDeGouvernanceId, array $attributs = ['*'], array $relations = []): JsonResponse
+    {
+        try {
+            if (!($principeDeGouvernance = $this->repository->findById($principeDeGouvernanceId)))
+                throw new Exception("Ce principe de gouvernance n'existe pas", Response::HTTP_NOT_FOUND);
+
+            return response()->json(['statut' => 'success', 'message' => null, 'data' => IndicateursDeGouvernanceResource::collection($principeDeGouvernance->questions_operationnelle), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
+        } catch (\Throwable $th) {
+            return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+}

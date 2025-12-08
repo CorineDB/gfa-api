@@ -1,0 +1,411 @@
+{
+    "id": 96,
+    "indice_de_gouvernance": 0.69,
+    "resultats": [
+        {
+            "id": 26,
+            "nom": "Egalit\u00e9 et inclusion sociale",
+            "indice_factuel": 1
+        },
+        { "id": 25, "nom": "Transparence", "indice_factuel": 0.69 }
+    ],
+    "type": "factuel",
+    "synthese": [
+        {
+            "id": "Y59AkgLPv5elPxYR2LVrzkm9JKd7M4NqYkN8GW13jqDBba0XQw6gyApOZy2xRDO3",
+            "nom": "Gouvernance politique",
+            "indice_factuel": 1,
+            "categories_de_gouvernance": [
+                {
+                    "id": "QpGOjDaBBeJ7VM9Y2wk80jOWq1dKr4nRX5Nab35QyXvZxRlDzmPgpLGA6yKxZm07",
+                    "nom": "Egalit\u00e9 et inclusion sociale",
+                    "score_factuel": 1,
+                    "categories_de_gouvernance": [
+                        {
+                            "id": "e4JgxwD1qVPJ9lMmbLOd3RQ5yzZ42eN3PmoK6jBg7G0kXx8YvrwDaWAp1v9YZBq7",
+                            "nom": "L\u00e9gitimit\u00e9/l\u00e9galit\u00e9",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "M1X0Y4gz5D3G17XYlo4yN6L9Z8MdaAQjlAnWmzrejOxbPvRgp02kVqKJwGPvORAx",
+                                    "nom": "R\u00f4les et responsabilit\u00e9 clairement d\u00e9finis",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "Za5dOL43r8ZLygqGW4zdKwXpNE5Y72nwajQDAmO1PM3Vl0xvJbj6kaRe9xp69Yz7",
+                                        "nom": "R\u00f4les et responsabilit\u00e9 clairement d\u00e9finis"
+                                    },
+                                    "reponse": {
+                                        "id": "BK8YeqA7ZX6D38zdBMRvwWYEjmL1P4b2drOKJpryVqNQoklegA5Gxa027Rw3Dza6",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 213,
+                                                "nom": "1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "chemin": "upload/soumissions/preuves/1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 293,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "pzRPAeVY13dbBYzeX9r0aOnxWJLZkAQpLbQyoR7842wVvEglmqDpPNG65910vN8D"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "X4d1ZbrYKPXkG3JDZma50grvywR7xLEz9GQWOYV4ldzANjM8pe9o6bq12m795LxV",
+                                    "nom": "Organes statutaires fonctionnels",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "17AJPalKw5N9y6xVO8kRLZqaYG7rMgoAXXQmvDKp1WzPbl3dJ0AXe2E4jMGgVYZk",
+                                        "nom": "Organes statutaires fonctionnels"
+                                    },
+                                    "reponse": {
+                                        "id": "Wl3GY074ZDmoVvrKwGJE6zPx817kQebExV9qYjAdp0RgB24WyLM5N3Xalmq6Pkjz",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 214,
+                                                "nom": "1764557547-bp170-image-2-4.png",
+                                                "chemin": "upload/soumissions/preuves/1764557547-bp170-image-2-4.png",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 294,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "yEw3vDprpqD1vorbVOy34Exz2awkdLMxLxM9WglnRJP5X86NZe7m0BYAG76dOeJa"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "dApJ6Kb2L3p0OdAa2kJlbXQW8yvZ9qnlPqneGx6KgR1YjDBP4zmwrVM57QyaZzrw",
+                            "nom": "Obligation de rendre compte",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "yqweNmb16jeVRGdNX39ZKpYA8POoWMQdeZEDagwm7r1q40bkvy5JLx2lzJVr052l",
+                                    "nom": "Existence de statuts et r\u00e8glement int\u00e9rieur",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "mRKr2GbNNd3ARvjybLG2ez97WVX1wYn1AwnaqJ5mlgx86Dp4rPZOkE0MKJaj65Pv",
+                                        "nom": "Existence de statuts et r\u00e8glement int\u00e9rieur"
+                                    },
+                                    "reponse": {
+                                        "id": "DpgWaGyPXvR04PVjkdlMDK8GN7LgaBn5YmnyAm3xWpqQYz2J6eowZr5E1xmlvd1q",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 215,
+                                                "nom": "1764557547-bp170-image-2-4.png",
+                                                "chemin": "upload/soumissions/preuves/1764557547-bp170-image-2-4.png",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 295,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "7ed8ANozPwJd6zL3xOVyGDRa5q40b7KXq4jNpm98YeEXorv1ZklA2gnBWEwPV1px"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "WvpALXjyLJVbpA06xwgd5eM13X9GODnemWnrvWZPYa8mKqzNyRj2k7ol4xKGe1Rl",
+                                    "nom": "D\u00e9claration d\u2019existence",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "xJD6yXNppl3AEX0ym4JGd1Vx5r7bWeQZ9NB6NZRPa2Y8kqzjDMg9OLKwvwmGk1AP",
+                                        "nom": "D\u00e9claration d\u2019existence"
+                                    },
+                                    "reponse": {
+                                        "id": "d1lyAL4ozaJkoALQpjMdG1ewRKN40VOQQyO8vZPW52XEgl7Br6yqDx3YmwaJ50gV",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 216,
+                                                "nom": "1764557547-bp170-image-2-4.png",
+                                                "chemin": "upload/soumissions/preuves/1764557547-bp170-image-2-4.png",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 296,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "8X7Jnz1WWpbAN2XV4OqnZGvd1RomD7KO1LQa693BJY0eP5rgyw8LExlkzZdAaoPy"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "7xVm4OZR1RAvmYVgOW5Dlbwa4JpX78ojlAELMzP09jB3r2Kx6kqeGQdyZk6jwM32",
+                    "nom": "Transparence",
+                    "score_factuel": 1,
+                    "categories_de_gouvernance": [
+                        {
+                            "id": "mWgjP9ekP08eZb1y5mWzxLgv6DMKdAnz5Go2qlrRV3jJG7Y9pkaX4OQBw5azbq68",
+                            "nom": "Repr\u00e9sentativit\u00e9",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "R715PxAD96D5rKJRPAW2OwekpdNMGYEwpmnbqx071moVgjavyzLX4Zl38obNWv9M",
+                                    "nom": "Plan de reddition de compte mis en \u0153uvre au moins \u00e0 80%",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "Az2WOY38kzbRMj5N31dDreyWxvGm9VovemQY6p7LJ82OaqAwE4XlPZ0gKPbZJ6q0",
+                                        "nom": "Plan de reddition de compte mis en \u0153uvre au moins \u00e0 80%"
+                                    },
+                                    "reponse": {
+                                        "id": "X1DBw2y6Xz287KG5RDNp3BdevPJWVaOXdVOmxQ60orgYAL4Ekyqj1MZlwLzpVK4Y",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 217,
+                                                "nom": "1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "chemin": "upload/soumissions/preuves/1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 297,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "z7yo4Lm5a9kY3Z7vRwEgLNnW2Dy8XpMa14Moqmbr6d5eA0G4PlBVx1JzONAblnG1"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "d2loxwXkj4LvWNkAolXRa3765m8qZOQALzB92xVG1rYpKDPdzJ0ygMbewMD0JyvK",
+                                    "nom": "Informations accessibles",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "JLMXeG016pGV4jEbz2NgyRXvLak9YWoYq8o3P08J7MxOdZwDKer1lAm5qmwzNraR",
+                                        "nom": "Informations accessibles"
+                                    },
+                                    "reponse": {
+                                        "id": "kjVPv6MQyExejXZ3dLDgk6zJWKaGvrnJe7b0lRBA2NY8PQp1Mq5m4Vo7wXDJGz70",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 218,
+                                                "nom": "1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "chemin": "upload/soumissions/preuves/1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 298,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "5RVw0E3AL6wGzB9WD4p2xgXPdNVo1ajByPK3OknZJyvrYb578qlAmER0eLg18kGY"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "xlwJ3r1QAeY3J0dBg9b5wQky8WDa4jodeZnRrV2OqZlpxK6vLPMm1G7zX7y24b0p",
+                            "nom": "Clarification des r\u00f4les et responsabilit\u00e9s",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "LrWVbMY4pd25DWjLV1b3RG6PloOwarE1wRBv0m9xYkAJgK7q8zXeMNZy4pxyamRv",
+                                    "nom": "Rapports publi\u00e9s",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "EmekN7q65kXgq6Ld8pam7DwKZGzrRxBbkOQyNeEb23JOAYl90MjV14vWPGJjRpx9",
+                                        "nom": "Rapports publi\u00e9s"
+                                    },
+                                    "reponse": {
+                                        "id": "2Yz7wKkJKA7W5wPJXQ6x1lMomNjpdZnMeMnzkyavL8Deg0324RVEBGYqraPxqBQ6",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 219,
+                                                "nom": "1764557547-gain-plan-media-radio-avril-2025.pdf",
+                                                "chemin": "upload/soumissions/preuves/1764557547-gain-plan-media-radio-avril-2025.pdf",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 299,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "kx5JBqw405Wp38o4kwdbxnR7B9DXEgK47BMzeLlmJYVqayv2NGrO16AZPv0lrG7V"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "7019b5MkdWVwMGopvmOKbl0YLZzy7rBZAZnqRJe6NaXg2jk8391D5P4xAj32GrXP",
+                                    "nom": "Proc\u00e9dures de prise de d\u00e9cision formalis\u00e9es",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "LvwlMpWEP7v2y03aVq9Omwd1XGJNeKQ2XRnr8gj5zAYMpDxLERk6WZ4bledXA74a",
+                                        "nom": "Proc\u00e9dures de prise de d\u00e9cision formalis\u00e9es"
+                                    },
+                                    "reponse": {
+                                        "id": "mMLGdNVegv274ZAPawpoYe0ymNK86M9BxWnRkXVrBLDJlGzdWq5jQxE133AJQ57r",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 220,
+                                                "nom": "1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "chemin": "upload/soumissions/preuves/1764557547-cahier_des_charges_suivi_spots.pdf",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 300,
+                                                "created_at": "2025-12-01T02:52:27.000000Z",
+                                                "updated_at": "2025-12-01T02:52:27.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "O2Bae6Xv90wOzbL5mpeGlRgWyxEVAYQybzMq6P3k18NZaJvX4Bnr2o7dDkYydmgo"
+                                            }
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "QLrg5KmWzjqM57dRBL2O6weKVb89gAEemWEpavDPJl3GWQk1mZx4XYyr06Mb1O3d",
+            "nom": "Gouvernance manag\u00e9riale et administrative",
+            "indice_factuel": 0.38,
+            "categories_de_gouvernance": [
+                {
+                    "id": "qdyOK6r5qdg6rJGzVWp5mw7YAkvRPKnwpmEQMLbl0OBxy4X9D28jea13ZY0ZezVx",
+                    "nom": "Transparence",
+                    "score_factuel": 0.38,
+                    "categories_de_gouvernance": [
+                        {
+                            "id": "PR8k9pXBQjbdOmWLBvl9XZ76ywk8RPoALzNe25q30AM1zrDGpK4aJxVgYgl3LzQO",
+                            "nom": "Alternance",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "WvkKR2Zwk8V4arR5y2KlJpZAbovMx7QrRoQGWO6zjgdN90X1wYePLD3qmVr8MaNo",
+                                    "nom": "Tenue r\u00e9guli\u00e8re des r\u00e9unions statutaires",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "Pl07JgO679K4RvJa8bXN0pL2VmlMGWorN5oqxrw1PAed5y6gYDzEkO3ZjN3DxA25",
+                                        "nom": "Tenue r\u00e9guli\u00e8re des r\u00e9unions statutaires"
+                                    },
+                                    "reponse": {
+                                        "id": "7w2MjX1G4VLKP1mpyoMBExwDJka3NWnoxLOX5qdG7le2RgQYZr6Aj08zvP0eLgdE",
+                                        "nom": "Oui",
+                                        "point": 1,
+                                        "sourceDeVerification": "source 1",
+                                        "preuves": [
+                                            {
+                                                "id": 221,
+                                                "nom": "1764557924-cahier_des_charges_suivi_spots.pdf",
+                                                "chemin": "upload/soumissions/preuves/1764557924-cahier_des_charges_suivi_spots.pdf",
+                                                "description": "preuves",
+                                                "fichiertable_type": "App\\Models\\enquetes_de_gouvernance\\ReponseDeLaCollecteFactuel",
+                                                "fichiertable_id": 301,
+                                                "created_at": "2025-12-01T02:58:44.000000Z",
+                                                "updated_at": "2025-12-01T02:58:44.000000Z",
+                                                "deleted_at": null,
+                                                "auteurId": 95,
+                                                "sharedId": null,
+                                                "secure_id": "NAoL0WEJJgnPyNmqDEz1oxa0rlpBLOKbxeQ6379dAVRZ285Wb4GwYvkeXy1zwg7a"
+                                            }
+                                        ]
+                                    }
+                                },
+                                {
+                                    "id": "G4rexPJgPOdMab70Z53pvlXrmVYGgKnGlKBk4J18qD6eWN9owx2AjyRLzbaDzd2Z",
+                                    "nom": "Existence d\u2019un dispositif d\u2019\u00e9coute et de prise en compte des pr\u00e9occupations des b\u00e9n\u00e9ficiaires",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "yv20AK87eElWMY0yP43qGp6rjbgVKLBG3pB5z9m8kD12NwROAZJXvda7xWkJD5Ze",
+                                        "nom": "Existence d\u2019un dispositif d\u2019\u00e9coute et de prise en compte des pr\u00e9occupations des b\u00e9n\u00e9ficiaires"
+                                    },
+                                    "reponse": {
+                                        "id": "5g7VkDYP5RzZV3DMAkBWN2L14mv0do9DxB9G7rJXejQlpxaKPY8wqg6EyJER2v3w",
+                                        "nom": "Non",
+                                        "point": 0,
+                                        "sourceDeVerification": "N/D",
+                                        "preuves": []
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "2jpB56ad46gdaD35b2Pe1kRvBwlZqzn1wRNMOL90xKX8QWJp7AyGmVYrjLr8Wg0A",
+                            "nom": "Implication des b\u00e9n\u00e9ficiaires",
+                            "questions_de_gouvernance": [
+                                {
+                                    "id": "YVabGNXDGrgWAkz1284Ywaj3Oqv0lPQ0PLQKMob57yNe6Z9mLVdJpxRXD6WPR9d7",
+                                    "nom": "R\u00e9daction et validation des rapports d\u2019activit\u00e9s",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "aZwN7Vv9R9mX34W8NVpzP125EvwdDgo0ywnLAlb60qa7xKkYerZjyMJOGzjmRe5D",
+                                        "nom": "R\u00e9daction et validation des rapports d\u2019activit\u00e9s"
+                                    },
+                                    "reponse": {
+                                        "id": "PVWBzAQKZKqJpaGDgBx6yMR7vjVQlYONlXbLWE0XP85m3ozer2wA4k1dNvjNYq3p",
+                                        "nom": "Partiellement",
+                                        "point": 0.5,
+                                        "sourceDeVerification": "N/D",
+                                        "preuves": []
+                                    }
+                                },
+                                {
+                                    "id": "GW5yKzVOxDzZWG2qdj67OXP8L5bweaB6A6ngKVk3rpvRy19J0lo4NMmYA0abRo6L",
+                                    "nom": "Existence d'un plan de reddition de compte",
+                                    "indicateur_de_gouvernance": {
+                                        "id": "w85YDpjPl4gdJKL2k8z30N9qX1yOW7Q6AxBGrwD65jexbMEvPmpYRAVaZXayblV9",
+                                        "nom": "Existence d'un plan de reddition de compte"
+                                    },
+                                    "reponse": {
+                                        "id": "WrzEQ7wxEWl2M1LGdDQmzaPjroA8pXbKeGO0RewkZ7yNVx4vBg35Y6qJKDl5k8K6",
+                                        "nom": "Non",
+                                        "point": 0,
+                                        "sourceDeVerification": "N/D",
+                                        "preuves": []
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "evaluatedAt": "2025-12-01T19:32:01.000000Z",
+    "formulaireDeGouvernance_type": "App\\Models\\enquetes_de_gouvernance\\FormulaireFactuelDeGouvernance",
+    "formulaireDeGouvernance_id": 56,
+    "evaluationDeGouvernanceId": 33,
+    "organisationId": 65,
+    "programmeId": 8,
+    "created_at": "2025-12-01T08:42:59.000000Z",
+    "updated_at": "2025-12-01T19:32:01.000000Z",
+    "deleted_at": null,
+    "secure_id": "RzlePkOA8y90OL7PprM4qXZmoj3zaV5Q4qEWJAxY6kQ1Rb2NvdnlwgGDedDmo2p7"
+}
