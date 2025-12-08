@@ -4,17 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
+use Illuminate\Support\Facades\Log;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class SuiviIndicateur extends Model
 {
+    use HasFactory, SoftDeletes, HasSecureIds;
 
-    use HasFactory, HasSecureIds;
-
-    protected $table = "suivi_indicateurs";
+    protected $table = 'suivi_indicateurs';
 
     public $timestamps = true;
 
@@ -25,10 +23,9 @@ class SuiviIndicateur extends Model
      * @var array
      */
     protected $casts = [
-        'valeurRealise' =>  'array',
-        "estValider"    => "boolean"
+        'valeurRealise' => 'array',
+        'estValider' => 'boolean'
     ];
-
 
     /* Les attributs qui sont assignés en masse */
     protected $fillable = [
@@ -64,16 +61,12 @@ class SuiviIndicateur extends Model
     {
         $valeurCible = $this->valeurCible;
 
-        if($valeurCible->cibleable_type == get_class(new Indicateur()))
-        {
+        if ($valeurCible->cibleable_type == get_class(new Indicateur())) {
             return Indicateur::find($valeurCible->cibleable_id);
-        }
-
-        else if($valeurCible->cibleable_type == get_class(new IndicateurMod()))
-        {
+        } else if ($valeurCible->cibleable_type == get_class(new IndicateurMod())) {
             return IndicateurMod::find($valeurCible->cibleable_id);
-        }
-        else return null;
+        } else
+            return null;
     }
 
     public function cumul()
@@ -82,39 +75,37 @@ class SuiviIndicateur extends Model
                                    where('id', '!=', $this->id)->
                                    get();*/
 
-        $suivis = SuiviIndicateur::/*where('dateSuivie', '<=', $this->dateSuivie)->*/
-                                   where('id', '!=', $this->id)->
-                                   get();
+        $suivis = SuiviIndicateur::  /* where('dateSuivie', '<=', $this->dateSuivie)-> */
+            where('id', '!=', $this->id)
+                ->get();
 
         $cumul = [];
 
         // Vérification de type
         if (!is_array($this->valeurRealise) && !is_object($this->valeurRealise)) {
-            Log::error("valeurRealise n’est pas un tableau : " . print_r($this->valeurRealise, true));
+            Log::error('valeurRealise n’est pas un tableau : ' . print_r($this->valeurRealise, true));
             return [];
         }
 
-        foreach($this->valeurRealise as $key => $valeur)
-        {
+        foreach ($this->valeurRealise as $key => $valeur) {
             $total = $valeur;
-            //return $total;
-            foreach($suivis as $suivi)
-            {
-                if($suivi->indicateur()->id != $this->indicateur()->id) continue;
+            // return $total;
+            foreach ($suivis as $suivi) {
+                if ($suivi->indicateur()->id != $this->indicateur()->id)
+                    continue;
 
                 // Vérifier l'existence de la clé
                 if (is_array($suivi->valeurRealise) && array_key_exists($key, $suivi->valeurRealise)) {
                     $total += $suivi->valeurRealise[$key];
-                }
-                else {
+                } else {
                     $total += $suivi->valeurRealise;
                     Log::info("Clé $key absente dans le suivi ID {$suivi->id}");
                 }
 
-                //$total += $suivi->valeurRealise[$key];
+                // $total += $suivi->valeurRealise[$key];
             }
 
-            //$cumul[$key] = $total; // mieux que array_push ici
+            // $cumul[$key] = $total; // mieux que array_push ici
 
             array_push($cumul, $total);
         }
@@ -126,5 +117,4 @@ class SuiviIndicateur extends Model
     {
         return $this->morphMany(IndicateurValeur::class, 'indicateur_valueable');
     }
-
 }
