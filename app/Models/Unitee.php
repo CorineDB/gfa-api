@@ -9,8 +9,7 @@ use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Unitee extends Model
 {
-
-    use HasFactory, HasSecureIds ;
+    use HasFactory, SoftDeletes, HasSecureIds;
 
     protected $table = 'unitees';
 
@@ -18,16 +17,14 @@ class Unitee extends Model
 
     protected $dates = ['deleted_at'];
 
-
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
 
-        static::deleting(function($uniteeDeMesure) {
-
+        static::deleting(function ($uniteeDeMesure) {
             $uniteeDeMesure->update([
                 'nom' => time() . '::' . $uniteeDeMesure->nom
             ]);
-
         });
     }
 
@@ -57,9 +54,9 @@ class Unitee extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        "created_at" => "datetime:Y-m-d",
-        "updated_at" => "datetime:Y-m-d",
-        "deleted_at" => "datetime:Y-m-d"
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d',
+        'deleted_at' => 'datetime:Y-m-d'
     ];
 
     /**
@@ -93,16 +90,16 @@ class Unitee extends Model
     }
 
     /*
-        public function indicateurs()
-        {
-            return $this->hasMany(Indicateur::class, 'uniteeId');
-        }
-
-        public function indicateurMods()
-        {
-            return $this->hasMany(IndicateurMod::class, 'uniteeId');
-        }
-    */
+     * public function indicateurs()
+     * {
+     *     return $this->hasMany(Indicateur::class, 'uniteeId');
+     * }
+     *
+     * public function indicateurMods()
+     * {
+     *     return $this->hasMany(IndicateurMod::class, 'uniteeId');
+     * }
+     */
 
     public function checkList()
     {
@@ -113,5 +110,4 @@ class Unitee extends Model
     {
         return $this->hasMany(CheckListCom::class, 'uniteeId');
     }
-
 }

@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+use Exception;
 
 class Categorie extends Model
 {
-    use HasSecureIds, HasFactory;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $table = 'categories';
 
@@ -20,7 +21,7 @@ class Categorie extends Model
 
     protected $dates = ['deleted_at'];
 
-    protected $fillable = ['nom', "type", "indice", 'categorieId', 'programmeId'];
+    protected $fillable = ['nom', 'type', 'indice', 'categorieId', 'programmeId'];
 
     /**
      * The attributes that should be hidden for serialization.
@@ -28,7 +29,7 @@ class Categorie extends Model
      * @var array<int, string>
      */
     protected $hidden = [
-        'updated_at','deleted_at'
+        'updated_at', 'deleted_at'
     ];
 
     /**
@@ -37,12 +38,13 @@ class Categorie extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        "created_at" => "datetime:Y-m-d",
-        "updated_at" => "datetime:Y-m-d",
-        "deleted_at" => "datetime:Y-m-d"
+        'created_at' => 'datetime:Y-m-d',
+        'updated_at' => 'datetime:Y-m-d',
+        'deleted_at' => 'datetime:Y-m-d'
     ];
 
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
 
         static::deleting(function ($categorie) {
@@ -50,23 +52,20 @@ class Categorie extends Model
                 // Prevent deletion by throwing an exception
                 throw new Exception("Impossible de supprimer cette catégorie. Veuillez d'abord supprimer tous les indicateurs, sous-catégories et modifications associées.");
             }
-        }); 
+        });
 
-        static::deleted(function($categorie) {
-
+        static::deleted(function ($categorie) {
             DB::beginTransaction();
             try {
-
                 $categorie->update([
                     'nom' => time() . '::' . $categorie->nom
                 ]);
 
                 DB::commit();
             } catch (\Throwable $th) {
-               DB::rollBack();
-               throw new Exception($th->getMessage(), 1);
+                DB::rollBack();
+                throw new Exception($th->getMessage(), 1);
             }
-
         });
     }
 
@@ -75,7 +74,7 @@ class Categorie extends Model
         if ($this->categorieId !== null) {
             return $this->categorie->code . '.' . $this->indice;
         }
-        
+
         return $this->indice;
     }
 

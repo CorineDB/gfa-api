@@ -2,10 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class IndicateurValeur extends Model
@@ -13,7 +14,7 @@ class IndicateurValeur extends Model
     protected $table = 'indicateur_valeurs';
     public $timestamps = true;
 
-    use HasSecureIds, HasFactory ;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $dates = ['deleted_at'];
 

@@ -5,29 +5,28 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class ValeurCibleIndicateur extends Model
 {
-    use HasFactory, HasSecureIds ;
+    use HasFactory, SoftDeletes, HasSecureIds;
 
-    protected $table = "valeur_cible_d_indicateurs";
+    protected $table = 'valeur_cible_d_indicateurs';
 
     /**
-    * Transtypage des attributs de type json
-    *
-    * @var array
-    */
+     * Transtypage des attributs de type json
+     *
+     * @var array
+     */
     protected $casts = [
-        'valeurCible'  => 'array'
+        'valeurCible' => 'array'
     ];
 
     /**
-    * Transtypage des attributs de type json
-    *
-    * @var array
-    */
+     * Transtypage des attributs de type json
+     *
+     * @var array
+     */
     protected $appends = [
         'valeur_realiser'
     ];
@@ -61,16 +60,17 @@ class ValeurCibleIndicateur extends Model
      */
     public function suivisIndicateur()
     {
-        return $this->hasMany(SuiviIndicateur::class, 'valeurCibleId')/*
-            ->when(
-                auth()->check() &&
-                (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) {
-                    // Filter by organisation responsible using both 'suivi_indicateurable_type' and 'suivi_indicateurable_id'
-                    $query->whereHas('suivi_indicateurable', function($query) {
-                        $query->where('suivi_indicateurable_type', get_class(auth()->user()->profilable))
-                            ->where('suivi_indicateurable_id', auth()->user()->profilable->id);
-                    });
-                }) */;
+        return $this->hasMany(SuiviIndicateur::class, 'valeurCibleId');  /*
+                                                                          * ->when(
+                                                                          *     auth()->check() &&
+                                                                          *     (auth()->user()->type == 'organisation' || (auth()->user()->profilable_id != 0 && auth()->user()->profilable_type == Organisation::class)), function($query) {
+                                                                          *         // Filter by organisation responsible using both 'suivi_indicateurable_type' and 'suivi_indicateurable_id'
+                                                                          *         $query->whereHas('suivi_indicateurable', function($query) {
+                                                                          *             $query->where('suivi_indicateurable_type', get_class(auth()->user()->profilable))
+                                                                          *                 ->where('suivi_indicateurable_id', auth()->user()->profilable->id);
+                                                                          *         });
+                                                                          *     })
+                                                                          */
     }
 
     /**
@@ -116,9 +116,9 @@ class ValeurCibleIndicateur extends Model
     {
         $totals = [];
 
-        //return $this->suivisIndicateur;
+        // return $this->suivisIndicateur;
 
-        $this->suivisIndicateur->pluck("valeurRealise")->each(function ($item, $index) use (&$totals) {
+        $this->suivisIndicateur->pluck('valeurRealise')->each(function ($item, $index) use (&$totals) {
             if (is_array($item)) {
                 foreach ($item as $key => $value) {
                     if (is_numeric($value)) {
@@ -128,10 +128,11 @@ class ValeurCibleIndicateur extends Model
                         $totals[$key] += $value;
                     }
                 }
-            }/*
-            else{
-                $totals[$index] += $item;
-            } */
+            }  /*
+                * else{
+                *     $totals[$index] += $item;
+                * }
+                */
         });
 
         return $totals;
