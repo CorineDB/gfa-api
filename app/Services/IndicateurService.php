@@ -1739,18 +1739,52 @@ class IndicateurService extends BaseService implements IndicateurServiceInterfac
                 throw new Exception("Vous n'avez pas les droits pour modifier cet indicateur", 403);
             }
 
-            // Vérification qu'il n'y a pas de suivis (optionnel selon les règles métier)
-            //if ($indicateur->suivis->isNotEmpty()) {
-            if ($indicateur->suivisIndicateur()->isNotEmpty()) {
-                throw new Exception("Impossible de modifier la valeur de base d'un indicateur qui a déjà des suivis.", 422);
-            }
-
             // Validation des données d'entrée
             if (!isset($attributs['valeurDeBase'])) {
                 throw new Exception("La valeur de base doit être fournie", 422);
             }
 
             $nouvelleValeurDeBase = $attributs['valeurDeBase'];
+
+            // Vérifier si la valeur de base a réellement changé
+            $valeurActuelle = $indicateur->valeurDeBase;
+            $valeurAChange = false;
+
+            if ($indicateur->agreger) {
+                // Pour un indicateur agrégé, comparer les tableaux
+                if (is_array($nouvelleValeurDeBase) && is_array($valeurActuelle)) {
+                    // Trier les deux tableaux pour une comparaison correcte
+                    ksort($nouvelleValeurDeBase);
+                    ksort($valeurActuelle);
+                    $valeurAChange = ($nouvelleValeurDeBase !== $valeurActuelle);
+                } else {
+                    $valeurAChange = true; // Structure différente = changement
+                }
+            } else {
+                // Pour un indicateur simple, comparer les valeurs directes
+                if (is_array($valeurActuelle) && !empty($valeurActuelle)) {
+                    // L'ancienne valeur est un tableau, prendre la première valeur
+                    $valeurActuelleSimple = array_values($valeurActuelle)[0] ?? null;
+                    $valeurAChange = ($nouvelleValeurDeBase != $valeurActuelleSimple);
+                } else {
+                    $valeurAChange = ($nouvelleValeurDeBase != $valeurActuelle);
+                }
+            }
+
+            // Vérification qu'il n'y a pas de suivis SEULEMENT si la valeur a changé
+            if ($valeurAChange && $indicateur->suivisIndicateur()->isNotEmpty()) {
+                throw new Exception("Impossible de modifier la valeur de base d'un indicateur qui a déjà des suivis.", 422);
+            }
+
+            // Si la valeur n'a pas changé, retourner directement sans modification
+            if (!$valeurAChange) {
+                return response()->json([
+                    'statut' => 'success',
+                    'message' => 'Aucune modification de la valeur de base nécessaire',
+                    'data' => new IndicateursResource($indicateur),
+                    'statutCode' => Response::HTTP_OK
+                ], Response::HTTP_OK);
+            }
 
 
 
