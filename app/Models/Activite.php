@@ -7,13 +7,13 @@ use App\Jobs\ChangementStatutJob;
 use App\Notifications\ChangementStatutNotification;
 use App\Traits\Helpers\HelperTrait;
 use App\Traits\Helpers\Pta;
-use DateTime;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+use DateTime;
+use Exception;
 
 class Activite extends Model
 {
@@ -27,19 +27,54 @@ class Activite extends Model
 
     protected $appends = ['consommer'];
 
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
 
-        static::deleted(function($activite) {
+        static::deleting(function ($activite) {
+            // Validation 1: Vérifier si l'activité a des suivis financiers
+            $suiviFinancierExists = \App\Models\SuiviFinancier::where('activiteId', $activite->id)
+                ->exists();
+
+            if ($suiviFinancierExists) {
+                throw new \Exception(
+                    "Impossible de supprimer cette activité car elle a déjà fait l'objet d'un suivi financier",
+                    403
+                );
+            }
+
+            // Validation 2: Vérifier si l'activité ou ses tâches ont des suivis physiques
+            $suiviExists = \App\Models\Suivi::where('suivitable_type', \App\Models\Activite::class)
+                ->where('suivitable_id', $activite->id)
+                ->exists();
+
+            if (!$suiviExists) {
+                // Vérifier les tâches
+                foreach ($activite->taches as $tache) {
+                    if (\App\Models\Suivi::where('suivitable_type', \App\Models\Tache::class)
+                            ->where('suivitable_id', $tache->id)
+                            ->exists()) {
+                        $suiviExists = true;
+                        break;
+                    }
+                }
+            }
+
+            if ($suiviExists) {
+                throw new \Exception(
+                    "Impossible de supprimer cette activité car elle ou ses tâches ont déjà fait l'objet d'un suivi physique (TEP)",
+                    403
+                );
+            }
+        });
+
+        static::deleted(function ($activite) {
             DB::beginTransaction();
             try {
-
-                if(optional($activite->statuts->last())->etat !== -2)
-                {
-                    if($activite->composante){
-                        $activite->rangement($activite->composante->activites->where("position", ">", $activite->position ));
+                if (optional($activite->statuts->last())->etat !== -2) {
+                    if ($activite->composante) {
+                        $activite->rangement($activite->composante->activites->where('position', '>', $activite->position));
                     }
-
                 }
 
                 $activite->taches()->delete();
@@ -56,7 +91,6 @@ class Activite extends Model
                 DB::rollBack();
 
                 throw new Exception($th->getMessage(), 1);
-
             }
         });
     }
@@ -73,17 +107,17 @@ class Activite extends Model
 
     public function structures()
     {
-        return $this->belongsToMany(User::class,'activite_users', 'activiteId', 'userId');
+        return $this->belongsToMany(User::class, 'activite_users', 'activiteId', 'userId');
     }
 
     public function structureResponsable()
     {
-        return $this->belongsToMany(User::class,'activite_users', 'activiteId', 'userId')->wherePivot('type', 'Responsable')->first();
+        return $this->belongsToMany(User::class, 'activite_users', 'activiteId', 'userId')->wherePivot('type', 'Responsable')->first();
     }
 
     public function structureAssociee()
     {
-        return $this->belongsToMany(User::class,'activite_users', 'activiteId', 'userId')->wherePivot('type', 'Associée')->first();
+        return $this->belongsToMany(User::class, 'activite_users', 'activiteId', 'userId')->wherePivot('type', 'Associée')->first();
     }
 
     public function projet()
@@ -91,7 +125,7 @@ class Activite extends Model
         $composante = $this->composante;
 
         while ($composante->composante) {
-           $composante = $composante->composante;
+            $composante = $composante->composante;
         }
 
         return $composante->projet();
@@ -139,57 +173,60 @@ class Activite extends Model
 
     public function planDeDecaissement($trimestre = null, $annee = null)
     {
-        $plan = $this->planDeDecaissements()->when($trimestre != null, function($query) use ($trimestre){
+        $plan = $this->planDeDecaissements()->when($trimestre != null, function ($query) use ($trimestre) {
             $query->where('trimestre', $trimestre);
-        })->when($annee != null, function($query) use ($annee){
+        })->when($annee != null, function ($query) use ($annee) {
             $query->where('annee', $annee);
         })->first();
 
-        if($plan)
+        if ($plan)
             return ['pret' => $plan->pret,
                 'budgetNational' => $plan->budgetNational];
 
         return ['pret' => 0,
-                'budgetNational' => 0];
+            'budgetNational' => 0];
     }
 
     public function planDeDecaissementParAnnee($annee = null)
     {
-        $plans = $this->planDeDecaissements()->when($annee != null, function($query) use ($annee) {
+        $plans = $this->planDeDecaissements()->when($annee != null, function ($query) use ($annee) {
             $query->where('annee', $annee);
         })->get();
 
         $pret = 0;
         $budgetNational = 0;
 
-        if($plans->count() > 0){
+        if ($plans->count() > 0) {
             $pret = $plans->sum('pret');
             $budgetNational = $plans->sum('budgetNational');
         }
         return ['pret' => $pret,
-                'budgetNational' => $budgetNational];
+            'budgetNational' => $budgetNational];
     }
 
-    public function suiviFinanciers($annee = null, $type= null)
+    public function suiviFinanciers($annee = null, $type = null)
     {
-        if(!isset($annee))
-        {
-            if($type == null)
-            {
+        if (!isset($annee)) {
+            if ($type == null) {
                 return $this->hasMany(SuiviFinancier::class, 'activiteId');
             }
-            return $this->hasMany(SuiviFinancier::class, 'activiteId')
-                        ->where('suivi_financierable_type', $type)->get();
+            return $this
+                ->hasMany(SuiviFinancier::class, 'activiteId')
+                ->where('suivi_financierable_type', $type)
+                ->get();
         }
 
-        if($type == null)
-        {
-            return $this->hasMany(SuiviFinancier::class, 'activiteId')
-                        ->where('annee', $annee)->get();
+        if ($type == null) {
+            return $this
+                ->hasMany(SuiviFinancier::class, 'activiteId')
+                ->where('annee', $annee)
+                ->get();
         }
-        return $this->hasMany(SuiviFinancier::class, 'activiteId')
-                        ->where('annee', $annee)
-                        ->where('suivi_financierable_type', $type)->get();
+        return $this
+            ->hasMany(SuiviFinancier::class, 'activiteId')
+            ->where('annee', $annee)
+            ->where('suivi_financierable_type', $type)
+            ->get();
     }
 
     public function statuts()
@@ -204,58 +241,37 @@ class Activite extends Model
 
         $statut = $statut ? $statut : $this->statuts()->create(['etat' => -1]);
 
-        if($statut['etat'] > -2 && $this->position == 0)
-        {
+        if ($statut['etat'] > -2 && $this->position == 0) {
             $this->position = $this->position($this->composante, 'activites');
             $this->save();
         }
 
-        if($statut && $statut['etat'] > -2)
-        {
-
-            foreach($this->taches as $tache)
-            {
-                if($tache->statut != 2)
-                {
+        if ($statut && $statut['etat'] > -2) {
+            foreach ($this->taches as $tache) {
+                if ($tache->statut != 2) {
                     $controle = 0;
                     break;
-                }
-
-                else $controle = 2;
+                } else
+                    $controle = 2;
             }
         }
 
-        if($controle == 2)
-        {
+        if ($controle == 2) {
             $statut = $this->statuts()->create(['etat' => 2]);
-
-        }
-
-        else if($controle == 1 || $controle == 0)
-        {
+        } else if ($controle == 1 || $controle == 0) {
             $fin = $this->duree->fin;
             $debut = $this->duree->debut;
 
-            if(($statut && $statut['etat'] == -1 || $statut['etat'] == 2) && $debut <= date('Y-m-d'))
-            {
+            if (($statut && $statut['etat'] == -1 || $statut['etat'] == 2) && $debut <= date('Y-m-d')) {
                 $etat = ['etat' => 0];
                 $statut = $this->statuts()->create($etat);
-
-            }
-
-            else if($statut && $statut['etat'] < 1 && $statut['etat'] != -2 && $fin < date('Y-m-d'))
-            {
+            } else if ($statut && $statut['etat'] < 1 && $statut['etat'] != -2 && $fin < date('Y-m-d')) {
                 $etat = ['etat' => 1];
                 $statut = $this->statuts()->create($etat);
-
-            }
-
-            else if($statut && $statut['etat'] == 1 && $fin > date('Y-m-d'))
-            {
+            } else if ($statut && $statut['etat'] == 1 && $fin > date('Y-m-d')) {
                 $etat = ['etat' => 0];
                 $statut = $this->statuts()->create($etat);
             }
-
         }
 
         return $statut ? $statut['etat'] : null;
@@ -264,17 +280,15 @@ class Activite extends Model
     public function getCodePtaAttribute()
     {
         $composante = $this->composante;
-        if($this->statut != -2 && $this->position == 0)
-        {
+        if ($this->statut != -2 && $this->position == 0) {
             $this->position = max($this->composante->activites->pluck('position')->all()) + 1;
             $this->save();
         }
-        return ''.optional($this->composante)->codePta.'.'.$this->position;
+        return '' . optional($this->composante)->codePta . '.' . $this->position;
     }
 
     public function getDureeAttribute()
     {
-
         $today = new DateTime();
         $nextDuree = null;
         $nextStart = null;
@@ -303,16 +317,13 @@ class Activite extends Model
         $duree = $this->durees->first();
         $min = strtotime($duree->debut) - strtotime('1970-01-01');
 
-        foreach($this->durees as $d)
-        {
+        foreach ($this->durees as $d) {
             $dif = strtotime(date('Y-m-d')) - strtotime($d->debut);
 
-            if($dif <= $min)
-            {
+            if ($dif <= $min) {
                 $min = $dif;
                 $duree = $d;
             }
-
         }
 
         return $duree;
@@ -320,7 +331,7 @@ class Activite extends Model
 
     public function getDureeActiviteAttribute()
     {
-        return new Duree(["debut" => $this->durees->first()->debut, "fin" => $this->durees->last()->fin]);
+        return new Duree(['debut' => $this->durees->first()->debut, 'fin' => $this->durees->last()->fin]);
     }
 
     public function getTepAttribute()
@@ -328,27 +339,25 @@ class Activite extends Model
         $count = $this->taches->count();
         return $count > 0
             ? $this->taches->map(fn($tache) => $tache->tep)->sum() / $count
-            : 0; // Or any default value
+            : 0;  // Or any default value
 
         $taches = $this->taches;
         $somme = 0;
         $sommeActuel = 0;
 
-        if(count($taches))
-        {
-            foreach($taches as $tache)
-            {
-                if($tache->statut == 2)
-                {
+        if (count($taches)) {
+            foreach ($taches as $tache) {
+                if ($tache->statut == 2) {
                     $sommeActuel += $tache->poids;
                 }
                 $somme += $tache->poids;
             }
         }
 
-        if(!$somme && $this->statut != 2) return 0;
-
-        else if($this->statut == 2) return $this->poids;
+        if (!$somme && $this->statut != 2)
+            return 0;
+        else if ($this->statut == 2)
+            return $this->poids;
 
         return ($sommeActuel * 100) / $somme;
     }
@@ -365,21 +374,19 @@ class Activite extends Model
         $somme = 0;
         $sommeActuel = 0;
 
-        if($taches)
-        {
-            foreach($taches as $tache)
-            {
-                if($tache->statut == 2)
-                {
+        if ($taches) {
+            foreach ($taches as $tache) {
+                if ($tache->statut == 2) {
                     $sommeActuel += $tache->poids;
                 }
                 $somme += $tache->poids;
             }
         }
 
-        if(!$somme && $this->statut != 2) return 0;
-
-        else if($this->statut == 2) return $this->poids;
+        if (!$somme && $this->statut != 2)
+            return 0;
+        else if ($this->statut == 2)
+            return $this->poids;
 
         return ($sommeActuel * $this->poids) / $somme;
     }
@@ -414,8 +421,7 @@ class Activite extends Model
 
         $taches = $this->taches;
 
-        foreach($taches as $tache)
-        {
+        foreach ($taches as $tache) {
             $tache->terminer();
         }
     }
@@ -424,5 +430,4 @@ class Activite extends Model
     {
         return $this->composante->bailleur;
     }
-
 }

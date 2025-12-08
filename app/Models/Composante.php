@@ -3,22 +3,20 @@
 namespace App\Models;
 
 use App\Traits\Helpers\Pta;
-use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+use Exception;
 
 class Composante extends Model
 {
-
     protected $table = 'composantes';
     public $timestamps = true;
 
     use Pta;
-
-    use HasSecureIds, HasFactory ;
+    use HasSecureIds, HasFactory;
 
     protected $dates = ['deleted_at'];
 
@@ -28,16 +26,79 @@ class Composante extends Model
     {
         parent::boot();
 
-        static::deleted(function ($composante) {
+        static::deleting(function ($composante) {
+            // Validation 1: Vérifier si la composante ou ses activités ont des suivis financiers
+            $suiviFinancierExists = false;
 
+            // Vérifier les activités directes
+            foreach ($composante->activites as $activite) {
+                if (\App\Models\SuiviFinancier::where('activiteId', $activite->id)->exists()) {
+                    $suiviFinancierExists = true;
+                    break;
+                }
+            }
+
+            // Vérifier les sous-composantes et leurs activités
+            if (!$suiviFinancierExists) {
+                foreach ($composante->sousComposantes as $sousComposante) {
+                    foreach ($sousComposante->activites as $activite) {
+                        if (\App\Models\SuiviFinancier::where('activiteId', $activite->id)->exists()) {
+                            $suiviFinancierExists = true;
+                            break 2;
+                        }
+                    }
+                }
+            }
+
+            if ($suiviFinancierExists) {
+                throw new \Exception(
+                    "Impossible de supprimer cette composante car elle ou ses activités ont déjà fait l'objet d'un suivi financier",
+                    403
+                );
+            }
+
+            // Validation 2: Vérifier si la composante ou ses enfants ont des suivis physiques
+            $suiviExists = \App\Models\Suivi::where('suivitable_type', \App\Models\Composante::class)
+                ->where('suivitable_id', $composante->id)
+                ->exists();
+
+            if (!$suiviExists) {
+                // Vérifier les activités et leurs tâches
+                foreach ($composante->activites as $activite) {
+                    if (\App\Models\Suivi::where('suivitable_type', \App\Models\Activite::class)
+                            ->where('suivitable_id', $activite->id)
+                            ->exists()) {
+                        $suiviExists = true;
+                        break;
+                    }
+
+                    foreach ($activite->taches as $tache) {
+                        if (\App\Models\Suivi::where('suivitable_type', \App\Models\Tache::class)
+                                ->where('suivitable_id', $tache->id)
+                                ->exists()) {
+                            $suiviExists = true;
+                            break 2;
+                        }
+                    }
+                }
+            }
+
+            if ($suiviExists) {
+                throw new \Exception(
+                    "Impossible de supprimer cette composante car elle ou ses activités/tâches ont déjà fait l'objet d'un suivi physique (TEP)",
+                    403
+                );
+            }
+        });
+
+        static::deleted(function ($composante) {
             DB::beginTransaction();
             try {
-
                 if (optional($composante->statuts->last())->etat !== -2) {
                     if ($composante->composante) {
-                        $composante->rangement($composante->composante->sousComposantes->where("position", ">", $composante->position));
+                        $composante->rangement($composante->composante->sousComposantes->where('position', '>', $composante->position));
                     } else if ($composante->projet) {
-                        $composante->rangement($composante->projet->composantes->where("position", ">", $composante->position));
+                        $composante->rangement($composante->projet->composantes->where('position', '>', $composante->position));
                     }
                 }
 
@@ -52,7 +113,6 @@ class Composante extends Model
                 $composante->fichiers()->delete();
 
                 $composante->commentaires()->delete();
-
 
                 DB::commit();
             } catch (\Throwable $th) {
@@ -78,7 +138,6 @@ class Composante extends Model
         return $this->morphMany(Statut::class, 'statuttable');
     }
 
-
     public function getStatusAttribute()
     {
         $controle = 1;
@@ -86,45 +145,30 @@ class Composante extends Model
 
         $statut = $statut ? $statut : $this->statuts()->create(['etat' => -1]);
 
-        if($statut['etat'] > -2 && $this->position == 0)
-        {
-            if($this->composanteId == 0)
-            {
+        if ($statut['etat'] > -2 && $this->position == 0) {
+            if ($this->composanteId == 0) {
                 $this->position = $this->position($this->projet, 'composantes');
-            }
-
-            else
-            {
+            } else {
                 $this->position = $this->position($this->composante, 'sousComposantes');
             }
 
             $this->save();
         }
 
-        if($statut &&  $statut['etat'] > -2)
-        {
-
-            foreach($this->activites as $activite)
-            {
-                if($activite->statut != 2)
-                {
+        if ($statut && $statut['etat'] > -2) {
+            foreach ($this->activites as $activite) {
+                if ($activite->statut != 2) {
                     $controle = 0;
                     break;
-                }
-
-                else $controle = 2;
+                } else
+                    $controle = 2;
             }
         }
 
-        if($controle == 2)
-        {
+        if ($controle == 2) {
             $statut = $this->statuts()->create(['etat' => 2]);
-        }
-
-        else if($controle == 1)
-        {
-            if($statut && $statut['etat'] == -1)
-            {
+        } else if ($controle == 1) {
+            if ($statut && $statut['etat'] == -1) {
                 $statut = $this->statuts()->create(['etat' => 0]);
             }
         }
@@ -149,7 +193,8 @@ class Composante extends Model
 
     public function ppm()
     {
-        return $this->hasMany(Activite::class, 'composanteId')
+        return $this
+            ->hasMany(Activite::class, 'composanteId')
             ->where('type', 'ppm')
             ->get();
     }
@@ -183,7 +228,7 @@ class Composante extends Model
 
         // Recursively sum 'comsommer' for all souscomposantes
         foreach ($this->souscomposantes as $souscomposante) {
-            $total += $souscomposante->consommer; // Recursive call
+            $total += $souscomposante->consommer;  // Recursive call
         }
 
         return $total;
@@ -238,7 +283,7 @@ class Composante extends Model
 
         // Aggregate the results
         return $activitesTep + $sousComposantesTep;
-        
+
         $somme = 0;
         $sommeActuel = 0;
 
@@ -258,7 +303,8 @@ class Composante extends Model
             }
         }
 
-        if (!$somme) return 0;
+        if (!$somme)
+            return 0;
 
         return ($sommeActuel * 100) / $somme;
     }
@@ -316,12 +362,12 @@ class Composante extends Model
             // Return composante-based code
             return $this->composante->codePta . '.' . $this->position;
         }
-    
+
         if ($this->projet) {
             // Return projet-based code
             return $this->projet->codePta . '.' . $this->position;
         }
-    
+
         return $this->position;
 
         if ($this->composanteId !== 0 || $this->composanteId !== NULL) {
@@ -375,14 +421,13 @@ class Composante extends Model
         $pret = 0;
         $budgetNational = 0;
 
-        for($i = 1; $i < 5; $i++)
-        {
+        for ($i = 1; $i < 5; $i++) {
             $pret += $this->planDeDecaissement($i, $annee)['pret'];
 
             $budgetNational += $this->planDeDecaissement($i, $annee)['budgetNational'];
         }
 
         return ['pret' => $pret,
-                'budgetNational' => $budgetNational];
+            'budgetNational' => $budgetNational];
     }
 }

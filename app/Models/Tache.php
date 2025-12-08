@@ -6,7 +6,6 @@ use App\Traits\Helpers\Pta;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
 use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 
 class Tache extends Model
@@ -19,16 +18,29 @@ class Tache extends Model
     protected $dates = ['deleted_at'];
     protected $fillable = array('nom', 'position', 'poids', 'activiteId', 'programmeId', 'description', 'statut');
 
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
 
-        static::deleted(function($tache) {
-            if(optional($tache->statuts->last())->etat !== -2)
-            {
-                if($tache->activite){
-                    $tache->rangement($tache->activite->taches->where("position", ">", $tache->position ));
-                }
+        static::deleting(function ($tache) {
+            // Vérifier si la tâche a des suivis physiques
+            $suiviExists = \App\Models\Suivi::where('suivitable_type', \App\Models\Tache::class)
+                ->where('suivitable_id', $tache->id)
+                ->exists();
 
+            if ($suiviExists) {
+                throw new \Exception(
+                    "Impossible de supprimer cette tâche car elle a déjà fait l'objet d'un suivi physique (TEP)",
+                    403
+                );
+            }
+        });
+
+        static::deleted(function ($tache) {
+            if (optional($tache->statuts->last())->etat !== -2) {
+                if ($tache->activite) {
+                    $tache->rangement($tache->activite->taches->where('position', '>', $tache->position));
+                }
             }
         });
     }
@@ -38,7 +50,7 @@ class Tache extends Model
         return $this->activite->projet();
 
         while ($composante->composante) {
-           $composante = $composante->composante;
+            $composante = $composante->composante;
         }
 
         return $composante->projet();
@@ -90,8 +102,7 @@ class Tache extends Model
 
         $statut = $statut ? $statut : $this->statuts()->create(['etat' => -1]);
 
-        if($statut['etat'] > -2 && $this->position == 0)
-        {
+        if ($statut['etat'] > -2 && $this->position == 0) {
             $this->position = $this->position($this->activite, 'taches');
             $this->save();
         }
@@ -99,27 +110,28 @@ class Tache extends Model
         return $statut ? $statut['etat'] : null;
     }
 
-
     public function verifiePlageDuree(string $debut, string $fin, Activite $activite = null)
     {
         // Use Carbon to parse the dates for accurate comparison
         $debutDate = Carbon::parse($debut);
         $finDate = Carbon::parse($fin);
 
-        if(!$activite){
+        if (!$activite) {
             $activite = $this->activite;
         }
 
         // Check if there exists any duration where the task's dates fit within one of the activity's date ranges
-        return $activite->durees()
-            ->where(function($query) use ($debutDate, $finDate) {
+        return $activite
+            ->durees()
+            ->where(function ($query) use ($debutDate, $finDate) {
                 // Check if the task's start date and end date fall within any of the ranges
                 $query->where(function ($subQuery) use ($debutDate, $finDate) {
-                    $subQuery->where('debut', '<=', $debutDate)
-                             ->where('fin', '>=', $finDate);
+                    $subQuery
+                        ->where('debut', '<=', $debutDate)
+                        ->where('fin', '>=', $finDate);
                 });
             })
-            ->exists(); // Return true if such a range exists
+            ->exists();  // Return true if such a range exists
     }
 
     public function getDureeAttribute()
@@ -127,16 +139,13 @@ class Tache extends Model
         $duree = $this->durees->first();
         $min = strtotime($duree->debut) - strtotime('1970-01-01');
 
-        foreach($this->durees as $d)
-        {
+        foreach ($this->durees as $d) {
             $dif = strtotime(date('Y-m-d')) - strtotime($d->debut);
 
-            if($dif <= $min)
-            {
+            if ($dif <= $min) {
                 $min = $dif;
                 $duree = $d;
             }
-
         }
 
         return $duree;
@@ -144,18 +153,18 @@ class Tache extends Model
 
     public function getDureeActiviteAttribute()
     {
-        return new Duree(["debut" => $this->durees->first()->debut, "fin" => $this->durees->last()->fin]);
+        return new Duree(['debut' => $this->durees->first()->debut, 'fin' => $this->durees->last()->fin]);
     }
 
     public function getDebutAttribute()
     {
-        if($this->duree)
+        if ($this->duree)
             return $this->duree->debut;
     }
 
     public function getFinAttribute()
     {
-        if($this->duree)
+        if ($this->duree)
             return $this->duree->fin;
     }
 
@@ -163,10 +172,11 @@ class Tache extends Model
     {
         $suivi = $this->suivis->last();
 
-        if(!$suivi) return 0;
+        if (!$suivi)
+            return 0;
 
         return $suivi->poidsActuel;
-        return ( optional($suivi)->poidsActuel * 100) / $this->poids;
+        return (optional($suivi)->poidsActuel * 100) / $this->poids;
     }
 
     public function terminer()
@@ -181,17 +191,15 @@ class Tache extends Model
     public function getCodePtaAttribute()
     {
         $activite = $this->activite;
-        if($this->statut != -2 && $this->position == 0)
-        {
+        if ($this->statut != -2 && $this->position == 0) {
             $this->position = max($this->activite->taches->pluck('position')->toArray()) + 1;
             $this->save();
         }
-        return ''.optional($this->activite)->codePta.'.'.$this->position;
+        return '' . optional($this->activite)->codePta . '.' . $this->position;
     }
 
     public function getBailleurAttribut()
     {
-        return $this->activite->bailleur ;
+        return $this->activite->bailleur;
     }
-
 }
