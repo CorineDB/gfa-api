@@ -32,9 +32,9 @@ class UniteeDeGestionObserver
         foreach ($optionsFactuelles as $option) {
             OptionDeReponseGouvernance::firstOrCreate(
                 [
-                    'libelle'     => $option['libelle'],
-                    'slug'        => $option['slug'],
-                    'type'        => 'factuel',
+                    'libelle' => $option['libelle'],
+                    'slug' => $option['slug'],
+                    'type' => 'factuel',
                     'programmeId' => $programmeId,
                 ]
             );
@@ -53,16 +53,16 @@ class UniteeDeGestionObserver
         foreach ($optionsPerception as $option) {
             OptionDeReponseGouvernance::firstOrCreate(
                 [
-                    'libelle'     => $option['libelle'],
-                    'slug'        => $option['slug'],
-                    'type'        => 'perception',
+                    'libelle' => $option['libelle'],
+                    'slug' => $option['slug'],
+                    'type' => 'perception',
                     'programmeId' => $programmeId,
                 ]
             );
         }
 
         // Création de l'unité de mesure 'nombre' si elle n'existe pas pour ce programme
-        $uniteNombre = \App\Models\Unitee::firstOrCreate(
+        $uniteNombre = \App\Models\Unitee::updateOrCreate(
             ['type' => 'nombre', 'programmeId' => $programmeId],
             ['nom' => 'Nombre', 'programmeId' => $programmeId]
         );

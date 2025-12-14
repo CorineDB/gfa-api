@@ -30,6 +30,16 @@ class RenameColumnsOfIndicateursCategoriesTable extends Migration
             Schema::table('categories', function (Blueprint $table) {
 
                 if(Schema::hasColumn('categories', 'nom')){
+                    // ou dropIndex selon le cas
+
+
+                    /* try {
+                        // 🔥 SUPPRESSION FORCÉE DES INDEX SUR nom
+                        \DB::statement('DROP INDEX categories_nom_unique ON categories');
+                        //\DB::statement('DROP INDEX categories_nom_index ON categories');
+                    } catch (\Throwable $e) {
+                        // ignore si déjà supprimé
+                    } */
                     $table->longText('nom')->change();
                 }
 
@@ -121,7 +131,7 @@ class RenameColumnsOfIndicateursCategoriesTable extends Migration
                     $table->dropColumn('indice');
                 }
 
-                if(Schema::hasColumn('indicateurs', 'type')){
+                if(Schema::hasColumn('categories', 'type')){
                     $table->dropColumn('type');
                 }
 

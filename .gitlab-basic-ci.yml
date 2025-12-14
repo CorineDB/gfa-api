@@ -1,0 +1,76 @@
+# stages:
+#   - deploy
+
+# before_script:
+#   - apt-get update && apt-get install -y sshpass
+
+# deploy_production:
+#   stage: deploy
+#   only:
+#     - corine
+#   script:
+#     - sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST "cd /usr/local/lsws/gfa_se_backend_webapp && git pull origin main && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+
+
+# stages:
+#   - deploy
+
+# before_script:
+#   - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+#   - eval $(ssh-agent -s)
+#   - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+#   - mkdir -p ~/.ssh
+#   - chmod 700 ~/.ssh
+#   - ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+
+# deploy_production:
+#   stage: deploy
+#   only:
+#     - main
+#   script:
+#     - ssh $SSH_USER@$SSH_HOST "cd /chemin/vers/votre/projet && git pull origin main && composer install --no-interaction --prefer-dist --optimize-autoloader && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache"
+
+stages:
+  - deploy
+
+before_script:
+  - 'which sshpass || (apt-get update -y && apt-get install -y sshpass)'
+
+deploy_production:
+  stage: deploy
+  only:
+    - corine
+  script:
+    - |
+      sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no \
+      -o UserKnownHostsFile=/dev/null \
+      $SSH_USER@$SSH_HOST "
+        set -e
+        echo 'Starting deployment...'
+
+        # Accéder au répertoire du projet
+        cd /usr/local/lsws/gfa_se_backend_webapp || exit 1
+
+        # Pull des dernières modifications
+        echo 'Pulling latest changes...'
+        git pull origin main || exit 1
+
+        # Installation des dépendances Composer
+        echo 'Installing Composer dependencies...'
+        composer install --no-interaction --prefer-dist --optimize-autoloader || exit 1
+
+        # Migrations de la base de données
+        echo 'Running database migrations...'
+        php artisan migrate --force || exit 1
+
+        # Mise en cache des configurations Laravel
+        echo 'Caching Laravel configurations...'
+        php artisan config:cache || exit 1
+        php artisan route:cache || exit 1
+        php artisan view:cache || exit 1
+
+        echo 'Deployment completed successfully!'
+      "
+  retry: 1
+  when: manual
+  allow_failure: false

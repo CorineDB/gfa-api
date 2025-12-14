@@ -13,7 +13,7 @@ use Exception;
 
 class Projet extends Model
 {
-    use HasSecureIds, HasFactory;
+    use HasSecureIds, SoftDeletes, HasFactory;
 
     protected $table = 'projets';
 
@@ -180,7 +180,7 @@ class Projet extends Model
 
             if ($suiviFinancierExists) {
                 throw new \Exception(
-                    "Impossible de supprimer ce projet car il ou ses composantes/activités ont déjà fait l'objet d'un suivi financier",
+                    "Impossible de supprimer ce projet car ses activités ont déjà fait l'objet d'un suivi financier",
                     403
                 );
             }

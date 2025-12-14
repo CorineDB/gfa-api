@@ -23,8 +23,15 @@ class Unitee extends Model
 
         static::deleting(function ($uniteeDeMesure) {
             $uniteeDeMesure->update([
-                'nom' => time() . '::' . $uniteeDeMesure->nom
+                'nom' => time() . '::' . $uniteeDeMesure->nom,
+                'type' => time() . '::' . $uniteeDeMesure->type
             ]);
+        });
+        static::creating(function ($uniteeDeMesure) {
+            // if type is null, set strtoLower of nom
+            if (is_null($uniteeDeMesure->type)) {
+                $uniteeDeMesure->type = Str::lower($uniteeDeMesure->nom);
+            }
         });
     }
 

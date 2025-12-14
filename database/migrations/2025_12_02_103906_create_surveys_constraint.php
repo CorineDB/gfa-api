@@ -42,6 +42,7 @@ class CreateSurveysConstraint extends Migration
                             ['intitule', 'programmeId', 'surveyable_type', 'surveyable_id'],
                             $newIndexName
                         );
+
                     } catch (\Exception $e) {
                         Log::warning("Could not create unique constraint '$newIndexName': " . $e->getMessage());
                     }

@@ -43,7 +43,15 @@ class UpdateColumnNomFromCategoriesTable extends Migration
                         } 
                     }else {
                         // Fallback: Drop unique constraint using column name
-                        $table->dropUnique(['nom']);
+                        //$table->dropUnique(['nom']);
+                        try {
+                            // 🔥 Supprimer TOUS les index sur nom (SQL brut)
+                            \DB::statement('DROP INDEX categories_nom_unique ON categories');
+                            //$table->dropUnique("categories_nom_unique");
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            // Log a warning if the unique constraint couldn't be dropped
+                            \Log::warning("Unique constraint 'categories_nom_unique' could not be dropped: " . $e->getMessage());
+                        } 
                     }
                 }
             });

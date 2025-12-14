@@ -1,8 +1,15 @@
+# ALTERNATIVE APPROACH: Build image in CI runner, then deploy to server
+# To use this file, rename it to .gitlab-ci.yml
+# This approach builds the Docker image in GitLab CI, transfers it to the server,
+# then runs docker-compose with the pre-built image.
+
 stages:
+  - build
   - deploy
   - health_check
 
 variables:
+  DOCKER_IMAGE: gfa_backend_app
   # DEPLOY_TARGET: Where to deploy
   #   - "server" (default): Uses SSH_HOST, SSH_USER, SSH_PASSWORD
   #   - "pc": Uses LOCAL_SSH_HOST, LOCAL_SSH_USER, LOCAL_SSH_PASSWORD
@@ -12,13 +19,40 @@ before_script:
   - 'which sshpass || (apt-get update -y && apt-get install -y sshpass)'
 
 # =============================================================================
-# DEPLOY STAGE
+# BUILD STAGE - Build image in GitLab CI runner
 # =============================================================================
 
-deploy_production:
-  stage: deploy
+build:
+  stage: build
+  image: docker:latest
+  services:
+    - docker:dind
+  script:
+    - |
+      echo "Building Backend App image..."
+      
+      # Build the backend app image
+      docker build -t $DOCKER_IMAGE:latest .
+      
+      # Save image for deploy stage
+      docker save $DOCKER_IMAGE:latest > image.tar
+      
+      echo "Image built successfully!"
+  artifacts:
+    paths:
+      - image.tar
+    expire_in: 1 hour
   only:
     - corine
+
+# =============================================================================
+# DEPLOY STAGE - Transfer image and start containers on server
+# =============================================================================
+
+deploy:
+  stage: deploy
+  dependencies:
+    - build
   script:
     - |
       # Select SSH credentials and project path based on DEPLOY_TARGET
@@ -36,8 +70,6 @@ deploy_production:
         PROJECT_PATH="${SERVER_PROJECT_PATH:-/usr/local/lsws/gfa_se_backend_webapp}"
       fi
       
-      echo "Project path: $PROJECT_PATH"
-      
       # Gestion des variables d'environnement
       # Priorité: 1) ENV_FILE (GitLab CI/CD), 2) .env.production.example
       if [ -n "$ENV_FILE" ]; then
@@ -51,22 +83,33 @@ deploy_production:
         exit 1
       fi
 
-      # Déploiement sur le serveur
+      echo "Transferring image to server..."
+      
+      # Transfer image to server
+      sshpass -p "$TARGET_PASSWORD" scp -o StrictHostKeyChecking=no \
+        -o UserKnownHostsFile=/dev/null \
+        image.tar $TARGET_USER@$TARGET_HOST:/tmp/gfa_backend_image.tar
+
+      # Deploy on server
       sshpass -p "$TARGET_PASSWORD" ssh -o StrictHostKeyChecking=no \
       -o UserKnownHostsFile=/dev/null \
       $TARGET_USER@$TARGET_HOST "
         set -e
-        echo 'Starting Docker deployment...'
+        echo 'Starting Backend deployment...'
 
-        # Accéder au répertoire du projet
+        # Navigate to project directory
         cd $PROJECT_PATH || exit 1
 
-
-        # Pull des dernières modifications
+        # Pull latest changes (for docker-compose.yml, configs, etc.)
         echo 'Pulling latest changes...'
         git pull origin main || exit 1
 
-        # Écrire le fichier .env.production
+        # Load the pre-built image
+        echo 'Loading Docker image...'
+        docker load < /tmp/gfa_backend_image.tar
+        rm /tmp/gfa_backend_image.tar
+
+        # Write .env.production
         echo 'Writing .env.production...'
         cat > .env.production << 'ENVEOF'
 $ENV_CONTENT
@@ -114,14 +157,15 @@ ENVEOF
         fi
         
         echo 'Environment validated successfully!'
-        echo '  APP_URL='\$APP_URL
-        echo '  UG_APP_URL='\$UG_APP_URL
 
-        # Redémarrage des conteneurs avec config production
-        echo 'Rebuilding and restarting containers...'
-        docker-compose --env-file .env.production -f docker-compose.yml -f docker-compose.prod.yml up -d --build --remove-orphans || exit 1
+        # Start all services with the pre-built image (no --build needed)
+        echo 'Starting containers...'
+        docker-compose --env-file .env.production -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans || exit 1
 
-        # Optimisations pour la production (Cache)
+        # Wait for app to be ready
+        sleep 10
+
+        # Run Laravel optimizations
         echo 'Optimizing configuration...'
         docker-compose exec -T app php artisan config:cache || exit 1
         docker-compose exec -T app php artisan route:cache || exit 1
@@ -129,7 +173,8 @@ ENVEOF
 
         echo 'Deploy stage completed!'
       "
-  retry: 1
+  only:
+    - corine
   when: manual
   allow_failure: false
 
@@ -142,7 +187,7 @@ health_check:
   only:
     - corine
   needs:
-    - deploy_production
+    - deploy
   script:
     - |
       # Select SSH credentials and project path based on DEPLOY_TARGET
