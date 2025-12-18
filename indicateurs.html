@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Suivi des indicateurs – Présentation améliorée</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 24px;
+      color: #1f2937;
+    }
+    h1, h2, h3 { margin: 0 0 12px 0; }
+    .container { max-width: 1200px; margin: auto; }
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .kpi-box {
+      background: #0f2a4d;
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .kpi-box span { font-size: 13px; opacity: 0.8; }
+    .kpi-box strong { font-size: 26px; display: block; margin-top: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th { background: #f1f5f9; font-size: 13px; text-transform: uppercase; }
+    .status-ok { color: #16a34a; font-weight: bold; }
+    .status-warn { color: #f59e0b; font-weight: bold; }
+    .status-bad { color: #dc2626; font-weight: bold; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+    label { font-weight: bold; margin-right: 8px; }
+    select { padding: 4px 8px; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>📊 Suivi des indicateurs – Historique cumulatif (T4 2025)</h1>
+
+  <!-- KPI GLOBAL (valeur cumulée des suivis) -->
+  <div class="card kpi">
+    <div class="kpi-box">
+      <span>Indicateur</span>
+      <strong>Score information des citoyens</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Score réalisé cumulé</span>
+      <strong id="lastScore">—</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Score cible (référence)</span>
+      <strong id="globalTarget">—</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Statut actuel</span>
+      <strong id="globalStatus">—</strong>
+    </div>
+  </div>
+
+  <!-- DETAIL PAR CLES -->
+  <div class="card">
+    <h2>Détail cumulatif par dimensions</h2>
+    <table id="detailTable">
+      <thead>
+        <tr>
+          <th>Clé</th>
+          <th>Valeur cumulée</th>
+          <th>Valeur cible</th>
+          <th>Taux</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- VISUALISATIONS -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>Évolution cumulée par clé (réalisé vs cibles annuelles)</h3>
+      <div style="margin-bottom:12px">
+        <label for="yearFilter">Filtrer par année cible :</label>
+        <select id="yearFilter"></select>
+      </div>
+      <div style="margin-bottom:12px">
+        <label for="keyFilter">Filtrer par clé :</label>
+        <select id="keyFilter"></select>
+      </div>
+      <canvas id="evolutionChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>Comparaison cumulée par clé</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Lecture globale par dimension (cumul)</h3>
+    <canvas id="radarChart"></canvas>
+  </div>
+
+</div>
+
+<script>
+/*************************************
+ * DATASETS
+ *************************************/
+const cible = {
+  Transparence: { 2024: 30, 2025: 70 },
+  Participation: { 2024: 20, 2025: 60 },
+  Controle: { 2024: 15, 2025: 45 }
+};
+
+const suivis = [
+  { date: '2025-10', valeurs: { Transparence: 20, Participation: 10, Controle: 5 } },
+  { date: '2025-11', valeurs: { Transparence: 30, Participation: 20, Controle: 15 } },
+  { date: '2025-12', valeurs: { Transparence: 25, Participation: 15, Controle: 10 } }
+];
+
+/*************************************
+ * NORMALISATION & CUMUL
+ *************************************/
+const sorted = suivis.sort((a,b)=>a.date.localeCompare(b.date));
+const periods = sorted.map(s => s.date);
+const labels = Object.keys(cible);
+
+// cumul réalisé par clé
+const cumulativeByKey = {};
+labels.forEach(k => {
+  let sum = 0;
+  cumulativeByKey[k] = sorted.map(s => sum += s.valeurs[k] || 0);
+});
+
+// valeurs finales cumulées
+const realised = labels.map(k => cumulativeByKey[k][cumulativeByKey[k].length -1]);
+
+/*************************************
+ * FILTRES ANNEE & CLE
+ *************************************/
+const yearFilter = document.getElementById('yearFilter');
+const keyFilter = document.getElementById('keyFilter');
+
+// remplir le filtre des années
+const allYears = [...new Set(Object.values(cible).flatMap(v => Object.keys(v)))].sort();
+allYears.forEach(y => {
+  const option = document.createElement('option');
+  option.value = y;
+  option.textContent = y;
+  yearFilter.appendChild(option);
+});
+
+// remplir le filtre des clés
+labels.forEach(k => {
+  const option = document.createElement('option');
+  option.value = k;
+  option.textContent = k;
+  keyFilter.appendChild(option);
+});
+
+/*************************************
+ * FONCTIONS DE CIBLE PAR ANNEE
+ *************************************/
+function getTargetByYear(selectedYear) {
+  const targetByYear = {};
+  labels.forEach(k => {
+    let acc = 0;
+    targetByYear[k] = sorted.map((s, idx) => {
+      acc += (cible[k][selectedYear] || 0);
+      return acc;
+    });
+  });
+  return targetByYear;
+}
+
+/*************************************
+ * TABLEAU DETAIL
+ *************************************/
+function updateTable(targetYearByKey) {
+  const tbody = document.querySelector('#detailTable tbody');
+  tbody.innerHTML = '';
+  labels.forEach(k => {
+    const taux = ((realised[labels.indexOf(k)] / targetYearByKey[k][targetYearByKey[k].length-1]) * 100).toFixed(1);
+    const status = realised[labels.indexOf(k)] >= targetYearByKey[k][targetYearByKey[k].length-1] ? 'Atteint' : 'En cours';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${k}</td>
+      <td>${realised[labels.indexOf(k)]}</td>
+      <td>${targetYearByKey[k][targetYearByKey[k].length-1]}</td>
+      <td>${taux}%</td>
+      <td class="${status==='Atteint'?'status-ok':'status-warn'}">${status}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+/*************************************
+ * KPI GLOBAL
+ *************************************/
+function updateKPI(targetYearByKey) {
+  const targetFinal = labels.map(k => targetYearByKey[k][targetYearByKey[k].length-1]);
+  const globalTarget = targetFinal.reduce((a,b)=>a+b,0);
+  const globalRealised = realised.reduce((a,b)=>a+b,0);
+  document.getElementById('lastScore').textContent = globalRealised.toFixed(1);
+  document.getElementById('globalTarget').textContent = globalTarget.toFixed(1);
+  document.getElementById('globalStatus').textContent = globalRealised >= globalTarget ? 'Atteint' : 'En cours';
+}
+
+/*************************************
+ * GRAPHIQUES
+ *************************************/
+let evolutionChart, barChart, radarChart;
+
+function renderEvolutionChart(selectedKey, targetData) {
+  const datasets = [
+    {
+      label: `${selectedKey} – Réalisé (cumul)`,
+      data: cumulativeByKey[selectedKey],
+      borderColor: '#0f2a4d',
+      backgroundColor: 'rgba(15,42,77,0.1)',
+      tension: 0.3
+    },
+    {
+      label: `${selectedKey} – Cible`,
+      data: targetData,
+      borderColor: '#f59e0b',
+      borderDash: [5,5],
+      tension: 0.3
+    }
+  ];
+  if (evolutionChart) evolutionChart.destroy();
+  evolutionChart = new Chart(document.getElementById('evolutionChart'), {
+    type: 'line',
+    data: { labels: periods, datasets },
+    options: { responsive:true, interaction:{mode:'index',intersect:false} }
+  });
+}
+
+function initBarAndRadar(targetYearByKey) {
+  const targetFinal = labels.map(k => targetYearByKey[k][targetYearByKey[k].length-1]);
+  const barData = {
+    labels,
+    datasets:[
+      { label:'Valeur cumulée', data: realised, backgroundColor:'#0f2a4d' },
+      { label:'Valeur cible', data: targetFinal, backgroundColor:'#f59e0b' }
+    ]
+  };
+  barChart = new Chart(document.getElementById('barChart'), { type:'bar', data: barData, options:{responsive:true} });
+
+  const radarData = {
+    labels,
+    datasets:[
+      { label:'Valeur cumulée', data: realised, fill:true, backgroundColor:'rgba(15,42,77,0.2)', borderColor:'#0f2a4d' },
+      { label:'Valeur cible', data: targetFinal, fill:true, backgroundColor:'rgba(245,158,11,0.2)', borderColor:'#f59e0b' }
+    ]
+  };
+  radarChart = new Chart(document.getElementById('radarChart'), { type:'radar', data: radarData, options:{ responsive:true, scales:{ r:{ beginAtZero:true } } } });
+}
+
+/*************************************
+ * MISE A JOUR TOTALE
+ *************************************/
+function updateAll() {
+  const selectedYear = yearFilter.value;
+  const selectedKey = keyFilter.value;
+  const targetYearByKey = getTargetByYear(selectedYear);
+  updateTable(targetYearByKey);
+  updateKPI(targetYearByKey);
+  renderEvolutionChart(selectedKey, targetYearByKey[selectedKey]);
+
+  // mettre à jour bar et radar
+  const targetFinal = labels.map(k => targetYearByKey[k][targetYearByKey[k].length-1]);
+  barChart.data.datasets[1].data = targetFinal;
+  barChart.update();
+  radarChart.data.datasets[1].data = targetFinal;
+  radarChart.update();
+}
+
+/*************************************
+ * INIT
+ *************************************/
+yearFilter.value = allYears[0];
+keyFilter.value = labels[0];
+initBarAndRadar(getTargetByYear(yearFilter.value));
+updateAll();
+
+yearFilter.addEventListener('change', updateAll);
+keyFilter.addEventListener('change', updateAll);
+
+</script>
+
+</body>
+</html>
+

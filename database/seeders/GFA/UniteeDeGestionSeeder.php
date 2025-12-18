@@ -39,7 +39,7 @@ class UniteeDeGestionSeeder extends Seeder
                 [
                     'nom' => 'Kokoye',
                     'prenom' => 'Marc',
-                    'password' => Hash::make('Redevabilite3@'),
+                    'password' => 'Redevabilite3@',
                     'contact' => '80808080',
                     'type' => 'unitee-de-gestion',
                     'profilable_type' => UniteeDeGestion::class,

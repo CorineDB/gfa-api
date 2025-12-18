@@ -8,21 +8,19 @@ use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
 use Core\Services\Contracts\BaseService;
 use Core\Services\Interfaces\RoleServiceInterface;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Exception;
 
 /**
-* Interface RoleServiceInterface
-* @package Core\Services\Interfaces
-*/
+ * Interface RoleServiceInterface
+ * @package Core\Services\Interfaces
+ */
 class RoleService extends BaseService implements RoleServiceInterface
 {
-    /**
-     * @var service
-     */
+    /** @var service */
     protected $repository;
     protected $permissionRepository;
 
@@ -40,22 +38,26 @@ class RoleService extends BaseService implements RoleServiceInterface
 
     public function all(array $attributs = ['*'], array $relations = []): JsonResponse
     {
-        try
-        {
+        try {
             $roles = [];
 
             $user = Auth::user();
 
-            if( ($user && $user->hasRole("administrateur", "super-admin")) )
-            {
-                $roles = $this->repository->getInstance()->where('roleable_type', "App\\Models\\Administrateur")->where('roleable_id', $user->profilable_id)
+            if (($user && $user->hasRole('administrateur', 'super-admin'))) {
+                $roles = $this
+                    ->repository
+                    ->getInstance()
+                    ->where('roleable_type', 'App\Models\Administrateur')
+                    ->where('roleable_id', $user->profilable_id)
                     ->orderBy('created_at', 'desc')
                     ->get();
-                //$roles = $this->repository->all();
-            }
-            else
-            {
-                $roles = $this->repository->getInstance()->where('roleable_type', $user->profilable_type)->where('roleable_id', $user->profilable_id)
+                // $roles = $this->repository->all();
+            } else {
+                $roles = $this
+                    ->repository
+                    ->getInstance()
+                    ->where('roleable_type', $user->profilable_type)
+                    ->where('roleable_id', $user->profilable_id)
                     ->orderBy('created_at', 'desc')
                     ->get();
             }
@@ -63,29 +65,24 @@ class RoleService extends BaseService implements RoleServiceInterface
             // Retourner le token
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => RolesResource::collection($roles), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
     public function findById($role, array $columns = ['*'], array $relations = [], array $appends = []): JsonResponse
     {
-        try
-        {
-            if(!is_object($role) && !($role = $this->repository->findById($role))) throw new Exception("Role inconnu.", 404);
+        try {
+            if (!is_object($role) && !($role = $this->repository->findById($role)))
+                throw new Exception('Role inconnu.', 404);
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new RolesResource($role), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-        }
-
-        catch (\Throwable $th)
-        {
+        } catch (\Throwable $th) {
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function create(array $attributs) : JsonResponse
+    public function create(array $attributs): JsonResponse
     {
         DB::beginTransaction();
 
@@ -96,52 +93,54 @@ class RoleService extends BaseService implements RoleServiceInterface
 
             $user = auth()->user();
 
-            if(($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == "App\\Models\\Administrateur")){
-
+            if (($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == 'App\Models\Administrateur')) {
                 $attributs = array_merge($attributs, [
-                    'roleable_type' => "App\\Models\\Administrateur",
-                    'roleable_id'   => $user->profilable_id,
+                    'roleable_type' => 'App\Models\Administrateur',
+                    'roleable_id' => $user->profilable_id,
                 ]);
-            }
-            else{
+            } else {
                 $roleableType = $user->profilable ? get_class($user->profilable) : auth()->user()->profilable_type;
-                $roleableId   = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
+                $roleableId = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
 
                 $attributs = array_merge($attributs, [
                     'roleable_type' => $roleableType,
-                    'roleable_id'   => $roleableId,
+                    'roleable_id' => $roleableId,
                 ]);
             }
 
             $role = $this->repository->fill(array_merge($attributs, ['programmeId' => auth()->user()->programmeId]));
 
+            // Désactiver les contraintes FK si Admin (pour permettre programmeId = 0)
+            if (($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == 'App\Models\Administrateur')) {
+                DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+            }
+
             $role->save();
 
-            if( array_key_exists('permissions', $attributs) && isset($attributs['permissions']))
-            {
+            // Réactiver les contraintes FK si Admin
+            if (($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == 'App\Models\Administrateur')) {
+                DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+            }
+
+            if (array_key_exists('permissions', $attributs) && isset($attributs['permissions'])) {
                 // Attacher les permissions au role, même ceux qui ne sont pas encore crée
                 foreach ($attributs['permissions'] as $value) {
-
-                    if(is_int($value))
-                    {
-                        if($value == $idSearch->id) $controle = 1;
+                    if (is_int($value)) {
+                        if ($value == $idSearch->id)
+                            $controle = 1;
 
                         $role->permissions()->attach($value);
-                    }
-                    elseif(isset($value['nom']))
-                    {
-                        $permission = $this->permissionRepository->findByAttribute("nom", $value['nom']);
+                    } elseif (isset($value['nom'])) {
+                        $permission = $this->permissionRepository->findByAttribute('nom', $value['nom']);
 
-                        if(!$permission) $permission =  $this->nouvellePermission($this->permissionRepository->fill($value)->toArray());
+                        if (!$permission)
+                            $permission = $this->nouvellePermission($this->permissionRepository->fill($value)->toArray());
 
                         $role->permissions()->save($permission);
-                    }
-                    else;
-
+                    } else;
                 }
 
-                if(!$controle)
-                {
+                if (!$controle) {
                     $role->permissions()->attach($idSearch->id);
                 }
             }
@@ -149,106 +148,87 @@ class RoleService extends BaseService implements RoleServiceInterface
             DB::commit();
 
             return response()->json(['statut' => 'success', 'message' => null, 'data' => new RolesResource($role), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
         } catch (\Throwable $th) {
+            // Réactiver les contraintes FK en cas d'erreur
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
             DB::rollback();
 
-            //throw $th;
+            // throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
-    public function update($idRole, array $attributs) : JsonResponse
+    public function update($idRole, array $attributs): JsonResponse
     {
-
         DB::beginTransaction();
 
         try {
-
-            if(is_string($idRole))
-            {
+            if (is_string($idRole)) {
                 $role = $this->repository->findById($idRole);
-            }
-            else{
+            } else {
                 $role = $idRole;
             }
 
-                $user = auth()->user();
+            $user = auth()->user();
 
-                if(($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == "App\\Models\\Administrateur")){
-
-                    if(($role->roleable_type != "App\\Models\\Administrateur") || $user->profilable_id != $role->roleable_id){
-                        throw new Exception("Action non autorisée : vous ne pouvez pas modifier ce rôle car il appartient à une autre entité.", 403);
-                    }
-                    elseif(($role->roleable_type == "App\\Models\\Administrateur") && $user->profilable_id != $role->roleable_id){
-                        $attributs = array_merge($attributs, [
-                            'roleable_type' => "App\\Models\\Administrateur",
-                            'roleable_id'   => $user->profilable_id,
-                        ]);
-                    }
+            if (($user->type == 'admin') || ($user->type == 'administrateur') || ($user->hasRole('administrateur') || $user->profilable_type == 'App\Models\Administrateur')) {
+                if (($role->roleable_type != 'App\Models\Administrateur') || $user->profilable_id != $role->roleable_id) {
+                    throw new Exception('Action non autorisée : vous ne pouvez pas modifier ce rôle car il appartient à une autre entité.', 403);
+                } elseif (($role->roleable_type == 'App\Models\Administrateur') && $user->profilable_id != $role->roleable_id) {
+                    $attributs = array_merge($attributs, [
+                        'roleable_type' => 'App\Models\Administrateur',
+                        'roleable_id' => $user->profilable_id,
+                    ]);
                 }
-                else{
-                    if(($role->roleable_type != get_class($user->profilable)) || $user->profilable_id != $role->roleable_id){
-                        //if(($role->roleable_type != "App\\Models\\Administrateur") || $user->profilable_id != $role->roleable_id){
-                        throw new Exception("Error Processing Request", 403);
-                    }
-                    elseif(($role->roleable_type == get_class($user->profilable)) && $user->profilable_id != $role->roleable_id){
+            } else {
+                if (($role->roleable_type != get_class($user->profilable)) || $user->profilable_id != $role->roleable_id) {
+                    // if(($role->roleable_type != "App\\Models\\Administrateur") || $user->profilable_id != $role->roleable_id){
+                    throw new Exception('Error Processing Request', 403);
+                } elseif (($role->roleable_type == get_class($user->profilable)) && $user->profilable_id != $role->roleable_id) {
+                    $roleableType = $user->profilable ? get_class($user->profilable) : auth()->user()->profilable_type;
+                    $roleableId = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
 
-                        $roleableType = $user->profilable ? get_class($user->profilable) : auth()->user()->profilable_type;
-                        $roleableId   = $user->profilable ? $user->profilable->id : auth()->user()->profilable_id;
-
-                        $attributs = array_merge($attributs, [
-                            'roleable_type' => $roleableType,
-                            'roleable_id'   => $roleableId,
-                        ]);
-                    }
+                    $attributs = array_merge($attributs, [
+                        'roleable_type' => $roleableType,
+                        'roleable_id' => $roleableId,
+                    ]);
                 }
+            }
 
             $role = $role->fill($attributs);
 
             $role->save();
 
-            if( array_key_exists("permissions", $attributs) && isset($attributs['permissions']))
-            {
+            if (array_key_exists('permissions', $attributs) && isset($attributs['permissions'])) {
                 $updateData = [];
 
                 foreach ($attributs['permissions'] as $value) {
-
-                    if(is_int($value))
+                    if (is_int($value))
                         array_push($updateData, $value);
+                    elseif (isset($value['nom'])) {
+                        $permission = $this->permissionRepository->findByAttribute('nom', $value['nom']);
 
-                    elseif(isset($value['nom']))
-                    {
-
-                        $permission = $this->permissionRepository->findByAttribute("nom", $value['nom']);
-
-                        if(!$permission) $permission = $this->nouvellePermission($this->permissionRepository->fill($value)->toArray());
+                        if (!$permission)
+                            $permission = $this->nouvellePermission($this->permissionRepository->fill($value)->toArray());
 
                         array_push($updateData, $permission->id);
-                    }
-                    else;
-
+                    } else;
                 }
 
                 // Mis à jour des permissions de ce role
                 $role->permissions()->sync($updateData);
-
             }
 
             DB::commit();
 
-            return response()->json(['statut' => 'success', 'message' => "Le rôle à bien été mis à jour", 'data' => new RolesResource($role), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
-
+            return response()->json(['statut' => 'success', 'message' => 'Le rôle à bien été mis à jour', 'data' => new RolesResource($role), 'statutCode' => Response::HTTP_OK], Response::HTTP_OK);
         } catch (\Throwable $th) {
-
             DB::rollback();
 
-            //throw $th;
+            // throw $th;
             return response()->json(['statut' => 'error', 'message' => $th->getMessage(), 'errors' => []], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-
     }
 
     private function nouvellePermission($attributs)

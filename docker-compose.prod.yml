@@ -1,34 +1,192 @@
-# Production override - requires all environment variables to be set
-# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-
 version: '3.8'
 
 services:
   app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: gfa_backend_app
+    container_name: gfa_app
+    restart: unless-stopped
+    tty: true
     environment:
-      # App Config - REQUIRED in production
-      APP_ENV: ${APP_ENV:?APP_ENV is required (e.g., production)}
-      APP_DEBUG: ${APP_DEBUG:-false}
-      APP_URL: ${APP_URL:?APP_URL is required (e.g., https://api.your-domain.com)}
-
-      # Database - REQUIRED
-      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
-
-      # Mail - REQUIRED for sending emails
-      MAIL_HOST: ${MAIL_HOST:?MAIL_HOST is required}
-      MAIL_USERNAME: ${MAIL_USERNAME:?MAIL_USERNAME is required}
-      MAIL_PASSWORD: ${MAIL_PASSWORD:?MAIL_PASSWORD is required}
-      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:?MAIL_FROM_ADDRESS is required}
-
-      # Frontend URLs - REQUIRED
-      UG_APP_URL: ${UG_APP_URL:?UG_APP_URL is required (e.g., https://ug.your-domain.com)}
-      ORG_APP_URL: ${ORG_APP_URL:?ORG_APP_URL is required (e.g., https://org.your-domain.com)}
-      ADMIN_APP_URL: ${ADMIN_APP_URL:?ADMIN_APP_URL is required (e.g., https://admin.your-domain.com)}
-
-      # SMS - REQUIRED for SMS functionality
-      SMS_PROVIDER_API_ACCOUNT_ID: ${SMS_PROVIDER_API_ACCOUNT_ID:?SMS_PROVIDER_API_ACCOUNT_ID is required}
-      SMS_PROVIDER_API_ACCOUNT_PASSWORD: ${SMS_PROVIDER_API_ACCOUNT_PASSWORD:?SMS_PROVIDER_API_ACCOUNT_PASSWORD is required}
-      SMS_PROVIDER_API_KEY: ${SMS_PROVIDER_API_KEY:?SMS_PROVIDER_API_KEY is required}
-
+      # App Config
+      APP_NAME: ${APP_NAME:-DMS Redevabilité}
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-true}
+      APP_URL: ${APP_URL:-http://localhost:8080}
+      LOG_CHANNEL: stack
+      LOG_LEVEL: debug
+      SERVICE_NAME: app
+      APP_SERVICE: ${APP_SERVICE:-app}
+      # Database
+      DB_CONNECTION: mysql
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: gfa_db
+      DB_USERNAME: gfa_admin
+      DB_PASSWORD: ${DB_PASSWORD:-Cb0c0g@2025!}
+      # Redis & Queue
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      QUEUE_CONNECTION: redis
+      CACHE_DRIVER: redis
+      SESSION_DRIVER: redis
+      # Mail Configuration
+      MAIL_MAILER: smtp
+      MAIL_HOST: ${MAIL_HOST:-smtp.titan.email}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-}
+      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION:-tls}
+      MAIL_FROM_ADDRESS: ${MAIL_FROM_ADDRESS:-}
+      MAIL_FROM_NAME: ${MAIL_FROM_NAME:-DMS Redevabilité}
+      # Pusher
+      PUSHER_APP_ID: ${PUSHER_APP_ID:-}
+      PUSHER_APP_KEY: ${PUSHER_APP_KEY:-}
+      PUSHER_APP_SECRET: ${PUSHER_APP_SECRET:-}
+      PUSHER_APP_CLUSTER: ${PUSHER_APP_CLUSTER:-eu}
+      # Frontend URLs (localhost for dev, set via .env for production)
+      UG_APP_URL: ${UG_APP_URL:-http://localhost:3000}
+      ORG_APP_URL: ${ORG_APP_URL:-http://localhost:3001}
+      ADMIN_APP_URL: ${ADMIN_APP_URL:-http://localhost:3002}
+      # SMS Provider
+      SMS_PROVIDER_URL: ${SMS_PROVIDER_URL:-https://api.e-mc.co/v3}
+      SMS_PROVIDER_API_ACCOUNT_ID: ${SMS_PROVIDER_API_ACCOUNT_ID:-}
+      SMS_PROVIDER_API_ACCOUNT_PASSWORD: ${SMS_PROVIDER_API_ACCOUNT_PASSWORD:-}
+      SMS_PROVIDER_API_KEY: ${SMS_PROVIDER_API_KEY:-}
       # Alerts
-      ALERT_EMAIL: ${ALERT_EMAIL:?ALERT_EMAIL is required}
+      SMS_ALERT_THRESHOLD: ${SMS_ALERT_THRESHOLD:-1000}
+      ALERT_EMAIL: ${ALERT_EMAIL:-}
+      ALERT_SMS: ${ALERT_SMS:-}
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./storage/app/public:/var/www/html/storage/app/public
+      - ./storage/app/private:/var/www/html/storage/app/private
+      - ./.env.prod:/var/www/html/.env:ro
+    networks:
+      - gfa-network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  scheduler:
+    image: gfa_backend_app
+    container_name: gfa_scheduler
+    restart: unless-stopped
+    command: php artisan schedule:work
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: gfa_db
+      DB_USERNAME: gfa_admin
+      DB_PASSWORD: ${DB_PASSWORD:-Cb0c0g@2025!}
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: redis
+    volumes:
+      - .:/var/www/html
+      - ./storage/app/public:/var/www/html/storage/app/public
+      - ./storage/app/private:/var/www/html/storage/app/private
+    networks:
+      - gfa-network
+    depends_on:
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
+
+  worker:
+    image: gfa_backend_app
+    container_name: gfa_worker
+    restart: unless-stopped
+    command: php artisan queue:work --tries=3 --timeout=90
+    environment:
+      DB_HOST: db
+      DB_PORT: 3306
+      DB_DATABASE: gfa_db
+      DB_USERNAME: gfa_admin
+      DB_PASSWORD: ${DB_PASSWORD:-Cb0c0g@2025!}
+      REDIS_HOST: redis
+      QUEUE_CONNECTION: redis
+    volumes:
+      - .:/var/www/html
+      - ./storage/app/public:/var/www/html/storage/app/public
+      - ./storage/app/private:/var/www/html/storage/app/private
+    networks:
+      - gfa-network
+    depends_on:
+      app:
+        condition: service_started
+      db:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:alpine
+    container_name: gfa_nginx
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - gfa-network
+    depends_on:
+      - app
+
+  db:
+    image: mariadb:10.6
+    container_name: gfa_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: gfa_db
+      MYSQL_USER: gfa_admin
+      MYSQL_PASSWORD: ${DB_PASSWORD:-Cb0c0g@2025!}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - gfa-network
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:alpine
+    container_name: gfa_redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - gfa-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: gfa_pma
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+    ports:
+      - "8081:80"
+    networks:
+      - gfa-network
+    depends_on:
+      - db
+
+networks:
+  gfa-network:
+    driver: bridge
+
+volumes:
+  db_data:
+  redis_data:
+
+

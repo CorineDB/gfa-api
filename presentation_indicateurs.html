@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Suivi des indicateurs – Présentation améliorée</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 24px;
+      color: #1f2937;
+    }
+    h1, h2, h3 { margin: 0 0 12px 0; }
+    .container { max-width: 1200px; margin: auto; }
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .kpi {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .kpi-box {
+      background: #0f2a4d;
+      color: #ffffff;
+      border-radius: 10px;
+      padding: 16px;
+    }
+    .kpi-box span { font-size: 13px; opacity: 0.8; }
+    .kpi-box strong { font-size: 26px; display: block; margin-top: 6px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    th { background: #f1f5f9; font-size: 13px; text-transform: uppercase; }
+    .status-ok { color: #16a34a; font-weight: bold; }
+    .status-warn { color: #f59e0b; font-weight: bold; }
+    .status-bad { color: #dc2626; font-weight: bold; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    @media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h1>📊 Suivi des indicateurs – Historique cumulatif (T4 2025)</h1>
+
+  <!-- KPI GLOBAL (valeur cumulée des suivis) -->
+  <div class="card kpi">
+    <div class="kpi-box">
+      <span>Indicateur</span>
+      <strong>Score information des citoyens</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Score réalisé cumulé</span>
+      <strong id="lastScore">—</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Score cible (référence)</span>
+      <strong id="globalTarget">—</strong>
+    </div>
+    <div class="kpi-box">
+      <span>Statut actuel</span>
+      <strong id="globalStatus">—</strong>
+    </div>
+  </div>
+
+  <!-- DETAIL PAR CLES -->
+  <div class="card">
+    <h2>Détail cumulatif par dimensions</h2>
+    <table id="detailTable">
+      <thead>
+        <tr>
+          <th>Clé</th>
+          <th>Valeur cumulée</th>
+          <th>Valeur cible</th>
+          <th>Taux</th>
+          <th>Statut</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <!-- VISUALISATIONS -->
+  <div class="grid-2">
+    <div class="card">
+      <h3>Évolution cumulée par clé (réalisé vs cibles annuelles)</h3>
+      <div style="margin-bottom:12px">
+        <label for="keyFilter"><strong>Filtrer par clé :</strong></label>
+        <select id="keyFilter"></select>
+      </div>
+      <canvas id="evolutionChart"></canvas>
+    </div>
+    <div class="card">
+      <h3>Comparaison cumulée par clé</h3>
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Lecture globale par dimension (cumul)</h3>
+    <canvas id="radarChart"></canvas>
+  </div>
+
+</div>
+
+<script>
+/*************************************
+ * DATASETS (issus de l'image – exemple fonctionnel)
+ *************************************/
+// CIBLES PAR ANNEE (cumulables)
+const cible = {
+  Transparence: { 2024: 30, 2025: 70 },
+  Participation: { 2024: 20, 2025: 60 },
+  Controle: { 2024: 15, 2025: 45 }
+};
+
+const suivis = [
+  { date: '2025-10', valeurs: { Transparence: 20, Participation: 10, Controle: 5 } },
+  { date: '2025-11', valeurs: { Transparence: 30, Participation: 20, Controle: 15 } },
+  { date: '2025-12', valeurs: { Transparence: 25, Participation: 15, Controle: 10 } }
+];
+
+/*************************************
+ * NORMALISATION
+ *************************************/
+const sorted = suivis.sort((a,b)=>a.date.localeCompare(b.date));
+const labels = Object.keys(cible);
+
+// initialisation du filtre
+const keyFilter = document.getElementById('keyFilter');
+// construction des cibles cumulatives par clé et par période (ANNUELLES CUMULATIVES)
+const targetByKey = {};
+labels.forEach(k => {
+  let acc = 0;
+  targetByKey[k] = periods.map(p => {
+    const year = p.split('-')[0];
+    acc += (cible[k][year] || 0);
+    return acc;
+  });
+});
+});
+
+// valeurs finales cumulées par clé
+const realised = labels.map(k => cumulativeByKey[k][cumulativeByKey[k].length - 1] || 0);
+
+// cible finale cumulée par clé (somme des cibles annuelles)
+const target = labels.map(k => Object.values(cible[k]).reduce((a,b)=>a+b,0));(-1) || 0);
+const target = labels.map(k => cible[k] || 0);
+
+/*************************************
+ * KPI GLOBAL
+ *************************************/
+const globalRealised = realised.reduce((a,b)=>a+b,0) / realised.length;
+const globalTarget = target.reduce((a,b)=>a+b,0) / target.length;
+
+document.getElementById('lastScore').textContent = globalRealised.toFixed(1);
+document.getElementById('globalTarget').textContent = globalTarget.toFixed(1);
+document.getElementById('globalStatus').textContent = globalRealised >= globalTarget ? 'Atteint' : 'En cours';').textContent = globalRealised >= globalTarget ? 'Atteint' : 'En cours';
+
+/*************************************
+ * CHARTS
+ *************************************/
+let evolutionChart;
+
+function renderEvolutionChart(selectedKey) {
+  const datasets = [
+    {
+      label: `${selectedKey} – Réalisé (cumul)`,
+      data: cumulativeByKey[selectedKey],
+      tension: 0.3
+    },
+    {
+      label: `${selectedKey} – Cible (cumul)`,
+      data: targetByKey[selectedKey],
+      borderDash: [5,5],
+      tension: 0.3
+    }
+  ];
+
+  if (evolutionChart) evolutionChart.destroy();
+
+  evolutionChart = new Chart(document.getElementById('evolutionChart'), {
+    type: 'line',
+    data: { labels: periods, datasets },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false }
+    }
+  });
+}
+
+// rendu initial
+renderEvolutionChart(labels[0]);
+
+keyFilter.addEventListener('change', e => {
+  renderEvolutionChart(e.target.value);
+});
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: { labels, datasets: [
+    { label: 'Valeur cumulée', data: realised },
+    { label: 'Valeur cible', data: target }
+  ]},
+  options: { responsive: true }
+});
+
+new Chart(document.getElementById('radarChart'), {
+  type: 'radar',
+  data: { labels, datasets: [
+    { label: 'Valeur cumulée', data: realised, fill: true },
+    { label: 'Valeur cible', data: target, fill: true }
+  ]},
+  options: { responsive: true, scales: { r: { beginAtZero: true } } }
+});
+</script>
+
+</body>
+</html>

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 class UserObserver
 {
-
     /**
      * Handle the User "creating" event.
      *
@@ -45,9 +44,7 @@ class UserObserver
      * @param  \App\Models\User  $user
      * @return void
      */
-    public function updating(User $user)
-    {
-    }
+    public function updating(User $user) {}
 
     /**
      * Handle the User "deleted" event.

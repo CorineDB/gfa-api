@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
             [
                 'nom' => 'Admin',
                 'prenom' => 'GFA',
-                'password' => Hash::make('password'),
+                'password' => 'password',
                 'contact' => '00000000',
                 'type' => 'administrateur',
                 'programmeId' => null,

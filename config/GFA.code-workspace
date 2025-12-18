@@ -1,0 +1,12 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"name": "surveyforge-connect-1",
+			"path": "../../surveyforge-connect-1"
+		}
+	],
+	"settings": {}
+}

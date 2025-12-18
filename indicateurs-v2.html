@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<title>Suivi des indicateurs – Dashboard complet</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+body { font-family: Arial, sans-serif; background: #f5f7fb; margin:0; padding:24px; color:#1f2937; }
+h1,h2,h3{ margin:0 0 12px 0; }
+.container { max-width: 1200px; margin:auto; }
+.card { background:#fff; border-radius:12px; padding:20px; margin-bottom:24px; box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+.kpi { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:16px; }
+.kpi-box { background:#0f2a4d; color:#fff; border-radius:10px; padding:16px; }
+.kpi-box span{ font-size:13px; opacity:0.8; }
+.kpi-box strong{ font-size:26px; display:block; margin-top:6px; }
+table { width:100%; border-collapse:collapse; margin-top:12px; }
+th, td { padding:10px 12px; text-align:left; border-bottom:1px solid #e5e7eb; }
+th { background:#f1f5f9; font-size:13px; text-transform:uppercase; }
+.status-ok{ color:#16a34a; font-weight:bold; }
+.status-warn{ color:#f59e0b; font-weight:bold; }
+.status-bad{ color:#dc2626; font-weight:bold; }
+.status-na{ color:#6b7280; font-weight:bold; }
+.grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+@media(max-width:900px){ .grid-2{ grid-template-columns:1fr; } }
+label{ font-weight:bold; margin-right:8px; }
+select{ padding:4px 8px; margin-right:12px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>📊 Suivi des indicateurs – Dashboard complet</h1>
+
+<!-- KPI GLOBAL -->
+<div class="card kpi">
+  <div class="kpi-box"><span>Indicateur</span><strong>Score information des citoyens</strong></div>
+  <div class="kpi-box"><span>Score réalisé cumulé</span><strong id="lastScore">—</strong></div>
+  <div class="kpi-box"><span>Score cible (référence)</span><strong id="globalTarget">—</strong></div>
+  <div class="kpi-box"><span>Statut actuel</span><strong id="globalStatus">—</strong></div>
+</div>
+
+<!-- DETAIL PAR CLES -->
+<div class="card">
+<h2>Détail cumulatif par dimensions</h2>
+<table id="detailTable">
+<thead>
+<tr><th>Clé</th><th>Valeur cumulée</th><th>Valeur cible</th><th>Progression (%)</th><th>Statut</th></tr>
+</thead>
+<tbody></tbody>
+</table>
+</div>
+
+<!-- FILTRES + GRAPHIQUES -->
+<div class="grid-2">
+  <div class="card">
+    <h3>Évolution cumulée par clé</h3>
+    <div style="margin-bottom:12px">
+      <label for="yearFollowFilter">Année :</label>
+      <select id="yearFollowFilter"></select>
+      <label for="quarterFilter">Trimestre :</label>
+      <select id="quarterFilter">
+        <option value="1">T1 (Jan-Mars)</option>
+        <option value="2">T2 (Avr-Juin)</option>
+        <option value="3">T3 (Juil-Sept)</option>
+        <option value="4">T4 (Oct-Déc)</option>
+      </select>
+      <label for="keyFilter">Clé :</label>
+      <select id="keyFilter"></select>
+    </div>
+    <canvas id="evolutionChart"></canvas>
+  </div>
+
+  <div class="card">
+    <h3>Comparaison cumulée par clé</h3>
+    <canvas id="barChart"></canvas>
+  </div>
+</div>
+
+<div class="card">
+<h3>Lecture globale par dimension (cumul)</h3>
+<canvas id="radarChart"></canvas>
+</div>
+
+<!-- PROGRESSION CUMULÉE PAR CLÉ AVEC FILTRE ANNÉE DÉDIÉ -->
+<div class="card">
+  <h3>Progression (%) cumulée par clé</h3>
+  <div style="margin-bottom:12px">
+    <label for="yearProgressFilter">Année :</label>
+    <select id="yearProgressFilter"></select>
+  </div>
+  <canvas id="progressChart"></canvas>
+</div>
+
+<div class="card">
+  <h3>Contribution globale par clé</h3>
+  <canvas id="contributionChart"></canvas>
+</div>
+
+<div class="card">
+  <h3>🔹 Contribution détaillée par clé</h3>
+  <canvas id="detailedContributionChart"></canvas>
+</div>
+
+<div class="card">
+<h3>Performance par responsable / organisation</h3>
+<div style="margin-bottom:12px">
+  <label for="responsibleFilter">Filtrer par responsable :</label>
+  <select id="responsibleFilter"><option value="All">Tous</option></select>
+</div>
+<canvas id="responsibleChart"></canvas>
+</div>
+
+<div class="card">
+<h3>Message d’analyse globale</h3>
+<p id="performanceMessage" style="font-weight:bold; font-size:1.2em;"></p>
+</div>
+
+<script>
+// ======== DATA EXEMPLE ========
+const cible = {
+  Transparence:{2024:30,2025:70},
+  Participation:{2024:20,2025:60},
+  Controle:{2024:15,2025:45}
+};
+
+const suivis = [
+  {date:'2025-01',valeurs:{Transparence:5,Participation:3,Controle:2}},
+  {date:'2025-02',valeurs:{Transparence:10,Participation:5,Controle:3}},
+  {date:'2025-03',valeurs:{Transparence:8,Participation:4,Controle:2}},
+  {date:'2025-04',valeurs:{Transparence:12,Participation:6,Controle:4}},
+  {date:'2025-05',valeurs:{Transparence:10,Participation:5,Controle:3}},
+  {date:'2025-06',valeurs:{Transparence:8,Participation:5,Controle:2}},
+  {date:'2025-07',valeurs:{Transparence:7,Participation:4,Controle:2}},
+  {date:'2025-08',valeurs:{Transparence:6,Participation:4,Controle:2}},
+  {date:'2025-09',valeurs:{Transparence:7,Participation:5,Controle:3}},
+  {date:'2025-10',valeurs:{Transparence:20,Participation:10,Controle:5}},
+  {date:'2025-11',valeurs:{Transparence:30,Participation:20,Controle:15}},
+  {date:'2025-12',valeurs:{Transparence:25,Participation:15,Controle:10}}
+];
+
+const suivisResponsable = [
+  {date:'2025-01', valeurs:{Transparence:3,Participation:2,Controle:1}, responsable:"Alice"},
+  {date:'2025-01', valeurs:{Transparence:2,Participation:1,Controle:1}, responsable:"Bob"},
+  {date:'2025-02', valeurs:{Transparence:5,Participation:3,Controle:2}, responsable:"Claire"},
+  {date:'2025-02', valeurs:{Transparence:3,Participation:2,Controle:1}, responsable:"David"},
+  {date:'2025-03', valeurs:{Transparence:5,Participation:4,Controle:2}, responsable:"Alice"},
+  {date:'2025-03', valeurs:{Transparence:3,Participation:2,Controle:1}, responsable:"Bob"}
+];
+
+// ======== INIT ========
+const labels = Object.keys(cible);
+const yearFollowFilter = document.getElementById('yearFollowFilter');
+const keyFilter = document.getElementById('keyFilter');
+const quarterFilter = document.getElementById('quarterFilter');
+const responsibleFilter = document.getElementById('responsibleFilter');
+const yearProgressFilter = document.getElementById('yearProgressFilter');
+let evolutionChart, barChart, radarChart, progressChart, contributionChart, responsibleChart, detailedContributionChart;
+
+// Filtres années
+const yearsFollow = [...new Set(suivis.map(s=>s.date.split('-')[0]))].sort();
+yearsFollow.forEach(y=>{ const opt=document.createElement('option'); opt.value=y; opt.textContent=y; yearFollowFilter.appendChild(opt); });
+yearsFollow.forEach(y=>{ const opt=document.createElement('option'); opt.value=y; opt.textContent=y; yearProgressFilter.appendChild(opt); });
+
+// Filtre clé
+labels.forEach(k=>{ const opt=document.createElement('option'); opt.value=k; opt.textContent=k; keyFilter.appendChild(opt); });
+
+// Filtre responsable
+const allResp = [...new Set(suivisResponsable.map(s=>s.responsable))];
+allResp.forEach(r=>{ const opt=document.createElement('option'); opt.value=r; opt.textContent=r; responsibleFilter.appendChild(opt); });
+
+// ======== FONCTIONS UTILES ========
+function getFilteredSuivis(year, quarter){
+  const monthStart = (quarter-1)*3 + 1;
+  const monthEnd = quarter*3;
+  return suivis.filter(s=>{
+    const [y,m]=s.date.split('-').map(Number);
+    return y===year && m>=monthStart && m<=monthEnd;
+  });
+}
+
+function chartOptionsWithTooltip(targetData=null){
+  return {
+    responsive:true,
+    interaction:{mode:'index',intersect:false},
+    plugins:{
+      tooltip:{
+        callbacks:{
+          label:function(context){
+            const val = context.raw;
+            const datasetLabel = context.dataset.label;
+            if(!targetData) return `${datasetLabel}: ${val}`;
+            const idx=context.dataIndex;
+            const targetVal = targetData[idx] || 1;
+            const ecart = val - targetVal;
+            const pct = ((val/targetVal)*100).toFixed(1);
+            return `${datasetLabel}: ${val} | Cible: ${targetVal} | Écart: ${ecart} | Atteinte: ${pct}%`;
+          }
+        }
+      }
+    },
+    scales:{y:{beginAtZero:true}}
+  };
+}
+
+// ======== DASHBOARD UPDATE ========
+function updateDashboard(){
+  const year=parseInt(yearFollowFilter.value);
+  const quarter=parseInt(quarterFilter.value);
+  const selectedKey=keyFilter.value;
+  const filteredSuivis=getFilteredSuivis(year, quarter);
+  const periods=filteredSuivis.map(s=>s.date);
+
+  // cumul par clé
+  const cumulativeByKey={};
+  labels.forEach(k=>{
+    let sum=0;
+    cumulativeByKey[k]=filteredSuivis.map(s=>sum+=s.valeurs[k]||0);
+  });
+  const realised=labels.map(k=>cumulativeByKey[k][cumulativeByKey[k].length-1]||0);
+  const targetByKey={};
+  labels.forEach(k=>{
+    const sum=Object.values(cible[k]).reduce((a,b)=>a+b,0);
+    targetByKey[k]=Array(filteredSuivis.length).fill(sum);
+  });
+
+  // tableau
+  const tbody=document.querySelector('#detailTable tbody'); tbody.innerHTML='';
+  labels.forEach((k,i)=>{
+    const valeurCible = targetByKey[k][targetByKey[k].length-1] || 0;
+    const taux = valeurCible ? ((realised[i]/valeurCible)*100).toFixed(1)+'%' : '—';
+    const status = valeurCible ? (realised[i]>=valeurCible?'Atteint':'En cours') : 'N/A';
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${k}</td>
+      <td>${realised[i]}</td>
+      <td>${valeurCible || '—'}</td>
+      <td>${taux}</td>
+      <td class="${status==='Atteint'?'status-ok':status==='En cours'?'status-warn':'status-na'}">${status}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // KPI
+  const globalTarget = labels.map(k=>targetByKey[k][targetByKey[k].length-1]).reduce((a,b)=>a+b,0);
+  const globalRealised = realised.reduce((a,b)=>a+b,0);
+  document.getElementById('lastScore').textContent = globalRealised.toFixed(1);
+  document.getElementById('globalTarget').textContent = globalTarget.toFixed(1);
+  document.getElementById('globalStatus').textContent = globalRealised>=globalTarget?'Atteint':'En cours';
+
+  // Evolution Chart
+  if(evolutionChart) evolutionChart.destroy();
+  evolutionChart=new Chart(document.getElementById('evolutionChart'),{
+    type:'line',
+    data:{ labels: periods, datasets:[
+      {label:`${selectedKey} – Réalisé`, data:cumulativeByKey[selectedKey], borderColor:'#0f2a4d', backgroundColor:'rgba(15,42,77,0.1)', tension:0.3},
+      {label:`${selectedKey} – Cible`, data:targetByKey[selectedKey], borderColor:'#f59e0b', borderDash:[5,5], tension:0.3}
+    ]},
+    options: chartOptionsWithTooltip(targetByKey[selectedKey])
+  });
+
+  // Bar Chart
+  const targetFinal = labels.map(k=>targetByKey[k][targetByKey[k].length-1]);
+  if(!barChart) barChart = new Chart(document.getElementById('barChart'),{
+    type:'bar',
+    data:{labels,datasets:[
+      {label:'Valeur cumulée', data:realised, backgroundColor:'#0f2a4d'},
+      {label:'Valeur cible', data:targetFinal, backgroundColor:'#f59e0b'}
+    ]},
+    options:{responsive:true}
+  }); else { barChart.data.datasets[0].data = realised; barChart.data.datasets[1].data = targetFinal; barChart.update(); }
+
+  // Radar Chart
+  if(!radarChart) radarChart = new Chart(document.getElementById('radarChart'),{
+    type:'radar',
+    data:{labels,datasets:[
+      {label:'Valeur cumulée', data:realised, fill:true, backgroundColor:'rgba(15,42,77,0.2)', borderColor:'#0f2a4d'},
+      {label:'Valeur cible', data:targetFinal, fill:true, backgroundColor:'rgba(245,158,11,0.2)', borderColor:'#f59e0b'}
+    ]},
+    options:{responsive:true, scales:{r:{beginAtZero:true}}}
+  }); else { radarChart.data.datasets[0].data=realised; radarChart.data.datasets[1].data=targetFinal; radarChart.update(); }
+
+  // Contribution Chart
+  const totalContribution = labels.map(k=>cumulativeByKey[k][cumulativeByKey[k].length-1]);
+  if(!contributionChart) contributionChart = new Chart(document.getElementById('contributionChart'),{
+    type:'doughnut',
+    data:{labels,datasets:[{data:totalContribution, backgroundColor:['#0f2a4d','#f59e0b','#16a34a']}]},
+    options:{responsive:true}
+  }); else { contributionChart.data.datasets[0].data=totalContribution; contributionChart.update(); }
+
+  // Responsible Chart
+  const filteredResp = suivisResponsable.filter(s=>{
+    const [y,m] = s.date.split('-').map(Number);
+    const monthStart = (quarter-1)*3+1;
+    const monthEnd = quarter*3;
+    return y===year && m>=monthStart && m<=monthEnd && (responsibleFilter.value==='All' || s.responsable===responsibleFilter.value);
+  });
+  const respLabels = [...new Set(filteredResp.map(s=>s.responsable))];
+  const respValues = respLabels.map(r=>filteredResp.filter(s=>s.responsable===r).reduce((sum,s)=>sum+Object.values(s.valeurs).reduce((a,b)=>a+b,0),0));
+  if(!responsibleChart) responsibleChart = new Chart(document.getElementById('responsibleChart'),{
+    type:'bar',
+    data:{labels:respLabels,datasets:[{label:'Valeur cumulée', data:respValues, backgroundColor:'#0f2a4d'}]},
+    options:{responsive:true}
+  }); else { responsibleChart.data.labels=respLabels; responsibleChart.data.datasets[0].data=respValues; responsibleChart.update(); }
+
+  // Message d’analyse
+  let msg='';
+  if(globalRealised>=globalTarget) msg="✅ L’effort global progresse et atteint les objectifs.";
+  else if(globalRealised/globalTarget>=0.7) msg="⚠️ L’effort global progresse mais certaines clés restent faibles.";
+  else msg="❌ L’analyse de performance reste à améliorer.";
+  document.getElementById('performanceMessage').textContent = msg;
+
+  // Detailed Contribution Chart
+  updateDetailedContributionChart(filteredSuivis);
+}
+
+// ======== PROGRESSION CUMULÉE PAR CLÉ AVEC FILTRE ANNÉE DÉDIÉ ====
+function updateProgressChart(){
+  const year = parseInt(yearProgressFilter.value);
+  const filtered = suivis.filter(s => parseInt(s.date.split('-')[0])===year);
+  const periods = filtered.map(s=>s.date);
+
+  const cumulativeByKey = {};
+  labels.forEach(k=>{
+    let sum=0;
+    cumulativeByKey[k]=filtered.map(s=>sum+=s.valeurs[k]||0);
+  });
+
+  const targetByKey = {};
+  labels.forEach(k=>{
+    const sum = Object.values(cible[k]).reduce((a,b)=>a+b,0);
+    targetByKey[k]=Array(filtered.length).fill(sum);
+  });
+
+  const progressDatasets = labels.map((k,idx)=>{
+    const data = cumulativeByKey[k].map((val,i)=>{
+      const targetVal = targetByKey[k][i] || 1;
+      return ((val/targetVal)*100).toFixed(1);
+    });
+    const colors = ['#0f2a4d','#f59e0b','#16a34a','#6366f1','#ec4899','#f97316'];
+    return { label:`${k} – Progression (%)`, data:data, borderColor:colors[idx%colors.length], backgroundColor:colors[idx%colors.length]+'33', tension:0.3, fill:true };
+  });
+
+  if(progressChart) progressChart.destroy();
+  progressChart=new Chart(document.getElementById('progressChart'),{
+    type:'line',
+    data:{ labels:periods, datasets:progressDatasets },
+    options:{
+      responsive:true,
+      interaction:{mode:'index',intersect:false},
+      plugins:{ tooltip:{ callbacks:{ label:function(context){
+        const val=context.raw;
+        const datasetLabel=context.dataset.label;
+        const targetVal = targetByKey[labels[context.datasetIndex]][context.dataIndex] || 1;
+        const ecart = val - targetVal;
+        const pct = ((val/targetVal)*100).toFixed(1);
+        return `${datasetLabel}: ${val} | Cible: ${targetVal} | Écart: ${ecart} | Atteinte: ${pct}%`;
+      }}} },
+      scales:{y:{beginAtZero:true, max:120}}
+    }
+  });
+}
+
+// ======== DETAILED CONTRIBUTION CHART ====
+function updateDetailedContributionChart(filteredSuivis){
+  const periods = filteredSuivis.map(s=>s.date);
+  const cumulativeByKey={};
+  labels.forEach(k=>{ let sum=0; cumulativeByKey[k]=filteredSuivis.map(s=>sum+=s.valeurs[k]||0); });
+  const totalSum = labels.reduce((acc,k)=>acc + (cumulativeByKey[k].slice(-1)[0]||0),0);
+  const pctByKey = labels.map(k=>((cumulativeByKey[k].slice(-1)[0]||0)/totalSum*100).toFixed(1));
+  const colors = ['#0f2a4d','#f59e0b','#16a34a','#6366f1','#ec4899','#f97316'];
+
+  if(detailedContributionChart) detailedContributionChart.destroy();
+  detailedContributionChart = new Chart(document.getElementById('detailedContributionChart'),{
+    type:'bar',
+    data:{ labels:labels.map((k,i)=>`${k} (${pctByKey[i]}%)`), datasets:[{ label:'Contribution (%)', data:pctByKey, backgroundColor:colors.slice(0,labels.length) }] },
+    options:{ responsive:true, plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:ctx=>`${ctx.label}: ${ctx.raw}%` } } }, scales:{ y:{ beginAtZero:true, max:100, title:{display:true,text:'% de contribution'} } } }
+  });
+}
+
+// ======== INITIAL CALL ========
+yearFollowFilter.value = yearsFollow[0];
+quarterFilter.value = 1;
+keyFilter.value = labels[0];
+responsibleFilter.value='All';
+yearProgressFilter.value = yearsFollow[0];
+updateDashboard();
+updateProgressChart();
+
+// ======== EVENT LISTENERS ========
+yearFollowFilter.addEventListener('change',updateDashboard);
+quarterFilter.addEventListener('change',updateDashboard);
+keyFilter.addEventListener('change',updateDashboard);
+responsibleFilter.addEventListener('change',updateDashboard);
+yearProgressFilter.addEventListener('change',updateProgressChart);
+
+</script>
+</body>
+</html>
+

@@ -4,23 +4,21 @@ namespace App\Models;
 
 use App\Traits\Eloquents\HasPermissionTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-
-use Exception;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
-use Laravel\Sanctum\HasApiTokens;
-use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 use Laravel\Sanctum\NewAccessToken;
-
+use SaiAshirwadInformatia\SecureIds\Models\Traits\HasSecureIds;
+use Exception;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, HasPermissionTrait, HasSecureIds ;
+    use HasApiTokens, HasFactory, Notifiable, HasPermissionTrait, HasSecureIds;
 
     protected $table = 'users';
 
@@ -47,6 +45,7 @@ class User extends Authenticatable
         'password_update_at',
         'last_password_remember',
         'link_is_valide',
+        'emailVerifiedAt',
         'photo'
     ];
 
@@ -64,7 +63,7 @@ class User extends Authenticatable
         'password',
         'token',
         'remember_token',
-        'updated_at','deleted_at'
+        'updated_at', 'deleted_at'
     ];
 
     /**
@@ -74,17 +73,16 @@ class User extends Authenticatable
      */
     protected $casts = [
         'emailVerifiedAt' => 'datetime',
-        "created_at" => "datetime:Y-m-d"
+        'created_at' => 'datetime:Y-m-d'
     ];
 
-    protected static function boot() {
+    protected static function boot()
+    {
         parent::boot();
 
-        static::deleting(function($user) {
-
+        static::deleting(function ($user) {
             DB::beginTransaction();
             try {
-
                 $user->update([
                     'email' => time() . '::' . $user->email,
                     'nom' => time() . '::' . $user->nom,
@@ -99,17 +97,15 @@ class User extends Authenticatable
 
                 throw new Exception($th->getMessage(), 1);
             }
-
         });
     }
-
 
     /**
      * The channels the user receives notification broadcasts on.
      */
     public function receivesBroadcastNotificationsOn(): string
     {
-        return 'notification.'.$this->id;
+        return 'notification.' . $this->id;
     }
 
     public function programme()
@@ -124,40 +120,40 @@ class User extends Authenticatable
 
     public function mod()
     {
-        return $this->morphTo()->where("profilable_type", get_class(new MOD()));
+        return $this->morphTo()->where('profilable_type', get_class(new MOD()));
     }
 
     public function bailleur()
     {
-        return $this->morphTo()->where("profilable_type", get_class(new Bailleur()))->get();
+        return $this->morphTo()->where('profilable_type', get_class(new Bailleur()))->get();
     }
 
     public function ongCom()
     {
-        return $this->morphTo()->where("profilable_type", get_class(new OngCom()));
+        return $this->morphTo()->where('profilable_type', get_class(new OngCom()));
     }
 
     public function organisation()
     {
         return $this->profilable_type === Organisation::class ? $this->profilable : null;
-        return $this->morphTo()->where("profilable_type", get_class(new Organisation()));
+        return $this->morphTo()->where('profilable_type', get_class(new Organisation()));
     }
 
     public function entrepriseExecutant()
     {
-        return $this->morphTo()->where("profilable_type", get_class(new EntrepriseExecutant()));
+        return $this->morphTo()->where('profilable_type', get_class(new EntrepriseExecutant()));
     }
 
     public function missionDeControle()
     {
         return $this->profilable();
-        return $this->morphTo()->where("profilable_type", get_class(new MissionDeControle()));
+        return $this->morphTo()->where('profilable_type', get_class(new MissionDeControle()));
     }
 
-    public function uniteeDeGestion():?MorphTo
+    public function uniteeDeGestion(): ?MorphTo
     {
         return $this->profilable_type === UniteeDeGestion::class ? $this->profilable() : null;
-        return $this->morphTo()->where("profilable_type", get_class(new UniteeDeGestion()));
+        return $this->morphTo()->where('profilable_type', get_class(new UniteeDeGestion()));
     }
 
     public function role()
@@ -192,7 +188,7 @@ class User extends Authenticatable
 
     public function scopeInstitutions($query)
     {
-        return $query->where('type','institution');
+        return $query->where('type', 'institution');
     }
 
     public function activites()
@@ -204,7 +200,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Ano::class, 'auteurId');
     }
-
 
     /**
      * Create a new personal access token for the user.
@@ -221,7 +216,7 @@ class User extends Authenticatable
             'abilities' => $abilities,
         ]);
 
-        return new NewAccessToken($token, $token->getKey().'|'.$plainTextToken);
+        return new NewAccessToken($token, $token->getKey() . '|' . $plainTextToken);
     }
 
     public function commentaires()
@@ -231,7 +226,7 @@ class User extends Authenticatable
 
     public function activiteStructures()
     {
-        return $this->belongsToMany(Activite::class,'activite_users', 'userId', 'activiteId');
+        return $this->belongsToMany(Activite::class, 'activite_users', 'userId', 'activiteId');
     }
 
     public function logo()
@@ -274,4 +269,3 @@ class User extends Authenticatable
         return $this->hasMany(EmailRapport::class, 'userId');
     }
 }
-

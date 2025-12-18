@@ -42,7 +42,7 @@ class OrganisationSeeder extends Seeder
                 [
                     'nom' => 'Organisation',
                     'prenom' => 'GFA',
-                    'password' => Hash::make('#Password@2025#'),
+                    'password' => '#Password@2025#',
                     'contact' => '90909090',
                     'type' => 'osc_partenaire',
                     'profilable_type' => Organisation::class,

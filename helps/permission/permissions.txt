@@ -1,0 +1,231 @@
+creer-un-utilisateur
+creer-une-organisation
+creer-un-ddc
+creer-un-decaissement
+creer-un-programme
+creer-un-projet
+creer-une-activite
+creer-une-tache
+creer-un-indicateur
+creer-une-unitee-de-gestion
+creer-un-plan-de-decaissement
+creer-un-suivi-financier
+creer-un-site
+creer-un-role
+creer-un-suivi
+creer-un-rappel
+creer-une-configuration-alerte
+creer-une-categorie
+creer-un-suivi-indicateur
+creer-un-fichier
+creer-une-unitee-de-mesure
+creer-un-audit
+creer-un-fond
+creer-un-outcome
+creer-un-output
+creer-une-cle-de-valeur-indicateur
+creer-une-option-de-reponse
+creer-une-source-de-verification
+creer-une-categorie-indicateur
+creer-un-indicateur-de-gouvernance
+creer-une-question-operationnelle
+creer-un-type-de-gouvernance
+creer-un-principe-de-gouvernance
+creer-un-critere-de-gouvernance
+creer-un-formulaire-de-gouvernance
+creer-une-evaluation-de-gouvernance
+creer-une-soumission
+creer-une-fiche-de-synthese
+creer-un-profil-de-gouvernance
+creer-une-recommandation
+creer-une-action-a-mener
+creer-une-enquete-individuelle
+creer-un-formulaire-individuel
+modifier-un-utilisateur
+modifier-une-organisation
+modifier-un-ddc
+modifier-un-decaissement
+modifier-un-programme
+modifier-un-projet
+modifier-une-activite
+modifier-une-tache
+modifier-un-indicateur
+modifier-une-unitee-de-gestion
+modifier-un-plan-de-decaissement
+modifier-un-suivi-financier
+modifier-un-site
+modifier-un-role
+modifier-un-suivi
+modifier-un-rappel
+modifier-une-configuration-alerte
+modifier-une-categorie
+modifier-un-suivi-indicateur
+modifier-un-fichier
+modifier-une-unitee-de-mesure
+modifier-un-audit
+modifier-un-fond
+modifier-un-outcome
+modifier-un-output
+modifier-une-cle-de-valeur-indicateur
+modifier-une-option-de-reponse
+modifier-une-source-de-verification
+modifier-une-categorie-indicateur
+modifier-un-indicateur-de-gouvernance
+modifier-une-question-operationnelle
+modifier-un-type-de-gouvernance
+modifier-un-principe-de-gouvernance
+modifier-un-critere-de-gouvernance
+modifier-un-formulaire-de-gouvernance
+modifier-une-evaluation-de-gouvernance
+modifier-une-soumission
+modifier-une-fiche-de-synthese
+modifier-un-profil-de-gouvernance
+modifier-une-recommandation
+modifier-une-action-a-mener
+modifier-une-enquete-individuelle
+modifier-un-formulaire-individuel
+supprimer-un-utilisateur
+supprimer-une-organisation
+supprimer-un-ddc
+supprimer-un-decaissement
+supprimer-un-programme
+supprimer-un-projet
+supprimer-une-activite
+supprimer-une-tache
+supprimer-un-indicateur
+supprimer-une-unitee-de-gestion
+supprimer-un-plan-de-decaissement
+supprimer-un-suivi-financier
+supprimer-un-site
+supprimer-un-role
+supprimer-un-suivi
+supprimer-un-rappel
+supprimer-une-configuration-alerte
+supprimer-une-categorie
+supprimer-un-suivi-indicateur
+supprimer-un-fichier
+supprimer-une-unitee-de-mesure
+supprimer-un-audit
+supprimer-un-fond
+supprimer-un-outcome
+supprimer-un-output
+supprimer-une-cle-de-valeur-indicateur
+supprimer-une-option-de-reponse
+supprimer-une-source-de-verification
+supprimer-une-categorie-indicateur
+supprimer-un-indicateur-de-gouvernance
+supprimer-une-question-operationnelle
+supprimer-un-type-de-gouvernance
+supprimer-un-principe-de-gouvernance
+supprimer-un-critere-de-gouvernance
+supprimer-un-formulaire-de-gouvernance
+supprimer-une-evaluation-de-gouvernance
+supprimer-une-soumission
+supprimer-une-fiche-de-synthese
+supprimer-un-profil-de-gouvernance
+supprimer-une-recommandation
+supprimer-une-action-a-mener
+supprimer-une-enquete-individuelle
+supprimer-un-formulaire-individuel
+voir-un-utilisateur
+voir-une-organisation
+voir-un-ddc
+voir-un-decaissement
+voir-un-programme
+voir-un-projet
+voir-une-activite
+voir-une-tache
+voir-un-indicateur
+voir-une-unitee-de-gestion
+voir-un-plan-de-decaissement
+voir-un-suivi-financier
+voir-un-site
+voir-un-role
+voir-un-suivi
+voir-un-rappel
+voir-une-configuration-alerte
+voir-une-categorie
+voir-un-suivi-indicateur
+voir-un-fichier
+voir-une-unitee-de-mesure
+voir-un-audit
+voir-un-fond
+voir-un-outcome
+voir-un-output
+voir-une-cle-de-valeur-indicateur
+voir-une-option-de-reponse
+voir-une-source-de-verification
+voir-une-categorie-indicateur
+voir-un-indicateur-de-gouvernance
+voir-une-question-operationnelle
+voir-un-type-de-gouvernance
+voir-un-principe-de-gouvernance
+voir-un-critere-de-gouvernance
+voir-un-formulaire-de-gouvernance
+voir-une-evaluation-de-gouvernance
+voir-une-soumission
+voir-une-fiche-de-synthese
+voir-un-profil-de-gouvernance
+voir-une-recommandation
+voir-une-action-a-mener
+voir-une-enquete-individuelle
+voir-un-formulaire-individuel
+voir ptab
+faire revision ptab
+voir revision ptab
+voir le plan de decaissement du ptab
+voir une permission
+attribuer une permission
+retirer une permission
+voir le point financier des activites
+faire un backup
+voir un historique
+alerte tache
+alerte activite
+alerte suivi financier
+alerte suivi indicateur
+modifier une frequence de sauvegarde
+voir statistique activite
+prolonger un projet
+validation
+voir details projet
+prolonger une tache
+prolonger une activite
+exporter un suivi indicateur
+exporter un decaissement
+exporter un plan decaissement
+exporter un suivi financier
+exporter un suivi ptab
+exporter un suivi ptab revise
+importer un suivi financier
+voir une statistique activite
+voir suivi kobo
+voir formulaire kobo
+voir formulaire factuel
+voir details soumission
+valider un suivi indicateur
+valider une soumission
+valider une action a mener
+signaler une action a mener est realise
+voir plan action
+voir statistique evolution des profiles de gouvernance au fil du temps
+ajouter nombre de participant
+envoyer une invitation
+envoyer un rappel soumission
+alerte validation action a mener
+voir resultats evaluation
+alerte action a mener
+alerte action a mener realise
+alerte evaluation de gouvernance
+alerte resultats evaluation
+alerte creer plan action
+alerte definition nombre de participant
+exporter resultats evaluation
+exporter fiche synthese
+exporter plan action
+filtrer indicateur
+ajouter une cle de valeur indicateur
+supprimer une cle de valeur indicateur
+voir cadre de rendement
+voir reponses enquete individuelle
+supprimer une reponse enquete individuelle
