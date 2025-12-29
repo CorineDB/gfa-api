@@ -12,13 +12,13 @@
   ),
   'facade/ignition' => 
   array (
-    'aliases' => 
-    array (
-      'Flare' => 'Facade\\Ignition\\Facades\\Flare',
-    ),
     'providers' => 
     array (
       0 => 'Facade\\Ignition\\IgnitionServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Flare' => 'Facade\\Ignition\\Facades\\Flare',
     ),
   ),
   'fruitcake/laravel-cors' => 
@@ -30,24 +30,24 @@
   ),
   'intervention/image' => 
   array (
-    'aliases' => 
-    array (
-      'Image' => 'Intervention\\Image\\Facades\\Image',
-    ),
     'providers' => 
     array (
       0 => 'Intervention\\Image\\ImageServiceProvider',
     ),
+    'aliases' => 
+    array (
+      'Image' => 'Intervention\\Image\\Facades\\Image',
+    ),
   ),
   'itsgoingd/clockwork' => 
   array (
-    'aliases' => 
-    array (
-      'Clockwork' => 'Clockwork\\Support\\Laravel\\Facade',
-    ),
     'providers' => 
     array (
       0 => 'Clockwork\\Support\\Laravel\\ClockworkServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Clockwork' => 'Clockwork\\Support\\Laravel\\Facade',
     ),
   ),
   'kitloong/laravel-app-logger' => 
@@ -94,24 +94,24 @@
   ),
   'rakutentech/laravel-request-docs' => 
   array (
-    'aliases' => 
-    array (
-      'LaravelRequestDocs' => 'Rakutentech\\LaravelRequestDocs\\LaravelRequestDocsFacade',
-    ),
     'providers' => 
     array (
       0 => 'Rakutentech\\LaravelRequestDocs\\LaravelRequestDocsServiceProvider',
     ),
+    'aliases' => 
+    array (
+      'LaravelRequestDocs' => 'Rakutentech\\LaravelRequestDocs\\LaravelRequestDocsFacade',
+    ),
   ),
   'saiashirwadinformatia/secure-ids' => 
   array (
-    'aliases' => 
-    array (
-      'SecureIds' => 'SaiAshirwadInformatia\\SecureIds\\Facades\\SecureIds',
-    ),
     'providers' => 
     array (
       0 => 'SaiAshirwadInformatia\\SecureIds\\SecureIdsServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'SecureIds' => 'SaiAshirwadInformatia\\SecureIds\\Facades\\SecureIds',
     ),
   ),
   'spatie/laravel-activitylog' => 
@@ -144,13 +144,13 @@
   ),
   'vinkla/hashids' => 
   array (
-    'aliases' => 
-    array (
-      'Hashids' => 'Vinkla\\Hashids\\Facades\\Hashids',
-    ),
     'providers' => 
     array (
       0 => 'Vinkla\\Hashids\\HashidsServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Hashids' => 'Vinkla\\Hashids\\Facades\\Hashids',
     ),
   ),
 );
