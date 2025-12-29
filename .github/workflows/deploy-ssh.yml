@@ -17,8 +17,8 @@ jobs:
           # Create deployment directory if it doesn't exist
           if [ ! -d "/var/www/html/gfa/backend" ]; then
             echo "📁 Creating deployment directory..."
-            sudo mkdir -p /var/www/html/gfa/backend
-            sudo chown -R pc-1:pc-1 /var/www/html/gfa/backend
+            mkdir -p /var/www/html/gfa/backend
+            # chown not needed if user creates it, or can't be done without sudo if parent owned by root (but we pre-created parent)
           fi
           
           # Navigate to deployment directory
@@ -35,15 +35,15 @@ jobs:
           echo "📥 Pulling latest code..."
           git pull origin main
           
-          # Fix permissions
-          echo "🔧 Fixing permissions..."
-          sudo chown -R pc-1:pc-1 .
+          # Fix permissions if needed (user owns files, so usually fine, or chown via sudo if really needed but we avoid sudo)
+          # echo "🔧 Fixing permissions..."
+          # sudo chown -R pc-1:pc-1 . 
           
           # Deploy with Docker
           echo "🐳 Deploying with Docker..."
-          sudo docker-compose -f docker-compose.staging.yml down
-          sudo docker-compose -f docker-compose.staging.yml up -d --build
+          docker-compose -f docker-compose.staging.yml down
+          docker-compose -f docker-compose.staging.yml up -d --build
           
           # Check status
           echo "✅ Deployment complete!"
-          sudo docker-compose -f docker-compose.staging.yml ps
+          docker-compose -f docker-compose.staging.yml ps
