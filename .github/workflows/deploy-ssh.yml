@@ -7,49 +7,43 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     
     steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: 22
-          script: |
-            echo "🚀 Starting deployment..."
-            
-            # Create deployment directory if it doesn't exist
-            if [ ! -d "/var/www/html/gfa/backend" ]; then
-              echo "📁 Creating deployment directory..."
-              sudo mkdir -p /var/www/html/gfa/backend
-              sudo chown -R pc-1:pc-1 /var/www/html/gfa/backend
-            fi
-            
-            # Navigate to deployment directory
-            cd /var/www/html/gfa/backend
-            
-            # Clone repository if not already cloned
-            if [ ! -d ".git" ]; then
-              echo "📦 Cloning repository..."
-              git clone ${{ secrets.BACKEND_REPO_URL }} .
-              git checkout main
-            fi
-            
-            # Pull latest changes
-            echo "📥 Pulling latest code..."
-            git pull origin main
-            
-            # Fix permissions
-            echo "🔧 Fixing permissions..."
-            sudo chown -R pc-1:pc-1 .
-            
-            # Deploy with Docker
-            echo "🐳 Deploying with Docker..."
-            sudo docker-compose -f docker-compose.staging.yml down
-            sudo docker-compose -f docker-compose.staging.yml up -d --build
-            
-            # Check status
-            echo "✅ Deployment complete!"
-            sudo docker-compose -f docker-compose.staging.yml ps
+      - name: Deploy Backend
+        run: |
+          echo "🚀 Starting deployment..."
+          
+          # Create deployment directory if it doesn't exist
+          if [ ! -d "/var/www/html/gfa/backend" ]; then
+            echo "📁 Creating deployment directory..."
+            sudo mkdir -p /var/www/html/gfa/backend
+            sudo chown -R pc-1:pc-1 /var/www/html/gfa/backend
+          fi
+          
+          # Navigate to deployment directory
+          cd /var/www/html/gfa/backend
+          
+          # Clone repository if not already cloned
+          if [ ! -d ".git" ]; then
+            echo "📦 Cloning repository..."
+            git clone ${{ secrets.BACKEND_REPO_URL }} .
+            git checkout main
+          fi
+          
+          # Pull latest changes
+          echo "📥 Pulling latest code..."
+          git pull origin main
+          
+          # Fix permissions
+          echo "🔧 Fixing permissions..."
+          sudo chown -R pc-1:pc-1 .
+          
+          # Deploy with Docker
+          echo "🐳 Deploying with Docker..."
+          sudo docker-compose -f docker-compose.staging.yml down
+          sudo docker-compose -f docker-compose.staging.yml up -d --build
+          
+          # Check status
+          echo "✅ Deployment complete!"
+          sudo docker-compose -f docker-compose.staging.yml ps
